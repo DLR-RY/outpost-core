@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+import os
+
+Import('envGlobal')
+
+envGlobal.Append(CPPPATH=[os.path.abspath('.')])
+
+env = envGlobal.Clone()
+
+files  = env.Glob('cobc/rtos/*.cpp')
+files += env.Glob('cobc/hal/*.cpp')
+
+if True:
+	# POSIX
+	files += env.Glob('cobc/rtos/posix/*.cpp')
+	
+	envGlobal.Append(LIBS=['rt', 'pthread'])
+else:
+	# Leon 3
+	files += env.Glob('cobc/rtos/rtems/*.cpp')
+	
+	files += env.Glob('cobc/hal/leon3-rtems/spwl/*.cpp')
+	files += env.Glob('cobc/hal/leon3-rtems/*.cpp')
+	files += env.Glob('cobc/hal/nexys3/*.cpp')
+
+library = env.StaticLibrary('cobc_rtos', files)
+envGlobal.Install('$BUILDPATH/lib', library)
+

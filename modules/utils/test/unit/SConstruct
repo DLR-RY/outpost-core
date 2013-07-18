@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+
+import os
+
+vars = Variables('custom.py')
+vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+
+envGlobal = Environment(variables=vars,
+                        toolpath=['../../conf/scons/site_tools'],
+				        tools=['hosted', 'buildpath', 'buildformat'],
+				        ENV=os.environ)
+
+Help(vars.GenerateHelpText(envGlobal))
+
+if envGlobal['coverage']:
+	envGlobal.Append(CCFLAGS=['--coverage'])
+	envGlobal.Append(LINKFLAGS=['--coverage'])
+
+envGlobal.Append(CPPDEFINES={'UNITTEST':None})
+
+envGlobal['BASEPATH'] = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath('../../build/test/unit')
+
+envGlobal.SConscript(['../../src/SConscript',
+                      '../../ext/SConscript'], exports='envGlobal')
+
+envGlobal.Append(CPPPATH=[
+	'../../src',
+	'../../ext/gmock-1.6.0/fused-src'
+])
+
+env = envGlobal.Clone()
+
+env['CXXFLAGS_std'] = ['-std=c++98']
+env['CCFLAGS_warning'] = [
+	'-W',
+	'-Wall',
+	'-Wextra',
+	'-Wformat',
+	'-Wno-unused-parameter',
+	'-Winit-self',
+	'-Wcast-qual',
+	'-Wcast-align',
+	'-Wimplicit',
+	'-Wshadow',
+	'-Wpointer-arith',
+	'-Wwrite-strings',
+	'-Wredundant-decls',
+	'-Wunused',
+	'-Wuninitialized',
+#	'-Wconversion',
+#	'-Wold-style-cast',
+#	'-Wundef',
+#	'-Winline',
+#	'-Wmissing-declarations',
+]
+
+env.Append(CPPPATH=['.'])
+env.Append(LIBS=['pthread', 'gmock'])
+env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
+
+files  = env.Glob('*.cpp')
+
+envGlobal.Alias('build', env.Program('unittest', files))
+
