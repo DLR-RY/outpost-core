@@ -1,0 +1,65 @@
+=====
+libcs
+=====
+
+Library for Communication & Services
+====================================
+
+This repository contains the following software modules:
+
+ccsds
+	CCSDS module for encoding/decoding transfer frames. Contains a backend
+	for tunneling CCSDS via UART for testing purposes.
+
+pus
+	PUS (Packet Utilization Standard) module. Contains some of the standard
+	services.
+
+rtos
+	RTOS Wrapper and hardware abstraction layer. Currently only RTEMS and all
+	POSIX compatible OS are supported but other OS may be added as well.
+
+smpc
+	Simple Message Passing Channel. Provides a very basic, but fast
+	publish/subscribe based communication middleware for objects living in
+	the same address space.
+
+utils
+	Small utilities. Not a real software module rather a collection of
+	useful bits and pieces. Some of the reuseable unit test harness are
+	located here.
+
+
+Folder structure
+----------------
+
+TBW. <----------------------------
+
+README and INSTALL as well as all other documentation should use
+`reStructuredText`_ for formatting. This allows to generate nice looking
+documents form them by converting them to HTML or LaTeX.
+
+
+Naming conventions
+------------------
+
+Unit tests
+~~~~~~~~~~
+
+Fake...
+	Implements an interface but does little more than for example add a message
+	to a trace log, against which a test assertion can be run.
+
+Mock...
+	Mock objects may contain test assertion that can make the test fail, for
+	example if some data is not as expected.
+
+Testing...
+	Simple subclass of the class under test, e.g. to expose interna or to add
+	.
+
+...Test
+	Test suite to test a given class.
+
+
+.. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html

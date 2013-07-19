@@ -11,34 +11,16 @@ envGlobal.Append(CPPPATH=[
 env = envGlobal.Clone()
 
 env['CXXFLAGS_std'] = ['-std=c++98']
-env['CCFLAGS_warning'] = [
-	'-W',
-	'-Wall',
-	'-Wextra',
-	'-Wformat',
-	'-Wno-unused-parameter',
-	'-Winit-self',
-	'-Wcast-qual',
-	'-Wcast-align',
-	'-Wimplicit',
-#	'-Wshadow',
-	'-Wpointer-arith',
-	'-Wwrite-strings',
-	'-Wredundant-decls',
-	'-Wunused',
-	'-Wuninitialized',
-#	'-Wconversion',
-#	'-Wold-style-cast',
-#	'-Wundef',
-#	'-Winline',
-#	'-Wmissing-declarations',
-]
 
-env.Append(LIBS=['pthread'])
-env.Append(LIBPATH=['/usr/lib'])
+env.RemoveFromList('CCFLAGS_warning', [
+	'-Wconversion',
+	'-Wundef',
+	'-Winline',
+	'-Wmissing-declarations'])
+env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 
 files = env.Glob('gmock-1.6.0/fused-src/*.cc')
 library = env.StaticLibrary('gmock', files)
 
 envGlobal.Install('$BUILDPATH/lib', library)
-
+envGlobal.Append(LIBS=['gmock', 'pthread'])

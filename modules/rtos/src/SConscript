@@ -11,18 +11,25 @@ env = envGlobal.Clone()
 files  = env.Glob('cobc/rtos/*.cpp')
 files += env.Glob('cobc/hal/*.cpp')
 
-if True:
+if env['OS'] == 'posix':
 	# POSIX
 	files += env.Glob('cobc/rtos/posix/*.cpp')
 	
 	envGlobal.Append(LIBS=['rt', 'pthread'])
-else:
+elif env['OS'] == 'rtems':
 	# Leon 3
 	files += env.Glob('cobc/rtos/rtems/*.cpp')
 	
-	files += env.Glob('cobc/hal/leon3-rtems/spwl/*.cpp')
-	files += env.Glob('cobc/hal/leon3-rtems/*.cpp')
-	files += env.Glob('cobc/hal/nexys3/*.cpp')
+	if env['ARCHITECTURE'] == 'leon3':
+		files += env.Glob('cobc/hal/leon3-rtems/spwl/*.cpp')
+		files += env.Glob('cobc/hal/leon3-rtems/*.cpp')
+		
+		# TODO only when compiling for the nexys3 board!
+		files += env.Glob('cobc/hal/nexys3/*.cpp')
+	
+	# as RTEMS is C it uses C-Style casts. Therefore this warning has to
+	# disabled for the RTEMS wrapper files.
+	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 
 library = env.StaticLibrary('cobc_rtos', files)
 envGlobal.Install('$BUILDPATH/lib', library)

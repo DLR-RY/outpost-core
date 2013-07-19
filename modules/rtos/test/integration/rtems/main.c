@@ -100,6 +100,9 @@ static const uint8_t numbers[10] =
 };
 
 rtems_task
+task_test(rtems_task_argument unused);
+
+rtems_task
 task_test(rtems_task_argument unused)
 {
 	rtems_id tid;
@@ -127,12 +130,12 @@ task_system_init(rtems_task_argument ignored)
 	printf( "Hello World\n" );
 	//rtems_task_wake_after(100);
 	printk( "Hello World over printk() on Debug console\n\n" );
-	
+
 	rtems_status_code status;
 	rtems_time_of_day time;
-	
+
 	puts( "\n\n*** CLOCK TICK TEST ***" );
-	
+
 	time.year   = 1988;
 	time.month  = 12;
 	time.day    = 31;
@@ -140,13 +143,13 @@ task_system_init(rtems_task_argument ignored)
 	time.minute = 0;
 	time.second = 0;
 	time.ticks  = 0;
-	
+
 	status = rtems_clock_set( &time );
-	
+
 	Task_name[ 1 ] = rtems_build_name( 'T', 'A', '1', ' ' );
 	Task_name[ 2 ] = rtems_build_name( 'T', 'A', '2', ' ' );
 	Task_name[ 3 ] = rtems_build_name( 'T', 'A', '3', ' ' );
-	
+
 	status = rtems_task_create(
 	Task_name[ 1 ], 1, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
 	RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ 1 ]
@@ -159,24 +162,24 @@ task_system_init(rtems_task_argument ignored)
 	Task_name[ 3 ], 1, RTEMS_MINIMUM_STACK_SIZE * 2, RTEMS_DEFAULT_MODES,
 	RTEMS_DEFAULT_ATTRIBUTES, &Task_id[ 3 ]
 	);
-	
+
 	status = rtems_task_start( Task_id[ 1 ], task_test, 1 );
 	status = rtems_task_start( Task_id[ 2 ], task_test, 2 );
 	status = rtems_task_start( Task_id[ 3 ], task_test, 3 );
-	
+
 	// -----------------
 	// print "dlr" on the seven segment display
 	(*(uint32_t *)(0x80000300)) = 0x5e385000;
-	
+
 	for (uint_fast8_t i = 0; i < 10; ++i) {
 		rtems_task_wake_after(100);
-		
+
 		(*(uint32_t *)(0x80000300)) = 0x5e385000 | numbers[i % 10];
 	}
-	
+
 	rtems_task_wake_after(100);
 	(*(uint32_t *)(0x80000300)) = 0x5e385000;
 	// -----------------
-	
+
 	status = rtems_task_delete( RTEMS_SELF );
 }
