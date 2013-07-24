@@ -56,4 +56,5 @@ cobc::smpc::TopicBase::dumpConnectedSubscriptions()
 	}
 }
 #endif
+// LCOV_EXCL_STOP
 // LCOV_EXCL_END
