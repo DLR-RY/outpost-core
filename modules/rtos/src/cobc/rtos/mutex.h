@@ -8,10 +8,14 @@
 #ifndef COBC_RTOS_MUTEX_HPP
 #define COBC_RTOS_MUTEX_HPP
 
-#ifdef __rtems__
+#if defined(__rtems__)
 #	include "rtems/mutex.h"
-#else
+#elif defined(__unix__)
 #	include "posix/mutex.h"
+#elif defined(FREERTOS)
+#	include "freertos/mutex.h"
+#else
+#	include "none/mutex.h"
 #endif
 
 namespace cobc

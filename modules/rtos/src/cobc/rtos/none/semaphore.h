@@ -5,10 +5,9 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#ifndef COBC_RTOS_RTEMS_SEMAPHORE_HPP
-#define COBC_RTOS_RTEMS_SEMAPHORE_HPP
+#ifndef COBC_RTOS_NONE_SEMAPHORE_HPP
+#define COBC_RTOS_NONE_SEMAPHORE_HPP
 
-#include <rtems.h>
 #include <cobc/time/duration.h>
 
 namespace cobc
@@ -87,7 +86,6 @@ namespace cobc
 			inline void
 			release()
 			{
-				rtems_semaphore_release(id);
 			}
 
 		private:
@@ -97,8 +95,6 @@ namespace cobc
 			// disable assignment operator
 			Semaphore&
 			operator = (const Semaphore& other);
-
-			rtems_id id;
 		};
 
 		/**
@@ -162,7 +158,6 @@ namespace cobc
 			inline void
 			release()
 			{
-				rtems_semaphore_release(id);
 			}
 
 		private:
@@ -172,10 +167,8 @@ namespace cobc
 			// disable assignment operator
 			BinarySemaphore&
 			operator = (const BinarySemaphore& other);
-
-			rtems_id id;
 		};
 	}
 }
 
-#endif // COBC_RTOS_RTEMS_SEMAPHORE_HPP
+#endif // COBC_RTOS_NONE_SEMAPHORE_HPP

@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import os
+
+envGlobal = Environment(toolpath=['../../../../../conf/scons/site_tools'],
+				        tools=['arm-none-eabi', 'buildpath', 'buildformat', 'libcs'],
+				        OS='freertos',
+			        	ENV=os.environ)
+
+envGlobal['BASEPATH'] = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath('../../build/test/integration/stm32f4')
+
+rootpath = '../../../..'
+
+envGlobal.Append(CPPPATH=[
+	os.path.abspath(rootpath + '/rtos/ext')
+])
+
+envGlobal.SConscript([rootpath + '/utils/src/SConscript',
+                      rootpath + '/time/src/SConscript',
+                      '../../../src/SConscript'],
+                     exports='envGlobal')
+
+env = envGlobal.Clone()
+env.Append(CPPPATH=[
+	'.'
+])
+
+env.Append(LIBS=['cobc_rtos', 'cobc_time'])
+env.Append(LIBPATH=['$BUILDPATH/lib'])
+
+files  = env.Glob('*.cpp')
+
+envGlobal.Alias('build', env.Program('test-stm32f4', files))
+

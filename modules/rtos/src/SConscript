@@ -17,9 +17,9 @@ if env['OS'] == 'posix':
 	
 	envGlobal.Append(LIBS=['rt', 'pthread'])
 elif env['OS'] == 'rtems':
-	# Leon 3
 	files += env.Glob('cobc/rtos/rtems/*.cpp')
 	
+	# Leon 3
 	if env['ARCHITECTURE'] == 'leon3':
 		files += env.Glob('cobc/hal/leon3-rtems/spwl/*.cpp')
 		files += env.Glob('cobc/hal/leon3-rtems/*.cpp')
@@ -30,6 +30,16 @@ elif env['OS'] == 'rtems':
 	# as RTEMS is C it uses C-Style casts. Therefore this warning has to
 	# disabled for the RTEMS wrapper files.
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+elif env['OS'] == 'freertos':
+	files += env.Glob('cobc/rtos/freertos/*.cpp')
+	
+	envGlobal.Append(CPPDEFINES={'FREERTOS':None})
+	
+	# FreeRTOS uses C-Style casts. Therefore this warning has to
+	# disabled for the FreeRTOS wrapper files.
+	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+else:
+	files += env.Glob('cobc/rtos/none/*.cpp')
 
 library = env.StaticLibrary('cobc_rtos', files)
 envGlobal.Install('$BUILDPATH/lib', library)

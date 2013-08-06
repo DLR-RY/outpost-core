@@ -5,13 +5,14 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#ifndef COBC_RTOS_RTEMS_THREAD_H
-#define COBC_RTOS_RTEMS_THREAD_H
+#ifndef COBC_RTOS_FREERTOS_THREAD_H
+#define COBC_RTOS_FREERTOS_THREAD_H
 
 #include <cstddef>
 #include <stdint.h>
 
-#include <rtems.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 #include <cobc/time/duration.h>
 
@@ -22,16 +23,16 @@ namespace cobc
 		/**
 		 * Wrapper class for the Thread function of the Operating System.
 		 *
-		 * Encapsulates the RTEMS C thread functions and provides C++-style
+		 * Encapsulates the FreeRTOS C thread functions and provides C++-style
 		 * access to them.
 		 *
 		 * The run()-method of a derived class is invoked in the newly created
 		 * thread context. The derived class can also hold data members
 		 * associated with the specific thread.
 		 *
-		 * This class uses the standard RTEMS tasks (not the POSIX threads).
-		 * Make sure to adapt CONFIGURE_MAXIMUM_TASKS to the number of
-		 * thread created. If more threads than available are created the
+		 * TODO FreeRTOS memory handling.
+		 *
+		 * If more threads than available are created the
 		 * FailureHandler::fatal() handler is called.
 		 *
 		 * @author	Fabian Greif <fabian.greif@dlr.de>
@@ -123,7 +124,7 @@ namespace cobc
 			static inline void
 			yield()
 			{
-				rtems_task_wake_after(RTEMS_YIELD_PROCESSOR);
+				taskYIELD();
 			}
 
 			/**
@@ -135,7 +136,7 @@ namespace cobc
 			static inline void
 			sleep(::cobc::time::Duration duration)
 			{
-				rtems_task_wake_after(duration.milliseconds());
+				vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000.0);
 			}
 
 		protected:
@@ -158,11 +159,11 @@ namespace cobc
 			operator = (const Thread& other);
 
 			static void
-			wrapper(rtems_task_argument object);
+			wrapper(void *object);
 
-			rtems_id tid;
+			xTaskHandle handle;
 		};
 	}
 }
 
-#endif // COBC_RTOS_RTEMS_THREAD_H
+#endif // COBC_RTOS_FREERTOS_THREAD_H

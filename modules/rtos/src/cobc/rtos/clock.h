@@ -8,10 +8,14 @@
 #ifndef COBC_RTOS_CLOCK_H
 #define COBC_RTOS_CLOCK_H
 
-#ifdef __rtems__
+#if defined(__rtems__)
 #	include "rtems/clock.h"
-#else
+#elif defined(__unix__)
 #	include "posix/clock.h"
+#elif defined(FREERTOS)
+#	include "freertos/clock.h"
+#else
+#	include "none/clock.h"
 #endif
 
 #endif // COBC_RTOS_CLOCK_H

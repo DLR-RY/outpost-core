@@ -8,10 +8,14 @@
 #ifndef COBC_RTOS_SEMAPHORE_HPP
 #define COBC_RTOS_SEMAPHORE_HPP
 
-#ifdef __rtems__
+#if defined(__rtems__)
 #	include "rtems/semaphore.h"
-#else
+#elif defined(__unix__)
 #	include "posix/semaphore.h"
+#elif defined(FREERTOS)
+#	include "freertos/semaphore.h"
+#else
+#	include "none/semaphore.h"
 #endif
 
 #endif // COBC_RTOS_SEMAPHORE_HPP

@@ -5,13 +5,11 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#ifndef COBC_RTOS_RTEMS_THREAD_H
-#define COBC_RTOS_RTEMS_THREAD_H
+#ifndef COBC_RTOS_NONE_THREAD_H
+#define COBC_RTOS_NONE_THREAD_H
 
 #include <cstddef>
 #include <stdint.h>
-
-#include <rtems.h>
 
 #include <cobc/time/duration.h>
 
@@ -123,7 +121,6 @@ namespace cobc
 			static inline void
 			yield()
 			{
-				rtems_task_wake_after(RTEMS_YIELD_PROCESSOR);
 			}
 
 			/**
@@ -135,7 +132,7 @@ namespace cobc
 			static inline void
 			sleep(::cobc::time::Duration duration)
 			{
-				rtems_task_wake_after(duration.milliseconds());
+				//rtems_task_wake_after(duration.milliseconds());
 			}
 
 		protected:
@@ -148,21 +145,8 @@ namespace cobc
 			 */
 			virtual void
 			run() = 0;
-
-		private:
-			// disable copy constructor
-			Thread(const Thread& other);
-
-			// disable assignment operator
-			Thread&
-			operator = (const Thread& other);
-
-			static void
-			wrapper(rtems_task_argument object);
-
-			rtems_id tid;
 		};
 	}
 }
 
-#endif // COBC_RTOS_RTEMS_THREAD_H
+#endif // COBC_RTOS_NONE_THREAD_H
