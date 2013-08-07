@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+import os
+
+envGlobal = Environment(toolpath=['../conf/scons/site_tools'],
+				        tools=['libcs', 'arm-none-eabi', 'buildpath', 'buildformat'],
+				        OS='freertos',
+			        	ENV=os.environ)
+
+envGlobal['BASEPATH']  = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath('build/library')
+
+modulepath = './'
+
+envGlobal.Append(CPPPATH=[
+	os.path.abspath(modulepath + 'rtos/ext')
+])
+
+envGlobal.SConscript(
+	[
+		modulepath + 'utils/src/SConscript',
+		modulepath + 'utils/ext/SConscript',
+		modulepath + 'time/src/SConscript',
+		modulepath + 'rtos/src/SConscript',
+		modulepath + 'smpc/src/SConscript',
+		modulepath + 'ccsds/src/SConscript',
+		modulepath + 'pus/src/SConscript',
+	],
+	exports='envGlobal')
+
+env = envGlobal.Clone()
+
+env.Append(LIBS=['cobc_pus', 'cobc_ccsds', 'cobc_smpc', 'cobc_rtos', 'cobc_time'])
+env.Append(LIBPATH=['$BUILDPATH/lib'])
+
+# Combine all libraries into one
+files = []
+for lib in env['LIBS']:
+	files.append(os.path.join('$BUILDPATH', 'lib', env['LIBPREFIX'] + lib + env['LIBSUFFIX'])) 
+
+envGlobal.Alias('library', env.StaticLibrary('libcs', files))
+

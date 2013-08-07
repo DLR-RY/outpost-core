@@ -11,6 +11,11 @@ env = envGlobal.Clone()
 files  = env.Glob('cobc/smpc/*.cpp')
 files += env.Glob('cobc/smpc/*/*.cpp')
 
-library = env.StaticLibrary('cobc_smpc', files)
+objects = []
+for file in files:
+	objects.append(env.Object(file))
+envGlobal.Append(objects={'smpc': objects})
+
+library = env.StaticLibrary('cobc_smpc', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
 

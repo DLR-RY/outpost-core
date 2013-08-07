@@ -4,23 +4,31 @@ import os
 
 Import('envGlobal')
 
-envGlobal.Append(CPPPATH=[
-	os.path.abspath('gmock-1.6.0/fused-src')
-])
-
-env = envGlobal.Clone()
-
-env['CXXFLAGS_std'] = ['-std=c++98']
-
-env.RemoveFromList('CCFLAGS_warning', [
-	'-Wconversion',
-	'-Wundef',
-	'-Winline',
-	'-Wmissing-declarations'])
-env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
-
-files = env.Glob('gmock-1.6.0/fused-src/*.cc')
-library = env.StaticLibrary('gmock', files)
-
-envGlobal.Install('$BUILDPATH/lib', library)
-envGlobal.Append(LIBS=['gmock', 'pthread'])
+if envGlobal['OS'] == 'posix':
+	# googletest should only be used when compiling for an hosted environment
+	envGlobal.Append(CPPPATH=[
+		os.path.abspath('gmock-1.6.0/fused-src')
+	])
+	
+	env = envGlobal.Clone()
+	
+	env['CXXFLAGS_std'] = ['-std=c++98']
+	
+	env.RemoveFromList('CCFLAGS_warning', [
+		'-Wconversion',
+		'-Wundef',
+		'-Winline',
+		'-Wmissing-declarations'])
+	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+	
+	files = env.Glob('gmock-1.6.0/fused-src/*.cc')
+	objects = []
+	for file in files:
+		objects.append(env.Object(file))
+	envGlobal.Append(objects={'gmock': objects})
+	
+	library = env.StaticLibrary('gmock', objects)
+	
+	envGlobal.Install('$BUILDPATH/lib', library)
+	envGlobal.Append(LIBS=['gmock', 'pthread'])
+	

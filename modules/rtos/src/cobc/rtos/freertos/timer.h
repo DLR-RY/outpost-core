@@ -12,9 +12,6 @@
 
 #include <cobc/time/duration.h>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/timers.h>
-
 #include "../callable.h"
 
 namespace cobc
@@ -25,16 +22,14 @@ namespace cobc
 		 * Software timer.
 		 *
 		 * The timer callback functions are called in the context of the
-		 * timer server thread.
+		 * timer daemon thread.
 		 *
-		 * The Timer Server thread is responsible for executing the timer
+		 * The timer daemon thread is responsible for executing the timer
 		 * service routines associated with all task-based timers.
 		 *
-		 * The Timer Server is designed to remain blocked until a task-based
-		 * timer fires. This reduces the execution overhead of the Timer Server.
-		 *
-		 * @warning	You need to call Timer::startTimerDaemonThread() somewhere
-		 * 			in your start-up code. Otherwise the timers won't work!
+		 * @warning You need to enable the timer daemon thread in your FreeRTOS
+		 *          configuration. Otherwise the timers won't work! See
+		 *          startTimerDaemonThread().
 		 *
 		 * @author	Fabian Greif <fabian.greif@dlr.de>
 		 * @ingroup	rtos
@@ -93,6 +88,9 @@ namespace cobc
 			/**
 			 * Reset the timer interval to it's original value when it is
 			 * currently running.
+			 *
+			 * If the timer is not running this has the same effect as calling
+			 * start().
 			 */
 			void
 			reset();
@@ -107,23 +105,18 @@ namespace cobc
 			cancel();
 
 			/**
-			 * Start the timer daemon.
+			 * Start timer daemon.
 			 *
-			 * This function initiates the Timer Server thread. This thread is
-			 * responsible for executing all timers.
+			 * Unused for FreeRTOS. The timer daemon is automatically started
+			 * by including `freertos/timers.c` and adjusting the following
+			 * defines in `freertos/FreeRTOSConfig.h`:
 			 *
-			 * As it is a normal thread it was to be considered when
-			 * configuring CONFIGURE_MAXIMUM_TASKS.
+			 * - configUSE_TIMERS = 1
+			 * - configTIMER_TASK_PRIORITY
+			 * - configTIMER_QUEUE_LENGTH
+			 * - configTIMER_TASK_STACK_DEPTH
 			 *
-			 * @param priority
-			 * 		Thread priority. RTEMS supports priorities between 1..255.
-			 * 		Lower values represent a higher priority. To ensure that
-			 * 		the handler-function is called at the exact time it is
-			 * 		a good idea to give the timer daemon thread a high
-			 * 		priority (low value).
-			 * @param stack
-			 * 		Stack size in bytes. If the stack is smaller than the
-			 * 		default stack size it is replaced with the default size.
+			 * @see http://www.freertos.org/Configuring-a-real-time-RTOS-application-to-use-software-timers.html
 			 */
 			static void
 			startTimerDaemonThread(uint8_t priority, size_t stack = 0);
@@ -133,13 +126,14 @@ namespace cobc
 			createTimer(const char* name);
 
 			static void
-			invokeTimer(xTimerHandle handle);
+			invokeTimer(void* handle);
 
 			/// Object and member function to call when the timer expires.
 			Callable * const object;
 			Function const function;
 
-			xTimerHandle handle;
+			/// FreeRTOS timer handle
+			void* handle;
 		};
 	}
 }

@@ -81,11 +81,8 @@ namespace cobc
 			 *
 			 * This function will never block.
 			 */
-			inline void
-			release()
-			{
-				xSemaphoreGive(handle);
-			}
+			void
+			release();
 
 		private:
 			// disable copy constructor
@@ -95,7 +92,7 @@ namespace cobc
 			Mutex&
 			operator = (const Mutex& other);
 
-			xSemaphoreHandle handle;
+			void* handle;
 		};
 	}
 }

@@ -10,6 +10,11 @@ env = envGlobal.Clone()
 
 files = env.Glob('cobc/time/*.cpp')
 
-library = env.StaticLibrary('cobc_time', files)
+objects = []
+for file in files:
+	objects.append(env.Object(file))
+envGlobal.Append(objects={'time': objects})
+
+library = env.StaticLibrary('cobc_time', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
 

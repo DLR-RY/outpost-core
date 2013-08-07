@@ -41,6 +41,11 @@ elif env['OS'] == 'freertos':
 else:
 	files += env.Glob('cobc/rtos/none/*.cpp')
 
-library = env.StaticLibrary('cobc_rtos', files)
+objects = []
+for file in files:
+	objects.append(env.Object(file))
+envGlobal.Append(objects={'rtos': objects})
+
+library = env.StaticLibrary('cobc_rtos', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
 

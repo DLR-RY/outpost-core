@@ -29,6 +29,12 @@ namespace cobc
 				return FailureCode(0x01ff);
 			}
 
+			inline static FailureCode
+			genericRuntimeError()
+			{
+				return FailureCode(0x0200);
+			}
+
 			inline uint32_t
 			getCode() const
 			{

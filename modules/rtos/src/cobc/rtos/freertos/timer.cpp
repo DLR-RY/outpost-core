@@ -9,13 +9,15 @@
 
 #include <cobc/rtos/failure_handler.h>
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/timers.h>
 #include <freertos/task.h>
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Timer::~Timer()
 {
 	if (xTimerDelete(handle, portMAX_DELAY) != pdPASS) {
-		// TODO failureHandler
+		rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
 	}
 }
 
@@ -28,7 +30,7 @@ cobc::rtos::Timer::start(time::Duration duration)
 	                        portMAX_DELAY) != pdPASS) ||
 		(xTimerStart(handle, portMAX_DELAY) != pdPASS))
 	{
-		// TODO failureHandler
+		rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
 	}
 }
 
@@ -36,7 +38,7 @@ void
 cobc::rtos::Timer::reset()
 {
 	if (xTimerReset(handle, portMAX_DELAY) != pdPASS) {
-		// TODO failureHandler
+		rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
 	}
 }
 
@@ -44,7 +46,7 @@ void
 cobc::rtos::Timer::cancel()
 {
 	if (xTimerStop(handle, portMAX_DELAY) != pdPASS) {
-		// TODO failureHandler
+		rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
 	}
 }
 
@@ -54,17 +56,6 @@ cobc::rtos::Timer::startTimerDaemonThread(uint8_t priority, size_t stack)
 {
 	(void) priority;
 	(void) stack;
-
-	// Timer daemon is automatically started by including freertos/timers.c and
-	// adjusting the following defines:
-	//
-	// - configUSE_TIMERS = 1
-	// - configTIMER_TASK_PRIORITY
-	// - configTIMER_QUEUE_LENGTH
-	// - configTIMER_TASK_STACK_DEPTH
-	//
-	// see also:
-	// http://www.freertos.org/Configuring-a-real-time-RTOS-application-to-use-software-timers.html
 }
 
 // ----------------------------------------------------------------------------
@@ -84,7 +75,7 @@ cobc::rtos::Timer::createTimer(const char* name)
 
 // ----------------------------------------------------------------------------
 void
-cobc::rtos::Timer::invokeTimer(xTimerHandle handle)
+cobc::rtos::Timer::invokeTimer(void* handle)
 {
 	Timer * timer = reinterpret_cast<Timer *>(pvTimerGetTimerID(handle));
 	(timer->object->*(timer->function))(timer);

@@ -7,6 +7,9 @@
 
 #include "semaphore.h"
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+
 #include "../failure_handler.h"
 
 // ----------------------------------------------------------------------------
@@ -36,6 +39,12 @@ bool
 cobc::rtos::Semaphore::acquire(time::Duration timeout)
 {
 	return (xSemaphoreTake(this->handle, (timeout.milliseconds() * 1000) / portTICK_RATE_MS) == pdTRUE);
+}
+
+void
+cobc::rtos::Semaphore::release()
+{
+	xSemaphoreGive(handle);
 }
 
 // ----------------------------------------------------------------------------
@@ -71,3 +80,10 @@ cobc::rtos::BinarySemaphore::acquire(time::Duration timeout)
 {
 	return (xSemaphoreTake(this->handle, (timeout.milliseconds() * 1000) / portTICK_RATE_MS) == pdTRUE);
 }
+
+void
+cobc::rtos::BinarySemaphore::release()
+{
+	xSemaphoreGive(handle);
+}
+

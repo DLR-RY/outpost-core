@@ -10,9 +10,6 @@
 
 #include <cobc/time/duration.h>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/semphr.h>
-
 namespace cobc
 {
 	namespace rtos
@@ -86,11 +83,8 @@ namespace cobc
 			 * This function will never block, but may preempt if an other
 			 * thread waiting for this semaphore has a higher priority.
 			 */
-			inline void
-			release()
-			{
-				xSemaphoreGive(handle);
-			}
+			void
+			release();
 
 		private:
 			// disable copy constructor
@@ -100,7 +94,7 @@ namespace cobc
 			Semaphore&
 			operator = (const Semaphore& other);
 
-			xSemaphoreHandle handle;
+			void* handle;
 		};
 
 		/**
@@ -161,11 +155,8 @@ namespace cobc
 			 * This function will never block, but may preempt if an other
 			 * thread waiting for this semaphore has a higher priority.
 			 */
-			inline void
-			release()
-			{
-				xSemaphoreGive(handle);
-			}
+			void
+			release();
 
 		private:
 			// disable copy constructor
@@ -175,7 +166,7 @@ namespace cobc
 			BinarySemaphore&
 			operator = (const BinarySemaphore& other);
 
-			xSemaphoreHandle handle;
+			void* handle;
 		};
 	}
 }
