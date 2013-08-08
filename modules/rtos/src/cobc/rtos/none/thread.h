@@ -132,7 +132,7 @@ namespace cobc
 			static inline void
 			sleep(::cobc::time::Duration duration)
 			{
-				//rtems_task_wake_after(duration.milliseconds());
+				(void) duration;
 			}
 
 		protected:
