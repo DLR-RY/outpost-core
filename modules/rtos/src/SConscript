@@ -23,6 +23,7 @@ elif env['OS'] == 'rtems':
 	if env['ARCHITECTURE'] == 'leon3':
 		files += env.Glob('cobc/hal/leon3-rtems/spwl/*.cpp')
 		files += env.Glob('cobc/hal/leon3-rtems/*.cpp')
+		files += env.Glob('cobc/hal/leon3-rtems/*.c')
 		
 		# TODO only when compiling for the nexys3 board!
 		files += env.Glob('cobc/hal/nexys3/*.cpp')
