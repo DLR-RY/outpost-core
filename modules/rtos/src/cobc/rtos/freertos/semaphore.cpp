@@ -56,7 +56,7 @@ cobc::rtos::BinarySemaphore::BinarySemaphore(bool initial)
 		rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
 	}
 
-	if (initial) {
+	if (!initial) {
 		acquire();
 	}
 }

@@ -11,6 +11,9 @@
 
 #include <stdio.h>
 
+/// Minimum stack size configured through the FreeRTOS configuration.
+static const std::size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTACK_TYPE);
+
 // ----------------------------------------------------------------------------
 void
 cobc::rtos::Thread::wrapper(void* object)
@@ -24,43 +27,42 @@ cobc::rtos::Thread::wrapper(void* object)
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char * name)
+cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char * name) :
+	handle(0),
+	priority(priority),
+	stackSize(stack),
+	name(name)
 {
-	// The task is created with the lowest possible priority (= 0, same
-	// priority as the idle task). Either the scheduler is not started yet
-	// or the currently running thread should have a higher priority.
-	// This should avoid switching to the thread before we are able to
-	// call vTaskSuspend().
-	if (stack < minimumStackSize) {
-		stack = minimumStackSize;
+	if (stackSize < minimumStackSize) {
+		stackSize = minimumStackSize;
 	}
-
-	int status = xTaskCreate(
-			&Thread::wrapper,
-			(const signed char*) name,
-			(stack / 4) + 1,
-			this,
-			0,
-			&handle);
-
-	if (status != pdPASS) {
-		rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
-	}
-
-	vTaskSuspend(handle);
-	vTaskPrioritySet(handle, priority);
 }
 
 cobc::rtos::Thread::~Thread()
 {
-	vTaskDelete(handle);
+	if (handle != 0) {
+		vTaskDelete(handle);
+	}
 }
 
 // ----------------------------------------------------------------------------
 void
 cobc::rtos::Thread::start()
 {
-	vTaskResume(handle);
+	if (handle == 0)
+	{
+		int status = xTaskCreate(
+				&Thread::wrapper,
+				(const signed char*) name,
+				(stackSize / sizeof(portSTACK_TYPE)) + 1,
+				this,
+				priority,
+				&handle);
+
+		if (status != pdPASS) {
+			rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+		}
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -78,9 +80,16 @@ cobc::rtos::Thread::getPriority() const
 
 // ----------------------------------------------------------------------------
 void
+cobc::rtos::Thread::sleep(::cobc::time::Duration duration)
+{
+	vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000.0);
+}
+
+// ----------------------------------------------------------------------------
+void
 cobc::rtos::Thread::startScheduler()
 {
-	vTaskStartScheduler();
+	//vTaskStartScheduler();
 
 	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
 }

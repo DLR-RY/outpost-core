@@ -55,7 +55,7 @@ namespace cobc
 			 * @param stack
 			 *     Stack size in **bytes**. If the stack is smaller than the
 			 *     default stack size it is replaced with the default size.
-			 *     See the definition of minimumStackSize below.
+			 *     See the definition of `minimumStackSize` in `thread.cpp`.
 			 *
 			 * @param name
 			 *     Name of the thread. Length is limited to
@@ -123,11 +123,8 @@ namespace cobc
 			 * @param timeout
 			 *     Time to sleep.
 			 */
-			static inline void
-			sleep(::cobc::time::Duration duration)
-			{
-				vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000.0);
-			}
+			static void
+			sleep(::cobc::time::Duration duration);
 
 			/**
 			 * Start the FreeRTOS scheduler.
@@ -138,9 +135,6 @@ namespace cobc
 			startScheduler();
 
 		protected:
-			/// Minimum stack size configured through the FreeRTOS configuration.
-			static const std::size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTACK_TYPE);
-
 			/**
 			 * Working method of the thread.
 			 *
@@ -163,6 +157,10 @@ namespace cobc
 			wrapper(void *object);
 
 			xTaskHandle handle;
+
+			uint8_t priority;
+			std::size_t stackSize;
+			const char* name;
 		};
 	}
 }
