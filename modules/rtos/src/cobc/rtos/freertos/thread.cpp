@@ -26,12 +26,21 @@ cobc::rtos::Thread::wrapper(void* object)
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char * name)
 {
+	// The task is created with the lowest possible priority (= 0, same
+	// priority as the idle task). Either the scheduler is not started yet
+	// or the currently running thread should have a higher priority.
+	// This should avoid switching to the thread before we are able to
+	// call vTaskSuspend().
+	if (stack < minimumStackSize) {
+		stack = minimumStackSize;
+	}
+
 	int status = xTaskCreate(
 			&Thread::wrapper,
 			(const signed char*) name,
 			(stack / 4) + 1,
 			this,
-			priority,
+			0,
 			&handle);
 
 	if (status != pdPASS) {
@@ -39,6 +48,7 @@ cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char * name)
 	}
 
 	vTaskSuspend(handle);
+	vTaskPrioritySet(handle, priority);
 }
 
 cobc::rtos::Thread::~Thread()
@@ -64,4 +74,13 @@ uint8_t
 cobc::rtos::Thread::getPriority() const
 {
 	return uxTaskPriorityGet(handle);
+}
+
+// ----------------------------------------------------------------------------
+void
+cobc::rtos::Thread::startScheduler()
+{
+	vTaskStartScheduler();
+
+	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
 }

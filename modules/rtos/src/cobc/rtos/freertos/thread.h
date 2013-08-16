@@ -35,7 +35,7 @@ namespace cobc
 		 * If more threads than available are created the
 		 * FailureHandler::fatal() handler is called.
 		 *
-		 * @author	Fabian Greif <fabian.greif@dlr.de>
+		 * @author  Fabian Greif <fabian.greif@dlr.de>
 		 * @ingroup	rtos
 		 */
 		class Thread
@@ -44,21 +44,22 @@ namespace cobc
 			/**
 			 * Create a new thread.
 			 *
-			 * Make sure to set CONFIGURE_MAXIMUM_TASKS to the maximum number
-			 * of executed tasks. Otherwise this constructor will fail to
-			 * allocate the necessary thread id and call the fatal error
-			 * handler.
+			 * During the creation of new threads the
 			 *
 			 * @param priority
-			 * 		Thread priority. RTEMS supports priorities between 1..255.
-			 * 		Lower values represent a higher priority, 1 is the
-			 * 		highest and 255 the lowest priority.
+			 * 	   Thread priority. FreeRTOS supports priorities between
+			 *     0 and (configMAX_PRIORITIES - 1).
+			 *     Lower values represent a lower priority, 0 is the
+			 *     priority of the idle task and the overall lowest priority.
+			 *
 			 * @param stack
-			 * 		Stack size in bytes. If the stack is smaller than the
-			 * 		default stack size it is replaced with the default size.
+			 *     Stack size in **bytes**. If the stack is smaller than the
+			 *     default stack size it is replaced with the default size.
+			 *     See the definition of minimumStackSize below.
+			 *
 			 * @param name
-			 * 		Name of the thread. Length is limited to four characters
-			 * 		due to RTEMS internal handling of the string.
+			 *     Name of the thread. Length is limited to
+			 *     `configMAX_TASK_NAME_LEN` characters.
 			 *
 			 * @see	rtos::FailureHandler::fatal()
 			 */
@@ -90,22 +91,11 @@ namespace cobc
 			 * The calling thread may be preempted if it lowers its own
 			 * priority or raises another thread's priority.
 			 *
-			 * From the RTEMS user manual:
-			 *
-			 *     If the task specified by id is currently holding any binary
-			 *     semaphores which use the priority inheritance algorithm,
-			 *     then the task’s priority cannot be lowered immediately. If
-			 *     the task’s priority were lowered immediately, then priority
-			 *     inversion results. The requested lowering of the task’s
-			 *     priority will occur when the task has released all priority
-			 *     inheritance binary semaphores. The task’s priority can be
-			 *     increased regardless of the task’s use of priority
-			 *     inheritance binary semaphores.
-			 *
 			 * @param priority
-			 * 		Thread priority. RTEMS supports priorities between 1..255.
-			 * 		Lower values correspond to higher priorities, e.g. 1 is
-			 * 		the highest priority, 255 the lowest.
+			 *     Thread priority. FreeRTOS supports priorities between
+			 *     0 and (configMAX_PRIORITIES - 1).
+			 *     Lower values represent a lower priority, 0 is the
+			 *     priority of the idle task and the overall lowest priority.
 			 */
 			void
 			setPriority(uint8_t priority);
@@ -131,7 +121,7 @@ namespace cobc
 			 * Suspend the current thread for the given time.
 			 *
 			 * @param timeout
-			 * 		Time to sleep.
+			 *     Time to sleep.
 			 */
 			static inline void
 			sleep(::cobc::time::Duration duration)
@@ -139,7 +129,18 @@ namespace cobc
 				vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000.0);
 			}
 
+			/**
+			 * Start the FreeRTOS scheduler.
+			 *
+			 * @warning This function will not return.
+			 */
+			static void
+			startScheduler();
+
 		protected:
+			/// Minimum stack size configured through the FreeRTOS configuration.
+			static const std::size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTACK_TYPE);
+
 			/**
 			 * Working method of the thread.
 			 *
