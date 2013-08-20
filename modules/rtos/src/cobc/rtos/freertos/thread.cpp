@@ -56,7 +56,8 @@ cobc::rtos::Thread::start()
 				(const signed char*) name,
 				(stackSize / sizeof(portSTACK_TYPE)) + 1,
 				this,
-				priority,
+				static_cast<unsigned portBASE_TYPE>(priority),
+				//3,
 				&handle);
 
 		if (status != pdPASS) {
