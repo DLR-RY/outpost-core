@@ -7,23 +7,43 @@
 
 #include "failure_handler.h"
 
-#ifdef __rtems__
+#include "detect.h"
+
+#if COBC_RTOS == COBC_RTOS_RTEMS
 #	include <rtems.h>
-#else
+#elif COBC_RTOS == COBC_RTOS_POSIX
 #	include <cstdio>
 #	include <cstdlib>
 
 #	include <inttypes.h>
 #endif
 
-void
-cobc::rtos::FailureHandler::fatal(FailureCode code)
+static void
+defaultHandler(cobc::rtos::FailureCode code)
 {
-#ifdef __rtems__
+#if COBC_RTOS == COBC_RTOS_RTEMS
 	rtems_fatal_error_occurred(code.getCode());
-#else
+#elif COBC_RTOS == COBC_RTOS_POSIX
 	//printf("Fatal Handler: %"PRIu32"\n", code.getCode());
 	printf("Fatal Handler: %i\n", static_cast<int>(code.getCode()));
 	exit(1);
+#else
+	// Avoid warnings about unused parameters.
+	(void) code;
 #endif
+}
+
+cobc::rtos::FailureHandler::Handler cobc::rtos::FailureHandler::handler = &defaultHandler;
+
+void
+cobc::rtos::FailureHandler::fatal(FailureCode code)
+{
+	// forward call to handler function
+	handler(code);
+}
+
+void
+cobc::rtos::FailureHandler::setFailureHandlerFunction(Handler newHandler)
+{
+	handler = newHandler;
 }

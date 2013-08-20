@@ -54,6 +54,8 @@ namespace cobc
 		class FailureHandler
 		{
 		public:
+			typedef void (*Handler)(FailureCode code);
+
 			/**
 			 * Fatal failure has occurred which makes a continuation of the
 			 * current execution path impossible.
@@ -61,13 +63,26 @@ namespace cobc
 			 * If compiled using RTEMS this function will execute the RTEMS
 			 * Fatal Error Manager.
 			 *
-			 * This function WILL NOT RETURN!
+			 * @warning This function WILL NOT RETURN!
 			 *
 			 * @param code
 			 * 		Failure code to identify the failure.
 			 */
 			static void
 			fatal(FailureCode code);
+
+			/**
+			 * Set a new failure handler.
+			 *
+			 * @warning This function must not return!
+			 *
+			 * @param newHandler
+			 */
+			static void
+			setFailureHandlerFunction(Handler newHandler);
+
+		protected:
+			static Handler handler;
 		};
 	}
 }

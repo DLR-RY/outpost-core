@@ -8,14 +8,16 @@
 #ifndef COBC_RTOS_THREAD_H
 #define COBC_RTOS_THREAD_H
 
-#if defined(__rtems__)
-#	include "rtems/thread.h"
-#elif defined(__unix__)
-#	include "posix/thread.h"
-#elif defined(FREERTOS)
-#	include "freertos/thread.h"
-#else
+#include "detect.h"
+
+#if COBC_RTOS == COBC_RTOS_NONE
 #	include "none/thread.h"
+#elif COBC_RTOS == COBC_RTOS_RTEMS
+#	include "rtems/thread.h"
+#elif COBC_RTOS == COBC_RTOS_FREERTOS
+#	include "freertos/thread.h"
+#elif COBC_RTOS == COBC_RTOS_POSIX
+#	include "posix/thread.h"
 #endif
 
 #endif // COBC_RTOS_THREAD_H

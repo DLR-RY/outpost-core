@@ -11,12 +11,13 @@ env = envGlobal.Clone()
 files  = env.Glob('cobc/rtos/*.cpp')
 files += env.Glob('cobc/hal/*.cpp')
 
-if env['OS'] == 'posix':
-	# POSIX
-	files += env.Glob('cobc/rtos/posix/*.cpp')
+if env['OS'] == 'none':
+	rtos = 'COBC_RTOS_NONE'
 	
-	envGlobal.Append(LIBS=['rt', 'pthread'])
+	files += env.Glob('cobc/rtos/none/*.cpp')
 elif env['OS'] == 'rtems':
+	rtos = 'COBC_RTOS_RTEMS'
+	
 	files += env.Glob('cobc/rtos/rtems/*.cpp')
 	
 	# Leon 3
@@ -32,15 +33,25 @@ elif env['OS'] == 'rtems':
 	# disabled for the RTEMS wrapper files.
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 elif env['OS'] == 'freertos':
-	files += env.Glob('cobc/rtos/freertos/*.cpp')
+	rtos = 'COBC_RTOS_FREERTOS'
 	
-	envGlobal.Append(CPPDEFINES={'FREERTOS':None})
+	files += env.Glob('cobc/rtos/freertos/*.cpp')
 	
 	# FreeRTOS uses C-Style casts. Therefore this warning has to
 	# disabled for the FreeRTOS wrapper files.
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+elif env['OS'] == 'posix':
+	rtos = 'COBC_RTOS_POSIX'
+	files += env.Glob('cobc/rtos/posix/*.cpp')
+	
+	envGlobal.Append(LIBS=['rt', 'pthread'])
 else:
-	files += env.Glob('cobc/rtos/none/*.cpp')
+	print "Error: Environment variable 'OS' not defined. Set it to " +\
+		  "none|rtems|freertos|posix to define the used operating system!"
+	Exit(1)
+
+env.Append(CPPDEFINES={'COBC_RTOS':rtos})
+envGlobal.Append(CPPDEFINES={'COBC_RTOS':rtos})
 
 objects = []
 for file in files:

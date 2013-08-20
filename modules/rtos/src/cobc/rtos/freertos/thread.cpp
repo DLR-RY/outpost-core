@@ -7,9 +7,12 @@
 
 #include "thread.h"
 
-#include "../failure_handler.h"
-
 #include <stdio.h>
+
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
+#include "../failure_handler.h"
 
 /// Minimum stack size configured through the FreeRTOS configuration.
 static const std::size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTACK_TYPE);
@@ -81,6 +84,13 @@ cobc::rtos::Thread::getPriority() const
 
 // ----------------------------------------------------------------------------
 void
+cobc::rtos::Thread::yield()
+{
+	taskYIELD();
+}
+
+// ----------------------------------------------------------------------------
+void
 cobc::rtos::Thread::sleep(::cobc::time::Duration duration)
 {
 	vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000.0);
@@ -90,7 +100,6 @@ cobc::rtos::Thread::sleep(::cobc::time::Duration duration)
 void
 cobc::rtos::Thread::startScheduler()
 {
-	//vTaskStartScheduler();
-
+	vTaskStartScheduler();
 	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
 }

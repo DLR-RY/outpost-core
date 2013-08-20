@@ -8,14 +8,16 @@
 #ifndef COBC_RTOS_TIMER_H
 #define COBC_RTOS_TIMER_H
 
-#if defined(__rtems__)
-#	include "rtems/timer.h"
-#elif defined(__unix__)
-#	include "posix/timer.h"
-#elif defined(FREERTOS)
-#	include "freertos/timer.h"
-#else
+#include "detect.h"
+
+#if COBC_RTOS == COBC_RTOS_NONE
 #	include "none/timer.h"
+#elif COBC_RTOS == COBC_RTOS_RTEMS
+#	include "rtems/timer.h"
+#elif COBC_RTOS == COBC_RTOS_FREERTOS
+#	include "freertos/timer.h"
+#elif COBC_RTOS == COBC_RTOS_POSIX
+#	include "posix/timer.h"
 #endif
 
 #endif // COBC_RTOS_TIMER_H

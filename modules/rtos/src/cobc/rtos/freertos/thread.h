@@ -11,9 +11,6 @@
 #include <cstddef>
 #include <stdint.h>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-
 #include <cobc/time/duration.h>
 
 namespace cobc
@@ -111,11 +108,8 @@ namespace cobc
 			/**
 			 * Give up the processor but remain in ready state.
 			 */
-			static inline void
-			yield()
-			{
-				taskYIELD();
-			}
+			static void
+			yield();
 
 			/**
 			 * Suspend the current thread for the given time.
@@ -156,11 +150,11 @@ namespace cobc
 			static void
 			wrapper(void *object);
 
-			xTaskHandle handle;
+			void * handle;	// FreeRTOS thread handle (xTaskHandle)
 
-			uint8_t priority;
+			const uint8_t priority;
 			std::size_t stackSize;
-			const char* name;
+			const char * const name;
 		};
 	}
 }
