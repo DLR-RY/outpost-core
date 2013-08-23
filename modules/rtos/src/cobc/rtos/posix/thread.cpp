@@ -51,6 +51,8 @@ cobc::rtos::Thread::start()
 void
 cobc::rtos::Thread::setPriority(uint8_t priority)
 {
+	// No priority defined for POSIX!
+	(void) priority;
 }
 
 uint8_t

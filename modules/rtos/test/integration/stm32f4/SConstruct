@@ -3,7 +3,7 @@
 import os
 
 envGlobal = Environment(toolpath=['../../../../../conf/scons/site_tools'],
-				        tools=['arm-none-eabi', 'buildpath', 'buildformat', 'libcs'],
+				        tools=['arm-none-eabi', 'buildpath', 'buildformat', 'cobc'],
 				        OS='freertos',
 			        	ENV=os.environ)
 

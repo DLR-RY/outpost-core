@@ -8,7 +8,7 @@ envGlobal = Environment(toolpath=['../conf/scons/site_tools'],
 			        	ENV=os.environ)
 
 envGlobal['BASEPATH']  = os.path.abspath('.')
-envGlobal['BUILDPATH'] = os.path.abspath('build/library')
+envGlobal['BUILDPATH'] = os.path.abspath('../build/library')
 
 modulepath = './'
 
@@ -38,5 +38,5 @@ files = []
 for lib in env['LIBS']:
 	files.append(os.path.join('$BUILDPATH', 'lib', env['LIBPREFIX'] + lib + env['LIBSUFFIX'])) 
 
-envGlobal.Alias('library', env.StaticLibrary('libcs', files))
+envGlobal.Alias('library', env.StaticLibrary('cobc', files))
 
