@@ -2,6 +2,25 @@
 Unless otherwise noted: All files are
 copyright (c) German Aerospace Center (DLR), all rights reserved.
 
+The source code is licensed under the following terms:
+
+    This code is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version with the following exception:
+    
+    If other files instantiate templates or use macros or inline functions or
+    inherit from the library, or compile and link it with other files to
+    produce an executable, the library does not by itself cause the resulting
+    executable to be covered by the GNU General Public License, provided that
+    every copy of the executable is accompanied by a written statement that
+    details to the recipient the version of the library used and an offer by
+    yourself to provide the library source code (including any modifications
+    you may have made) should the recipient request it.
+    This exception does not however invalidate any other reasons why the
+    executable might be covered by the GNU General Public License.
+
+
 Files with a different license:
 
 src/libcs/hal/leon3-rtems/spwl/spacewirelight.*:

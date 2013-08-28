@@ -94,12 +94,14 @@ namespace cobc
 		 * This class can be directly used in a boolean expression.
 		 * A positive value (`true`) indicates a successful operation.
 		 */
-		// When using C++11 this function can be rewritten as:
-		//     inline explicit
-		//     operator bool() const
-		//     {
-		//         return isSuccess();
-		//     }
+		/* When using C++11 this function can be rewritten as:
+		 *
+		 *     inline explicit
+		 *     operator bool() const
+		 *     {
+		 *         return isSuccess();
+		 *     }
+		 */
 		operator boot_type() const
 		{
 			return (isSuccess() ? &ErrorCode::this_type_does_no_support_comparisons : 0);

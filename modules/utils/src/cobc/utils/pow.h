@@ -1,10 +1,18 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
 #ifndef COBC_POW_H
 #define COBC_POW_H
 
 namespace cobc
 {
-	// ------------------------------------------------------------------------
+	/**
+	 * @author  Fabian Greif <fabian.greif@dlr.de>
+	 */
 	template <int N>
 	struct PowerOfTwo
 	{
@@ -29,7 +37,9 @@ namespace cobc
 		enum { value = 0 };
 	};
 
-	// ------------------------------------------------------------------------
+	/**
+	 * @author  Fabian Greif <fabian.greif@dlr.de>
+	 */
 	template <int Base, int Exponent>
 	struct Pow
 	{

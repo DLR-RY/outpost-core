@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
 #include "topic_raw.h"
 #include "subscription_raw.h"
@@ -19,7 +25,7 @@ void
 cobc::smpc::TopicRaw::publish(const void * message, std::size_t length)
 {
 	rtos::MutexGuard lock(mutex);
-	
+
 	for (SubscriptionRaw * topic = subscriptions;
 			topic != 0;
 			topic = topic->nextTopicSubscription)

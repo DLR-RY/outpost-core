@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
-#ifndef COBC__UTILS_H
-#define COBC__UTILS_H
+#ifndef COBC_UTILS_H
+#define COBC_UTILS_H
 
 #include "utils/deque.h"
 #include "utils/pow.h"
@@ -101,4 +107,4 @@ namespace cobc
 #	define UNITTEST_INHERIT(x)	public ::cobc::Nil
 #endif
 
-#endif	// COBC__UTILS_H
+#endif	// COBC_UTILS_H

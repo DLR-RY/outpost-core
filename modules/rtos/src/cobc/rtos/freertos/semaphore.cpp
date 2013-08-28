@@ -38,7 +38,8 @@ cobc::rtos::Semaphore::acquire()
 bool
 cobc::rtos::Semaphore::acquire(time::Duration timeout)
 {
-	return (xSemaphoreTake(this->handle, (timeout.milliseconds() * 1000) / portTICK_RATE_MS) == pdTRUE);
+	const portTickType ticks = (timeout.milliseconds() * 1000) / portTICK_RATE_MS;
+	return (xSemaphoreTake(this->handle, ticks) == pdTRUE);
 }
 
 void
@@ -78,7 +79,8 @@ cobc::rtos::BinarySemaphore::acquire()
 bool
 cobc::rtos::BinarySemaphore::acquire(time::Duration timeout)
 {
-	return (xSemaphoreTake(this->handle, (timeout.milliseconds() * 1000) / portTICK_RATE_MS) == pdTRUE);
+	const portTickType ticks = (timeout.milliseconds() * 1000) / portTICK_RATE_MS;
+	return (xSemaphoreTake(this->handle, ticks) == pdTRUE);
 }
 
 void
@@ -86,4 +88,3 @@ cobc::rtos::BinarySemaphore::release()
 {
 	xSemaphoreGive(handle);
 }
-

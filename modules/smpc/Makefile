@@ -1,6 +1,8 @@
 
 all: test
 
+include ../../conf/module.default.mk
+
 test:
 	mkdir -p build/test/unit
 	cd build/test/unit; \
@@ -22,14 +24,8 @@ coverage:
 coverage-view:
 	xdg-open build/test/coverage/report/index.html &
 
-doxygen:
-	cd doc/doxygen; \
-	doxygen
-
-doc: doxygen
-
-clean:
+clean: clean_default
 	rm -rf build/*
 
-.PHONY: clean doxygen test
+.PHONY: clean test
 

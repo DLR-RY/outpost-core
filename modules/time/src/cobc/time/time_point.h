@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
-#ifndef COBC_TIME__TIME_POINT_H
-#define COBC_TIME__TIME_POINT_H
+#ifndef COBC_TIME_TIME_POINT_H
+#define COBC_TIME_TIME_POINT_H
 
 #include <stdint.h>
 #include "duration.h"
@@ -44,8 +50,7 @@ namespace cobc
 			typedef int64_t SignedType;
 
 		public:
-			explicit
-			TimePoint(const Type time = 0) :
+			explicit TimePoint(const Type time = 0) :
 					time(time)
 			{
 			}
@@ -132,4 +137,4 @@ namespace cobc
 	}
 }
 
-#endif // COBC_TIME__TIME_POINT_H
+#endif // COBC_TIME_TIME_POINT_H

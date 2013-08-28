@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
-#ifndef COBC_TIME__TIME_MODEL_H
-#define COBC_TIME__TIME_MODEL_H
+#ifndef COBC_TIME_TIME_MODEL_H
+#define COBC_TIME_TIME_MODEL_H
 
 #include "time_point.h"
 
@@ -10,7 +16,7 @@ namespace cobc
 	{
 		/**
 		 * Time model used to convert between different time representations.
-		 * 
+		 *
 		 * @ingroup	time
 		 * @author	Fabian Greif <fabian.greif@dlr.de>
 		 */
@@ -23,4 +29,4 @@ namespace cobc
 	}
 }
 
-#endif // COBC_TIME__TIME_MODEL_H
+#endif // COBC_TIME_TIME_MODEL_H

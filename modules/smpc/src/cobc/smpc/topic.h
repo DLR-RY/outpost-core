@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
-#ifndef COBC_SMPC__TOPIC_H
-#define COBC_SMPC__TOPIC_H
+#ifndef COBC_SMPC_TOPIC_H
+#define COBC_SMPC_TOPIC_H
 
 #include <stdint.h>
 #include <cobc/rtos/mutex.h>
@@ -156,4 +162,4 @@ namespace cobc
 	}
 }
 
-#endif // COBC_SMPC__TOPIC_H
+#endif // COBC_SMPC_TOPIC_H

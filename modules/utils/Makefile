@@ -1,6 +1,8 @@
 
 all: test
 
+include ../../conf/module.default.mk
+
 test:
 	mkdir -p build/test/unit
 	cd build/test/unit; \
@@ -8,13 +10,7 @@ test:
 	$(MAKE) -C build/test/unit --no-print-directory
 	./build/test/unit/unittest
 
-doxygen:
-	cd doc/doxygen; \
-	doxygen
-
-doc: doxygen
-
-clean:
+clean: clean_default
 	rm -rf build/*
 
-.PHONY: clean doxygen test
+.PHONY: clean test

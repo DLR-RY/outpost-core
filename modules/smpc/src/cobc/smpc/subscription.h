@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
-#ifndef COBC_SMPC__SUBSCRIPTION_H
-#define COBC_SMPC__SUBSCRIPTION_H
+#ifndef COBC_SMPC_SUBSCRIPTION_H
+#define COBC_SMPC_SUBSCRIPTION_H
 
 #include "list.h"
 #include "subscriber.h"
@@ -143,4 +149,4 @@ cobc::smpc::Subscription::Subscription(Topic<T>& topic,
 {
 }
 
-#endif // COBC_SMPC__SUBSCRIPTION_H
+#endif // COBC_SMPC_SUBSCRIPTION_H

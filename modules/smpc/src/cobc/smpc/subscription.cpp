@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
 #include "subscription.h"
 
@@ -6,7 +12,7 @@ cobc::smpc::Subscription * cobc::smpc::Subscription::listOfAllSubscriptions = 0;
 cobc::smpc::Subscription::~Subscription()
 {
 	removeFromList(&Subscription::listOfAllSubscriptions, this);
-	
+
 	// TODO
 	releaseAllSubscriptions();
 	connectSubscriptionsToTopics();
@@ -17,7 +23,7 @@ cobc::smpc::Subscription::connectSubscriptionsToTopics()
 {
 	// Reset the lists in the topics
 	TopicBase::clearSubscriptions();
-	
+
 	for (Subscription * it = Subscription::listOfAllSubscriptions;
 			it != 0;
 			it = it->getNext())
@@ -36,6 +42,6 @@ cobc::smpc::Subscription::releaseAllSubscriptions()
 	{
 		it->nextTopicSubscription = 0;
 	}
-	
+
 	TopicBase::clearSubscriptions();
 }

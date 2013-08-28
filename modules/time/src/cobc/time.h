@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
 #ifndef COBC_TIME_H
 #define COBC_TIME_H

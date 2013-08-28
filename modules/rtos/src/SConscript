@@ -22,7 +22,7 @@ elif env['OS'] == 'rtems':
 	
 	# Leon 3
 	if env['ARCHITECTURE'] == 'leon3':
-		files += env.Glob('cobc/hal/leon3-rtems/spwl/*.cpp')
+		files += env.Glob('../ext/spwl/*.cpp')
 		files += env.Glob('cobc/hal/leon3-rtems/*.cpp')
 		files += env.Glob('cobc/hal/leon3-rtems/*.c')
 		
