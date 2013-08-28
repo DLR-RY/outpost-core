@@ -17,14 +17,11 @@ include ../../conf/module.default.mk
 #	./build/test/integration/posix_timer/test-posix_timer
 
 test:
-	mkdir -p build/test/unit
-	cd build/test/unit; \
-	cmake ../../../test/unit
-	$(MAKE) -C build/test/unit --no-print-directory
-	./build/test/unit/unittest
+	@scons build $(MAKEJOBS) -Q -C test/unit || return 1; \
+	./build/test/unit/unittest --gtest_filter=$(FILTER)
 
 clean: clean_default
-	rm -rf build/*
-	rm -rf bin/*
+	@$(RM) -r build/*
+	@$(RM) -r bin/*
 
-.PHONY: clean doxygen test
+.PHONY: test clean

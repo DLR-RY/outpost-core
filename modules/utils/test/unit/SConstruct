@@ -6,8 +6,8 @@ vars = Variables('custom.py')
 vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 
 envGlobal = Environment(variables=vars,
-                        toolpath=['../../conf/scons/site_tools'],
-				        tools=['hosted', 'buildpath', 'buildformat'],
+                        toolpath=['../../../../conf/scons/site_tools'],
+				        tools=['cobc', 'hosted', 'buildpath', 'buildformat'],
 				        ENV=os.environ)
 
 Help(vars.GenerateHelpText(envGlobal))
@@ -21,13 +21,11 @@ envGlobal.Append(CPPDEFINES={'UNITTEST':None})
 envGlobal['BASEPATH'] = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath('../../build/test/unit')
 
-envGlobal.SConscript(['../../src/SConscript',
-                      '../../ext/SConscript'], exports='envGlobal')
-
-envGlobal.Append(CPPPATH=[
-	'../../src',
-	'../../ext/gmock-1.6.0/fused-src'
-])
+modulepath = '../../..'
+envGlobal.SConscript([
+		modulepath + '/utils/src/SConscript',
+        modulepath + '/utils/ext/SConscript',
+    ], exports='envGlobal')
 
 env = envGlobal.Clone()
 

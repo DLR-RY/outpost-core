@@ -2,22 +2,36 @@
 
 import os
 
-envGlobal = Environment(toolpath=['../../../../utils/trunk/conf/scons/site_tools'],
-				        tools=['hosted', 'buildpath', 'buildformat'],
+vars = Variables('custom.py')
+vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+
+envGlobal = Environment(variables=vars,
+                        toolpath=['../../../../conf/scons/site_tools'],
+				        tools=['cobc', 'hosted-llvm', 'buildpath', 'buildformat'],
 			        	ENV=os.environ)
 
-envGlobal.Append(CPPDEFINES={'UNITTEST': 1})
+Help(vars.GenerateHelpText(envGlobal))
+
+if envGlobal['coverage']:
+	envGlobal.Append(CCFLAGS=['--coverage'])
+	envGlobal.Append(LINKFLAGS=['--coverage'])
+
+envGlobal.Append(CPPDEFINES={'UNITTEST':None})
 
 envGlobal['BASEPATH'] = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath('../../build/test/unit')
 
-envGlobal.SConscript(['../../../../utils/trunk/src/SConscript',
-                      '../../../../utils/trunk/ext/SConscript',
-                      '../../src/SConscript'], exports='envGlobal')
+modulepath = '../../..'
+envGlobal.SConscript([
+		modulepath + '/utils/src/SConscript',
+        modulepath + '/utils/ext/SConscript',
+        modulepath + '/time/src/SConscript',
+    ], exports='envGlobal')
 
 env = envGlobal.Clone()
 
-env['CXXFLAGS_std'] = ['-std=c++98']
+# googletest uses some C++11 elements
+env['CXXFLAGS_std'] = ['-std=c++0x']
 env['CCFLAGS_warning'] = [
 	'-W',
 	'-Wall',
@@ -28,7 +42,7 @@ env['CCFLAGS_warning'] = [
 	'-Wcast-qual',
 	'-Wcast-align',
 	'-Wimplicit',
-#	'-Wshadow',
+	'-Wshadow',
 	'-Wpointer-arith',
 	'-Wwrite-strings',
 	'-Wredundant-decls',
@@ -41,13 +55,10 @@ env['CCFLAGS_warning'] = [
 #	'-Wmissing-declarations',
 ]
 
-env.Append(CPPPATH=[
-	'.'
-])
-env.Append(LIBS=['pthread', 'gmock', 'cobc_time'])
+env.Append(CPPPATH=['.'])
+env.Append(LIBS=['cobc_time', 'pthread', 'gmock'])
 env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 
 files  = env.Glob('*.cpp')
 
 envGlobal.Alias('build', env.Program('unittest', files))
-

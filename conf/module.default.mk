@@ -26,6 +26,6 @@ doc: doxygen design
 
 clean_default:
 	@$(MAKE) -C doc/design clean
-	@$(RM) doc/doxygen/api/*
+	@$(RM) -r doc/doxygen/api/*
 
 .PHONY: doxygen design doc clean_default

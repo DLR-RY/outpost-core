@@ -27,3 +27,4 @@ Crop the files with Inkscape. This can be done on the command line::
     inkscape --verb=FitCanvasToDrawing -D --export-pdf=out.pdf in.pdf
 
 Or you can use ``File > Document Properties > Resize page to content > Resize page to drawing or selection``.
+
