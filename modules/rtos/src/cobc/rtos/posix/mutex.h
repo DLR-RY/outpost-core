@@ -49,7 +49,24 @@ namespace cobc
 			}
 
 			/**
-			 * Releas the mutex.
+			 * Acquire the mutex.
+			 *
+			 * Same as acquire() but blocks only for `timeout` milliseconds.
+			 *
+			 * @param	timeout
+			 * 		Timeout in milliseconds.
+			 *
+			 * @return	`true` if the mutex could be acquired, `false` in
+			 * 			case of an error or timeout.
+			 */
+			bool
+			acquire(time::Duration timeout)
+			{
+				return acquire();
+			}
+
+			/**
+			 * Release the mutex.
 			 */
 			inline void
 			release()

@@ -71,7 +71,7 @@ namespace cobc
 			 * 			case of an error or timeout.
 			 */
 			bool
-			acquire(uint32_t timeout);
+			acquire(time::Duration timeout);
 
 			/**
 			 * Release the mutex.

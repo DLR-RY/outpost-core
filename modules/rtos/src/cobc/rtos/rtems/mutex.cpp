@@ -39,7 +39,8 @@ cobc::rtos::Mutex::acquire()
 }
 
 bool
-cobc::rtos::Mutex::acquire(uint32_t timeout)
+cobc::rtos::Mutex::acquire(time::Duration timeout)
 {
-	return (rtems_semaphore_obtain(id, RTEMS_WAIT, timeout) == RTEMS_SUCCESSFUL);
+	rtems_interval time = timeout.milliseconds();
+	return (rtems_semaphore_obtain(id, RTEMS_WAIT, time) == RTEMS_SUCCESSFUL);
 }

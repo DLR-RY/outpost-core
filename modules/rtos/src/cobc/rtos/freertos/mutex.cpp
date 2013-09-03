@@ -33,9 +33,9 @@ cobc::rtos::Mutex::acquire()
 }
 
 bool
-cobc::rtos::Mutex::acquire(uint32_t timeout)
+cobc::rtos::Mutex::acquire(time::Duration timeout)
 {
-	return (xSemaphoreTake(handle, (timeout * 1000) / portTICK_RATE_MS) == pdTRUE);
+	return (xSemaphoreTake(handle, timeout.milliseconds() / portTICK_RATE_MS) == pdTRUE);
 }
 
 void
