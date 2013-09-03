@@ -100,6 +100,8 @@ cobc::rtos::Thread::sleep(::cobc::time::Duration duration)
 void
 cobc::rtos::Thread::startScheduler()
 {
+#if !defined(GOMSPACE)
 	vTaskStartScheduler();
+#endif
 	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
 }
