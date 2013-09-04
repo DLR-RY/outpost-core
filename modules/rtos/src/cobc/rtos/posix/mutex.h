@@ -9,6 +9,7 @@
 #define COBC_RTOS_POSIX_MUTEX_HPP
 
 #include <pthread.h>
+
 #include <cobc/time/duration.h>
 
 namespace cobc
@@ -61,10 +62,7 @@ namespace cobc
 			 * 			case of an error or timeout.
 			 */
 			bool
-			acquire(time::Duration timeout)
-			{
-				return acquire();
-			}
+			acquire(time::Duration timeout);
 
 			/**
 			 * Release the mutex.
