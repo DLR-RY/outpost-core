@@ -25,9 +25,6 @@ namespace cobc
 		 * Mutexes can be used to enforce mutual exclusion for a critical
 		 * section in user code.
 		 *
-		 * Implemented using RTEMS binary semaphores with priority pool locking
-		 * and priority inheritance.
-		 *
 		 * @author	Fabian Greif <fabian.greif@dlr.de>
 		 * @ingroup	rtos
 		 */
@@ -38,18 +35,11 @@ namespace cobc
 			 * Create a new Mutex.
 			 *
 			 * The mutex is released after creation.
-			 *
-			 * RTEMS has only one pool for mutexes and semaphores. Make sure
-			 * the maximum number of allocated mutexes and semaphores combined
-			 * is smaller than the number given via `CONFIGURE_MAXIMUM_SEMAPHORES`.
 			 */
 			Mutex();
 
 			/**
 			 * Destroy the mutex and free it's resources.
-			 *
-			 * The resources are added back to the resource pool created by
-			 * CONFIGURE_MAXIMUM_SEMAPHORES.
 			 */
 			~Mutex();
 

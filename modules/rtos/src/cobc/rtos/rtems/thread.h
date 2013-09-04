@@ -49,9 +49,7 @@ namespace cobc
 			 * handler.
 			 *
 			 * @param priority
-			 * 		Thread priority. RTEMS supports priorities between 1..255.
-			 * 		Lower values represent a higher priority, 1 is the
-			 * 		highest and 255 the lowest priority.
+			 * 		Thread priority. A higher value represent a higher priority.
 			 * @param stack
 			 * 		Stack size in bytes. If the stack is smaller than the
 			 * 		default stack size it is replaced with the default size.
@@ -102,9 +100,7 @@ namespace cobc
 			 *     inheritance binary semaphores.
 			 *
 			 * @param priority
-			 * 		Thread priority. RTEMS supports priorities between 1..255.
-			 * 		Lower values correspond to higher priorities, e.g. 1 is
-			 * 		the highest priority, 255 the lowest.
+			 * 		Thread priority. Higher values represent a higher priority.
 			 */
 			void
 			setPriority(uint8_t priority);

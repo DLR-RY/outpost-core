@@ -23,6 +23,32 @@ cobc::rtos::Thread::wrapper(rtems_task_argument object)
 }
 
 // ----------------------------------------------------------------------------
+/*
+ * RTEMS supports priorities between 1..255. Lower values represent a higher
+ * priority, 1 is the highest and 255 the lowest priority.
+ *
+ * These RTEMS are priorities are mapped to 0..255 priority map with 0
+ * representing the lowest priority and 255 the highest. Because RTEMS
+ * has only 255 steps, both 0 and 1 represent the same priority.
+ */
+static uint8_t
+toRtemsPriority(uint8_t priority)
+{
+	if (priority == 0) {
+		return 255;
+	}
+
+	return (256 - static_cast<int16_t>(priority));
+}
+
+static uint8_t
+fromRtemsPriority(uint8_t rtemsPriority)
+{
+	// a RTEMS priority of 0 is invalid and not checked here.
+	return (256 - static_cast<int16_t>(rtemsPriority));
+}
+
+// ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t priority, size_t stack,
 		const char * name)
 {
@@ -41,7 +67,8 @@ cobc::rtos::Thread::Thread(uint8_t priority, size_t stack,
 		}
 	}
 
-	rtems_status_code status = rtems_task_create(taskName, priority, stack,
+	rtems_task_priority rtemsPriority = toRtemsPriority(priority);
+	rtems_status_code status = rtems_task_create(taskName, rtemsPriority, stack,
 			RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &tid);
 
 	if (status != RTEMS_SUCCESSFUL) {
@@ -66,7 +93,7 @@ void
 cobc::rtos::Thread::setPriority(uint8_t priority)
 {
 	rtems_task_priority old;
-	rtems_task_set_priority(tid, priority, &old);
+	rtems_task_set_priority(tid, toRtemsPriority(priority), &old);
 }
 
 uint8_t
@@ -75,5 +102,5 @@ cobc::rtos::Thread::getPriority() const
 	rtems_task_priority priority;
 	rtems_task_set_priority(tid, RTEMS_CURRENT_PRIORITY, &priority);
 
-	return priority;
+	return fromRtemsPriority(priority);
 }
