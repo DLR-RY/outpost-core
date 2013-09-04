@@ -9,6 +9,7 @@
 #define COBC_RTOS_RTEMS_MUTEX_HPP
 
 #include <rtems.h>
+#include <cobc/time/duration.h>
 
 namespace cobc
 {

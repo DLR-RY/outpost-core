@@ -13,6 +13,8 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 
+#include <cobc/time/duration.h>
+
 namespace cobc
 {
 	namespace rtos

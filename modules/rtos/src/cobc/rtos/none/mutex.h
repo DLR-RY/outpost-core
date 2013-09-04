@@ -9,6 +9,7 @@
 #define COBC_RTOS_NONE_MUTEX_HPP
 
 #include <stdint.h>
+#include <cobc/time/duration.h>
 
 namespace cobc
 {
