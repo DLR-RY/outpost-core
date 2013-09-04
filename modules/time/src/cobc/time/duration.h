@@ -59,8 +59,11 @@ namespace cobc
 			 * @return	Returns number of seconds truncating any
 			 * 			fractional seconds.
 			 */
-			int64_t
-			seconds() const;
+			inline int64_t
+			seconds() const
+			{
+				return ticks / (1000 * 1000);
+			}
 
 			/**
 			 * Get duration in milliseconds.
@@ -68,8 +71,11 @@ namespace cobc
 			 * @return	Returns number of milliseconds truncating any
 			 * 			fractional milliseconds.
 			 */
-			int64_t
-			milliseconds() const;
+			inline int64_t
+			milliseconds() const
+			{
+				return ticks / 1000;
+			}
 
 			/**
 			 * Get duration in microseconds.
@@ -77,8 +83,11 @@ namespace cobc
 			 * @return	Returns number of microseconds truncating any
 			 * 			fractional microseconds.
 			 */
-			int64_t
-			microseconds() const;
+			inline int64_t
+			microseconds() const
+			{
+				return ticks;
+			}
 
 			/**
 			 * Check if the duration points to the past (is negative, zero included)

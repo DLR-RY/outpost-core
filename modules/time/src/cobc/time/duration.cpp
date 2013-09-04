@@ -7,24 +7,6 @@
 
 #include "duration.h"
 
-int64_t
-cobc::time::Duration::seconds() const
-{
-	return ticks / (1000 * 1000);
-}
-
-int64_t
-cobc::time::Duration::milliseconds() const
-{
-	return ticks / 1000;
-}
-
-int64_t
-cobc::time::Duration::microseconds() const
-{
-	return ticks;
-}
-
 // ----------------------------------------------------------------------------
 cobc::time::Seconds::Seconds(int32_t seconds) :
 	Duration(static_cast<int64_t>(seconds) * 1000 * 1000)
