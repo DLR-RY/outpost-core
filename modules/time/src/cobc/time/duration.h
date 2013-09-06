@@ -221,7 +221,10 @@ namespace cobc
 		class Seconds : public Duration
 		{
 		public:
-			explicit Seconds(int32_t seconds);
+			explicit inline Seconds(int32_t seconds) :
+				Duration(static_cast<int64_t>(seconds) * 1000 * 1000)
+			{
+			}
 		};
 
 		/**
@@ -232,7 +235,10 @@ namespace cobc
 		class Milliseconds : public Duration
 		{
 		public:
-			explicit Milliseconds(int32_t milliseconds);
+			explicit inline Milliseconds(int32_t milliseconds) :
+				Duration(static_cast<int64_t>(milliseconds) * 1000)
+			{
+			}
 		};
 
 		/**
@@ -243,7 +249,10 @@ namespace cobc
 		class Microseconds : public Duration
 		{
 		public:
-			explicit Microseconds(int32_t microseconds);
+			explicit inline Microseconds(int32_t microseconds) :
+				Duration(static_cast<int64_t>(microseconds))
+			{
+			}
 		};
 	}
 }
