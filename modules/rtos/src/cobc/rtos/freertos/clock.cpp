@@ -21,7 +21,7 @@ cobc::rtos::Clock::now()
 	return currentTime;
 #else
 	// TODO Check when this will overflow
-	portTickType ticks_since_boot = xTaskGetTickCount();
+	uint64_t ticks_since_boot = static_cast<uint64_t>(xTaskGetTickCount());
 
 	// convert to microseconds
 	uint64_t us = (ticks_since_boot * configTICK_RATE_HZ) / 1000000;

@@ -42,7 +42,7 @@ namespace cobc
 			 *
 			 * @param object
 			 * 		Instance to with the function to be called belongs. Must
-			 * 		be sub-class of cobc::Callable
+			 * 		be sub-class of cobc::rtos::Callable.
 			 * @param function
 			 * 		Member function of `object` to call when the timer
 			 * 		expires.
