@@ -12,6 +12,8 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#include "thread_priorities.h"
+
 #include "../failure_handler.h"
 
 /// Minimum stack size configured through the FreeRTOS configuration.
@@ -27,27 +29,6 @@ cobc::rtos::Thread::wrapper(void* object)
 	// Returning from a FreeRTOS thread is a fatal error, nothing more to
 	// do here than call the fatal error handler.
 	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
-}
-
-// ----------------------------------------------------------------------------
-/*
- * FreeRTOS supports priorities between 0 and (configMAX_PRIORITIES - 1).
- * Lower values represent a lower priority, 0 is the priority of the idle task
- * and the overall lowest priority.
- */
-static const uint8_t stepWidth = 256 / configMAX_PRIORITIES;
-static const uint8_t offset = (256 - configMAX_PRIORITIES  * stepWidth + stepWidth) / 2;
-
-static uint8_t
-toFreeRtosPriority(uint8_t priority)
-{
-	return (priority * stepWidth + offset);
-}
-
-static uint8_t
-fromFreeRtosPriority(uint8_t freeRtosPriority)
-{
-	return ((freeRtosPriority - offset) / stepWidth);
 }
 
 // ----------------------------------------------------------------------------
@@ -80,7 +61,7 @@ cobc::rtos::Thread::start()
 				(const signed char*) name,
 				(stackSize / sizeof(portSTACK_TYPE)) + 1,
 				this,
-				static_cast<unsigned portBASE_TYPE>(toFreeRtosPriority(priority)),
+				static_cast<unsigned portBASE_TYPE>(toFreeRtosPriority(priority, configMAX_PRIORITIES)),
 				//3,
 				&handle);
 
@@ -94,13 +75,13 @@ cobc::rtos::Thread::start()
 void
 cobc::rtos::Thread::setPriority(uint8_t priority)
 {
-	vTaskPrioritySet(handle, toFreeRtosPriority(priority));
+	vTaskPrioritySet(handle, toFreeRtosPriority(priority, configMAX_PRIORITIES));
 }
 
 uint8_t
 cobc::rtos::Thread::getPriority() const
 {
-	return fromFreeRtosPriority(uxTaskPriorityGet(handle));
+	return fromFreeRtosPriority(uxTaskPriorityGet(handle), configMAX_PRIORITIES);
 }
 
 // ----------------------------------------------------------------------------
@@ -123,6 +104,8 @@ cobc::rtos::Thread::startScheduler()
 {
 #if !defined(GOMSPACE)
 	vTaskStartScheduler();
-#endif
 	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
+#else
+	rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
+#endif
 }
