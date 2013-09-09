@@ -24,7 +24,7 @@ cobc::rtos::Clock::now()
 	uint64_t ticks_since_boot = static_cast<uint64_t>(xTaskGetTickCount());
 
 	// convert to microseconds
-	uint64_t us = (ticks_since_boot * configTICK_RATE_HZ) / 1000000;
+	uint64_t us = (static_cast<uint64_t>(ticks_since_boot) * 1000000) / configTICK_RATE_HZ;
 
 	return cobc::time::TimePoint(us);
 #endif

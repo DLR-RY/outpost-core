@@ -26,7 +26,7 @@ void
 cobc::rtos::Timer::start(time::Duration duration)
 {
 	if ((xTimerChangePeriod(handle,
-	                        duration.milliseconds() * configTICK_RATE_HZ / 1000,
+	                        (duration.milliseconds() * configTICK_RATE_HZ) / 1000,
 	                        portMAX_DELAY) != pdPASS) ||
 		(xTimerStart(handle, portMAX_DELAY) != pdPASS))
 	{
@@ -63,7 +63,7 @@ void
 cobc::rtos::Timer::createTimer(const char* name)
 {
 	handle = xTimerCreate(reinterpret_cast<const signed char *>(name),
-	                      0,
+	                      1,		// dummy value (must be >= 0 but will be changed when starting the timer)
 	                      pdFALSE,	// no auto-reload
 	                      (void *) this,
 	                      &Timer::invokeTimer);
