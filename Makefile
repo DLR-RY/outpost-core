@@ -34,7 +34,14 @@ COK    = \033[32;01m
 CERROR = \033[31;01m
 CEND   = \033[0m
 
-default: test
+help:
+	@echo "Please use \`make <target>\` where <target> is one of"
+	@echo "  doc      to build all documentation"
+	@echo "  design   to build the design documentation (requires xelatex)"
+	@echo "  doxygen  to build the doxygen documentation"
+	@echo "  test     to run all unit tests"
+	@echo "  style    to check the coding style with vera++"
+	@echo "  clean    to remove temporary data (\`build\` folder)"
 
 doc: design doxygen
 
