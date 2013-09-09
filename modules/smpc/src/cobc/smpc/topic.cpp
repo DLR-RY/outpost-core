@@ -47,7 +47,7 @@ cobc::smpc::TopicBase::clearSubscriptions()
 
 // LCOV_EXCL_START
 #ifdef UNITTEST
-#include <cstdio>
+#include <stdio.h>
 
 void
 cobc::smpc::TopicBase::dumpConnectedSubscriptions()

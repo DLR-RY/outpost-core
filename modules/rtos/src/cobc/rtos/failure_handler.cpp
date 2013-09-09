@@ -12,7 +12,7 @@
 #if COBC_RTOS == COBC_RTOS_RTEMS
 #	include <rtems.h>
 #elif COBC_RTOS == COBC_RTOS_POSIX
-#	include <cstdio>
+#	include <stdio.h>
 #	include <cstdlib>
 
 #	include <inttypes.h>
