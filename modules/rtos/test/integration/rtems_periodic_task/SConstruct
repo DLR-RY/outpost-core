@@ -1,0 +1,46 @@
+#!/usr/bin/env pythonrtems periodic timer
+
+import os
+
+envGlobal = Environment(toolpath=['../../../../../conf/scons/site_tools'],
+				        tools=['cobc', 'rtems-leon3', 'buildpath', 'buildformat', 'buildsize'],
+				        DEVICE_SIZE={
+				            'name' : 'Nexys 3 - LEON3',
+				            'flash': 16777216,
+				            'ram'  : 16777216
+				        },
+			        	ENV=os.environ)
+
+envGlobal['BASEPATH'] = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath('../../../build/test/integration/rtems_periodic_task')
+
+rootpath = '../../../..'
+envGlobal.SConscript([rootpath + '/utils/src/SConscript',
+                      rootpath + '/time/src/SConscript',
+                      rootpath + '/rtos/src/SConscript',
+                      ],
+                     exports='envGlobal')
+
+env = envGlobal.Clone()
+
+env.Append(CPPPATH=[
+	'.'
+])
+env.Append(LIBS=['cobc_rtos', 'cobc_time'])
+env.Append(LIBPATH=['$BUILDPATH/lib'])
+
+files  = env.Object(env.FilteredGlob('*.cpp', ['main.cpp']))
+
+env = env.Clone()
+env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+
+files.append(env.Object('main.cpp'))
+
+
+program = env.Program('rtems_periodic_task', files)
+
+envGlobal.Alias('build', program)
+envGlobal.Alias('install', env.Install('bin', program))
+envGlobal.Alias('size', env.Size(program))
+
+envGlobal.Default(['build', 'install', 'size'])

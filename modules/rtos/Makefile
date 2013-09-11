@@ -1,20 +1,27 @@
 
 all: test
 
+TERMINAL ?= /dev/cobc_console_1
+
+PORT     ?= /dev/cobc_dsu_1
+GRMON    ?= "/opt/grmon-eval-2.0.37/bin/grmon"
+BAUD     ?= 460800
+
 include ../../conf/module.default.mk
 
-#test-rtems:
-#	mkdir -p build/test/integration/rtems
-#	cd build/test/integration/rtems; \
-#	cmake -DCMAKE_TOOLCHAIN_FILE=../../../../conf/cmake/leon3-rtems.cmake ../../../../test/integration/rtems
-#	$(MAKE) -C build/test/integration/rtems install --no-print-directory
-#
-#test-posix_timer:
-#	mkdir -p build/test/integration/posix_timer
-#	cd build/test/integration/posix_timer; \
-#	cmake ../../../../test/integration/posix_timer
-#	$(MAKE) -C build/test/integration/posix_timer --no-print-directory
-#	./build/test/integration/posix_timer/test-posix_timer
+test-rtems_periodic_task:
+test-%:
+	@scons $(MAKEJOBS) -Q -C test/integration/$*
+
+program-rtems_periodic_task:
+program-%: test-%
+	@../../tools/grmon_program.sh ./build/test/integration/$*/$* PORT=$(PORT)
+
+terminal:
+	@../../tools/terminal.sh $(TERMINAL)
+
+grmon:
+	@$(GRMON) -uart $(PORT) -stack 0x40ffffff -baud $(BAUD)
 
 test:
 	@scons build $(MAKEJOBS) -Q -C test/unit || return 1; \
