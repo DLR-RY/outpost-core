@@ -95,7 +95,7 @@ cobc::rtos::Thread::yield()
 void
 cobc::rtos::Thread::sleep(::cobc::time::Duration duration)
 {
-	vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000.0);
+	vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000);
 }
 
 // ----------------------------------------------------------------------------

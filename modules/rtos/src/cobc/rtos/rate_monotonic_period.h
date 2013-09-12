@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
+
+#ifndef COBC_RTOS_RATE_MONOTONIC_PERIOD_HPP
+#define COBC_RTOS_RATE_MONOTONIC_PERIOD_HPP
+
+#include "detect.h"
+
+#if COBC_RTOS == COBC_RTOS_NONE
+#	include "none/rate_monotonic_period.h"
+#elif COBC_RTOS == COBC_RTOS_RTEMS
+#	include "rtems/rate_monotonic_period.h"
+#elif COBC_RTOS == COBC_RTOS_FREERTOS
+#	include "freertos/rate_monotonic_period.h"
+#elif COBC_RTOS == COBC_RTOS_POSIX
+#	include "posix/rate_monotonic_period.h"
+#endif
+
+#endif // COBC_RTOS_RATE_MONOTONIC_PERIOD_HPP

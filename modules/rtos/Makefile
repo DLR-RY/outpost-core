@@ -9,10 +9,12 @@ BAUD     ?= 460800
 
 include ../../conf/module.default.mk
 
+test-freertos_periodic_task:
 test-rtems_periodic_task:
 test-%:
 	@scons $(MAKEJOBS) -Q -C test/integration/$*
 
+program-freertos_periodic_task:
 program-rtems_periodic_task:
 program-%: test-%
 	@../../tools/grmon_program.sh ./build/test/integration/$*/$* PORT=$(PORT)

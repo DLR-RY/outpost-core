@@ -5,12 +5,12 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#ifndef COBC_RTOS_RTEMS_RATE_MONOTONIC_PERIOD_H
-#define COBC_RTOS_RTEMS_RATE_MONOTONIC_PERIOD_H
-
-#include <rtems.h>
+#ifndef COBC_RTOS_FREERTOS_RATE_MONOTONIC_PERIOD_H
+#define COBC_RTOS_FREERTOS_RATE_MONOTONIC_PERIOD_H
 
 #include <cobc/time/duration.h>
+
+#include <freertos/FreeRTOS.h>
 
 #include "../failure_handler.h"
 
@@ -21,6 +21,8 @@ namespace cobc
 		/**
 		 * Helper class for Rate-Monotonic Scheduling (RMS).
 		 *
+		 * Required the FreeRTOS function vTaskDelayUntil().
+		 *
 		 * @author	Fabian Greif
 		 * @ingroup	rtos
 		 */
@@ -30,13 +32,13 @@ namespace cobc
 			enum Status
 			{
 				/// Period has not been started
-				IDLE = RTEMS_NOT_DEFINED,
+				IDLE,
 
 				/// Period is currently running
-				RUNNING = RTEMS_SUCCESSFUL,
+				RUNNING,
 
 				/// Period has expired
-				TIMEOUT = RTEMS_TIMEOUT
+				TIMEOUT
 			};
 
 			RateMonotonicPeriod();
@@ -70,12 +72,8 @@ namespace cobc
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
-			inline Status
-			nextPeriod(time::Duration period)
-			{
-				rtems_status_code status = rtems_rate_monotonic_period(id, period.milliseconds());
-				return static_cast<Status>(status);
-			}
+			Status
+			nextPeriod(time::Duration period);
 
 			/**
 			 * Check the status of the current period.
@@ -88,28 +86,23 @@ namespace cobc
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
-			inline Status
-			status()
-			{
-				rtems_status_code status = rtems_rate_monotonic_period(id, RTEMS_PERIOD_STATUS);
-				return static_cast<Status>(status);
-			}
+			Status
+			status();
 
 			/**
 			 * Period measurement is stopped.
 			 *
 			 * Can be restarted with the invocation of `nextPeriod`.
 			 */
-			inline void
-			cancel()
-			{
-				rtems_rate_monotonic_cancel(id);
-			}
+			void
+			cancel();
 
 		private:
-			rtems_id id;
+			bool running;
+			portTickType lastWakeTime;
+			portTickType currentPeriod;
 		};
 	}
 }
 
-#endif // COBC_RTOS_RTEMS_RATE_MONOTONIC_PERIOD_H
+#endif // COBC_RTOS_FREERTOS_RATE_MONOTONIC_PERIOD_H

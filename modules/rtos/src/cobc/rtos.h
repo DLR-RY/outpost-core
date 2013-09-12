@@ -19,6 +19,7 @@
 #include "rtos/clock.h"
 #include "rtos/failure_handler.h"
 #include "rtos/mutex.h"
+#include "rtos/rate_monotonic_period.h"
 #include "rtos/semaphore.h"
 #include "rtos/thread.h"
 #include "rtos/timer.h"
