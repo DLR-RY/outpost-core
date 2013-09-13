@@ -2,7 +2,7 @@
 #include "timing_test.h"
 
 #include <cobc/time/duration.h>
-#include <cobc/rtos/rate_monotonic_period.h>
+#include <cobc/rtos/periodic_task_manager.h>
 
 #include "hardware.h"
 
@@ -17,11 +17,11 @@ void
 TimingTest::run()
 {
 	bool state = false;
-	rtos::RateMonotonicPeriod period;
-	rtos::RateMonotonicPeriod period2;
+	rtos::PeriodicTaskManager period;
+	rtos::PeriodicTaskManager period2;
 	while (1)
 	{
-		if (period.nextPeriod(time::Milliseconds(500)) == rtos::RateMonotonicPeriod::TIMEOUT) {
+		if (period.nextPeriod(time::Milliseconds(500)) == rtos::PeriodicTaskManager::TIMEOUT) {
 			// Period missed
 			break;
 		}

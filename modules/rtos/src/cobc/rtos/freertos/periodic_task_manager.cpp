@@ -5,7 +5,7 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#include "rate_monotonic_period.h"
+#include "periodic_task_manager.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -14,19 +14,19 @@
 
 using namespace cobc::rtos;
 
-RateMonotonicPeriod::RateMonotonicPeriod() :
+PeriodicTaskManager::PeriodicTaskManager() :
 	running(false),
 	lastWakeTime(),
 	currentPeriod()
 {
 }
 
-RateMonotonicPeriod::~RateMonotonicPeriod()
+PeriodicTaskManager::~PeriodicTaskManager()
 {
 }
 
-RateMonotonicPeriod::Status
-RateMonotonicPeriod::nextPeriod(time::Duration period)
+PeriodicTaskManager::Status
+PeriodicTaskManager::nextPeriod(time::Duration period)
 {
 	Status status = RUNNING;
 
@@ -48,8 +48,8 @@ RateMonotonicPeriod::nextPeriod(time::Duration period)
 	return status;
 }
 
-RateMonotonicPeriod::Status
-RateMonotonicPeriod::status()
+PeriodicTaskManager::Status
+PeriodicTaskManager::status()
 {
 	if (!running) {
 		return IDLE;
@@ -63,7 +63,7 @@ RateMonotonicPeriod::status()
 }
 
 void
-RateMonotonicPeriod::cancel()
+PeriodicTaskManager::cancel()
 {
 	running = false;
 }

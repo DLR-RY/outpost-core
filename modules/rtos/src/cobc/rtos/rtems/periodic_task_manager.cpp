@@ -5,11 +5,11 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#include "rate_monotonic_period.h"
+#include "periodic_task_manager.h"
 
 using namespace cobc::rtos;
 
-RateMonotonicPeriod::RateMonotonicPeriod() :
+PeriodicTaskManager::PeriodicTaskManager() :
 	id()
 {
 	rtems_name name = rtems_build_name('P', 'E', 'R', 'D');
@@ -20,7 +20,7 @@ RateMonotonicPeriod::RateMonotonicPeriod() :
 	}
 }
 
-RateMonotonicPeriod::~RateMonotonicPeriod()
+PeriodicTaskManager::~PeriodicTaskManager()
 {
 	rtems_status_code status = rtems_rate_monotonic_delete(id);
 	if (status != RTEMS_SUCCESSFUL)	{

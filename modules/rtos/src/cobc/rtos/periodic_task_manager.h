@@ -5,19 +5,19 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#ifndef COBC_RTOS_RATE_MONOTONIC_PERIOD_HPP
-#define COBC_RTOS_RATE_MONOTONIC_PERIOD_HPP
+#ifndef COBC_RTOS_PERIODIC_TASK_MANAGER_HPP
+#define COBC_RTOS_PERIODIC_TASK_MANAGER_HPP
 
 #include "detect.h"
 
 #if COBC_RTOS == COBC_RTOS_NONE
-#	include "none/rate_monotonic_period.h"
+#	include "none/periodic_task_manager.h"
 #elif COBC_RTOS == COBC_RTOS_RTEMS
-#	include "rtems/rate_monotonic_period.h"
+#	include "rtems/periodic_task_manager.h"
 #elif COBC_RTOS == COBC_RTOS_FREERTOS
-#	include "freertos/rate_monotonic_period.h"
+#	include "freertos/periodic_task_manager.h"
 #elif COBC_RTOS == COBC_RTOS_POSIX
-#	include "posix/rate_monotonic_period.h"
+#	include "posix/periodic_task_manager.h"
 #endif
 
-#endif // COBC_RTOS_RATE_MONOTONIC_PERIOD_HPP
+#endif // COBC_RTOS_PERIODIC_TASK_MANAGER_HPP

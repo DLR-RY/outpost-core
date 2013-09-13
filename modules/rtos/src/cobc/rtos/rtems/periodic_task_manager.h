@@ -5,8 +5,8 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#ifndef COBC_RTOS_RTEMS_RATE_MONOTONIC_PERIOD_H
-#define COBC_RTOS_RTEMS_RATE_MONOTONIC_PERIOD_H
+#ifndef COBC_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
+#define COBC_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
 
 #include <rtems.h>
 
@@ -24,7 +24,7 @@ namespace cobc
 		 * @author	Fabian Greif
 		 * @ingroup	rtos
 		 */
-		class RateMonotonicPeriod
+		class PeriodicTaskManager
 		{
 		public:
 			enum Status
@@ -39,23 +39,23 @@ namespace cobc
 				TIMEOUT = RTEMS_TIMEOUT
 			};
 
-			RateMonotonicPeriod();
+			PeriodicTaskManager();
 
-			~RateMonotonicPeriod();
+			~PeriodicTaskManager();
 
 			/**
 			 * Start next period.
 			 *
-			 * If the rate monotonic period is running, the calling thread will
+			 * If the PeriodicTaskManager is running, the calling thread will
 			 * be blocked for the remainder of the outstanding period and,
 			 * upon completion of that period, the period will be reinitialized
 			 * with the specified period.
 			 *
-			 * If the rate monotonic period is not currently running and has
+			 * If the PeriodicTaskManager is not currently running and has
 			 * not expired, it is initiated with a length of period ticks and
 			 * the calling task returns immediately.
 			 *
-			 * If the rate monotonic period has expired before the thread invokes
+			 * If the PeriodicTaskManager has expired before the thread invokes
 			 * the `nextPeriod` method, the period will be initiated with a
 			 * length of *period* and the calling task returns immediately with
 			 * a timeout error status.
@@ -112,4 +112,4 @@ namespace cobc
 	}
 }
 
-#endif // COBC_RTOS_RTEMS_RATE_MONOTONIC_PERIOD_H
+#endif // COBC_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H

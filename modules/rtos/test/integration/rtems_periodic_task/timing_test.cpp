@@ -4,7 +4,7 @@
 #include <cobc/time/duration.h>
 #include <cobc/hal/nexys3/sevensegment.h>
 
-#include <cobc/rtos/rate_monotonic_period.h>
+#include <cobc/rtos/periodic_task_manager.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,12 +19,12 @@ TimingTest::TimingTest() :
 void
 TimingTest::run()
 {
-	rtos::RateMonotonicPeriod period;
+	rtos::PeriodicTaskManager period;
 
 	bool state = true;
 	while (1)
 	{
-		if (period.nextPeriod(time::Milliseconds(500)) == rtos::RateMonotonicPeriod::TIMEOUT) {
+		if (period.nextPeriod(time::Milliseconds(500)) == rtos::PeriodicTaskManager::TIMEOUT) {
 			// Period missed
 			break;
 		}
