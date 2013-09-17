@@ -47,7 +47,7 @@ envGlobal.SConscript(
 env = envGlobal.Clone()
 
 # googletest uses some C++0x features.
-env['CXXFLAGS_std'] = ['-std=c++0x']
+env['CXXFLAGS_language'] = ['-std=c++0x']
 env['CCFLAGS_warning'] = [
 	'-W',
 	'-Wall',

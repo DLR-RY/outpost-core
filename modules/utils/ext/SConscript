@@ -12,7 +12,7 @@ if envGlobal['OS'] == 'posix':
 	
 	env = envGlobal.Clone()
 	
-	env['CXXFLAGS_std'] = ['-std=c++98']
+	env['CXXFLAGS_language'] = ['-std=c++98']
 	
 	env.RemoveFromList('CCFLAGS_warning', [
 		'-Wconversion',
