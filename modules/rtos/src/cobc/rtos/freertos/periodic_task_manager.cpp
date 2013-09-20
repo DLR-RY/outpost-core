@@ -32,7 +32,8 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
 
 	const portTickType nextPeriod = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
 	if (running) {
-		if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - lastWakeTime) > currentPeriod) {
+		if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() -
+				lastWakeTime) > currentPeriod) {
 			status = TIMEOUT;
 		}
 
@@ -54,7 +55,8 @@ PeriodicTaskManager::status()
 	if (!running) {
 		return IDLE;
 	}
-	else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - lastWakeTime) > currentPeriod) {
+	else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() -
+			lastWakeTime) > currentPeriod) {
 		return TIMEOUT;
 	}
 	else {

@@ -6,5 +6,3 @@
  */
 
 #include "duration.h"
-
-

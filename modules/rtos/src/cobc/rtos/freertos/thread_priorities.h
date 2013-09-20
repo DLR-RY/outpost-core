@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
 #ifndef COBC_FREERTOS_THREAD_PRIORITIES_H
 #define COBC_FREERTOS_THREAD_PRIORITIES_H
