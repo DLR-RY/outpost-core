@@ -106,6 +106,12 @@ namespace cobc
 		class BinarySemaphore
 		{
 		public:
+			enum State
+			{
+				ACQUIRED,
+				RELEASED
+			};
+
 			/**
 			 * Create a Semaphore.
 			 *
@@ -116,7 +122,7 @@ namespace cobc
 			 * @param initial
 			 * 		Initial value for the semaphore.
 			 */
-			explicit BinarySemaphore(bool initial);
+			explicit BinarySemaphore(State initial);
 
 			/**
 			 * Destroy the semaphore and release it's resources.

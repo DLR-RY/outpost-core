@@ -49,7 +49,7 @@ cobc::rtos::Semaphore::release()
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::BinarySemaphore::BinarySemaphore(bool initial)
+cobc::rtos::BinarySemaphore::BinarySemaphore(State initial)
 {
 	vSemaphoreCreateBinary(handle);
 
@@ -57,7 +57,7 @@ cobc::rtos::BinarySemaphore::BinarySemaphore(bool initial)
 		rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
 	}
 
-	if (!initial) {
+	if (initial == ACQUIRED) {
 		acquire();
 	}
 }

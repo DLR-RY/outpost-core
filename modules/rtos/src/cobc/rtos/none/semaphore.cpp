@@ -44,11 +44,11 @@ cobc::rtos::Semaphore::acquire(time::Duration timeout)
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::BinarySemaphore::BinarySemaphore(bool initial)
+cobc::rtos::BinarySemaphore::BinarySemaphore(State initial)
 {
 	rtems_name name = rtems_build_name('B', 'S', 'E', 'M');
 
-	if (rtems_semaphore_create(name, (initial) ? 1 : 0,
+	if (rtems_semaphore_create(name, (initial == ACQUIRED) ? 0 : 1,
 			RTEMS_PRIORITY |
 			RTEMS_BINARY_SEMAPHORE, 1, &id) != RTEMS_SUCCESSFUL) {
 		rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());

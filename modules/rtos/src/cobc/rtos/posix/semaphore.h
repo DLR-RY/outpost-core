@@ -100,13 +100,19 @@ namespace cobc
 		class BinarySemaphore
 		{
 		public:
+			enum State
+			{
+				ACQUIRED,
+				RELEASED
+			};
+
 			/**
 			 * Create a binary semaphore.
 			 *
 			 * @param	initial
 			 * 		Initial value of the semaphore.
 			 */
-			explicit BinarySemaphore(bool initial);
+			explicit BinarySemaphore(State initial);
 
 			/**
 			 * Destroy the semaphore and release it's resources.
@@ -156,7 +162,7 @@ namespace cobc
 			// POSIX handles
 			pthread_mutex_t mutex;
 			pthread_cond_t signal;
-			bool value;
+			State value;
 		};
 	}
 }
