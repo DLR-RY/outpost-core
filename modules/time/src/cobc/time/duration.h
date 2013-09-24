@@ -89,6 +89,18 @@ namespace cobc
 				return ticks;
 			}
 
+			static inline Duration
+			infinity()
+			{
+				return Duration(INT64_MAX);
+			}
+
+			inline bool
+			isInfinite() const
+			{
+				return (ticks == INT64_MAX);
+			}
+
 			/**
 			 * Check if the duration points to the past (is negative, zero included)
 			 *
@@ -228,7 +240,7 @@ namespace cobc
 		};
 
 		/**
-		 * Allows expression of durations as a milli seconds.
+		 * Allows expression of durations as a milliseconds.
 		 *
 		 * @ingroup	time
 		 */
@@ -242,7 +254,7 @@ namespace cobc
 		};
 
 		/**
-		 * Allows expression of durations as a micro seconds.
+		 * Allows expression of durations as a microseconds.
 		 *
 		 * @ingroup	time
 		 */
