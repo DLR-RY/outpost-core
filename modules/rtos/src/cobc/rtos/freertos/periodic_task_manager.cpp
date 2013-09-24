@@ -10,11 +10,13 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+#include "../mutex.h"
 #include "traits.h"
 
 using namespace cobc::rtos;
 
 PeriodicTaskManager::PeriodicTaskManager() :
+	mutex(),
 	running(false),
 	lastWakeTime(),
 	currentPeriod()
@@ -28,6 +30,7 @@ PeriodicTaskManager::~PeriodicTaskManager()
 PeriodicTaskManager::Status
 PeriodicTaskManager::nextPeriod(time::Duration period)
 {
+	MutexGuard lock(mutex);
 	Status status = RUNNING;
 
 	const portTickType nextPeriod = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
@@ -52,6 +55,8 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
 PeriodicTaskManager::Status
 PeriodicTaskManager::status()
 {
+	MutexGuard lock(mutex);
+
 	if (!running) {
 		return IDLE;
 	}
@@ -67,5 +72,6 @@ PeriodicTaskManager::status()
 void
 PeriodicTaskManager::cancel()
 {
+	MutexGuard lock(mutex);
 	running = false;
 }

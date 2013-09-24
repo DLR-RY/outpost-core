@@ -12,6 +12,7 @@
 
 #include <freertos/FreeRTOS.h>
 
+#include "mutex.h"
 #include "../failure_handler.h"
 
 namespace cobc
@@ -98,6 +99,7 @@ namespace cobc
 			cancel();
 
 		private:
+			Mutex mutex;
 			bool running;
 			portTickType lastWakeTime;
 			portTickType currentPeriod;
