@@ -5,8 +5,8 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 
-#include "uart.h"
+#include "serial.h"
 
-cobc::hal::Uart::~Uart()
+cobc::hal::Serial::~Serial()
 {
 }
