@@ -1,7 +1,7 @@
 #!/usr/bin/tclsh
 # Line cannot be too long
 
-set maxLength [getParameter "max-line-length" 100]
+set maxLength [getParameter "max-line-length" 120]
 
 foreach f [getSourceFileNames] {
     set lineNumber 1

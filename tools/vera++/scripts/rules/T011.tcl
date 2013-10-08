@@ -1,5 +1,5 @@
 #!/usr/bin/tclsh
-# Curly brackets from the same pair should be either in the same line or in the same column
+# Curly brackets from the same pair should be in the same column
 
 proc acceptPairs {} {
     global file parens index end
@@ -26,7 +26,7 @@ proc acceptPairs {} {
             set rightParenLine [lindex $nextToken 1]
             set rightParenColumn [lindex $nextToken 2]
 
-            if {($leftParenLine != $rightParenLine) && ($leftParenColumn != $rightParenColumn)} {
+            if {($leftParenColumn != $rightParenColumn)} {
                 # make an exception for line continuation
                 set leftLine [getLine $file $leftParenLine]
                 set rightLine [getLine $file $rightParenLine]
