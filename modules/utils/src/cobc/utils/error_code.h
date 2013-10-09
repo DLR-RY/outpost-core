@@ -163,7 +163,7 @@ namespace cobc
 		{
 		}
 
-		// Disable assignment operator as errorCode is const and can not be
+		// Disable assignment operator as errorCode is `const` and can not be
 		// overwritten.
 		ErrorCode&
 		operator = (const ErrorCode& other);
