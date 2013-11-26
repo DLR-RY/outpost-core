@@ -20,6 +20,15 @@
 
 #include <cobc/utils.h>
 
+/**
+ * Compare two arrays.
+ *
+ * Example:
+ *   uint8_t expect[16];
+ *   uint8_t result[16];
+ *   ...
+ *   EXPECT_ARRAY_EQ(uint8_t, expect, result, 16);
+ */
 #define EXPECT_ARRAY_EQ(type, reference, actual, element_count) 			\
 	do {																	\
 		const type* reference_ = static_cast<const type *> (reference);		\
