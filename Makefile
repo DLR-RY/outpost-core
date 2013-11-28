@@ -45,6 +45,8 @@ help:
 
 doc: design doxygen
 
+documents: design
+
 design:
 	@for m in $(MODULES); do \
 		printf "$(CINFO)Build design description for module \"$$m\":$(CEND)\n" ; \
