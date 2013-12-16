@@ -41,7 +41,6 @@ env['CCFLAGS_warning'] = [
 	'-Winit-self',
 	'-Wcast-qual',
 	'-Wcast-align',
-	'-Wimplicit',
 	'-Wshadow',
 	'-Wpointer-arith',
 	'-Wwrite-strings',
