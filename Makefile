@@ -78,5 +78,5 @@ clean :
 		make -C modules/$$m clean --no-print-directory ; \
 	done
 
-.PHONY: doc
+.PHONY: doc clean
 
