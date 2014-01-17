@@ -27,17 +27,17 @@ PeriodicTaskManager::~PeriodicTaskManager()
 {
 }
 
-PeriodicTaskManager::Status
+PeriodicTaskManager::StatusT
 PeriodicTaskManager::nextPeriod(time::Duration period)
 {
 	MutexGuard lock(mutex);
-	Status status = running;
+	StatusT status = Status::running;
 
 	const portTickType nextPeriod = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
 	if (timerRunning) {
 		if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() -
 				lastWakeTime) > currentPeriod) {
-			status = timeout;
+			status = Status::timeout;
 		}
 
 		vTaskDelayUntil(&lastWakeTime, currentPeriod);
@@ -52,20 +52,20 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
 	return status;
 }
 
-PeriodicTaskManager::Status
+PeriodicTaskManager::StatusT
 PeriodicTaskManager::status()
 {
 	MutexGuard lock(mutex);
 
 	if (!timerRunning) {
-		return idle;
+		return Status::idle;
 	}
 	else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() -
 			lastWakeTime) > currentPeriod) {
-		return timeout;
+		return Status::timeout;
 	}
 	else {
-		return running;
+		return Status::running;
 	}
 }
 
