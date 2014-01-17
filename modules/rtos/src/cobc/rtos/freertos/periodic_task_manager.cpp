@@ -27,11 +27,11 @@ PeriodicTaskManager::~PeriodicTaskManager()
 {
 }
 
-PeriodicTaskManager::StatusT
+PeriodicTaskManager::Status::Type
 PeriodicTaskManager::nextPeriod(time::Duration period)
 {
 	MutexGuard lock(mutex);
-	StatusT status = Status::running;
+	Status::Type status = Status::running;
 
 	const portTickType nextPeriod = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
 	if (timerRunning) {
@@ -52,7 +52,7 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
 	return status;
 }
 
-PeriodicTaskManager::StatusT
+PeriodicTaskManager::Status::Type
 PeriodicTaskManager::status()
 {
 	MutexGuard lock(mutex);

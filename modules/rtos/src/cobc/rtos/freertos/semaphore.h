@@ -110,7 +110,6 @@ namespace cobc
 					released
 				};
 			};
-			typedef State::Type StateT;
 
 			/**
 			 * Create a Semaphore.
@@ -122,7 +121,7 @@ namespace cobc
 			 * @param initial
 			 * 		Initial value for the semaphore.
 			 */
-			explicit BinarySemaphore(StateT initial);
+			explicit BinarySemaphore(State::Type initial);
 
 			/**
 			 * Destroy the semaphore and release it's resources.

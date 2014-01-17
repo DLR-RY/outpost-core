@@ -44,7 +44,6 @@ namespace cobc
 					timeout
 				};
 			};
-			typedef Status::Type StatusT;
 
 			PeriodicTaskManager();
 
@@ -77,7 +76,7 @@ namespace cobc
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
-			StatusT
+			Status::Type
 			nextPeriod(time::Duration period);
 
 			/**
@@ -91,7 +90,7 @@ namespace cobc
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
-			StatusT
+			Status::Type
 			status();
 
 			/**

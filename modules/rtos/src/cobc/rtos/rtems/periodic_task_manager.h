@@ -41,7 +41,6 @@ namespace cobc
 					timeout
 				};
 			};
-			typedef Status::Type StatusT;
 
 			PeriodicTaskManager();
 
@@ -74,11 +73,11 @@ namespace cobc
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
-			inline StatusT
+			inline Status::Type
 			nextPeriod(time::Duration period)
 			{
 				rtems_status_code status = rtems_rate_monotonic_period(id, period.milliseconds());
-				return static_cast<StatusT>(status);
+				return static_cast<Status::Type>(status);
 			}
 
 			/**
@@ -92,11 +91,11 @@ namespace cobc
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
-			inline StatusT
+			inline Status::Type
 			status()
 			{
 				rtems_status_code status = rtems_rate_monotonic_period(id, RTEMS_PERIOD_STATUS);
-				return static_cast<StatusT>(status);
+				return static_cast<Status::Type>(status);
 			}
 
 			/**

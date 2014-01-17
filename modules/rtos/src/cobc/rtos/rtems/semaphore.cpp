@@ -44,7 +44,7 @@ cobc::rtos::Semaphore::acquire(time::Duration timeout)
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::BinarySemaphore::BinarySemaphore(StateT initial)
+cobc::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
 {
 	rtems_name name = rtems_build_name('B', 'S', 'E', 'M');
 

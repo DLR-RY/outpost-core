@@ -38,7 +38,7 @@ cobc::rtos::Semaphore::acquire(time::Duration timeout)
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::BinarySemaphore::BinarySemaphore(StateT initial) :
+cobc::rtos::BinarySemaphore::BinarySemaphore(State::Type initial) :
 	value(initial)
 {
 	pthread_mutex_init(&mutex, NULL);

@@ -108,7 +108,6 @@ namespace cobc
 					released
 				};
 			};
-			typedef State::Type StateT;
 
 			/**
 			 * Create a binary semaphore.
@@ -116,7 +115,7 @@ namespace cobc
 			 * @param	initial
 			 * 		Initial value of the semaphore.
 			 */
-			explicit BinarySemaphore(StateT initial);
+			explicit BinarySemaphore(State::Type initial);
 
 			/**
 			 * Destroy the semaphore and release it's resources.
@@ -166,7 +165,7 @@ namespace cobc
 			// POSIX handles
 			pthread_mutex_t mutex;
 			pthread_cond_t signal;
-			StateT value;
+			State::Type value;
 		};
 	}
 }
