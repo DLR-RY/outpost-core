@@ -27,22 +27,22 @@ namespace cobc
 		public:
 			enum Blocking
 			{
-				NON_BLOCKING = 0,
-				BLOCKING = 1
+				nonBlocking = 0,
+				blocking = 1
 			};
 
 			enum EndMarker
 			{
-				PARTIAL = 0,	///< Leave packet open to add additional data later
-				EOP = 1,		///< End of packet
-				EEP = 2			///< Error end of packet
+				partial = 0,	///< Leave packet open to add additional data later
+				eop = 1,		///< End of packet
+				eep = 2			///< Error end of packet
 			};
 
 			enum Result
 			{
-				SUCCESS,
-				FAILURE,
-				TIMEOUT
+				success,
+				failure,
+				timeout
 			};
 
 			/**
@@ -51,7 +51,7 @@ namespace cobc
 			struct TransmitBuffer
 			{
 				TransmitBuffer(uint8_t * d) :
-					data(d), length(), end(EOP)
+					data(d), length(), end(eop)
 				{
 				}
 
@@ -67,7 +67,7 @@ namespace cobc
 			struct ReceiveBuffer
 			{
 				ReceiveBuffer() :
-					data(0), length(0), end(EOP)
+					data(0), length(0), end(eop)
 				{
 				}
 
@@ -101,10 +101,10 @@ namespace cobc
 			close() = 0;
 
 			virtual void
-			up(Blocking blocking = NON_BLOCKING) = 0;
+			up(Blocking blockingMode = nonBlocking) = 0;
 
 			virtual void
-			down(Blocking blocking = NON_BLOCKING) = 0;
+			down(Blocking blockingMode = nonBlocking) = 0;
 
 			virtual bool
 			isUp() = 0;
@@ -118,11 +118,11 @@ namespace cobc
 			 *
 			 * \param[out]	buffer
 			 * 		Pointer to a send buffer. 0 in a case of a failure.
-			 * \param[in]	blocking
+			 * \param[in]	blockingMode
 			 * 		Blocking mode.
 			 */
 			virtual Result
-			requestBuffer(TransmitBuffer *& buffer, Blocking blocking = BLOCKING) = 0;
+			requestBuffer(TransmitBuffer *& buffer, Blocking blockingMode = blocking) = 0;
 
 			/**
 			 * Send a configured buffer.
@@ -142,11 +142,11 @@ namespace cobc
 			 *
 			 * \param[out]	buffer
 			 * 		Pointer to a receive buffer. 0 in a case of a failure.
-			 * \param[in]	blocking
+			 * \param[in]	blockingMode
 			 * 		Blocking mode.
 			 */
 			virtual Result
-			receive(ReceiveBuffer& buffer, Blocking blocking = BLOCKING) = 0;
+			receive(ReceiveBuffer& buffer, Blocking blockingMode = blocking) = 0;
 
 			/**
 			 * Release receive buffer.

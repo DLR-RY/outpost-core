@@ -33,7 +33,7 @@ TEST(CrcTest, testEcssPus1)
 		0x00, 0x00
 	};
 
-	ASSERT_EQ(0x1d0f, CrcCcitt::calculate(data, 2));
+	ASSERT_EQ(0x1d0f, Crc16Ccitt::calculate(data, 2));
 }
 
 /*
@@ -46,7 +46,7 @@ TEST(CrcTest, testEcssPus2)
 		0x00, 0x00, 0x00
 	};
 
-	ASSERT_EQ(0xcc9c, CrcCcitt::calculate(data, 3));
+	ASSERT_EQ(0xcc9c, Crc16Ccitt::calculate(data, 3));
 }
 
 /*
@@ -59,7 +59,7 @@ TEST(CrcTest, testEcssPus3)
 		0xab, 0xcd, 0xef, 0x01
 	};
 
-	ASSERT_EQ(0x04a2, CrcCcitt::calculate(data, 4));
+	ASSERT_EQ(0x04a2, Crc16Ccitt::calculate(data, 4));
 }
 
 /*
@@ -72,7 +72,7 @@ TEST(CrcTest, testEcssPus4)
 		0x14, 0x56, 0xf8, 0x9a, 0x00, 0x01
 	};
 
-	ASSERT_EQ(0x7fd5, CrcCcitt::calculate(data, 6));
+	ASSERT_EQ(0x7fd5, Crc16Ccitt::calculate(data, 6));
 }
 
 /*
@@ -85,7 +85,7 @@ TEST(CrcTest, testEcssPus4Total)
 		0x14, 0x56, 0xf8, 0x9a, 0x00, 0x01, 0x7f, 0xd5
 	};
 
-	ASSERT_EQ(0, CrcCcitt::calculate(data, sizeof(data)));
+	ASSERT_EQ(0, Crc16Ccitt::calculate(data, sizeof(data)));
 }
 
 /*
@@ -100,7 +100,7 @@ TEST(CrcTest, testUpdate)
 		0x14, 0x56, 0xf8, 0x9a, 0x00, 0x01
 	};
 
-	CrcCcitt crc;
+	Crc16Ccitt crc;
 
 	for (uint_fast8_t i = 0; i < sizeof(data); ++i) {
 		crc.update(data[i]);
@@ -154,7 +154,7 @@ TEST(CrcTest, testRandom)
 		data[i] = 0xff;
 	}
 
-	ASSERT_EQ(0x6995, CrcCcitt::calculate(data, 512));
+	ASSERT_EQ(0x6995, Crc16Ccitt::calculate(data, 512));
 }
 
 TEST(CrcTest, testRandom2)
@@ -163,7 +163,7 @@ TEST(CrcTest, testRandom2)
 		'1', '2', '3', '4', '5', '6', '7', '8', '9'
 	};
 
-	ASSERT_EQ(0x29B1, CrcCcitt::calculate(data, sizeof(data)));
+	ASSERT_EQ(0x29B1, Crc16Ccitt::calculate(data, sizeof(data)));
 }
 
 TEST(CrcTest, testRandom3)
@@ -172,5 +172,5 @@ TEST(CrcTest, testRandom3)
 		0xff, 0xff
 	};
 
-	ASSERT_EQ(0, CrcCcitt::calculate(data, sizeof(data)));
+	ASSERT_EQ(0, Crc16Ccitt::calculate(data, sizeof(data)));
 }

@@ -33,13 +33,13 @@ namespace cobc
 			enum Status
 			{
 				/// Period has not been started
-				IDLE,
+				idle,
 
 				/// Period is currently running
-				RUNNING,
+				running,
 
 				/// Period has expired
-				TIMEOUT
+				timeout
 			};
 
 			PeriodicTaskManager();
@@ -67,9 +67,9 @@ namespace cobc
 			 *     Length of the next period. Can be different from the
 			 *     previous one.
 			 *
-			 * @retval	RUNNING
+			 * @retval	running
 			 *     Period is currently running.
-			 * @retval  TIMEOUT
+			 * @retval  timeout
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
@@ -79,11 +79,11 @@ namespace cobc
 			/**
 			 * Check the status of the current period.
 			 *
-			 * @retval  IDLE
+			 * @retval  idle
 			 *     Period has not been started.
-			 * @retval	RUNNING
+			 * @retval	running
 			 *     Period is currently running.
-			 * @retval  TIMEOUT
+			 * @retval  timeout
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
@@ -100,7 +100,7 @@ namespace cobc
 
 		private:
 			Mutex mutex;
-			bool running;
+			bool timerRunning;
 			portTickType lastWakeTime;
 			portTickType currentPeriod;
 		};

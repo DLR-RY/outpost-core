@@ -62,22 +62,22 @@ cobc::leon3::SpaceWireLight::close()
 
 // ----------------------------------------------------------------------------
 void
-cobc::leon3::SpaceWireLight::up(Blocking blocking)
+cobc::leon3::SpaceWireLight::up(Blocking blockingMode)
 {
 	spwl_set_linkmode(handle, SPWL_LINKMODE_START);
 
-	if (blocking == BLOCKING) {
+	if (blockingMode == blocking) {
 		unsigned int mask = SPWL_COND_LINKUP;
 		spwl_wait(handle, &mask, 0);
 	}
 }
 
 void
-cobc::leon3::SpaceWireLight::down(Blocking blocking)
+cobc::leon3::SpaceWireLight::down(Blocking blockingMode)
 {
 	spwl_set_linkmode(handle, SPWL_LINKMODE_DISABLE);
 
-	if (blocking == BLOCKING) {
+	if (blockingMode == blocking) {
 		unsigned int mask = SPWL_COND_LINKDOWN;
 		spwl_wait(handle, &mask, 0);
 	}
@@ -96,19 +96,19 @@ cobc::leon3::SpaceWireLight::isUp()
 
 // ----------------------------------------------------------------------------
 cobc::hal::SpaceWire::Result
-cobc::leon3::SpaceWireLight::requestBuffer(TransmitBuffer *& buffer, Blocking blocking)
+cobc::leon3::SpaceWireLight::requestBuffer(TransmitBuffer *& buffer, Blocking blockingMode)
 {
 //	if (!txSync.acquire()) {
 //		return FAILURE;
 //	}
-	(void) blocking;	// TODO
+	(void) blockingMode;	// TODO
 
 	// TODO buffer management
 	if (!firstTransmit) {
 		struct spwl_txbuf * reclaimedBuffer;
 		rtems_status_code status = spwl_reclaim_txbuf(handle, &reclaimedBuffer, SPWL_WAIT);
 		if (status != RTEMS_SUCCESSFUL) {
-			return FAILURE;
+			return failure;
 		}
 	}
 	else {
@@ -116,10 +116,10 @@ cobc::leon3::SpaceWireLight::requestBuffer(TransmitBuffer *& buffer, Blocking bl
 	}
 
 	txBuffer.length = 0;
-	txBuffer.end = EOP;
+	txBuffer.end = eop;
 	buffer = &txBuffer;
 
-	return SUCCESS;
+	return success;
 }
 
 cobc::hal::SpaceWire::Result
@@ -132,17 +132,17 @@ cobc::leon3::SpaceWireLight::send(TransmitBuffer * buffer)
 	rtems_status_code status = spwl_send_txbuf(handle, &spwlBuffer, SPWL_WAIT);
 
 	if (status == RTEMS_SUCCESSFUL) {
-		return SUCCESS;
+		return success;
 	}
 	else {
-		return FAILURE;
+		return failure;
 	}
 }
 
 cobc::hal::SpaceWire::Result
-cobc::leon3::SpaceWireLight::receive(ReceiveBuffer& buffer, Blocking blocking)
+cobc::leon3::SpaceWireLight::receive(ReceiveBuffer& buffer, Blocking blockingMode)
 {
-	(void) blocking;	// TODO
+	(void) blockingMode;	// TODO
 
 	void * data;
 	uint16_t bytesReceived;
@@ -155,10 +155,10 @@ cobc::leon3::SpaceWireLight::receive(ReceiveBuffer& buffer, Blocking blocking)
 		buffer.data = static_cast<const uint8_t *>(data);
 		buffer.length = bytesReceived;
 		buffer.end = eopMarker(eopFlags);
-		return SUCCESS;
+		return success;
 	}
 	else {
-		return FAILURE;
+		return failure;
 	}
 }
 

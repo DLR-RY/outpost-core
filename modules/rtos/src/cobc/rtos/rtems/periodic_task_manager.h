@@ -30,13 +30,13 @@ namespace cobc
 			enum Status
 			{
 				/// Period has not been started
-				IDLE = RTEMS_NOT_DEFINED,
+				idle = RTEMS_NOT_DEFINED,
 
 				/// Period is currently running
-				RUNNING = RTEMS_SUCCESSFUL,
+				running = RTEMS_SUCCESSFUL,
 
 				/// Period has expired
-				TIMEOUT = RTEMS_TIMEOUT
+				timeout = RTEMS_TIMEOUT
 			};
 
 			PeriodicTaskManager();
@@ -64,9 +64,9 @@ namespace cobc
 			 *     Length of the next period. Can be different from the
 			 *     previous one.
 			 *
-			 * @retval	RUNNING
+			 * @retval	running
 			 *     Period is currently running.
-			 * @retval  TIMEOUT
+			 * @retval  timeout
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
@@ -80,11 +80,11 @@ namespace cobc
 			/**
 			 * Check the status of the current period.
 			 *
-			 * @retval  IDLE
+			 * @retval  idle
 			 *     Period has not been started.
-			 * @retval	RUNNING
+			 * @retval	running
 			 *     Period is currently running.
-			 * @retval  TIMEOUT
+			 * @retval  timeout
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */

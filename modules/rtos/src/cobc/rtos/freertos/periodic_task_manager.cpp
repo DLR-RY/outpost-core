@@ -17,7 +17,7 @@ using namespace cobc::rtos;
 
 PeriodicTaskManager::PeriodicTaskManager() :
 	mutex(),
-	running(false),
+	timerRunning(false),
 	lastWakeTime(),
 	currentPeriod()
 {
@@ -31,13 +31,13 @@ PeriodicTaskManager::Status
 PeriodicTaskManager::nextPeriod(time::Duration period)
 {
 	MutexGuard lock(mutex);
-	Status status = RUNNING;
+	Status status = running;
 
 	const portTickType nextPeriod = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
-	if (running) {
+	if (timerRunning) {
 		if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() -
 				lastWakeTime) > currentPeriod) {
-			status = TIMEOUT;
+			status = timeout;
 		}
 
 		vTaskDelayUntil(&lastWakeTime, currentPeriod);
@@ -45,7 +45,7 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
 	else {
 		// period is started now, no need to wait
 		lastWakeTime = xTaskGetTickCount();
-		running = true;
+		timerRunning = true;
 	}
 
 	currentPeriod = nextPeriod;
@@ -57,15 +57,15 @@ PeriodicTaskManager::status()
 {
 	MutexGuard lock(mutex);
 
-	if (!running) {
-		return IDLE;
+	if (!timerRunning) {
+		return idle;
 	}
 	else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() -
 			lastWakeTime) > currentPeriod) {
-		return TIMEOUT;
+		return timeout;
 	}
 	else {
-		return RUNNING;
+		return running;
 	}
 }
 
@@ -73,5 +73,5 @@ void
 PeriodicTaskManager::cancel()
 {
 	MutexGuard lock(mutex);
-	running = false;
+	timerRunning = false;
 }

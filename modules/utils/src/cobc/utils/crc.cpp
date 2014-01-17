@@ -11,15 +11,15 @@
 using namespace cobc;
 
 void
-CrcCcitt::update(uint8_t data)
+Crc16Ccitt::update(uint8_t data)
 {
 	crc = (crc << 8) ^ crcTable[(crc >> 8) ^ data];
 }
 
 uint16_t
-CrcCcitt::calculate(const uint8_t * data, size_t length)
+Crc16Ccitt::calculate(const uint8_t * data, size_t length)
 {
-	CrcCcitt crc;
+	Crc16Ccitt crc;
 	for (size_t i = 0; i < length; ++i)
 	{
 		crc.update(data[i]);

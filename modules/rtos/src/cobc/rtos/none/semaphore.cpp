@@ -48,7 +48,7 @@ cobc::rtos::BinarySemaphore::BinarySemaphore(State initial)
 {
 	rtems_name name = rtems_build_name('B', 'S', 'E', 'M');
 
-	if (rtems_semaphore_create(name, (initial == ACQUIRED) ? 0 : 1,
+	if (rtems_semaphore_create(name, (initial == acquired) ? 0 : 1,
 			RTEMS_PRIORITY |
 			RTEMS_BINARY_SEMAPHORE, 1, &id) != RTEMS_SUCCESSFUL) {
 		rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());

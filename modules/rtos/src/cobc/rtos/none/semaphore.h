@@ -108,8 +108,8 @@ namespace cobc
 		public:
 			enum State
 			{
-				ACQUIRED,
-				RELEASED
+				acquired,
+				released
 			};
 
 			/**

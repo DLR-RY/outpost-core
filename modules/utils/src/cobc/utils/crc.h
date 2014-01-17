@@ -15,17 +15,17 @@
 namespace cobc
 {
 	/**
-	 * CRC-CCITT calculation.
+	 * CRC-16-CCITT calculation.
 	 *
 	 * Polynomial    : x^16 + x^12 + x^5 + 1 (0x8408, LSB first)
 	 * Initial value : 0xffff
 	 *
 	 * Used for CCSDS transfer frames.
 	 */
-	class CrcCcitt
+	class Crc16Ccitt
 	{
 	public:
-		inline CrcCcitt() : crc(initialValue)
+		inline Crc16Ccitt() : crc(initialValue)
 		{
 		}
 

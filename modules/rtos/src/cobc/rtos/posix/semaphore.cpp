@@ -54,10 +54,10 @@ bool
 cobc::rtos::BinarySemaphore::acquire()
 {
 	pthread_mutex_lock(&mutex);
-	while (value == ACQUIRED) {
+	while (value == acquired) {
 		pthread_cond_wait(&signal, &mutex);
 	}
-	value = ACQUIRED;
+	value = acquired;
 	pthread_mutex_unlock(&mutex);
 
 	return true;
@@ -80,7 +80,7 @@ cobc::rtos::BinarySemaphore::acquire(time::Duration timeout)
 	time.tv_sec += static_cast<long int>(nanoseconds / 1000000000);
 
 	pthread_mutex_lock(&mutex);
-	while (value == ACQUIRED) {
+	while (value == acquired) {
 		if (pthread_cond_timedwait(&signal, &mutex, &time) != 0) {
 			// Timeout or other error has occurred
 			// => semaphore can't be acquired
@@ -88,7 +88,7 @@ cobc::rtos::BinarySemaphore::acquire(time::Duration timeout)
 			return false;
 		}
 	}
-	value = ACQUIRED;
+	value = acquired;
 	pthread_mutex_unlock(&mutex);
 
 	return true;
@@ -98,7 +98,7 @@ void
 cobc::rtos::BinarySemaphore::release()
 {
 	pthread_mutex_lock(&mutex);
-	value = RELEASED;
+	value = released;
 	pthread_cond_signal(&signal);
 	pthread_mutex_unlock(&mutex);
 }

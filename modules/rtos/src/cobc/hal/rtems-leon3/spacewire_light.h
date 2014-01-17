@@ -52,24 +52,24 @@ namespace cobc
 			close();
 
 			virtual void
-			up(Blocking blocking = NON_BLOCKING);
+			up(Blocking blockingMode = nonBlocking);
 
 			virtual void
-			down(Blocking blocking = NON_BLOCKING);
+			down(Blocking blockingMode = nonBlocking);
 
 			virtual bool
 			isUp();
 
 
 			virtual Result
-			requestBuffer(TransmitBuffer *& buffer, Blocking blocking = BLOCKING);
+			requestBuffer(TransmitBuffer *& buffer, Blocking blockingMode = blocking);
 
 			virtual Result
 			send(TransmitBuffer * buffer);
 
 
 			virtual Result
-			receive(ReceiveBuffer& buffer, Blocking blocking = BLOCKING);
+			receive(ReceiveBuffer& buffer, Blocking blockingMode = blocking);
 
 			virtual void
 			releaseBuffer(const ReceiveBuffer& buffer);
@@ -85,9 +85,9 @@ namespace cobc
 			{
 				uint16_t flags = 0;
 				switch (marker) {
-					case EOP: flags = SPWL_EOP; break;
-					case EEP: flags = SPWL_EEP; break;
-					case PARTIAL: break;
+					case eop: flags = SPWL_EOP; break;
+					case eep: flags = SPWL_EEP; break;
+					case partial: break;
 				}
 				return flags;
 			}
@@ -98,13 +98,13 @@ namespace cobc
 			{
 				EndMarker marker;
 				if (flags & SPWL_EOP) {
-					marker = EOP;
+					marker = eop;
 				}
 				else if (flags & SPWL_EEP) {
-					marker = EEP;
+					marker = eep;
 				}
 				else {
-					marker = PARTIAL;
+					marker = partial;
 				}
 				return marker;
 			}
