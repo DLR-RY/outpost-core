@@ -49,7 +49,7 @@ cobc::rtos::Semaphore::release()
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::BinarySemaphore::BinarySemaphore(State initial)
+cobc::rtos::BinarySemaphore::BinarySemaphore(StateT initial)
 {
 	vSemaphoreCreateBinary(handle);
 
