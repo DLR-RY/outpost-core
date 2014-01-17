@@ -102,11 +102,15 @@ namespace cobc
 		class BinarySemaphore
 		{
 		public:
-			enum State
+			struct State
 			{
-				acquired,
-				released
+				enum Type
+				{
+					acquired,
+					released
+				};
 			};
+			typedef State::Type StateT;
 
 			/**
 			 * Create a Semaphore.
@@ -118,7 +122,7 @@ namespace cobc
 			 * @param initial
 			 * 		Initial value for the semaphore.
 			 */
-			explicit BinarySemaphore(State initial);
+			explicit BinarySemaphore(StateT initial);
 
 			/**
 			 * Destroy the semaphore and release it's resources.

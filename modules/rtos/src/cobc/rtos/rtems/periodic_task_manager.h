@@ -27,17 +27,21 @@ namespace cobc
 		class PeriodicTaskManager
 		{
 		public:
-			enum Status
+			struct Status
 			{
-				/// Period has not been started
-				idle = RTEMS_NOT_DEFINED,
+				enum Type
+				{
+					/// Period has not been started
+					idle,
 
-				/// Period is currently running
-				running = RTEMS_SUCCESSFUL,
+					/// Period is currently running
+					running,
 
-				/// Period has expired
-				timeout = RTEMS_TIMEOUT
+					/// Period has expired
+					timeout
+				};
 			};
+			typedef Status::Type StatusT;
 
 			PeriodicTaskManager();
 
@@ -64,35 +68,35 @@ namespace cobc
 			 *     Length of the next period. Can be different from the
 			 *     previous one.
 			 *
-			 * @retval	running
+			 * @retval	Status::running
 			 *     Period is currently running.
-			 * @retval  timeout
+			 * @retval  Status::timeout
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
-			inline Status
+			inline StatusT
 			nextPeriod(time::Duration period)
 			{
 				rtems_status_code status = rtems_rate_monotonic_period(id, period.milliseconds());
-				return static_cast<Status>(status);
+				return static_cast<StatusT>(status);
 			}
 
 			/**
 			 * Check the status of the current period.
 			 *
-			 * @retval  idle
+			 * @retval  Status::idle
 			 *     Period has not been started.
-			 * @retval	running
+			 * @retval	Status::running
 			 *     Period is currently running.
-			 * @retval  timeout
+			 * @retval  Status::timeout
 			 *     Last period was missed, this may require some different
 			 *     handling from the user.
 			 */
-			inline Status
+			inline StatusT
 			status()
 			{
 				rtems_status_code status = rtems_rate_monotonic_period(id, RTEMS_PERIOD_STATUS);
-				return static_cast<Status>(status);
+				return static_cast<StatusT>(status);
 			}
 
 			/**
