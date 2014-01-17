@@ -17,7 +17,6 @@ if envGlobal['OS'] == 'posix':
 	env.RemoveFromList('CCFLAGS_warning', [
 		'-Wconversion',
 		'-Wundef',
-		'-Winline',
 		'-Wmissing-declarations'])
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 	

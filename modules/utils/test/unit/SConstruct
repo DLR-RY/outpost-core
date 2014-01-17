@@ -48,7 +48,6 @@ env['CCFLAGS_warning'] = [
 #	'-Wconversion',
 #	'-Wold-style-cast',
 #	'-Wundef',
-#	'-Winline',
 #	'-Wmissing-declarations',
 ]
 
