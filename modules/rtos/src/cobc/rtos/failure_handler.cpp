@@ -25,7 +25,7 @@ defaultHandler(cobc::rtos::FailureCode code)
 	rtems_fatal_error_occurred(code.getCode());
 #elif COBC_RTOS == COBC_RTOS_POSIX
 	//printf("Fatal Handler: %"PRIu32"\n", code.getCode());
-	printf("Fatal Handler: %i\n", static_cast<int>(code.getCode()));
+	printf("Fatal Handler: 0x%08X\n", static_cast<int>(code.getCode()));
 	exit(1);
 #else
 	// Avoid warnings about unused parameters.

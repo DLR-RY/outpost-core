@@ -60,10 +60,46 @@ namespace cobc
 			 * 		Name of the timer. Maximum length is four characters. Longer
 			 * 		names will be truncated.
 			 *
+			 * Example:
+			 * @code
+			 * class A : public cobc::rtos::Callable
+			 * {
+			 * public:
+			 *     void
+			 *     function(cobc::rtos::Timer*)
+			 *     {
+			 *     }
+			 * };
+			 *
+			 * A a;
+			 *
+			 * cobc::rtos::Timer timer(&a, &A::function);
+			 * @endcode
+			 *
+			 * Example 2:
+			 * @code
+			 * class B : public cobc::rtos::Callable
+			 * {
+			 * public:
+			 *     B() :
+			 *         timer(this, &B::function, "TIM2");
+			 *     {
+			 *     }
+			 *
+			 *     void
+			 *     function(cobc::rtos::Timer*)
+			 *     {
+			 *     }
+			 *
+			 * private:
+			 *     cobc::rtos::Timer timer;
+			 * };
+			 * @endcode
+			 *
 			 * @see	cobc::Callable
 			 */
 			template <typename T>
-			Timer(T *object, void (T::*function)(Timer *timer), const char* name = "TIM-");
+			Timer(T *object, void (T::*function)(Timer* timer), const char* name = "TIM-");
 
 			/**
 			 * Delete the timer.

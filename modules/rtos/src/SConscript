@@ -22,15 +22,15 @@ elif env['OS'] == 'rtems':
 	
 	# Leon 3
 	if env['ARCHITECTURE'] == 'leon3':
-		files += env.Glob('../ext/rtems-leon3/spwl/*.c')
-		files += env.Glob('../ext/rtems-leon3/apbuart/*.c')
-		
 		# Remove warning because the spacewirelight driver uses void pointer
 		# casts which ignore qualifiers like volatile.
 		env.RemoveFromList('CCFLAGS_warning', '-Wcast-qual')
 		
 		# spacewirelight can not be compiled as C99 (with or without pedantic)
 		env['CFLAGS_language'] = '-std=gnu99'
+		
+		files += env.Glob('../ext/rtems-leon3/spwl/*.c')
+		files += env.Glob('../ext/rtems-leon3/apbuart/*.c')
 		
 		files += env.Glob('cobc/hal/rtems-leon3/*.cpp')
 		

@@ -222,7 +222,7 @@ namespace cobc
 			}
 
 		protected:
-			Duration(int64_t numberOfTicks) :
+			explicit Duration(int64_t numberOfTicks) :
 				ticks(numberOfTicks)
 			{
 			}

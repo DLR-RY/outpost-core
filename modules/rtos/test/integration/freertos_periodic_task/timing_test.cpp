@@ -21,7 +21,7 @@ TimingTest::run()
 	rtos::PeriodicTaskManager period2;
 	while (1)
 	{
-		if (period.nextPeriod(time::Milliseconds(500)) == rtos::PeriodicTaskManager::timeout) {
+		if (period.nextPeriod(time::Milliseconds(500)) == rtos::PeriodicTaskManager::Status::timeout) {
 			// Period missed
 			break;
 		}

@@ -13,8 +13,7 @@
 // ----------------------------------------------------------------------------
 cobc::rtos::Timer::~Timer()
 {
-	// TODO generates a Segementation fault?
-	//timer_delete(tid);
+	timer_delete(tid);
 }
 
 // ----------------------------------------------------------------------------
@@ -29,8 +28,10 @@ cobc::rtos::Timer::start(time::Duration duration)
 	time.it_interval.tv_nsec = 0;
 
 	// initial expiration
-	time.it_value.tv_sec = static_cast<time_t>(nanoseconds / 1000000000);// seconds
-	time.it_value.tv_nsec = static_cast<long int>(nanoseconds % 1000000000);// nanoseconds
+	// seconds
+	time.it_value.tv_sec = static_cast<time_t>(nanoseconds / 1000000000);
+	// nanoseconds
+	time.it_value.tv_nsec = static_cast<uint32_t>(nanoseconds % 1000000000);
 
 	std::memcpy(&interval, &time, sizeof(struct itimerspec));
 
@@ -57,13 +58,7 @@ cobc::rtos::Timer::cancel()
 {
 	struct itimerspec time;
 
-	// interval
-	time.it_interval.tv_sec = 0;
-	time.it_interval.tv_nsec = 0;
-
-	// initial expiration
-	time.it_value.tv_sec = 0;
-	time.it_value.tv_nsec = 0;
+	memset(&time, 0, sizeof(time));
 
 	if (timer_settime(tid, 0, &time, NULL) != 0) {
 		// Could not set the timer value
@@ -88,17 +83,22 @@ cobc::rtos::Timer::createTimer(const char* name)
 
 	struct sigevent event;
 
+	memset(&event, 0, sizeof(event));
+
 	// Set the sigevent structure to cause the signal to be
 	// delivered by creating a new thread.
 	event.sigev_notify = SIGEV_THREAD;
-	event.sigev_value.sival_ptr = this;
 	event.sigev_notify_function = Timer::invokeTimer;
 	event.sigev_notify_attributes = NULL;
+	event.sigev_value.sival_ptr = this;
 
 	if (timer_create(CLOCK_MONOTONIC, &event, &tid) != 0) {
 		// Could not allocate a new timer
 		FailureHandler::fatal(FailureCode::resourceAllocationFailed());
 	}
+
+	// Disable timer for now
+	this->cancel();
 }
 
 // ----------------------------------------------------------------------------
