@@ -26,8 +26,8 @@ if envGlobal['OS'] == 'posix':
 		objects.append(env.Object(file))
 	envGlobal.Append(objects={'gmock': objects})
 	
-	library = env.StaticLibrary('gmock', objects)
+	library = env.StaticLibrary('gmock-1.6.0', objects)
 	
 	envGlobal.Install('$BUILDPATH/lib', library)
-	envGlobal.Append(LIBS=['gmock', 'pthread'])
+	envGlobal.Append(LIBS=['gmock-1.6.0', 'pthread'])
 	
