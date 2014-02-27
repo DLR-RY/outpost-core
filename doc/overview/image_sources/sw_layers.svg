@@ -17,9 +17,9 @@
    version="1.0"
    sodipodi:docname="sw_layers.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
-   inkscape:export-filename="/home/calle/AktuelleArbeit/FSS/doku/grafik/mustergrafik.png"
-   inkscape:export-xdpi="300.08286"
-   inkscape:export-ydpi="300.08286">
+   inkscape:export-filename="/home/dlr/Desktop/exchange/libcobc_sw_layers.png"
+   inkscape:export-xdpi="600.08002"
+   inkscape:export-ydpi="600.08002">
   <defs
      id="defs4" />
   <sodipodi:namedview
@@ -30,17 +30,17 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.2803556"
-     inkscape:cx="89.404289"
-     inkscape:cy="98.919596"
+     inkscape:cx="245.31019"
+     inkscape:cy="91.06539"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      width="150mm"
      height="70mm"
      units="mm"
      inkscape:window-width="1920"
-     inkscape:window-height="1125"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-height="1173"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
      showgrid="true"
      inkscape:window-maximized="1"
      showguides="true"
@@ -61,7 +61,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -70,32 +70,6 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-35.433062)">
-    <path
-       style="fill:#fcaf3e;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999000000002;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0"
-       d="m 10.00002,108.03146 174.99998,1e-5 0,40 -125,0 0,45 -49.99998,0 z"
-       id="rect3185"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccc" />
-    <rect
-       style="fill:#c4a000;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3187"
-       width="160"
-       height="40.000004"
-       x="65"
-       y="153.03146" />
-    <rect
-       style="fill:#c4a000;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899993;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3189"
-       width="115"
-       height="40.000004"
-       x="230"
-       y="153.03146" />
-    <path
-       style="fill:#f57900;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999000000002;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0"
-       d="m 130,83.031503 215,-2.2e-5 0,64.999999 -155,0 c 0,-11.66667 0,21.77397 0,-45.00001 l -60,1e-5 z"
-       id="rect3191"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccc" />
     <path
        style="fill:#ce5c00;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0"
        d="m 10,43.031478 335,-10e-7 0,35.000004 -220,-4e-6 0,25.000003 -115,0 z"
@@ -114,6 +88,42 @@
          x="155"
          y="63.031483"
          style="font-size:12px">Application</tspan></text>
+    <path
+       style="fill:#f57900;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999000000002;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0"
+       d="m 130,83.031503 215,-2.2e-5 0,64.999999 -155,0 c 0,-11.66667 0,21.77397 0,-45.00001 l -60,1e-5 z"
+       id="rect3191"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
+       x="245"
+       y="113.03148"
+       id="text3206"
+       sodipodi:linespacing="113%"><tspan
+         sodipodi:role="line"
+         id="tspan3208"
+         x="245"
+         y="113.03148"
+         style="font-size:16px">libcobc</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
+       x="270"
+       y="128.03148"
+       id="text3027"
+       sodipodi:linespacing="113%"><tspan
+         sodipodi:role="line"
+         x="270"
+         y="128.03148"
+         style="font-size:8px;text-align:center;text-anchor:middle"
+         id="tspan3031">HAL, Middleware, Communication</tspan></text>
+    <path
+       style="fill:#fcaf3e;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999000000002;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0"
+       d="m 10.00002,108.03146 174.99998,1e-5 0,40 -125,0 0,45 -49.99998,0 z"
+       id="rect3185"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccc" />
     <text
        xml:space="preserve"
        style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
@@ -129,15 +139,22 @@
     <text
        xml:space="preserve"
        style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
-       x="245"
-       y="113.03148"
-       id="text3206"
+       x="65"
+       y="138.03148"
+       id="text3226-9"
        sodipodi:linespacing="113%"><tspan
          sodipodi:role="line"
-         id="tspan3208"
-         x="245"
-         y="113.03148"
-         style="font-size:16px">libcobc</tspan></text>
+         id="tspan3228-6"
+         x="65"
+         y="138.03148"
+         style="font-size:8px">e.g. SpW, UART</tspan></text>
+    <rect
+       style="fill:#c4a000;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3187"
+       width="160"
+       height="40.000004"
+       x="65"
+       y="153.03146" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:center;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:middle;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
@@ -153,6 +170,13 @@
          x="145"
          y="184.73094"
          id="tspan3020">Package</tspan></text>
+    <rect
+       style="fill:#c4a000;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899993;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3189"
+       width="115"
+       height="40.000004"
+       x="230"
+       y="153.03146" />
     <text
        xml:space="preserve"
        style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
@@ -206,29 +230,5 @@
          id="tspan3228"
          x="125"
          y="228.03148">LEON3 (FT), ARM, OpenRISC, ...</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
-       x="65"
-       y="138.03148"
-       id="text3226-9"
-       sodipodi:linespacing="113%"><tspan
-         sodipodi:role="line"
-         id="tspan3228-6"
-         x="65"
-         y="138.03148"
-         style="font-size:8px">e.g. SpW, UART</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
-       x="270"
-       y="128.03148"
-       id="text3027"
-       sodipodi:linespacing="113%"><tspan
-         sodipodi:role="line"
-         x="270"
-         y="128.03148"
-         style="font-size:8px;text-align:center;text-anchor:middle"
-         id="tspan3031">HAL, Middleware, Communication</tspan></text>
   </g>
 </svg>

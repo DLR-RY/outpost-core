@@ -11,13 +11,13 @@
 #include "detect.h"
 
 #if COBC_RTOS == COBC_RTOS_NONE
-#	include "none/periodic_task_manager.h"
+//#	include "none/periodic_task_manager.h"
 #elif COBC_RTOS == COBC_RTOS_RTEMS
 #	include "rtems/periodic_task_manager.h"
 #elif COBC_RTOS == COBC_RTOS_FREERTOS
 #	include "freertos/periodic_task_manager.h"
 #elif COBC_RTOS == COBC_RTOS_POSIX
-#	include "posix/periodic_task_manager.h"
+//#	include "posix/periodic_task_manager.h"
 #endif
 
 #endif // COBC_RTOS_PERIODIC_TASK_MANAGER_HPP
