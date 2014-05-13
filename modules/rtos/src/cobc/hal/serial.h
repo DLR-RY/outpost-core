@@ -25,8 +25,38 @@ namespace cobc
 		class Serial
 		{
 		public:
+			/* Added by Muhammad FIXME: If this is the right position?? */
+			typedef enum states_e{
+				OPEN = 0,
+				CLOSE,
+				ENABLED,
+				DISABLED,
+				READY,
+				BUSY
+			}serial_states_t;
+
+			typedef enum parity_e{
+				NONE = 0,
+				EVEN,
+				ODD,
+				MARK,
+				SPACE
+			}serial_parity_t;
+
 			virtual
 			~Serial() = 0;
+
+			/**
+			 * Opens the UART device
+			 */
+			virtual void 
+			open() = 0;
+
+			/**
+			 * CLose the UART device
+			 */
+			virtual void 
+			close() = 0;
 
 			/**
 			 * Check if data is available in the input buffers.
