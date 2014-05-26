@@ -37,9 +37,11 @@ files  = env.Glob('*.c')
 files += env.Glob('*.cpp')
 
 program = env.Program('rtems_float_endianness', files)
+stripped = env.Strip(env.Buildpath('rtems_float_endianness_stripped'), program)
 
 envGlobal.Alias('build', program)
-envGlobal.Alias('install', env.Install(program))
+envGlobal.Alias('strip', stripped)
+envGlobal.Alias('install', [env.Install(program), env.Install(stripped)])
 envGlobal.Alias('size', env.Size(program))
 
 envGlobal.Default(['build', 'size'])
