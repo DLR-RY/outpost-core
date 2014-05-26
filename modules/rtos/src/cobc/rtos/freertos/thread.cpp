@@ -17,7 +17,7 @@
 #include "../failure_handler.h"
 
 /// Minimum stack size configured through the FreeRTOS configuration.
-static const std::size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTACK_TYPE);
+static const size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTACK_TYPE);
 
 // ----------------------------------------------------------------------------
 void
@@ -69,6 +69,24 @@ cobc::rtos::Thread::start()
 			rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
 		}
 	}
+}
+
+// ----------------------------------------------------------------------------
+cobc::rtos::Thread::Identifier
+cobc::rtos::Thread::getIdentifier() const
+{
+    if (handle == 0) {
+        return invalidIdentifier;
+    }
+    else {
+        return handle;
+    }
+}
+
+cobc::rtos::Thread::Identifier
+cobc::rtos::Thread::getCurrentThreadIdentifier()
+{
+    return xTaskGetCurrentTaskHandle();
 }
 
 // ----------------------------------------------------------------------------

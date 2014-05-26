@@ -30,6 +30,19 @@ cobc::rtos::Thread::start()
 }
 
 // ----------------------------------------------------------------------------
+cobc::rtos::Thread::Identifier
+cobc::rtos::Thread::getIdentifier() const
+{
+    return 0;
+}
+
+cobc::rtos::Thread::Identifier
+cobc::rtos::Thread::getCurrentThreadIdentifier()
+{
+    return 0;
+}
+
+// ----------------------------------------------------------------------------
 void
 cobc::rtos::Thread::setPriority(uint8_t priority)
 {

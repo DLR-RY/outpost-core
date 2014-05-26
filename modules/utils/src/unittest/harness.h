@@ -33,7 +33,7 @@
 	do {																	\
 		const type* reference_ = static_cast<const type *> (reference);		\
 		const type* actual_ = static_cast<const type *> (actual);			\
-		for (std::size_t i = 0; i < element_count; ++i ) {					\
+		for (size_t i = 0; i < element_count; ++i ) {					\
 			EXPECT_EQ(reference_[i], actual_[i]);							\
 		}																	\
 	} while (0)

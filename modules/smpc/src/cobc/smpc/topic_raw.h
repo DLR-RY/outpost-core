@@ -68,7 +68,7 @@ namespace cobc
 			 * Forwards the pointer to all connected subscribers.
 			 */
 			void
-			publish(const void * message, std::size_t length);
+			publish(const void * message, size_t length);
 
 		protected:
 			/// List of all raw topics currently active.

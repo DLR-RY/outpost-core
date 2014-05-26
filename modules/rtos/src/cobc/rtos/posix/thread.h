@@ -25,9 +25,6 @@ namespace cobc
 		/**
 		 * Wrapper class for the Thread function of the Operating System.
 		 *
-		 * Encapsulates the RTEMS C thread functions and provides C++-style
-		 * access to them.
-		 *
 		 * The run()-method of a derived class is invoked in the newly created
 		 * thread context. The derived class can also hold data members
 		 * associated with the specific thread.
@@ -38,6 +35,15 @@ namespace cobc
 		class Thread
 		{
 		public:
+		    /// Unique identifier to identify a thread.
+            typedef uint32_t Identifier;
+
+            /**
+             * Initial return value of getIdentifier() before the
+             * thread have been started and an associated thread id.
+             */
+            static const Identifier invalidIdentifier = 0xffffffff;
+
 			/**
 			 * Create a new thread.
 			 *
@@ -71,6 +77,24 @@ namespace cobc
 			 */
 			void
 			start();
+
+			/**
+             * Get a unique identifier for this thread.
+             *
+             * Only valid after the thread has be started.
+             *
+             * @return  Unique identifier.
+             */
+            Identifier
+            getIdentifier() const;
+
+            /**
+             * Get the unique identifier for the currently executed thread.
+             *
+             * @return  Unique identifier.
+             */
+            static Identifier
+            getCurrentThreadIdentifier();
 
 			/**
 			 * Unused for POSIX.
@@ -130,7 +154,8 @@ namespace cobc
 			wrapper(void * object);
 
 			bool isRunning;
-			pthread_t tid;
+			pthread_t pthreadId;
+			Identifier tid;
 		};
 	}
 }

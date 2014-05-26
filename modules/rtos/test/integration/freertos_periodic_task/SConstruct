@@ -3,42 +3,44 @@
 import os
 
 # root folder of the cobc library
-rootpath = '../../../../..'
-modulepath = rootpath + '/modules'
+rootpath    = '../../../../..'
+modulepath  = os.path.join(rootpath, 'modules')
+buildfolder = os.path.join(modulepath, '../build')
 
-# path to the xpcc root directory
-xpccpath = rootpath + '/../../other/xpcc'
+# path to the xpcc root directory, TODO don't use a absolute path here!
+xpccpath = '/home/user/development/xpcc'
+#xpccpath = rootpath + '/../../other/xpcc'
 
 envGlobal = Environment(toolpath=[rootpath + '/conf/scons/site_tools'],
-				        tools=['cobc', 'arm-none-eabi', 'buildpath', 'buildformat', 'buildsize'],
-				        OS='freertos',
-				        CCFLAGS_target=['-mcpu=cortex-m4',
-				                        '-mthumb',
-				                        '-mthumb-interwork',
-				                        '-mfloat-abi=softfp',
-				                        '-mfpu=fpv4-sp-d16',
-				                        '-nostdlib',
-				                        ],
+                        tools=['cobc', 'arm-none-eabi', 'buildpath', 'buildformat', 'buildsize'],
+                        OS='freertos',
+                        CCFLAGS_target=['-mcpu=cortex-m4',
+                                        '-mthumb',
+                                        '-mthumb-interwork',
+                                        '-mfloat-abi=softfp',
+                                        '-mfpu=fpv4-sp-d16',
+                                        '-nostdlib',
+                                        ],
                         CCFLAGS_debug=['-gdwarf-2'],
-				        CCFLAGS_other=['-finline-limit=10000',
-				                       '-funsigned-char',
-								       '-funsigned-bitfields',
-								       '-fno-split-wide-types',
-								       '-fno-move-loop-invariants',
-								       '-fno-tree-loop-optimize',
-								       '-fno-unwind-tables',
-								       ],
-				        CXXFLAGS_other=['-fno-threadsafe-statics',
-				                        '-fuse-cxa-atexit',
-				                        ],
-			        	ENV=os.environ)
+                        CCFLAGS_other=['-finline-limit=10000',
+                                       '-funsigned-char',
+                                       '-funsigned-bitfields',
+                                       '-fno-split-wide-types',
+                                       '-fno-move-loop-invariants',
+                                       '-fno-tree-loop-optimize',
+                                       '-fno-unwind-tables',
+                                       ],
+                        CXXFLAGS_other=['-fno-threadsafe-statics',
+                                        '-fuse-cxa-atexit',
+                                        ],
+                        ENV=os.environ)
 
-envGlobal['BASEPATH'] = os.path.abspath('.')
-envGlobal['BUILDPATH'] = os.path.abspath(modulepath + '/rtos/build/test/integration/freertos_periodic_task')
+envGlobal['BASEPATH']  = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/integration/freertos_periodic_task'))
 
 envGlobal.Append(CPPPATH=[
-	'.',
-	os.path.abspath(xpccpath + '/ext'),	# for FreeRTOS
+    '.',
+    os.path.abspath(xpccpath + '/ext'),    # for FreeRTOS
 ])
 
 envGlobal.SConscript([modulepath + '/utils/src/SConscript',
@@ -52,8 +54,8 @@ env = envGlobal.Clone()
 # Combine all libraries into one
 files = []
 for lib in env['objects']:
-	for f in env['objects'][lib]:
-		files.extend(f)
+    for f in env['objects'][lib]:
+        files.extend(f)
 
 library = env.StaticLibrary('libcobc', files)
 envGlobal.Alias('library', library)
@@ -70,12 +72,12 @@ env.Append(LIBS=['libcobc'])
 env.Append(LIBPATH=['$BUILDPATH'])
 
 env.Append(CPPPATH=[
-	modulepath + '/utils/src',
-	modulepath + '/time/src',
-	modulepath + '/rtos/src',
-	modulepath + '/smpc/src',
-	modulepath + '/ccsds/src',
-	modulepath + '/pus/src',
+    modulepath + '/utils/src',
+    modulepath + '/time/src',
+    modulepath + '/rtos/src',
+    modulepath + '/smpc/src',
+    modulepath + '/ccsds/src',
+    modulepath + '/pus/src',
 ])
 env.Append(CPPDEFINES={'COBC_RTOS':'COBC_RTOS_FREERTOS'})
 
@@ -94,3 +96,4 @@ env.Alias('build', [hexfile, env.Listing(program)])
 env.Alias('all', ['build', 'size'])
 
 env.Default('all')
+

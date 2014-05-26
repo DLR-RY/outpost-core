@@ -1,6 +1,6 @@
-=====
-libcs
-=====
+=======
+libcobc
+=======
 
 Library for Communication & Services
 ====================================
@@ -61,5 +61,17 @@ Testing...
 ...Test
 	Test suite to test a given class.
 
+
+Requirements
+------------
+
+To build the unittests the following programs in their respective versions
+are needed:
+
+- gcc >= 4.7
+- scons >= 2.3
+- python >= 2.7
+- clang >= 3.2
+- lcov >= 1.10
 
 .. _reStructuredText: http://docutils.sourceforge.net/docs/user/rst/quickref.html

@@ -19,7 +19,7 @@ TEST(TopicTypeTest, testInteger)
 
 TEST(TopicTypeTest, testArray)
 {
-	static const std::size_t numberOfSunSensors = 10;
+	static const size_t numberOfSunSensors = 10;
 
 	cobc::smpc::Topic<const uint16_t[numberOfSunSensors]> sunSensors;
 

@@ -38,6 +38,9 @@ namespace cobc
 		class Thread
 		{
 		public:
+		    /// Unique identifier to identify a thread.
+            typedef uint32_t Identifier;
+
 			/**
 			 * Create a new thread.
 			 *
@@ -80,6 +83,22 @@ namespace cobc
 			 */
 			void
 			start();
+
+			/**
+             * Get a unique identifier for this thread.
+             *
+             * @return  Unique identifier.
+             */
+            Identifier
+            getIdentifier() const;
+
+            /**
+             * Get the unique identifier for the currently executed thread.
+             *
+             * @return  Unique identifier.
+             */
+            static Identifier
+            getCurrentThreadIdentifier();
 
 			/**
 			 * Set a new priority for the thread.

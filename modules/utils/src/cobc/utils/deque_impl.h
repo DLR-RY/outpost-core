@@ -7,7 +7,7 @@
 // ----------------------------------------------------------------------------
 
 template<typename T>
-cobc::Deque<T>::Deque(T* backendBuffer, std::size_t n) :
+cobc::Deque<T>::Deque(T* backendBuffer, size_t n) :
 	buffer(backendBuffer), maxSize(n), head(0), tail(1), size(0)
 {
 }

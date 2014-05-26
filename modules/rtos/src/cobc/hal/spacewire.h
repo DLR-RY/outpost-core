@@ -60,7 +60,7 @@ namespace cobc
 				 * implementation specific.
 				 */
 				uint8_t * const data;
-				std::size_t length;
+				size_t length;
 				EndMarker end;
 			};
 
@@ -82,7 +82,7 @@ namespace cobc
 				}
 
 				const uint8_t * data;
-				std::size_t length;
+				size_t length;
 				EndMarker end;
 			};
 

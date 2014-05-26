@@ -53,7 +53,7 @@ namespace cobc
 			template <typename S>
 			SubscriptionRaw(TopicRaw& topic,
 						 S * subscriber,
-						 void (S::*function)(const void * message, std::size_t length)) :
+						 void (S::*function)(const void * message, size_t length)) :
 				List<SubscriptionRaw>(listOfAllSubscriptions, this),
 				topic(&topic),
 				nextTopicSubscription(0),
@@ -87,13 +87,13 @@ namespace cobc
 
 		protected:
 			/** Base-type to cast all member function pointers to. */
-			typedef void (Subscriber::*Function)(const void *, std::size_t);
+			typedef void (Subscriber::*Function)(const void *, size_t);
 
 			/**
 			 * Relay message to the subscribing component.
 			 */
 			inline void
-			notify(const void * message, std::size_t length) const
+			notify(const void * message, size_t length) const
 			{
 				(subscriber->*function)(message, length);
 			}

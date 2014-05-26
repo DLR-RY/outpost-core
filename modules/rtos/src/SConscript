@@ -31,7 +31,6 @@ elif env['OS'] == 'rtems':
 		
 		files += env.Glob('../ext/rtems-leon3/spwl/*.c')
 		files += env.Glob('../ext/rtems-leon3/apbuart/*.c')
-		files += env.Glob('../ext/rtems-leon3/grspw/*.c')
 		
 		files += env.Glob('cobc/hal/rtems-leon3/*.cpp')
 		

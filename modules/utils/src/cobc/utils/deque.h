@@ -42,11 +42,11 @@ namespace cobc
 	class Deque
 	{
 	public:
-		typedef std::size_t Index;
+		typedef size_t Index;
 		typedef Index Size;
 
 	public:
-		Deque(T* backendBuffer, std::size_t n);
+		Deque(T* backendBuffer, size_t n);
 
 		inline bool
 		isEmpty() const;
@@ -107,6 +107,6 @@ namespace cobc
 	};
 }
 
-#include "deque_impl.hpp"
+#include "deque_impl.h"
 
 #endif	// COBC_DEQUE_HPP

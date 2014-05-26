@@ -38,6 +38,15 @@ namespace cobc
 		class Thread
 		{
 		public:
+		    /// Unique identifier to identify a thread.
+		    typedef uint32_t Identifier;
+
+		    /**
+             * Initial return value of getIdentifier() before the
+             * thread have been started and an associated thread id.
+             */
+            static const Identifier invalidIdentifier = 0xffffffff;
+
 			/**
 			 * Create a new thread.
 			 *
@@ -79,6 +88,24 @@ namespace cobc
 			 */
 			void
 			start();
+
+			/**
+			 * Get a unique identifier for this thread.
+			 *
+			 * Only valid after the thread has be started.
+			 *
+			 * @return  Unique identifier.
+			 */
+			Identifier
+			getIdentifier() const;
+
+			/**
+             * Get the unique identifier for the currently executed thread.
+             *
+             * @return  Unique identifier.
+             */
+			static Identifier
+			getCurrentThreadIdentifier();
 
 			/**
 			 * Set a new priority for the thread.
@@ -169,7 +196,7 @@ namespace cobc
 			void * handle;	// FreeRTOS thread handle (xTaskHandle)
 
 			const uint8_t priority;
-			std::size_t stackSize;
+			size_t stackSize;
 			const char * const name;
 		};
 	}

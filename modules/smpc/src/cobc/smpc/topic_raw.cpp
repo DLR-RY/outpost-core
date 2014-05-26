@@ -22,7 +22,7 @@ cobc::smpc::TopicRaw::~TopicRaw()
 }
 
 void
-cobc::smpc::TopicRaw::publish(const void * message, std::size_t length)
+cobc::smpc::TopicRaw::publish(const void * message, size_t length)
 {
 	rtos::MutexGuard lock(mutex);
 

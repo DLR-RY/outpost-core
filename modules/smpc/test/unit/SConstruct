@@ -1,78 +1,61 @@
 #!/usr/bin/env python
 
 import os
-import commands
+
+vars = Variables('custom.py')
+vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 
 envGlobal = Environment(toolpath=['../../../../conf/scons/site_tools'],
-				        tools=['cobc', 'buildformat'],
-			        	ENV=os.environ)
+                        tools=['cobc', 'buildformat'],
+                        variables=vars,
+                        ENV=os.environ)
+
+Help(vars.GenerateHelpText(envGlobal))
 
 envGlobal.Append(CPPDEFINES={'UNITTEST': 1})
 
+modulepath  = '../../..'
+buildfolder = os.path.join(modulepath, '../build')
+
 envGlobal['BASEPATH'] = os.path.abspath('.')
-if ARGUMENTS.get('coverage') == '1':
-	envGlobal.Tool('hosted')
-	envGlobal.Tool('buildpath')
-	
-	envGlobal.Append(CCFLAGS='--coverage')
-	envGlobal.Append(LINKFLAGS='--coverage')
-	
-	# detect GCC (g++) version
-	GCC_VERSION = commands.getoutput(envGlobal['CXX'] + ' -dumpversion')
-	if float(GCC_VERSION) < 4.7:
-		envGlobal['CC'] = 'gcc-4.7'
-		envGlobal['CXX'] = 'g++-4.7'
-		envGlobal['AS'] = 'gcc-4.7'
-		envGlobal['AR'] = 'gcc-ar-4.7'
-		envGlobal['NM'] = 'gcc-nm-4.7'
-		envGlobal['RANLIB'] = 'gcc-ranlib-4.7'
+if envGlobal['coverage']:
+    envGlobal.Tool('hosted-gcc')
+    envGlobal.Tool('buildpath')
+    
+    envGlobal.Append(CCFLAGS='--coverage')
+    envGlobal.Append(LINKFLAGS='--coverage')
 
-	envGlobal['BUILDPATH'] = os.path.abspath('../../build/test/coverage')
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'smpc/test/coverage'))
 else:
-	envGlobal.Tool('hosted-llvm')
-	envGlobal.Tool('buildpath')
-	
-	envGlobal['BUILDPATH'] = os.path.abspath('../../build/test/unit')
+    envGlobal.Tool('hosted-llvm')
+    envGlobal.Tool('buildpath')
+    
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'smpc/test/unit'))
 
-modulepath = '../../..'
-envGlobal.SConscript(
-	[
-		modulepath + '/utils/src/SConscript',
-		modulepath + '/utils/ext/SConscript',
-		modulepath + '/time/src/SConscript',
-		modulepath + '/rtos/src/SConscript',
-		modulepath + '/smpc/src/SConscript',
-	],
-	exports='envGlobal')
+envGlobal.SConscript([
+        os.path.join(modulepath, 'utils/src/SConscript'),
+        os.path.join(modulepath, 'utils/ext/SConscript'),
+        os.path.join(modulepath, 'time/src/SConscript'),
+        os.path.join(modulepath, 'rtos/src/SConscript'),
+        os.path.join(modulepath, 'smpc/src/SConscript'),
+    ],
+    exports='envGlobal')
 
 env = envGlobal.Clone()
 
 # googletest uses some C++0x features.
 env['CXXFLAGS_language'] = ['-std=c++0x']
-env['CCFLAGS_warning'] = [
-	'-W',
-	'-Wall',
-	'-Wextra',
-	'-Wformat',
-	'-Wno-unused-parameter',
-	'-Winit-self',
-	'-Wcast-qual',
-	'-Wcast-align',
-#	'-Wshadow',
-	'-Wpointer-arith',
-	'-Wwrite-strings',
-	'-Wredundant-decls',
-	'-Wunused',
-	'-Wuninitialized',
-#	'-Wconversion',
-#	'-Wold-style-cast',
-#	'-Wundef',
-#	'-Wmissing-declarations',
-]
 
-env.Append(CPPPATH=[
-	'.'
+env.RemoveFromList('CCFLAGS_warning', [
+    '-Wunused-parameter',
+    '-Wshadow',
+    '-Wconversion',
+    '-Wold-style-cast',
+    '-Wundef',
+    '-Wmissing-declarations',
 ])
+
+env.Append(CPPPATH=['.'])
 env.Append(LIBS=['cobc_smpc', 'cobc_rtos', 'cobc_time', 'gmock-1.6.0', 'pthread'])
 env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 

@@ -5,53 +5,53 @@ import os
 vars = Variables('custom.py')
 vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 
-envGlobal = Environment(variables=vars,
-                        toolpath=['../../../../conf/scons/site_tools'],
-				        tools=['cobc', 'hosted-llvm', 'buildpath', 'buildformat'],
-			        	ENV=os.environ)
+envGlobal = Environment(toolpath=['../../../../conf/scons/site_tools'],
+                        tools=['cobc', 'buildformat'],
+                        variables=vars,
+                        ENV=os.environ)
 
 Help(vars.GenerateHelpText(envGlobal))
 
-if envGlobal['coverage']:
-	envGlobal.Append(CCFLAGS=['--coverage'])
-	envGlobal.Append(LINKFLAGS=['--coverage'])
+envGlobal.Append(CPPDEFINES={'UNITTEST': 1})
 
-envGlobal.Append(CPPDEFINES={'UNITTEST':None})
+modulepath  = '../../..'
+buildfolder = os.path.join(modulepath, '../build')
 
 envGlobal['BASEPATH'] = os.path.abspath('.')
-envGlobal['BUILDPATH'] = os.path.abspath('../../build/test/unit')
+if envGlobal['coverage']:
+    envGlobal.Tool('hosted-gcc')
+    envGlobal.Tool('buildpath')
+    
+    envGlobal.Append(CCFLAGS='--coverage')
+    envGlobal.Append(LINKFLAGS='--coverage')
 
-modulepath = '../../..'
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'time/test/coverage'))
+else:
+    envGlobal.Tool('hosted-llvm')
+    envGlobal.Tool('buildpath')
+    
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'time/test/unit'))
+
 envGlobal.SConscript([
-		modulepath + '/utils/src/SConscript',
-        modulepath + '/utils/ext/SConscript',
-        modulepath + '/time/src/SConscript',
-    ], exports='envGlobal')
+        os.path.join(modulepath, 'utils/src/SConscript'),
+        os.path.join(modulepath, 'utils/ext/SConscript'),
+        os.path.join(modulepath, 'time/src/SConscript'),
+    ],
+    exports='envGlobal')
 
 env = envGlobal.Clone()
 
-# googletest uses some C++11 elements
+# googletest uses some C++0x features.
 env['CXXFLAGS_language'] = ['-std=c++0x']
-env['CCFLAGS_warning'] = [
-	'-W',
-	'-Wall',
-	'-Wextra',
-	'-Wformat',
-	'-Wno-unused-parameter',
-	'-Winit-self',
-	'-Wcast-qual',
-	'-Wcast-align',
-	'-Wshadow',
-	'-Wpointer-arith',
-	'-Wwrite-strings',
-	'-Wredundant-decls',
-	'-Wunused',
-	'-Wuninitialized',
-#	'-Wconversion',
-#	'-Wold-style-cast',
-#	'-Wundef',
-#	'-Wmissing-declarations',
-]
+
+env.RemoveFromList('CCFLAGS_warning', [
+    '-Wunused-parameter',
+    '-Wshadow',
+    '-Wconversion',
+    '-Wold-style-cast',
+    '-Wundef',
+    '-Wmissing-declarations',
+])
 
 env.Append(CPPPATH=['.'])
 env.Append(LIBS=['cobc_time', 'pthread', 'gmock-1.6.0'])

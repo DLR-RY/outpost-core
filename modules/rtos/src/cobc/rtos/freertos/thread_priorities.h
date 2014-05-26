@@ -17,7 +17,7 @@
  * and the overall lowest priority.
  */
 static inline uint8_t
-toFreeRtosPriority(uint8_t priority, std::size_t numPriorities)
+toFreeRtosPriority(uint8_t priority, size_t numPriorities)
 {
 	const uint8_t stepWidth = 256 / numPriorities;
 
@@ -32,7 +32,7 @@ toFreeRtosPriority(uint8_t priority, std::size_t numPriorities)
 }
 
 static inline uint8_t
-fromFreeRtosPriority(uint8_t priority, std::size_t numPriorities)
+fromFreeRtosPriority(uint8_t priority, size_t numPriorities)
 {
 	const uint8_t stepWidth = 256 / numPriorities;
 	const uint8_t offset = stepWidth / 2;

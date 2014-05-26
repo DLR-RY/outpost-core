@@ -82,8 +82,8 @@ namespace cobc
 			 *
 			 * @return	Number of bytes which could be read, maximal `length`
 			 */
-			virtual std::size_t
-			read(uint8_t* data, std::size_t length, time::Duration timeout = time::Duration::infinity()) = 0;
+			virtual size_t
+			read(uint8_t* data, size_t length, time::Duration timeout = time::Duration::infinity()) = 0;
 
 			/**
 			 * Write a block of bytes with timeout.
@@ -96,8 +96,8 @@ namespace cobc
 			 * 		Number of bytes to be write
 			 * @return  Number of bytes written.
 			 */
-			virtual std::size_t
-			write(const uint8_t* data, std::size_t length, time::Duration timeout = time::Duration::infinity()) = 0;
+			virtual size_t
+			write(const uint8_t* data, size_t length, time::Duration timeout = time::Duration::infinity()) = 0;
 
 			/**
 			 * Flush send/receive buffers.

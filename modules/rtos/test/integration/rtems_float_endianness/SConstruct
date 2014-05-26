@@ -16,7 +16,7 @@ envGlobal = Environment(toolpath=['../../../../../conf/scons/site_tools'],
                         ENV=os.environ)
 
 envGlobal['BASEPATH']  = os.path.abspath('.')
-envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/integration/rtems'))
+envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/integration/rtems_float_endianness'))
 
 envGlobal.SConscript([modulepath + '/utils/src/SConscript',
                       modulepath + '/time/src/SConscript',
@@ -36,11 +36,11 @@ env.Append(LIBPATH=['$BUILDPATH/lib'])
 files  = env.Glob('*.c')
 files += env.Glob('*.cpp')
 
-program = env.Program('rtems', files)
+program = env.Program('rtems_float_endianness', files)
 
 envGlobal.Alias('build', program)
-envGlobal.Alias('install', env.Install('bin', program))
+envGlobal.Alias('install', env.Install(program))
 envGlobal.Alias('size', env.Size(program))
 
-envGlobal.Default(['build', 'install', 'size'])
+envGlobal.Default(['build', 'size'])
 

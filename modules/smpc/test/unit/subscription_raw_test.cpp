@@ -27,22 +27,22 @@ public:
 	}
 
 	void
-	onReceiveData0(const void *, std::size_t) {
+	onReceiveData0(const void *, size_t) {
 		received[0] = true;
 	}
 
 	void
-	onReceiveData1(const void *, std::size_t) {
+	onReceiveData1(const void *, size_t) {
 		received[1] = true;
 	}
 
 	void
-	onReceiveData2(const void *, std::size_t) {
+	onReceiveData2(const void *, size_t) {
 		received[2] = true;
 	}
 
 	void
-	onReceiveData3(const void *, std::size_t) {
+	onReceiveData3(const void *, size_t) {
 		received[3] = true;
 	}
 

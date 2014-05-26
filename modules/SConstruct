@@ -3,9 +3,9 @@
 import os
 
 envGlobal = Environment(toolpath=['../conf/scons/site_tools'],
-				        tools=['cobc', 'arm-none-eabi', 'buildpath', 'buildformat'],
-				        OS='freertos',
-			        	ENV=os.environ)
+                        tools=['cobc', 'arm-none-eabi', 'buildpath', 'buildformat'],
+                        OS='freertos',
+                        ENV=os.environ)
 
 envGlobal['BASEPATH']  = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath('../build/library')
@@ -13,20 +13,20 @@ envGlobal['BUILDPATH'] = os.path.abspath('../build/library')
 modulepath = './'
 
 envGlobal.Append(CPPPATH=[
-	os.path.abspath(modulepath + 'rtos/ext')
+    os.path.abspath(modulepath + 'rtos/ext')
 ])
 
 envGlobal.SConscript(
-	[
-		modulepath + 'utils/src/SConscript',
-		modulepath + 'utils/ext/SConscript',
-		modulepath + 'time/src/SConscript',
-		modulepath + 'rtos/src/SConscript',
-		modulepath + 'smpc/src/SConscript',
-		modulepath + 'ccsds/src/SConscript',
-		modulepath + 'pus/src/SConscript',
-	],
-	exports='envGlobal')
+    [
+        modulepath + 'utils/src/SConscript',
+        modulepath + 'utils/ext/SConscript',
+        modulepath + 'time/src/SConscript',
+        modulepath + 'rtos/src/SConscript',
+        modulepath + 'smpc/src/SConscript',
+        modulepath + 'ccsds/src/SConscript',
+        modulepath + 'pus/src/SConscript',
+    ],
+    exports='envGlobal')
 
 env = envGlobal.Clone()
 
@@ -36,7 +36,7 @@ env.Append(LIBPATH=['$BUILDPATH/lib'])
 # Combine all libraries into one
 files = []
 for lib in env['LIBS']:
-	files.append(os.path.join('$BUILDPATH', 'lib', env['LIBPREFIX'] + lib + env['LIBSUFFIX'])) 
+    files.append(os.path.join('$BUILDPATH', 'lib', env['LIBPREFIX'] + lib + env['LIBSUFFIX'])) 
 
 envGlobal.Alias('library', env.StaticLibrary('cobc', files))
 

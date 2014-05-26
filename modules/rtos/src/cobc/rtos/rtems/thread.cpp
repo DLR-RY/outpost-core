@@ -82,6 +82,24 @@ cobc::rtos::Thread::~Thread()
 }
 
 // ----------------------------------------------------------------------------
+cobc::rtos::Thread::Identifier
+cobc::rtos::Thread::getIdentifier() const
+{
+    return tid;
+}
+
+cobc::rtos::Thread::Identifier
+cobc::rtos::Thread::getCurrentThreadIdentifier()
+{
+    rtems_id current;
+    if (rtems_task_ident(RTEMS_SELF, OBJECTS_SEARCH_LOCAL_NODE, &current) != RTEMS_SUCCESSFUL) {
+        return 0;
+    }
+
+    return current;
+}
+
+// ----------------------------------------------------------------------------
 void
 cobc::rtos::Thread::start()
 {

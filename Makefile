@@ -27,12 +27,22 @@
 
 MODULES = ccsds pus rtos smpc time utils
 
-# Color definitions
-# TODO disable these if the console is not able to output color
+# Check if the terminal supports colors
+COLORS := $(shell tput colors 2> /dev/null)
+
+ifeq ($(COLORS),)
+# The terminal doesn't support colors, don't output anything
+CINFO  = 
+COK    = 
+CERROR = 
+CEND   = 
+else
+# Color definitions (e.g. for bash 'tput colors' returns '8')
 CINFO  = \033[;0;33m
 COK    = \033[32;01m
 CERROR = \033[31;01m
 CEND   = \033[0m
+endif
 
 help:
 	@echo "Please use \`make <target>\` where <target> is one of"
@@ -65,6 +75,20 @@ test:
 		make -C modules/$$m test --no-print-directory || return 1 ; \
 	done
 	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
+
+coverage:
+	@for m in $(MODULES); do \
+		printf "$(CINFO)Run coverage analysis for module \"$$m\":$(CEND)\n" ; \
+		make -C modules/$$m coverage --no-print-directory || return 1 ; \
+	done
+	@printf "\n$(COK)[PASS] Coverage analysis done!$(CEND)\n"
+
+analyze:
+	@for m in $(MODULES); do \
+		printf "$(CINFO)Run static analysis with clang for module \"$$m\":$(CEND)\n" ; \
+		make -C modules/$$m analyze-clang --no-print-directory || return 1 ; \
+	done
+	@printf "\n$(COK)[PASS] Coverage analysis done!$(CEND)\n"
 
 style:
 	@for m in $(MODULES); do \

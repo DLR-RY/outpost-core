@@ -34,9 +34,22 @@ FILTER := *
 ifneq ($(JOBS),)
 MAKEJOBS=-j$(JOBS)
 else
-# Default is 3 parallel jobs. Use `MAKEJOBS=` to disable parallel build.
+# Default is 3 parallel jobs. Use `JOBS=` to disable parallel build.
 MAKEJOBS=-j3
 endif
+
+# Run clang static analyzer (see http://clang-analyzer.llvm.org/). Requires
+# that the unittests are configured in the SConstruct file to be build
+# with the 'hosted-clang' module.
+analyze-clang:
+	@PATH=$(PATH):~/Downloads/llvm/tools/clang/tools/scan-build \
+	scan-build --use-analyzer "$(shell which clang)" \
+	-o "../../build/$(MODULE)/test/analyze-clang" \
+	scons build $(MAKEJOBS) analyze=1 -Q -C test/unit
+
+analyze-clang-view:
+	PATH=$(PATH):~/Downloads/llvm/tools/clang/tools/scan-view \
+	scan-view "$(CURDIR)/../../build/$(MODULE)/test/analyze-clang/$(FOLDER)"
 
 # Run style checker
 style:
@@ -51,7 +64,10 @@ design:
 doc: doxygen design
 
 clean_default:
-	@$(MAKE) -C doc/design clean
 	@$(RM) -r doc/doxygen/api/*
 
-.PHONY: doxygen design doc clean_default
+distclean_default:
+	@scons build coverage=1 -Q -C test/unit -c
+
+.PHONY: doxygen design doc clean_default distclean_default
+

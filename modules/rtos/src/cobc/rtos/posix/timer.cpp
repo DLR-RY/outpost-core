@@ -33,7 +33,7 @@ cobc::rtos::Timer::start(time::Duration duration)
 	// nanoseconds
 	time.it_value.tv_nsec = static_cast<uint32_t>(nanoseconds % 1000000000);
 
-	std::memcpy(&interval, &time, sizeof(struct itimerspec));
+	memcpy(&interval, &time, sizeof(struct itimerspec));
 
 	if (timer_settime(tid, 0, &time, NULL) != 0) {
 		// Could not set the timer value

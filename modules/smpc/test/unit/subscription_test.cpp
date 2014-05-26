@@ -25,22 +25,22 @@ public:
 	}
 
 	void
-	onReceiveData0(const Data * data) {
+	onReceiveData0(const Data * /*data*/) {
 		received[0] = true;
 	}
 
 	void
-	onReceiveData1(const Data * data) {
+	onReceiveData1(const Data * /*data*/) {
 		received[1] = true;
 	}
 
 	void
-	onReceiveData2(const Data * data) {
+	onReceiveData2(const Data * /*data*/) {
 		received[2] = true;
 	}
 
 	void
-	onReceiveData3(const Data * data) {
+	onReceiveData3(const Data * /*data*/) {
 		received[3] = true;
 	}
 
