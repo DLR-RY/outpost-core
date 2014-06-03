@@ -4,6 +4,7 @@
  *
  * See the file "LICENSE" for the full license governing this code.
  */
+// ----------------------------------------------------------------------------
 
 #include "subscription_raw.h"
 
@@ -11,35 +12,35 @@ cobc::smpc::SubscriptionRaw * cobc::smpc::SubscriptionRaw::listOfAllSubscription
 
 cobc::smpc::SubscriptionRaw::~SubscriptionRaw()
 {
-	removeFromList(&SubscriptionRaw::listOfAllSubscriptions, this);
+    removeFromList(&SubscriptionRaw::listOfAllSubscriptions, this);
 
-	releaseAllSubscriptions();
-	connectSubscriptionsToTopics();
+    releaseAllSubscriptions();
+    connectSubscriptionsToTopics();
 }
 
 void
 cobc::smpc::SubscriptionRaw::connectSubscriptionsToTopics()
 {
-	TopicRaw::clearSubscriptions();
+    TopicRaw::clearSubscriptions();
 
-	for (SubscriptionRaw * it = listOfAllSubscriptions;
-			it != 0;
-			it = it->getNext())
-	{
-		it->nextTopicSubscription = it->topic->subscriptions;
-		it->topic->subscriptions = it;
-	}
+    for (SubscriptionRaw * it = listOfAllSubscriptions;
+            it != 0;
+            it = it->getNext())
+    {
+        it->nextTopicSubscription = it->topic->subscriptions;
+        it->topic->subscriptions = it;
+    }
 }
 
 void
 cobc::smpc::SubscriptionRaw::releaseAllSubscriptions()
 {
-	for (SubscriptionRaw * it = listOfAllSubscriptions;
-			it != 0;
-			it = it->getNext())
-	{
-		it->nextTopicSubscription = 0;
-	}
+    for (SubscriptionRaw * it = listOfAllSubscriptions;
+            it != 0;
+            it = it->getNext())
+    {
+        it->nextTopicSubscription = 0;
+    }
 
-	TopicRaw::clearSubscriptions();
+    TopicRaw::clearSubscriptions();
 }

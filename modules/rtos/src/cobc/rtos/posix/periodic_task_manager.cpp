@@ -16,59 +16,59 @@ using namespace cobc::rtos;
 
 /**
  *
- * @param[inout] time
- * @param[in]    duration
+ * \param[inout] time
+ * \param[in]    duration
  */
 static void
 addTime(timespec* time, cobc::time::Duration duration)
 {
-	uint64_t nanoseconds = duration.microseconds() * nanosecondsPerMicrosecond;
-	nanoseconds += time->tv_nsec;
+    uint64_t nanoseconds = duration.microseconds() * nanosecondsPerMicrosecond;
+    nanoseconds += time->tv_nsec;
 
-	// add seconds
-	time->tv_sec += static_cast<time_t>(nanoseconds / nanosecondsPerSecond);
+    // add seconds
+    time->tv_sec += static_cast<time_t>(nanoseconds / nanosecondsPerSecond);
 
-	// store remaining nanoseconds
-	time->tv_nsec = static_cast<uint32_t>(nanoseconds % nanosecondsPerSecond);
+    // store remaining nanoseconds
+    time->tv_nsec = static_cast<uint32_t>(nanoseconds % nanosecondsPerSecond);
 }
 
 /**
  * Compare two times.
  *
- * @param time
- * @param other
+ * \param time
+ * \param other
  *
- * @retval true time is bigger or equal than other
- * @retval false time is lower than other
+ * \retval true time is bigger or equal than other
+ * \retval false time is lower than other
  */
 static bool
 isBigger(timespec* time, timespec* other)
 {
-	if (time->tv_sec > other->tv_sec) {
-		return true;
-	}
-	else if (time->tv_sec == other->tv_sec) {
-		if (time->tv_nsec >= other->tv_nsec) {
-			return true;
-		}
-	}
+    if (time->tv_sec > other->tv_sec) {
+        return true;
+    }
+    else if (time->tv_sec == other->tv_sec) {
+        if (time->tv_nsec >= other->tv_nsec) {
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 static inline void
 getTime(timespec* time)
 {
-	int result = clock_gettime(CLOCK_MONOTONIC, time);
-	if (result != 0) {
-		FailureHandler::fatal(FailureCode::genericRuntimeError());
-	}
+    int result = clock_gettime(CLOCK_MONOTONIC, time);
+    if (result != 0) {
+        FailureHandler::fatal(FailureCode::genericRuntimeError());
+    }
 }
 
 PeriodicTaskManager::PeriodicTaskManager() :
-	mutex(),
-	timerRunning(false),
-	nextWakeTime()
+    mutex(),
+    timerRunning(false),
+    nextWakeTime()
 {
 }
 
@@ -79,70 +79,70 @@ PeriodicTaskManager::~PeriodicTaskManager()
 PeriodicTaskManager::Status::Type
 PeriodicTaskManager::nextPeriod(time::Duration period)
 {
-	MutexGuard lock(mutex);
-	Status::Type status = Status::running;
+    MutexGuard lock(mutex);
+    Status::Type status = Status::running;
 
-	if (timerRunning)
-	{
-		struct timespec currentTime;
-		getTime(&currentTime);
+    if (timerRunning)
+    {
+        struct timespec currentTime;
+        getTime(&currentTime);
 
-		// Check if the time is in the current period
-		if (isBigger(&currentTime, &nextWakeTime)) {
-			status = Status::timeout;
-		}
+        // Check if the time is in the current period
+        if (isBigger(&currentTime, &nextWakeTime)) {
+            status = Status::timeout;
+        }
 
-		int result;
-		do {
-			result = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &nextWakeTime, NULL);
+        int result;
+        do {
+            result = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &nextWakeTime, NULL);
 
-			// EINTR is returned when the sleep is interrupted by a signal
-			// handler. In this case the sleep can be restarted.
-			//
-			// Any other result unequal zero is an failure which can not be
-			// resolved here and therefore triggers the fatal error handler.
-			if (result != 0 && result != EINTR) {
-				FailureHandler::fatal(FailureCode::genericRuntimeError());
-			}
-		} while (result != 0);
-	}
-	else {
-		// period is started now, no need to wait
-		clock_gettime(CLOCK_MONOTONIC, &nextWakeTime);
-		timerRunning = true;
-	}
+            // EINTR is returned when the sleep is interrupted by a signal
+            // handler. In this case the sleep can be restarted.
+            //
+            // Any other result unequal zero is an failure which can not be
+            // resolved here and therefore triggers the fatal error handler.
+            if (result != 0 && result != EINTR) {
+                FailureHandler::fatal(FailureCode::genericRuntimeError());
+            }
+        } while (result != 0);
+    }
+    else {
+        // period is started now, no need to wait
+        clock_gettime(CLOCK_MONOTONIC, &nextWakeTime);
+        timerRunning = true;
+    }
 
-	// calculate the next wake-up time
-	addTime(&nextWakeTime, period);
+    // calculate the next wake-up time
+    addTime(&nextWakeTime, period);
 
-	return status;
+    return status;
 }
 
 PeriodicTaskManager::Status::Type
 PeriodicTaskManager::status()
 {
-	MutexGuard lock(mutex);
+    MutexGuard lock(mutex);
 
-	if (!timerRunning) {
-		return Status::idle;
-	}
-	else {
-		struct timespec currentTime;
-		getTime(&currentTime);
+    if (!timerRunning) {
+        return Status::idle;
+    }
+    else {
+        struct timespec currentTime;
+        getTime(&currentTime);
 
-		// Check if the time is in the current period
-		if (isBigger(&currentTime, &nextWakeTime)) {
-			return Status::timeout;
-		}
-		else {
-			return Status::running;
-		}
-	}
+        // Check if the time is in the current period
+        if (isBigger(&currentTime, &nextWakeTime)) {
+            return Status::timeout;
+        }
+        else {
+            return Status::running;
+        }
+    }
 }
 
 void
 PeriodicTaskManager::cancel()
 {
-	MutexGuard lock(mutex);
-	timerRunning = false;
+    MutexGuard lock(mutex);
+    timerRunning = false;
 }

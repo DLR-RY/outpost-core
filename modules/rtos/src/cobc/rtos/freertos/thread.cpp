@@ -23,52 +23,52 @@ static const size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTA
 void
 cobc::rtos::Thread::wrapper(void* object)
 {
-	Thread* thread = reinterpret_cast<Thread *>(object);
-	thread->run();
+    Thread* thread = reinterpret_cast<Thread *>(object);
+    thread->run();
 
-	// Returning from a FreeRTOS thread is a fatal error, nothing more to
-	// do here than call the fatal error handler.
-	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
+    // Returning from a FreeRTOS thread is a fatal error, nothing more to
+    // do here than call the fatal error handler.
+    rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
 }
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char * name) :
-	handle(0),
-	priority(priority),
-	stackSize(stack),
-	name(name)
+    handle(0),
+    priority(priority),
+    stackSize(stack),
+    name(name)
 {
-	if (stackSize < minimumStackSize) {
-		stackSize = minimumStackSize;
-	}
+    if (stackSize < minimumStackSize) {
+        stackSize = minimumStackSize;
+    }
 }
 
 cobc::rtos::Thread::~Thread()
 {
-	if (handle != 0) {
-		vTaskDelete(handle);
-	}
+    if (handle != 0) {
+        vTaskDelete(handle);
+    }
 }
 
 // ----------------------------------------------------------------------------
 void
 cobc::rtos::Thread::start()
 {
-	if (handle == 0)
-	{
-		int status = xTaskCreate(
-				&Thread::wrapper,
-				(const signed char*) name,
-				(stackSize / sizeof(portSTACK_TYPE)) + 1,
-				this,
-				static_cast<unsigned portBASE_TYPE>(toFreeRtosPriority(priority, configMAX_PRIORITIES)),
-				//3,
-				&handle);
+    if (handle == 0)
+    {
+        int status = xTaskCreate(
+                &Thread::wrapper,
+                (const signed char*) name,
+                (stackSize / sizeof(portSTACK_TYPE)) + 1,
+                this,
+                static_cast<unsigned portBASE_TYPE>(toFreeRtosPriority(priority, configMAX_PRIORITIES)),
+                //3,
+                &handle);
 
-		if (status != pdPASS) {
-			rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
-		}
-	}
+        if (status != pdPASS) {
+            rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        }
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -93,27 +93,27 @@ cobc::rtos::Thread::getCurrentThreadIdentifier()
 void
 cobc::rtos::Thread::setPriority(uint8_t priority)
 {
-	vTaskPrioritySet(handle, toFreeRtosPriority(priority, configMAX_PRIORITIES));
+    vTaskPrioritySet(handle, toFreeRtosPriority(priority, configMAX_PRIORITIES));
 }
 
 uint8_t
 cobc::rtos::Thread::getPriority() const
 {
-	return fromFreeRtosPriority(uxTaskPriorityGet(handle), configMAX_PRIORITIES);
+    return fromFreeRtosPriority(uxTaskPriorityGet(handle), configMAX_PRIORITIES);
 }
 
 // ----------------------------------------------------------------------------
 void
 cobc::rtos::Thread::yield()
 {
-	taskYIELD();
+    taskYIELD();
 }
 
 // ----------------------------------------------------------------------------
 void
 cobc::rtos::Thread::sleep(::cobc::time::Duration duration)
 {
-	vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000);
+    vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000);
 }
 
 // ----------------------------------------------------------------------------
@@ -121,9 +121,9 @@ void
 cobc::rtos::Thread::startScheduler()
 {
 #if !defined(GOMSPACE)
-	vTaskStartScheduler();
-	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
+    vTaskStartScheduler();
+    rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
 #else
-	rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
+    rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
 #endif
 }

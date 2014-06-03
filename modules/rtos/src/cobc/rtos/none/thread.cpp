@@ -12,11 +12,11 @@
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t priority, size_t stack,
-		const char * name)
+        const char * name)
 {
-	(void) priority;
-	(void) stack;
-	(void) name;
+    (void) priority;
+    (void) stack;
+    (void) name;
 }
 
 cobc::rtos::Thread::~Thread()
@@ -46,11 +46,11 @@ cobc::rtos::Thread::getCurrentThreadIdentifier()
 void
 cobc::rtos::Thread::setPriority(uint8_t priority)
 {
-	(void) priority;
+    (void) priority;
 }
 
 uint8_t
 cobc::rtos::Thread::getPriority() const
 {
-	return 0;
+    return 0;
 }

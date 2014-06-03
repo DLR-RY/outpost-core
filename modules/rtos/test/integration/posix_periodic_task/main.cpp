@@ -17,8 +17,9 @@ static TimingTest timingTest;
 int
 main(void)
 {
-	timingTest.start();
-	sleep(10);
+    timingTest.start();
+    sleep(10);
 
-	return 0;
+    return 0;
 }
+

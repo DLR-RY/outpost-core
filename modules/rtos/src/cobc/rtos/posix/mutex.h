@@ -4,6 +4,7 @@
  *
  * See the file "LICENSE" for the full license governing this code.
  */
+// ----------------------------------------------------------------------------
 
 #ifndef COBC_RTOS_POSIX_MUTEX_HPP
 #define COBC_RTOS_POSIX_MUTEX_HPP
@@ -14,76 +15,78 @@
 
 namespace cobc
 {
-	namespace rtos
-	{
-		/**
-		 * Mutex
-		 *
-		 * @author	Fabian Greif <fabian.greif@dlr.de>
-		 */
-		class Mutex
-		{
-		public:
-			inline
-			Mutex()
-			{
-				pthread_mutex_init(&mutex, NULL);
-			}
+namespace rtos
+{
 
-			inline
-			~Mutex()
-			{
-				pthread_mutex_destroy(&mutex);
-			}
+/**
+ * Mutex
+ *
+ * \author    Fabian Greif
+ */
+class Mutex
+{
+public:
+    inline
+    Mutex()
+    {
+        pthread_mutex_init(&mutex, NULL);
+    }
 
-			/**
-			 * Acquire the mutex.
-			 *
-			 * This function may block if the mutex is currently held by an
-			 * other thread.
-			 *
-			 * @returns	`true` if the mutex could be acquired.
-			 */
-			inline bool
-			acquire()
-			{
-				return (pthread_mutex_lock(&mutex) == 0);
-			}
+    inline
+    ~Mutex()
+    {
+        pthread_mutex_destroy(&mutex);
+    }
 
-			/**
-			 * Acquire the mutex.
-			 *
-			 * Same as acquire() but blocks only for `timeout` milliseconds.
-			 *
-			 * @param	timeout
-			 * 		Timeout in milliseconds.
-			 *
-			 * @return	`true` if the mutex could be acquired, `false` in
-			 * 			case of an error or timeout.
-			 */
-			bool
-			acquire(time::Duration timeout);
+    /**
+     * Acquire the mutex.
+     *
+     * This function may block if the mutex is currently held by an
+     * other thread.
+     *
+     * \returns    \c true if the mutex could be acquired.
+     */
+    inline bool
+    acquire()
+    {
+        return (pthread_mutex_lock(&mutex) == 0);
+    }
 
-			/**
-			 * Release the mutex.
-			 */
-			inline void
-			release()
-			{
-				pthread_mutex_unlock(&mutex);
-			}
+    /**
+     * Acquire the mutex.
+     *
+     * Same as acquire() but blocks only for \p timeout milliseconds.
+     *
+     * \param    timeout
+     *         Timeout in milliseconds.
+     *
+     * \return    \c true if the mutex could be acquired, \c false in
+     *             case of an error or timeout.
+     */
+    bool
+    acquire(time::Duration timeout);
 
-		private:
-			// disable copy constructor
-			Mutex(const Mutex& other);
+    /**
+     * Release the mutex.
+     */
+    inline void
+    release()
+    {
+        pthread_mutex_unlock(&mutex);
+    }
 
-			// disable assignment operator
-			Mutex&
-			operator = (const Mutex& other);
+private:
+    // disable copy constructor
+    Mutex(const Mutex& other);
 
-			pthread_mutex_t mutex;
-		};
-	}
+    // disable assignment operator
+    Mutex&
+    operator = (const Mutex& other);
+
+    pthread_mutex_t mutex;
+};
+
+}
 }
 
 #endif // COBC_RTOS_POSIX_MUTEX_HPP

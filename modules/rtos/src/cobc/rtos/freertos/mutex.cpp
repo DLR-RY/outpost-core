@@ -12,34 +12,34 @@
 // ----------------------------------------------------------------------------
 cobc::rtos::Mutex::Mutex()
 {
-	handle = xSemaphoreCreateMutex();
+    handle = xSemaphoreCreateMutex();
 
-	if (handle == 0) {
-		rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
-	}
+    if (handle == 0) {
+        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    }
 }
 
 cobc::rtos::Mutex::~Mutex()
 {
-	vQueueDelete(handle);
+    vQueueDelete(handle);
 }
 
 // ----------------------------------------------------------------------------
 bool
 cobc::rtos::Mutex::acquire()
 {
-	// wait indefinitely
-	return (xSemaphoreTake(handle, portMAX_DELAY) == pdTRUE);
+    // wait indefinitely
+    return (xSemaphoreTake(handle, portMAX_DELAY) == pdTRUE);
 }
 
 bool
 cobc::rtos::Mutex::acquire(time::Duration timeout)
 {
-	return (xSemaphoreTake(handle, timeout.milliseconds() * configTICK_RATE_HZ / 1000) == pdTRUE);
+    return (xSemaphoreTake(handle, timeout.milliseconds() * configTICK_RATE_HZ / 1000) == pdTRUE);
 }
 
 void
 cobc::rtos::Mutex::release()
 {
-	xSemaphoreGive(handle);
+    xSemaphoreGive(handle);
 }

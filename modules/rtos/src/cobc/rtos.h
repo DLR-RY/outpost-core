@@ -4,13 +4,14 @@
  *
  * See the file "LICENSE" for the full license governing this code.
  */
+// ----------------------------------------------------------------------------
 
 #ifndef COBC_RTOS_H
 #define COBC_RTOS_H
 
 /**
- * @defgroup	rtos	RTOS Wrappers
- * @brief		Real Time Operating System
+ * \defgroup    rtos    RTOS Wrappers
+ * \brief        Real Time Operating System
  *
  * This library provide an operating system abstraction layer.
  *

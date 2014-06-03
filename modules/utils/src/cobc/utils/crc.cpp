@@ -13,17 +13,17 @@ using namespace cobc;
 void
 Crc16Ccitt::update(uint8_t data)
 {
-	crc = (crc << 8) ^ crcTable[(crc >> 8) ^ data];
+    crc = (crc << 8) ^ crcTable[(crc >> 8) ^ data];
 }
 
 uint16_t
 Crc16Ccitt::calculate(const uint8_t * data, size_t length)
 {
-	Crc16Ccitt crc;
-	for (size_t i = 0; i < length; ++i)
-	{
-		crc.update(data[i]);
-	}
+    Crc16Ccitt crc;
+    for (size_t i = 0; i < length; ++i)
+    {
+        crc.update(data[i]);
+    }
 
-	return crc.getValue();
+    return crc.getValue();
 }

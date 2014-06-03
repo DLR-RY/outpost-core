@@ -6,12 +6,12 @@
  */
 // ----------------------------------------------------------------------------
 /**
- * @file
- * @author Fabian Greif
+ * \file
+ * \author Fabian Greif
  *
- * @copyright German Aerospace Center (DLR)
+ * \copyright German Aerospace Center (DLR)
  *
- * @brief FreeRTOS example for the STM32F4Discovery Board.
+ * \brief FreeRTOS example for the STM32F4Discovery Board.
  *
  * Uses the xpcc library to provide the STM32F4xx hardware drivers.
  */
@@ -28,25 +28,25 @@ using namespace xpcc::stm32;
 static bool
 initClock()
 {
-	// use external 8MHz crystal
-	if (!Clock::enableHse(Clock::HseConfig::HSE_CRYSTAL)) {
-		return false;
-	}
+    // use external 8MHz crystal
+    if (!Clock::enableHse(Clock::HseConfig::HSE_CRYSTAL)) {
+        return false;
+    }
 
-	Clock::enablePll(Clock::PllSource::PLL_HSE, 4, 168);
-	return Clock::switchToPll();
+    Clock::enablePll(Clock::PllSource::PLL_HSE, 4, 168);
+    return Clock::switchToPll();
 }
 
 static void
 failureHandler(cobc::rtos::FailureCode code)
 {
-	(void) code;
+    (void) code;
 
-	LedRed::set();
+    LedRed::set();
 
-	while (1) {
-		// wait forever
-	}
+    while (1) {
+        // wait forever
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -56,19 +56,19 @@ static TimingTest timingTest;
 int
 main(void)
 {
-	initClock();
+    initClock();
 
-	LedOrange::setOutput(xpcc::gpio::LOW);
-	LedGreen::setOutput(xpcc::gpio::LOW);
-	LedRed::setOutput(xpcc::gpio::LOW);
-	LedBlue::setOutput(xpcc::gpio::LOW);
+    LedOrange::setOutput(xpcc::gpio::LOW);
+    LedGreen::setOutput(xpcc::gpio::LOW);
+    LedRed::setOutput(xpcc::gpio::LOW);
+    LedBlue::setOutput(xpcc::gpio::LOW);
 
-	cobc::rtos::FailureHandler::setFailureHandlerFunction(&failureHandler);
+    cobc::rtos::FailureHandler::setFailureHandlerFunction(&failureHandler);
 
-	timingTest.start();
+    timingTest.start();
 
-	LedGreen::set();
+    LedGreen::set();
 
-	xpcc::rtos::Scheduler::schedule();
-	LedRed::set();
+    xpcc::rtos::Scheduler::schedule();
+    LedRed::set();
 }

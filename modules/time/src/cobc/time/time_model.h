@@ -4,6 +4,7 @@
  *
  * See the file "LICENSE" for the full license governing this code.
  */
+// ----------------------------------------------------------------------------
 
 #ifndef COBC_TIME_TIME_MODEL_H
 #define COBC_TIME_TIME_MODEL_H
@@ -12,21 +13,23 @@
 
 namespace cobc
 {
-	namespace time
-	{
-		/**
-		 * Time model used to convert between different time representations.
-		 *
-		 * @ingroup	time
-		 * @author	Fabian Greif <fabian.greif@dlr.de>
-		 */
-		class TimeModel
-		{
-		public:
-			static TimePoint
-			endOfEpoch();
-		};
-	}
+namespace time
+{
+
+/**
+ * Time model used to convert between different time representations.
+ *
+ * \ingroup time
+ * \author  Fabian Greif
+ */
+class TimeModel
+{
+public:
+    static TimePoint
+    endOfEpoch();
+};
+
+}
 }
 
 #endif // COBC_TIME_TIME_MODEL_H

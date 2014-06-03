@@ -9,8 +9,8 @@
 #define COBC_TIME_H
 
 /**
- * @defgroup	time
- * @brief		Time management
+ * \defgroup    time
+ * \brief        Time management
  *
  * In the satellite there are different time representations. TM/TC use
  * CUC (CCSDS Unsegmented time Code) and UTC encoded as CDS (CCSDS Day
@@ -32,12 +32,12 @@
 
 namespace cobc
 {
-	/**
-	 * @ingroup	time
-	 */
-	namespace time
-	{
-	}
+    /**
+     * \ingroup    time
+     */
+    namespace time
+    {
+    }
 }
 
 #endif // COBC_TIME_H

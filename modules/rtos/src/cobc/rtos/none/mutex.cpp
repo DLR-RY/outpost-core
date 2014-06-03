@@ -12,25 +12,25 @@
 // ----------------------------------------------------------------------------
 cobc::rtos::Mutex::Mutex()
 {
-	// TODO
+    // TODO
 }
 
 cobc::rtos::Mutex::~Mutex()
 {
-	// TODO
+    // TODO
 }
 
 // ----------------------------------------------------------------------------
 bool
 cobc::rtos::Mutex::acquire()
 {
-	// TODO
-	return false;
+    // TODO
+    return false;
 }
 
 bool
 cobc::rtos::Mutex::acquire(time::Duration timeout)
 {
-	// TODO
-	return false;
+    // TODO
+    return false;
 }

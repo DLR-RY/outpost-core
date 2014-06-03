@@ -9,8 +9,8 @@
 #define COBC_SMPC_H
 
 /**
- * @defgroup	smpc	SMPC
- * @brief		Simple Message Passing Channel
+ * \defgroup    smpc    SMPC
+ * \brief        Simple Message Passing Channel
  *
  *
  */
@@ -23,4 +23,4 @@
 #include "smpc/subscription.h"
 #include "smpc/topic.h"
 
-#endif	// COBC_SMPC_H
+#endif    // COBC_SMPC_H

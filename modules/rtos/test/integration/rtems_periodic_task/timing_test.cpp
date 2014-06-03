@@ -12,32 +12,32 @@
 using namespace cobc;
 
 TimingTest::TimingTest() :
-	rtos::Thread(128, 4096, "TTet")
+    rtos::Thread(128, 4096, "TTet")
 {
 }
 
 void
 TimingTest::run()
 {
-	rtos::PeriodicTaskManager period;
+    rtos::PeriodicTaskManager period;
 
-	bool state = true;
-	while (1)
-	{
-		if (period.nextPeriod(time::Milliseconds(500)) == rtos::PeriodicTaskManager::Status::timeout) {
-			// Period missed
-			break;
-		}
+    bool state = true;
+    while (1)
+    {
+        if (period.nextPeriod(time::Milliseconds(500)) == rtos::PeriodicTaskManager::Status::timeout) {
+            // Period missed
+            break;
+        }
 
-		state = !state;
+        state = !state;
 
-		if (state) {
-			nexys3::SevenSegment::write(0, 'A');
-		}
-		else {
-			nexys3::SevenSegment::write(0, 'B');
-		}
-	}
+        if (state) {
+            nexys3::SevenSegment::write(0, 'A');
+        }
+        else {
+            nexys3::SevenSegment::write(0, 'B');
+        }
+    }
 
-	// DO SOMETHING
+    // DO SOMETHING
 }

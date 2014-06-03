@@ -7986,7 +7986,7 @@ bool IsInSet(char ch, const char* str) {
 // current locale.
 bool IsAsciiDigit(char ch) { return '0' <= ch && ch <= '9'; }
 bool IsAsciiPunct(char ch) {
-  return IsInSet(ch, "^-!\"#$%&'()*+,./:;<=>?@[\\]_`{|}~");
+  return IsInSet(ch, "^-!\"#$%&'()*+,./:;<=>?@[\\]_{|}~");
 }
 bool IsRepeat(char ch) { return IsInSet(ch, "?*+"); }
 bool IsAsciiWhiteSpace(char ch) { return IsInSet(ch, " \f\n\r\t\v"); }

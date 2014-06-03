@@ -4,6 +4,7 @@
  *
  * See the file "LICENSE" for the full license governing this code.
  */
+// ----------------------------------------------------------------------------
 
 #ifndef COBC_RTOS_TIMER_H
 #define COBC_RTOS_TIMER_H
@@ -11,13 +12,13 @@
 #include "detect.h"
 
 #if COBC_RTOS == COBC_RTOS_NONE
-#	include "none/timer.h"
+#    include "none/timer.h"
 #elif COBC_RTOS == COBC_RTOS_RTEMS
-#	include "rtems/timer.h"
+#    include "rtems/timer.h"
 #elif COBC_RTOS == COBC_RTOS_FREERTOS
-#	include "freertos/timer.h"
+#    include "freertos/timer.h"
 #elif COBC_RTOS == COBC_RTOS_POSIX
-#	include "posix/timer.h"
+#    include "posix/timer.h"
 #endif
 
 #endif // COBC_RTOS_TIMER_H

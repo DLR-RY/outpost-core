@@ -96,6 +96,14 @@ style:
 		make -C modules/$$m style --no-print-directory ; \
 	done
 
+metric:
+	for m in $(MODULES); do \
+		printf "$(CINFO)Generating code metrics for module \"$$m\" (sources):$(CEND)\n" ; \
+		sloccount --duplicates --wide modules/$$m/src ; \
+		printf "$(CINFO)Generating code metrics for module \"$$m\" (unittests):$(CEND)\n" ; \
+		sloccount --duplicates --wide modules/$$m/test/unit ; \
+	done
+
 clean :
 	@for m in $(MODULES); do \
 		printf "$(CINFO)Clean module \"$$m\":$(CEND)\n" ; \

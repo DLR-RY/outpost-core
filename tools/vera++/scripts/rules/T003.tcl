@@ -28,6 +28,8 @@ foreach f [getSourceFileNames] {
         if {$state == "keyword"} {
             if {$tokenName == "space" && $tokenValue == " "} {
                 set state "space"
+            } elseif {$tokenName == "newline"} {
+            	set state "other"
             } else {
                 report $f $lineNumber "keyword \'${keywordValue}\' not followed by a single space"
                 set state "other"

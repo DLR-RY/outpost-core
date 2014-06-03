@@ -4,6 +4,13 @@
  *
  * See the file "LICENSE" for the full license governing this code.
  */
+// ----------------------------------------------------------------------------
+/**
+ * \file
+ * \brief   Failure code and failure handler class
+ *
+ * \author  Fabian Greif
+ */
 
 #ifndef COBC_RTOS_FAILURE_H
 #define COBC_RTOS_FAILURE_H
@@ -12,79 +19,81 @@
 
 namespace cobc
 {
-	namespace rtos
-	{
-		class FailureCode
-		{
-		public:
-			inline static FailureCode
-			resourceAllocationFailed()
-			{
-				return FailureCode(0x0100);
-			}
+namespace rtos
+{
 
-			inline static FailureCode
-			returnFromThread()
-			{
-				return FailureCode(0x01ff);
-			}
+class FailureCode
+{
+public:
+    inline static FailureCode
+    resourceAllocationFailed()
+    {
+        return FailureCode(0x0100);
+    }
 
-			inline static FailureCode
-			genericRuntimeError()
-			{
-				return FailureCode(0x0200);
-			}
+    inline static FailureCode
+    returnFromThread()
+    {
+        return FailureCode(0x01FF);
+    }
 
-			inline uint32_t
-			getCode() const
-			{
-				return code;
-			}
+    inline static FailureCode
+    genericRuntimeError()
+    {
+        return FailureCode(0x0200);
+    }
 
-		protected:
-			inline FailureCode(uint32_t code) :
-				code(code)
-			{
-			}
+    inline uint32_t
+    getCode() const
+    {
+        return code;
+    }
 
-		private:
-			const uint32_t code;
-		};
+protected:
+    inline FailureCode(uint32_t code) :
+        code(code)
+    {
+    }
 
-		class FailureHandler
-		{
-		public:
-			typedef void (*Handler)(FailureCode code);
+private:
+    const uint32_t code;
+};
 
-			/**
-			 * Fatal failure has occurred which makes a continuation of the
-			 * current execution path impossible.
-			 *
-			 * If compiled using RTEMS this function will execute the RTEMS
-			 * Fatal Error Manager.
-			 *
-			 * @warning This function WILL NOT RETURN!
-			 *
-			 * @param code
-			 * 		Failure code to identify the failure.
-			 */
-			static void
-			fatal(FailureCode code);
+class FailureHandler
+{
+public:
+    typedef void (*Handler)(FailureCode code);
 
-			/**
-			 * Set a new failure handler.
-			 *
-			 * @warning This function must not return!
-			 *
-			 * @param newHandler
-			 */
-			static void
-			setFailureHandlerFunction(Handler newHandler);
+    /**
+     * Fatal failure has occurred which makes a continuation of the
+     * current execution path impossible.
+     *
+     * If compiled using RTEMS this function will execute the RTEMS
+     * Fatal Error Manager.
+     *
+     * \warning This function WILL NOT RETURN!
+     *
+     * \param code
+     *         Failure code to identify the failure.
+     */
+    static void
+    fatal(FailureCode code);
 
-		protected:
-			static Handler handler;
-		};
-	}
+    /**
+     * Set a new failure handler.
+     *
+     * \warning This function must not return!
+     *
+     * \param newHandler
+     */
+    static void
+    setFailureHandlerFunction(Handler newHandler);
+
+protected:
+    static Handler handler;
+};
+
+}
 }
 
 #endif // COBC_RTOS_FAILURE_H

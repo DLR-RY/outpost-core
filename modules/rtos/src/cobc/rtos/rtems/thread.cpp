@@ -14,71 +14,70 @@
 void
 cobc::rtos::Thread::wrapper(rtems_task_argument object)
 {
-	Thread* thread = reinterpret_cast<Thread *>(object);
-	thread->run();
+    Thread* thread = reinterpret_cast<Thread *>(object);
+    thread->run();
 
-	// Returning from a RTEMS thread is a fatal error, nothing more to
-	// do here than call the fatal error handler.
-	rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
+    // Returning from a RTEMS thread is a fatal error, nothing more to
+    // do here than call the fatal error handler.
+    rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
 }
 
 // ----------------------------------------------------------------------------
-/*
- * RTEMS supports priorities between 1..255. Lower values represent a higher
- * priority, 1 is the highest and 255 the lowest priority.
- *
- * These RTEMS are priorities are mapped to 0..255 priority map with 0
- * representing the lowest priority and 255 the highest. Because RTEMS
- * has only 255 steps, both 0 and 1 represent the same priority.
- */
+// RTEMS supports priorities between 1..255. Lower values represent a higher
+// priority, 1 is the highest and 255 the lowest priority.
+//
+// These RTEMS are priorities are mapped to 0..255 priority map with 0
+// representing the lowest priority and 255 the highest. Because RTEMS
+// has only 255 steps, both 0 and 1 represent the same priority.
+//
 static uint8_t
 toRtemsPriority(uint8_t priority)
 {
-	if (priority == 0) {
-		return 255;
-	}
+    if (priority == 0) {
+        return 255;
+    }
 
-	return (256 - static_cast<int16_t>(priority));
+    return (256 - static_cast<int16_t>(priority));
 }
 
 static uint8_t
 fromRtemsPriority(uint8_t rtemsPriority)
 {
-	// a RTEMS priority of 0 is invalid and not checked here.
-	return (256 - static_cast<int16_t>(rtemsPriority));
+    // a RTEMS priority of 0 is invalid and not checked here.
+    return (256 - static_cast<int16_t>(rtemsPriority));
 }
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t priority, size_t stack,
-		const char * name)
+        const char * name)
 {
-	rtems_name taskName = 0;
-	if (name == 0)
-	{
-		// taskName = 0 is not allowed.
-		taskName = rtems_build_name('T', 'H', 'D', '-');
-	}
-	else {
-		for (uint_fast8_t i = 0; i < 4; ++i) {
-			if (name != 0) {
-				taskName |= *name++;
-			}
-			taskName <<= 8;
-		}
-	}
+    rtems_name taskName = 0;
+    if (name == 0)
+    {
+        // taskName = 0 is not allowed.
+        taskName = rtems_build_name('T', 'H', 'D', '-');
+    }
+    else {
+        for (uint_fast8_t i = 0; i < 4; ++i) {
+            if (name != 0) {
+                taskName |= *name++;
+            }
+            taskName <<= 8;
+        }
+    }
 
-	rtems_task_priority rtemsPriority = toRtemsPriority(priority);
-	rtems_status_code status = rtems_task_create(taskName, rtemsPriority, stack,
-			RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &tid);
+    rtems_task_priority rtemsPriority = toRtemsPriority(priority);
+    rtems_status_code status = rtems_task_create(taskName, rtemsPriority, stack,
+            RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &tid);
 
-	if (status != RTEMS_SUCCESSFUL) {
-		rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
-	}
+    if (status != RTEMS_SUCCESSFUL) {
+        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    }
 }
 
 cobc::rtos::Thread::~Thread()
 {
-	rtems_task_delete(tid);
+    rtems_task_delete(tid);
 }
 
 // ----------------------------------------------------------------------------
@@ -103,22 +102,22 @@ cobc::rtos::Thread::getCurrentThreadIdentifier()
 void
 cobc::rtos::Thread::start()
 {
-	rtems_task_start(tid, wrapper, reinterpret_cast<rtems_task_argument>(this));
+    rtems_task_start(tid, wrapper, reinterpret_cast<rtems_task_argument>(this));
 }
 
 // ----------------------------------------------------------------------------
 void
 cobc::rtos::Thread::setPriority(uint8_t priority)
 {
-	rtems_task_priority old;
-	rtems_task_set_priority(tid, toRtemsPriority(priority), &old);
+    rtems_task_priority old;
+    rtems_task_set_priority(tid, toRtemsPriority(priority), &old);
 }
 
 uint8_t
 cobc::rtos::Thread::getPriority() const
 {
-	rtems_task_priority priority;
-	rtems_task_set_priority(tid, RTEMS_CURRENT_PRIORITY, &priority);
+    rtems_task_priority priority;
+    rtems_task_set_priority(tid, RTEMS_CURRENT_PRIORITY, &priority);
 
-	return fromRtemsPriority(priority);
+    return fromRtemsPriority(priority);
 }

@@ -7,11 +7,11 @@
 class TimingTest : public cobc::rtos::Thread
 {
 public:
-	TimingTest();
+    TimingTest();
 
 private:
-	virtual void
-	run();
+    virtual void
+    run();
 };
 
 #endif // TIMING_TEST_H

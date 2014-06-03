@@ -10,7 +10,7 @@
 // Configuration information
 #define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
-#define	CONFIGURE_APPLICATION_NEEDS_TIMER_DRIVER
+#define    CONFIGURE_APPLICATION_NEEDS_TIMER_DRIVER
 
 // ----------------------------------------------------------------------------
 // Tasks
@@ -19,7 +19,7 @@
 #define CONFIGURE_EXTRA_TASK_STACKS         (3 * RTEMS_MINIMUM_STACK_SIZE)
 
 // Configure start task
-#define	CONFIGURE_INIT_TASK_ENTRY_POINT		task_system_init
+#define    CONFIGURE_INIT_TASK_ENTRY_POINT        task_system_init
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,26 +33,26 @@ rtems_task task_system_init (rtems_task_argument );
 extern const char* bsp_boot_cmdline;
 #define CONFIGURE_INIT_TASK_ARGUMENTS     ((rtems_task_argument) &bsp_boot_cmdline)
 
-#define	CONFIGURE_MICROSECONDS_PER_TICK		1000
-#define	CONFIGURE_TICKS_PER_TIMESLICE		20
+#define    CONFIGURE_MICROSECONDS_PER_TICK        1000
+#define    CONFIGURE_TICKS_PER_TIMESLICE        20
 
 // ----------------------------------------------------------------------------
 // Mutex/Semaphores
 // C++ requires at least one Semaphore for the constructor calls and the
 // initialization of static member variables.
-#define	CONFIGURE_MAXIMUM_SEMAPHORES		5
-#define	CONFIGURE_MAXIMUM_POSIX_MUTEXES		4
+#define    CONFIGURE_MAXIMUM_SEMAPHORES        5
+#define    CONFIGURE_MAXIMUM_POSIX_MUTEXES        4
 
 // ----------------------------------------------------------------------------
 // Timer support
-#define	CONFIGURE_MAXIMUM_TIMERS			4
-//#define	CONFIGURE_MAXIMUM_POSIX_TIMERS		4
+#define    CONFIGURE_MAXIMUM_TIMERS            4
+//#define    CONFIGURE_MAXIMUM_POSIX_TIMERS        4
 
-#define CONFIGURE_MAXIMUM_PERIODS			4
+#define CONFIGURE_MAXIMUM_PERIODS            4
 
 // ----------------------------------------------------------------------------
 // Enable task stack checker extension
-//#define	STACK_CHECKER_EXTENSION
+//#define    STACK_CHECKER_EXTENSION
 
 // ----------------------------------------------------------------------------
 #include <rtems/confdefs.h>
@@ -69,14 +69,14 @@ extern const char* bsp_boot_cmdline;
 //#include <drvmgr/ambapp_bus_grlib.h>
 //
 //static struct drvmgr_bus_res grlib_drv_resources = {
-//	NULL,
-//	{}
+//    NULL,
+//    {}
 //};
 //
-///* GRLIB AMBA bus configuration (the LEON3 root bus configuration) */
+//// GRLIB AMBA bus configuration (the LEON3 root bus configuration) 
 //static struct grlib_config grlib_bus_config = {
-//	&ambapp_plb,              /* AMBAPP bus setup */
-//	&grlib_drv_resources,     /* Driver configuration */
+//    &ambapp_plb,              // AMBAPP bus setup 
+//    &grlib_drv_resources,     // Driver configuration 
 //};
 //
 //// prototype of the driver registration function

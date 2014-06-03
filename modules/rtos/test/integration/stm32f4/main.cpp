@@ -12,19 +12,19 @@ using namespace cobc;
 class Thread : public rtos::Thread
 {
 public:
-	Thread() :
-		rtos::Thread(1)
-	{
-	}
+    Thread() :
+        rtos::Thread(1)
+    {
+    }
 
 private:
-	virtual void
-	run()
-	{
-		while (1) {
-			yield();
-		}
-	}
+    virtual void
+    run()
+    {
+        while (1) {
+            yield();
+        }
+    }
 };
 
 Thread thread;
@@ -32,7 +32,7 @@ Thread thread;
 int
 main(void)
 {
-	thread.start();
+    thread.start();
 
-	return 0;
+    return 0;
 }

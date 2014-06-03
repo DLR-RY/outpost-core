@@ -12,28 +12,28 @@
 
 namespace cobc
 {
-	namespace rtos
-	{
-		/**
-		 *
-		 * @ingroup	rtos
-		 */
-		class Clock
-		{
-		public:
-			static time::TimePoint
-			now();
-		};
+    namespace rtos
+    {
+        /**
+         *
+         * \ingroup    rtos
+         */
+        class Clock
+        {
+        public:
+            static time::TimePoint
+            now();
+        };
 
 #ifdef UNITTEST
-		class TestingClock
-		{
-		public:
-			static void
-			setTime(time::TimePoint time);
-		};
+        class TestingClock
+        {
+        public:
+            static void
+            setTime(time::TimePoint time);
+        };
 #endif
-	}
+    }
 }
 
 #endif // COBC_RTOS_RETMS_CLOCK_H

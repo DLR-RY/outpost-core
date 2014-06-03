@@ -4,6 +4,7 @@
  *
  * See the file "LICENSE" for the full license governing this code.
  */
+// ----------------------------------------------------------------------------
 
 #include "topic_raw.h"
 #include "subscription_raw.h"
@@ -11,36 +12,36 @@
 cobc::smpc::TopicRaw * cobc::smpc::TopicRaw::listOfAllTopics = 0;
 
 cobc::smpc::TopicRaw::TopicRaw() :
-	List<TopicRaw>(listOfAllTopics, this),
-	subscriptions(0)
+    List<TopicRaw>(listOfAllTopics, this),
+    subscriptions(0)
 {
 }
 
 cobc::smpc::TopicRaw::~TopicRaw()
 {
-	removeFromList(&TopicRaw::listOfAllTopics, this);
+    removeFromList(&TopicRaw::listOfAllTopics, this);
 }
 
 void
 cobc::smpc::TopicRaw::publish(const void * message, size_t length)
 {
-	rtos::MutexGuard lock(mutex);
+    rtos::MutexGuard lock(mutex);
 
-	for (SubscriptionRaw * topic = subscriptions;
-			topic != 0;
-			topic = topic->nextTopicSubscription)
-	{
-		topic->notify(message, length);
-	}
+    for (SubscriptionRaw * topic = subscriptions;
+            topic != 0;
+            topic = topic->nextTopicSubscription)
+    {
+        topic->notify(message, length);
+    }
 }
 
 void
 cobc::smpc::TopicRaw::clearSubscriptions()
 {
-	for (TopicRaw * it = listOfAllTopics;
-			it != 0;
-			it = it->getNext())
-	{
-		it->subscriptions = 0;
-	}
+    for (TopicRaw * it = listOfAllTopics;
+            it != 0;
+            it = it->getNext())
+    {
+        it->subscriptions = 0;
+    }
 }

@@ -6,107 +6,108 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef	COBC_DEQUE_HPP
-#define	COBC_DEQUE_HPP
+#ifndef COBC_DEQUE_HPP
+#define COBC_DEQUE_HPP
 
 #include <stdint.h>
-#include <cstddef>
+#include <stddef.h>
 
 #include <cobc/utils.h>
 
 namespace cobc
 {
-	/**
-	 * Double ended queue.
-	 *
-	 * Internally organized as a ring buffer.
-	 *
-	 *                 tail --\                 /-- head
-	 *                        |                 |
-	 *              +------+------+---- ----+------+------+
-	 *            0 |      | data |   ...   | data |      | N-1
-	 *              +------+------+---- ----+------+------+
-	 *                 |      |                 |      |
-	 *     prepend() --/      |                 |      \-- append()
-	 *                        |                 |
-	 *           getFront() --/                 \-- getBack()
-	 *
-	 * @tparam  T   Type of the elements
-	 *
-	 * @warning This class don't check if the container is empty before
-	 *          a pop-operation. You have to do this by yourself!
-	 *
-	 * @author  Fabian Greif
-	 */
-	template<typename T>
-	class Deque
-	{
-	public:
-		typedef size_t Index;
-		typedef Index Size;
+/**
+ * Double ended queue.
+ *
+ * Internally organized as a ring buffer.
+ *
+ *                 tail --\                 /-- head
+ *                        |                 |
+ *              +------+------+---- ----+------+------+
+ *            0 |      | data |   ...   | data |      | N-1
+ *              +------+------+---- ----+------+------+
+ *                 |      |                 |      |
+ *     prepend() --/      |                 |      \-- append()
+ *                        |                 |
+ *           getFront() --/                 \-- getBack()
+ *
+ * \tparam  T   Type of the elements
+ *
+ * \warning This class don't check if the container is empty before
+ *          a pop-operation. You have to do this by yourself!
+ *
+ * \author  Fabian Greif
+ */
+template<typename T>
+class Deque
+{
+public:
+    typedef size_t Index;
+    typedef Index Size;
 
-	public:
-		Deque(T* backendBuffer, size_t n);
+public:
+    Deque(T* backendBuffer,
+          size_t n);
 
-		inline bool
-		isEmpty() const;
+    inline bool
+    isEmpty() const;
 
-		inline bool
-		isFull() const;
+    inline bool
+    isFull() const;
 
-		inline Size
-		getSize() const;
+    inline Size
+    getSize() const;
 
-		inline Size
-		getMaxSize() const;
+    inline Size
+    getMaxSize() const;
 
-		inline Size
-		getAvailableSpace() const;
+    inline Size
+    getAvailableSpace() const;
 
-		/**
-		 * Clear the queue.
-		 *
-		 * @warning	This will discard all the items in the container
-		 */
-		void
-		clear();
-
-
-		inline T&
-		getFront();
-
-		inline const T&
-		getFront() const;
-
-		inline T&
-		getBack();
-
-		inline const T&
-		getBack() const;
+    /**
+     * Clear the queue.
+     *
+     * \warning    This will discard all the items in the container
+     */
+    void
+    clear();
 
 
-		bool
-		append(const T& value);
+    inline T&
+    getFront();
 
-		bool
-		prepend(const T& value);
+    inline const T&
+    getFront() const;
 
-		void
-		removeBack();
+    inline T&
+    getBack();
 
-		void
-		removeFront();
+    inline const T&
+    getBack() const;
 
-	private:
-		T* const buffer;
-		const Size maxSize;
 
-		Index head;
-		Index tail;
-		Size size;
-	};
+    bool
+    append(const T& value);
+
+    bool
+    prepend(const T& value);
+
+    void
+    removeBack();
+
+    void
+    removeFront();
+
+private:
+    T* const buffer;
+    const Size maxSize;
+
+    Index head;
+    Index tail;
+    Size size;
+};
 }
 
 #include "deque_impl.h"
 
-#endif	// COBC_DEQUE_HPP
+#endif // COBC_DEQUE_HPP

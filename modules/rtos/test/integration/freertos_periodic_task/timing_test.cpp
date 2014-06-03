@@ -9,45 +9,45 @@
 using namespace cobc;
 
 TimingTest::TimingTest() :
-	rtos::Thread(128, 4096, "TTet")
+    rtos::Thread(128, 4096, "TTet")
 {
 }
 
 void
 TimingTest::run()
 {
-	bool state = false;
-	rtos::PeriodicTaskManager period;
-	rtos::PeriodicTaskManager period2;
-	while (1)
-	{
-		if (period.nextPeriod(time::Milliseconds(500)) == rtos::PeriodicTaskManager::Status::timeout) {
-			// Period missed
-			break;
-		}
+    bool state = false;
+    rtos::PeriodicTaskManager period;
+    rtos::PeriodicTaskManager period2;
+    while (1)
+    {
+        if (period.nextPeriod(time::Milliseconds(500)) == rtos::PeriodicTaskManager::Status::timeout) {
+            // Period missed
+            break;
+        }
 
-		state = !state;
+        state = !state;
 
-		// Start a new period of 20 ms
-		period2.nextPeriod(time::Milliseconds(20));
-		LedBlue::set();
+        // Start a new period of 20 ms
+        period2.nextPeriod(time::Milliseconds(20));
+        LedBlue::set();
 
-		// Wait for the previous period to end
-		period2.nextPeriod(time::Milliseconds(20));
-		LedBlue::reset();
+        // Wait for the previous period to end
+        period2.nextPeriod(time::Milliseconds(20));
+        LedBlue::reset();
 
-		period2.cancel();
+        period2.cancel();
 
-		if (state) {
-			LedGreen::set();
-		}
-		else {
-			LedGreen::reset();
-		}
-	}
+        if (state) {
+            LedGreen::set();
+        }
+        else {
+            LedGreen::reset();
+        }
+    }
 
-	LedOrange::set();
-	while (1) {
-		// DO SOMETHING
-	}
+    LedOrange::set();
+    while (1) {
+        // DO SOMETHING
+    }
 }

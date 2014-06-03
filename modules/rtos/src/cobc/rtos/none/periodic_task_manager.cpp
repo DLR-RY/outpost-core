@@ -18,15 +18,16 @@ PeriodicTaskManager::~PeriodicTaskManager()
 }
 
 PeriodicTaskManager::Status::Type
-PeriodicTaskManager::nextPeriod(time::Duration /*period*/)
+PeriodicTaskManager::nextPeriod(time::Duration period)
 {
-	return Status::idle;
+    (void) period;
+    return Status::idle;
 }
 
 PeriodicTaskManager::Status::Type
 PeriodicTaskManager::status()
 {
-	return Status::idle;
+    return Status::idle;
 }
 
 void

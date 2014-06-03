@@ -18,15 +18,15 @@ cobc::time::TimePoint
 cobc::rtos::Clock::now()
 {
 #ifdef UNITTEST
-	return currentTime;
+    return currentTime;
 #else
-	// TODO Check when this will overflow
-	uint64_t ticks_since_boot = static_cast<uint64_t>(xTaskGetTickCount());
+    // TODO Check when this will overflow
+    uint64_t ticks_since_boot = static_cast<uint64_t>(xTaskGetTickCount());
 
-	// convert to microseconds
-	uint64_t us = (static_cast<uint64_t>(ticks_since_boot) * 1000000) / configTICK_RATE_HZ;
+    // convert to microseconds
+    uint64_t us = (static_cast<uint64_t>(ticks_since_boot) * 1000000) / configTICK_RATE_HZ;
 
-	return cobc::time::TimePoint(us);
+    return cobc::time::TimePoint(us);
 #endif
 }
 
@@ -34,6 +34,6 @@ cobc::rtos::Clock::now()
 void
 cobc::rtos::TestingClock::setTime(time::TimePoint time)
 {
-	currentTime = time;
+    currentTime = time;
 }
 #endif

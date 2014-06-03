@@ -17,15 +17,15 @@ cobc::time::TimePoint
 cobc::rtos::Clock::now()
 {
 #ifdef UNITTEST
-	return currentTime;
+    return currentTime;
 #else
-	struct timespec time;
-	clock_gettime(CLOCK_MONOTONIC, &time);
+    struct timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
 
-	// convert to microseconds
-	uint64_t microseconds = (time.tv_nsec / 1000) + (time.tv_sec * 1000000);
+    // convert to microseconds
+    uint64_t microseconds = (time.tv_nsec / 1000) + (time.tv_sec * 1000000);
 
-	return cobc::time::TimePoint(microseconds);
+    return cobc::time::TimePoint(microseconds);
 #endif
 }
 
@@ -33,6 +33,6 @@ cobc::rtos::Clock::now()
 void
 cobc::rtos::TestingClock::setTime(time::TimePoint time)
 {
-	currentTime = time;
+    currentTime = time;
 }
 #endif
