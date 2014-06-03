@@ -1,0 +1,34 @@
+#!/usr/bin/env pythonrtems periodic timer
+
+import os
+
+envGlobal = Environment(toolpath=['../../../../../conf/scons/site_tools'],
+				        tools=['cobc', 'or32-gcc', 'buildpath', 'buildformat', 'buildsize'],
+			        	ENV=os.environ)
+
+envGlobal['BASEPATH'] = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath('../../../build/test/integration/none_urtu')
+
+rootpath = '../../../..'
+envGlobal.SConscript([rootpath + '/utils/src/SConscript',
+                      rootpath + '/time/src/SConscript',
+                      rootpath + '/rtos/src/SConscript',
+                      ],
+                     exports='envGlobal')
+
+env = envGlobal.Clone()
+
+env.Append(CPPPATH=[
+	'.'
+])
+env.Append(LIBS=['cobc_rtos', 'cobc_time'])
+env.Append(LIBPATH=['$BUILDPATH/lib'])
+
+files  = env.Glob('*.cpp')
+
+program = env.Program('none_urtu', files)
+
+envGlobal.Alias('build', program)
+envGlobal.Alias('install', env.Install('bin', program))
+
+envGlobal.Default(['build', 'install'])

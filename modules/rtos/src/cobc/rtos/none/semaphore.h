@@ -83,10 +83,8 @@ namespace cobc
              * This function will never block, but may preempt if an other
              * thread waiting for this semaphore has a higher priority.
              */
-            inline void
-            release()
-            {
-            }
+            void
+            release();
 
         private:
             // disable copy constructor
@@ -164,10 +162,8 @@ namespace cobc
              * This function will never block, but may preempt if an other
              * thread waiting for this semaphore has a higher priority.
              */
-            inline void
-            release()
-            {
-            }
+            void
+            release();
 
         private:
             // disable copy constructor

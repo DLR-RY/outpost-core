@@ -8,6 +8,7 @@
 #ifndef COBC_RTOS_NONE_TIMER_H
 #define COBC_RTOS_NONE_TIMER_H
 
+#include <stddef.h>
 #include <cobc/time/duration.h>
 
 #include "../callable.h"
@@ -27,9 +28,6 @@ namespace cobc
          *
          * The Timer Server is designed to remain blocked until a task-based
          * timer fires. This reduces the execution overhead of the Timer Server.
-         *
-         * \warning    You need to call Timer::startTimerDaemonThread() somewhere
-         *             in your start-up code. Otherwise the timers won't work!
          *
          * \author    Fabian Greif
          * \ingroup    rtos
@@ -100,28 +98,6 @@ namespace cobc
              */
             void
             cancel();
-
-            /**
-             * Start the timer daemon.
-             *
-             * This function initiates the Timer Server thread. This thread is
-             * responsible for executing all timers.
-             *
-             * As it is a normal thread it was to be considered when
-             * configuring CONFIGURE_MAXIMUM_TASKS.
-             *
-             * \param priority
-             *         Thread priority. RTEMS supports priorities between 1..255.
-             *         Lower values represent a higher priority. To ensure that
-             *         the handler-function is called at the exact time it is
-             *         a good idea to give the timer daemon thread a high
-             *         priority (low value).
-             * \param stack
-             *         Stack size in bytes. If the stack is smaller than the
-             *         default stack size it is replaced with the default size.
-             */
-            static void
-            startTimerDaemonThread(uint8_t priority, size_t stack = 0);
 
         private:
             void
