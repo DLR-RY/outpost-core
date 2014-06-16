@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013, German Aerospace Center (DLR)
+ * All Rights Reserved.
+ *
+ * See the file "LICENSE" for the full license governing this code.
+ */
 
 #include <stdio.h>
 #include <sys/ioctl.h>
@@ -6,29 +12,36 @@
 #include <fcntl.h>
 #include "uart.h"
 
-cobc::leon3::UART::UART(char * path, uint32_t baud, uint8_t blocking, serial_parity_t par){
-    this->devHandle = 0;
-    strcpy(devName, path);
-    devName[19] = '\0';
-    this->baud = baud;
-    this->devState = CLOSE;
-    this->parity = par;
-    txCount = 0;
-    rxCount = 0;
-    blockingMode = blocking;
+#define DEBUG_EN
+#ifdef DEBUG_EN
+#define DEBUG	printf
+#else
+#define DEBUG(...)
+#endif
+
+cobc::leon3::UART::UART(uint8_t id, uint32_t baudrate, uint8_t blocking) :
+	devHandle(0),
+	devId(id),
+	baud(baudrate),
+	devState(CLOSE),
+	txCount(0),
+	rxCount(0),
+	blockingMode(blocking)
+{
 }
 
 cobc::leon3::UART::~UART(){
-    this->dev_disable();
     this->close();
 }
 
-void cobc::leon3::UART::open(){
-    devHandle = ::open(devName, O_RDWR);
-    if(devHandle < 0){
-        printf("Device not opened, %s:errno-> %d\n", devName, errno);
-        return;
-    }
+void
+cobc::leon3::UART::open()
+{
+	devHandle = ::open(cobc::leon3::uartPath[this->devId], O_RDWR);
+	if(devHandle < 0){
+		DEBUG("Device not opened, %s:errno-> %d\n", cobc::leon3::uartPath[this->devId], errno);
+		return;
+	}
 
     // Configure Device
     if(::ioctl(devHandle, APBUART_SET_BAUDRATE, baud) < 0) return;
@@ -40,34 +53,32 @@ void cobc::leon3::UART::open(){
 
     this->devState = OPEN;
     this->dev_enable();
-    printf("%s opened, %d\n", devName, devState);
+	DEBUG("%s opened, %d\n", cobc::leon3::uartPath[this->devId], devState);
 }
 
 void cobc::leon3::UART::close(){
-    int retval = 0;
-    if(devState == DISABLED) {
-        retval = ::close(devHandle);
-        if(retval >= 0) {
-            devState = CLOSE;
-            printf("%s closed, %d\n", devName, devState);
-        }
-    }
+	int retval = 0;
+	this->dev_disable();
+	if(devState == DISABLED) {
+		retval = ::close(devHandle);
+		if(retval >= 0) {
+			devState = CLOSE;
+			DEBUG("%s closed, %d\n", cobc::leon3::uartPath[this->devId], devState);
+		}
+	}
+
 }
 
-bool cobc::leon3::UART::isAvailable(void){
-    if(devState == OPEN || devState == ENABLED)
-        return true;
-    return false;
-}
-
-std::size_t cobc::leon3::UART::read(uint8_t* data, std::size_t length, time::Duration timeout){
+std::size_t
+cobc::leon3::UART::read(uint8_t* data, std::size_t length, time::Duration timeout){
+	(void) timeout;
     std::size_t retval = 0;
-    void *src = (void*)data;
+    void *src = static_cast<void*> (data);
 
     if(devState != ENABLED || src == NULL)
         return 0;
 
-    // Reading the byte buffer up till supplied length 
+    // Reading the byte buffer up till supplied length
     if((retval = ::read(devHandle, src, length)) <= 0)
         return retval;
 
@@ -75,61 +86,50 @@ std::size_t cobc::leon3::UART::read(uint8_t* data, std::size_t length, time::Dur
     return retval;
 }
 
-std::size_t cobc::leon3::UART::write(const uint8_t* data, std::size_t length, time::Duration timeout){
-    std::size_t ret = 0;
-    uint8_t *src = (uint8_t*) data;
+std::size_t
+cobc::leon3::UART::write(const uint8_t* data, std::size_t length, time::Duration timeout){
+	(void) timeout;
+	std::size_t ret = 0;
+	uint8_t *src = const_cast<uint8_t*> (data);
 
-    if(devState != ENABLED || src == NULL)
-        return 0;
+	if(devState != ENABLED || src == NULL)
+		return 0;
 
-    // Write block of data to the device handle 
-    if((ret += ::write(devHandle, src, length)) <= 0)
-        return ret;
+	/* Write block of data to the device handle */
+	if((ret += ::write(devHandle, src, length)) <= 0)
+		return ret;
 
-    this->txCount += ret;
-    return ret;
+	this->txCount += ret;
+	return ret;
 }
 
-void cobc::leon3::UART::flush(){
-    fflush(NULL);
+void
+cobc::leon3::UART::flush(){
+    fflush(NULL);		//FIXME: All output streams will be flushed
 }
 
-int cobc::leon3::UART::dev_enable(){
+int
+cobc::leon3::UART::dev_enable(){
     int retval = 0;
     if(devState == OPEN || devState == DISABLED) {
         retval = ::ioctl(devHandle, APBUART_START, 0);
         if(retval >= 0) {
             devState = ENABLED;
-            printf("%s enabled, %d\n", devName, devState);
+			DEBUG("%s enabled, %d\n", cobc::leon3::uartPath[this->devId], devState);
         }
     }
     return retval;
 }
 
-int cobc::leon3::UART::dev_disable(){
+int
+cobc::leon3::UART::dev_disable(){
     int retval = 0;
     if(devState != DISABLED){
         retval = ::ioctl(devHandle, APBUART_STOP, 0);
         if(retval >= 0) {
             devState = DISABLED;
-            printf("%s disabled, %d\n", devName, devState);
+			DEBUG("%s disabled, %d\n", cobc::leon3::uartPath[this->devId], devState);
         }
     }
     return retval;
 }
-
-void cobc::leon3::UART::print_status(){
-    // Get device stats 
-    ::ioctl(devHandle, APBUART_GET_STATS, &devStatus);
-
-    printf("\n");
-    printf(" ******** STATISTICS ********  \n");
-    printf("HW data overrun error: %i\n", devStatus.hw_dovr);
-    printf("HW framing error: %i\n", devStatus.hw_frame);
-    printf("HW parity error: %i\n", devStatus.hw_parity);
-    printf("SW data overrun error: %i\n", devStatus.sw_dovr);
-    printf("TX count: %i\n", devStatus.tx_cnt);
-    printf("RX count: %i\n", devStatus.rx_cnt);
-}
-
-

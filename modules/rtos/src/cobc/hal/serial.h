@@ -15,88 +15,88 @@
 
 namespace cobc
 {
-namespace hal
-{
+	namespace hal
+	{
 
-/**
- * Serial Interface
- *
- * \author  Fabian Greif
- */
-class Serial
-{
-public:
-    virtual
-    ~Serial() = 0;
+		/**
+		 * Serial Interface
+		 *
+		 * \author  Fabian Greif
+		 */
+		class Serial
+		{
+		public:
+			virtual
+			~Serial() = 0;
 
-    /**
-     * Opens the UART device
-     */
-    virtual void
-    open() = 0;
+			/**
+			 * Opens the UART device
+			 */
+			virtual void
+			open() = 0;
 
-    /**
-     * CLose the UART device
-     */
-    virtual void
-    close() = 0;
+			/**
+			 * CLose the UART device
+			 */
+			virtual void
+			close() = 0;
 
-    /**
-     * Check if data is available in the input buffers.
-     *
-     * \retval true   Data is available and can be read via read(...).
-     * \retval false  No data available.
-     */
-    virtual bool
-    isAvailable(void) = 0;
+			/**
+			 * Check if data is available in the input buffers.
+			 *
+			 * \retval true   Data is available and can be read via read(...).
+			 * \retval false  No data available.
+			 */
+			virtual bool
+			isAvailable(void) = 0;
 
-    /**
-     * Read a block of bytes.
-     *
-     * Waits until the timeout occurs to read the given number of
-     * bytes. May return earlier if enough bytes are available. The
-     * exact number of bytes read will be return, it will be up to
-     * \p length byte but can also be any value lower.
-     *
-     * \param *data
-     *      Pointer to a buffer big enough to storage \p length bytes
-     * \param  length
-     *      Number of bytes to be read
-     *
-     * \return    Number of bytes which could be read, maximal \p length
-     */
-    virtual size_t
-    read(uint8_t* data,
-         size_t length,
-         time::Duration timeout = time::Duration::infinity()) = 0;
+			/**
+			 * Read a block of bytes.
+			 *
+			 * Waits until the timeout occurs to read the given number of
+			 * bytes. May return earlier if enough bytes are available. The
+			 * exact number of bytes read will be return, it will be up to
+			 * \p length byte but can also be any value lower.
+			 *
+			 * \param *data
+			 *      Pointer to a buffer big enough to storage \p length bytes
+			 * \param  length
+			 *      Number of bytes to be read
+			 *
+			 * \return    Number of bytes which could be read, maximal \p length
+			 */
+			virtual size_t
+			read(uint8_t* data,
+				 size_t length,
+				 time::Duration timeout = time::Duration::infinity()) = 0;
 
-    /**
-     * Write a block of bytes with timeout.
-     *
-     *
-     *
-     * \param *data
-     *      Pointer to a buffer
-     * \param length
-     *      Number of bytes to be write
-     * \return  Number of bytes written.
-     */
-    virtual size_t
-    write(const uint8_t* data,
-          size_t length,
-          time::Duration timeout = time::Duration::infinity()) = 0;
+			/**
+			 * Write a block of bytes with timeout.
+			 *
+			 *
+			 *
+			 * \param *data
+			 *      Pointer to a buffer
+			 * \param length
+			 *      Number of bytes to be write
+			 * \return  Number of bytes written.
+			 */
+			virtual size_t
+			write(const uint8_t* data,
+				  size_t length,
+				  time::Duration timeout = time::Duration::infinity()) = 0;
 
-    /**
-     * Flush send/receive buffers.
-     *
-     * Sends eventually buffered data. Afterwards all internal buffers
-     * are empty.
-     */
-    virtual void
-    flush() = 0;
-};
+			/**
+			 * Flush send/receive buffers.
+			 *
+			 * Sends eventually buffered data. Afterwards all internal buffers
+			 * are empty.
+			 */
+			virtual void
+			flush() = 0;
+		};
 
-}
+	}
 }
 
 #endif // COBC_HAL_SERIAL_H
