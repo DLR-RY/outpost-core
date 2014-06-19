@@ -12,13 +12,15 @@ files  = env.Glob('cobc/rtos/*.cpp')
 files += env.Glob('cobc/hal/*.cpp')
 
 if env['OS'] == 'none':
-	rtos = 'COBC_RTOS_NONE'
+	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/none')])
+	env.Append(CPPPATH=[os.path.abspath('../arch/none')])
 	
-	files += env.Glob('cobc/rtos/none/*.cpp')
+	files += env.Glob('../arch/none/cobc/rtos/*.cpp')
 elif env['OS'] == 'rtems':
-	rtos = 'COBC_RTOS_RTEMS'
+	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/rtems')])
+	env.Append(CPPPATH=[os.path.abspath('../arch/rtems')])
 	
-	files += env.Glob('cobc/rtos/rtems/*.cpp')
+	files += env.Glob('../arch/rtems/cobc/rtos/*.cpp')
 	
 	# Leon 3
 	if env['ARCHITECTURE'] == 'leon3':
@@ -43,25 +45,25 @@ elif env['OS'] == 'rtems':
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 	
 elif env['OS'] == 'freertos':
-	rtos = 'COBC_RTOS_FREERTOS'
+	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/freertos')])
+	env.Append(CPPPATH=[os.path.abspath('../arch/freertos')])
 	
-	files += env.Glob('cobc/rtos/freertos/*.cpp')
+	files += env.Glob('../arch/freertos/cobc/rtos/*.cpp')
 	
 	# FreeRTOS uses C-Style casts. Therefore this warning has to
 	# disabled for the FreeRTOS wrapper files.
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 elif env['OS'] == 'posix':
-	rtos = 'COBC_RTOS_POSIX'
-	files += env.Glob('cobc/rtos/posix/*.cpp')
+	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/posix')])
+	env.Append(CPPPATH=[os.path.abspath('../arch/posix')])
+	
+	files += env.Glob('../arch/posix/cobc/rtos/*.cpp')
 	
 	envGlobal.Append(LIBS=['rt', 'pthread'])
 else:
 	print "Error: Environment variable 'OS' not defined. Set it to " +\
 		  "none|rtems|freertos|posix to define the used operating system!"
 	Exit(1)
-
-env.Append(CPPDEFINES={'COBC_RTOS':rtos})
-envGlobal.Append(CPPDEFINES={'COBC_RTOS':rtos})
 
 objects = []
 for file in files:
