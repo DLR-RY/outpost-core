@@ -94,6 +94,10 @@ public:
         store64(*ptr);
     }
 
+    template <typename T>
+    inline void
+    store(T data);
+
     // get position of the buffer
     inline ptrdiff_t
     getPosition() const
@@ -164,6 +168,7 @@ private:
 // LCOV_EXCL_STOP
 // LCOV_EXCL_END
 
+// ----------------------------------------------------------------------------
 /**
  * Deserialize the application data of a CCSDS/PUS packet.
  *
@@ -352,6 +357,14 @@ public:
         return d;
     }
 
+    template <typename T>
+    inline T
+    peek(size_t n) const;
+
+    template <typename T>
+    inline T
+    read();
+
     /**
      * Skip forward the given number of bytes.
      *
@@ -440,6 +453,139 @@ private:
     const uint8_t* buffer;
     const uint8_t* const begin;
 };
+}
+
+// ----------------------------------------------------------------------------
+// Store
+template <>
+inline void
+cobc::Serialize::store<uint8_t>(uint8_t data)
+{
+    store8(data);
+}
+
+template <>
+inline void
+cobc::Serialize::store<uint16_t>(uint16_t data)
+{
+    store16(data);
+}
+
+template <>
+inline void
+cobc::Serialize::store<uint32_t>(uint32_t data)
+{
+    store32(data);
+}
+
+template <>
+inline void
+cobc::Serialize::store<uint64_t>(uint64_t data)
+{
+    store64(data);
+}
+
+template <>
+inline void
+cobc::Serialize::store<float>(float data)
+{
+    storeFloat(data);
+}
+
+template <>
+inline void
+cobc::Serialize::store<double>(double data)
+{
+    storeDouble(data);
+}
+
+// ----------------------------------------------------------------------------
+// Peek
+template <>
+inline uint8_t
+cobc::Deserialize::peek<uint8_t>(size_t n) const
+{
+    return peek8(n);
+}
+
+template <>
+inline uint16_t
+cobc::Deserialize::peek<uint16_t>(size_t n) const
+{
+    return peek16(n);
+}
+
+template <>
+inline uint32_t
+cobc::Deserialize::peek<uint32_t>(size_t n) const
+{
+    return peek32(n);
+}
+
+template <>
+inline uint64_t
+cobc::Deserialize::peek<uint64_t>(size_t n) const
+{
+    return peek64(n);
+}
+
+template <>
+inline float
+cobc::Deserialize::peek<float>(size_t n) const
+{
+    return peekFloat(n);
+}
+
+template <>
+inline double
+cobc::Deserialize::peek<double>(size_t n) const
+{
+    return peekDouble(n);
+}
+
+// ----------------------------------------------------------------------------
+// Read
+template <>
+inline uint8_t
+cobc::Deserialize::read<uint8_t>()
+{
+    return read8();
+}
+
+template <>
+inline uint16_t
+cobc::Deserialize::read<uint16_t>()
+{
+    return read16();
+}
+
+template <>
+inline uint32_t
+cobc::Deserialize::read<uint32_t>()
+{
+    return read32();
+}
+
+template <>
+inline uint64_t
+cobc::Deserialize::read<uint64_t>()
+{
+    return read64();
+}
+
+template <>
+inline float
+cobc::Deserialize::read<float>()
+{
+    return readFloat();
+}
+
+
+template <>
+inline double
+cobc::Deserialize::read<double>()
+{
+    return readDouble();
 }
 
 #endif // COBC_UTILS_SERIALIZE_H
