@@ -33,7 +33,7 @@ TEST(CrcTest, testEcssPus1)
         0x00, 0x00
     };
 
-    ASSERT_EQ(0x1d0f, Crc16Ccitt::calculate(data, 2));
+    EXPECT_EQ(0x1D0F, Crc16Ccitt::calculate(data, 2));
 }
 
 /**
@@ -46,7 +46,7 @@ TEST(CrcTest, testEcssPus2)
         0x00, 0x00, 0x00
     };
 
-    ASSERT_EQ(0xcc9c, Crc16Ccitt::calculate(data, 3));
+    EXPECT_EQ(0xCC9C, Crc16Ccitt::calculate(data, 3));
 }
 
 /**
@@ -56,10 +56,10 @@ TEST(CrcTest, testEcssPus2)
 TEST(CrcTest, testEcssPus3)
 {
     uint8_t data[] = {
-        0xab, 0xcd, 0xef, 0x01
+        0xAB, 0xCD, 0xEF, 0x01
     };
 
-    ASSERT_EQ(0x04a2, Crc16Ccitt::calculate(data, 4));
+    EXPECT_EQ(0x04A2, Crc16Ccitt::calculate(data, 4));
 }
 
 /**
@@ -69,10 +69,10 @@ TEST(CrcTest, testEcssPus3)
 TEST(CrcTest, testEcssPus4)
 {
     uint8_t data[] = {
-        0x14, 0x56, 0xf8, 0x9a, 0x00, 0x01
+        0x14, 0x56, 0xF8, 0x9A, 0x00, 0x01
     };
 
-    ASSERT_EQ(0x7fd5, Crc16Ccitt::calculate(data, 6));
+    EXPECT_EQ(0x7FD5, Crc16Ccitt::calculate(data, 6));
 }
 
 /**
@@ -81,10 +81,62 @@ TEST(CrcTest, testEcssPus4)
 TEST(CrcTest, testEcssPus4Total)
 {
     uint8_t data[] = {
-        0x14, 0x56, 0xf8, 0x9a, 0x00, 0x01, 0x7f, 0xd5
+        0x14, 0x56, 0xF8, 0x9A, 0x00, 0x01, 0x7F, 0xD5
     };
 
-    ASSERT_EQ(0, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0, Crc16Ccitt::calculate(data, sizeof(data)));
+}
+
+TEST(CrcTest, testMltpExample1)
+{
+	uint8_t data[] = {
+		0x30, 0xC1, 0xA1, 0x7D, 0x43, 0xD2, 0x10, 0x82,
+		0xAB, 0x32, 0x7D, 0xEF, 0x7E, 0x10, 0x81, 0x08,
+		0x34, 0x7E, 0xE5, 0xC3, 0x90,
+	};
+
+    EXPECT_EQ(0x4959, Crc16Ccitt::calculate(data, sizeof(data)));
+}
+
+
+TEST(CrcTest, testMltpExample2)
+{
+	uint8_t data[] = {
+		0x10, 0x82, 0x23, 0x7D, 0x43, 0xD2,
+	};
+
+    EXPECT_EQ(0xF7AC, Crc16Ccitt::calculate(data, sizeof(data)));
+}
+
+TEST(CrcTest, testMltpExample3)
+{
+	uint8_t data0[] = {
+		0x10, 0x82, 0x8F, 0x7D, 0x00,
+		0x00, 0x11, 0x43, 0xD2, 0xAB, 0x32, 0x7D, 0xEF,
+	};
+	
+	uint8_t data1[] = {
+		0x10, 0x82, 0x8F, 0x7D, 0x01,
+		0x7E, 0x10, 0x81, 0x08, 0x34, 0x7E, 0xE5, 0xC3,
+	};
+
+	uint8_t data2[] = {
+		0x10, 0x82, 0x8F, 0x7D, 0x02,
+		0x90,
+	};
+
+    EXPECT_EQ(0xB233, Crc16Ccitt::calculate(data0, sizeof(data0)));
+    EXPECT_EQ(0x8541, Crc16Ccitt::calculate(data1, sizeof(data1)));
+    EXPECT_EQ(0x0493, Crc16Ccitt::calculate(data2, sizeof(data2)));
+}
+
+TEST(CrcTest, testMltpExample4)
+{
+	uint8_t data[] = {
+		0x30, 0xC1, 0x01, 0x7D, 0x43, 0xD2, 0x10, 0x82,
+	};
+
+    EXPECT_EQ(0x8CC7, Crc16Ccitt::calculate(data, sizeof(data)));
 }
 
 /**
@@ -105,7 +157,7 @@ TEST(CrcTest, testUpdate)
         crc.update(data[i]);
     }
 
-    ASSERT_EQ(0x7fd5, crc.getValue());
+    EXPECT_EQ(0x7fd5, crc.getValue());
 }
 
 // code from http://www.nongnu.org/avr-libc/user-manual/group__util__crc.html
@@ -113,7 +165,7 @@ uint16_t
 crc_xmodem_update(uint16_t crc, uint8_t data)
 {
     crc = crc ^ (static_cast<uint16_t>(data) << 8);
-    for (uint_fast16_t i = 0; i < 8; ++i)
+    for (uint_fast8_t i = 0; i < 8; ++i)
     {
         if (crc & 0x8000)
         {
@@ -142,7 +194,7 @@ TEST(CrcTest, testXModemAvr)
         crc = crc_xmodem_update(crc, data[i]);
     }
 
-    ASSERT_EQ(0x7fd5, crc);
+    EXPECT_EQ(0x7fd5, crc);
 }
 
 TEST(CrcTest, testRandom)
@@ -153,7 +205,7 @@ TEST(CrcTest, testRandom)
         data[i] = 0xff;
     }
 
-    ASSERT_EQ(0x6995, Crc16Ccitt::calculate(data, 512));
+    EXPECT_EQ(0x6995, Crc16Ccitt::calculate(data, 512));
 }
 
 TEST(CrcTest, testRandom2)
@@ -162,7 +214,7 @@ TEST(CrcTest, testRandom2)
         '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
 
-    ASSERT_EQ(0x29B1, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0x29B1, Crc16Ccitt::calculate(data, sizeof(data)));
 }
 
 TEST(CrcTest, testRandom3)
@@ -171,5 +223,6 @@ TEST(CrcTest, testRandom3)
         0xff, 0xff
     };
 
-    ASSERT_EQ(0, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0, Crc16Ccitt::calculate(data, sizeof(data)));
 }
+
