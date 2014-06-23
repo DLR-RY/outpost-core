@@ -3,7 +3,7 @@
 import os
 
 envGlobal = Environment(toolpath=['../../../../../conf/scons/site_tools'],
-				        tools=['cobc', 'hosted', 'buildpath', 'buildformat', 'buildsize'],
+				        tools=['cobc', 'hosted-llvm', 'buildpath', 'buildformat', 'buildsize'],
 				        COMPILERVERSION="4.7",
 			        	ENV=os.environ)
 
@@ -30,6 +30,7 @@ files  = env.Glob('*.cpp')
 program = env.Program('posix_periodic_task', files)
 
 envGlobal.Alias('build', program)
+envGlobal.Alias('run', env.Command('thisfileshouldnotexist', program, '@"%s"' % program[0].abspath))
 envGlobal.Alias('install', env.Install('bin', program))
 
-envGlobal.Default(['build', 'install'])
+envGlobal.Default(['build', 'run'])

@@ -12,7 +12,7 @@ main(void)
     uint32_t i = 133124;
     printf("Test integer: %d\n", i);
 
-    const uint8_t* ptr = (const uint8_t *) &i;
+    const uint8_t* ptr = reinterpret_cast<const uint8_t *>(&i);
 
     printf("byte array  : %02X:%02X:%02X:%02X\n", ptr[0], ptr[1], ptr[2], ptr[3]);
 
@@ -30,7 +30,7 @@ main(void)
     float f = 3.14159;
 
     printf("Test float  : %f\n", f);
-    ptr = (const uint8_t *) &f;
+    ptr = reinterpret_cast<const uint8_t *>(&f);
 
     printf("byte array  : %02X:%02X:%02X:%02X\n", ptr[0], ptr[1], ptr[2], ptr[3]);
 

@@ -38,6 +38,7 @@ public:
     void
     test2(rtos::Timer * timer)
     {
+        (void) timer;
         printf("trigger2\n");
 
         timer1.cancel();

@@ -20,16 +20,19 @@ MODULE=rtos
 include ../../conf/module.default.mk
 
 build-freertos_periodic_task:
-build-rtems_periodic_task:
+build-hosted_float_endianness:
+build-posix_periodic_task:
+build-posix_timer:
+build-posix_timestamp:
 build-rtems:
 build-rtems_float_endianness:
-build-hosted_float_endianness:
+build-rtems_periodic_task:
 build-%:
 	@scons $(MAKEJOBS) -Q -C test/integration/$*
 
 program-freertos_periodic_task:
-program-rtems_periodic_task:
 program-rtems_float_endianness:
+program-rtems_periodic_task:
 program-%: test-%
 	@../../tools/grmon_program.sh ./build/test/integration/$*/$* $(PORT) $(GRMON)
 
