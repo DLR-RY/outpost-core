@@ -10,9 +10,14 @@
 
 #include <rtems.h>
 
+void
+defaultHandler(cobc::rtos::FailureCode code);
+
+void
 defaultHandler(cobc::rtos::FailureCode code)
 {
     rtems_fatal_error_occurred(code.getCode());
 }
 
 cobc::rtos::FailureHandler::Handler cobc::rtos::FailureHandler::handler = &defaultHandler;
+

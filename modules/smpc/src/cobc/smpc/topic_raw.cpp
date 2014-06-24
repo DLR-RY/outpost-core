@@ -9,6 +9,8 @@
 #include "topic_raw.h"
 #include "subscription_raw.h"
 
+#include <cobc/rtos/mutex_guard.h>
+
 cobc::smpc::TopicRaw * cobc::smpc::TopicRaw::listOfAllTopics = 0;
 
 cobc::smpc::TopicRaw::TopicRaw() :

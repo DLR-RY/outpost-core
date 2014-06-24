@@ -9,6 +9,8 @@
 #include "topic.h"
 #include "subscription.h"
 
+#include <cobc/rtos/mutex_guard.h>
+
 cobc::smpc::TopicBase * cobc::smpc::TopicBase::listOfAllTopics = 0;
 
 cobc::smpc::TopicBase::TopicBase() :
