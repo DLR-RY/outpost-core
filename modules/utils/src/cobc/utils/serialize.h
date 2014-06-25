@@ -15,14 +15,19 @@
 
 namespace cobc
 {
-// LCOV_EXCL_START
-// Functions are tested in \c test/unit/test_byteorder.cpp
-// But as they are inline functions lcov can't generate useful
-// coverage reports for them
+
+struct uint24_t
+{
+    uint8_t value[3];
+};
 
 /**
  * \author Fabian Greif
  */
+// LCOV_EXCL_START
+// Functions are tested in \c test/unit/test_byteorder.cpp
+// But as they are inline functions lcov can't generate useful
+// coverage reports for them
 class Serialize
 {
 public:
@@ -94,6 +99,7 @@ public:
         store64(*ptr);
     }
 
+    // explicit template instantiations are provided in serialize_impl.h
     template <typename T>
     inline void
     store(T data);
@@ -105,59 +111,11 @@ public:
         return (buffer - begin);
     }
 
+    template <typename T>
     inline Serialize&
-    operator<<(uint8_t data)
+    operator<<(const T& data)
     {
-        store8(data);
-        return *this;
-    }
-
-    inline Serialize&
-    operator<<(uint16_t data)
-    {
-        store16(data);
-        return *this;
-    }
-
-    inline Serialize&
-    operator<<(uint32_t data)
-    {
-        store32(data);
-        return *this;
-    }
-
-    inline Serialize&
-    operator<<(int8_t data)
-    {
-        store8(static_cast<uint8_t>(data));
-        return *this;
-    }
-
-    inline Serialize&
-    operator<<(int16_t data)
-    {
-        store16(static_cast<uint16_t>(data));
-        return *this;
-    }
-
-    inline Serialize&
-    operator<<(int32_t data)
-    {
-        store32(static_cast<uint32_t>(data));
-        return *this;
-    }
-
-    inline Serialize&
-    operator<<(const float& data)
-    {
-        storeFloat(data);
-        return *this;
-    }
-
-    inline Serialize&
-    operator<<(const double& data)
-    {
-        storeDouble(data);
+        store<T>(data);
         return *this;
     }
 
@@ -377,62 +335,13 @@ public:
         buffer += bytes;
     }
 
+    template <typename T>
     inline Deserialize&
-    operator>>(uint8_t& data)
+    operator >>(T& data)
     {
-        data = read8();
+        data = read<T>();
         return *this;
     }
-
-    inline Deserialize&
-    operator>>(uint16_t& data)
-    {
-        data = read16();
-        return *this;
-    }
-
-    inline Deserialize&
-    operator>>(uint32_t& data)
-    {
-        data = read32();
-        return *this;
-    }
-
-    inline Deserialize&
-    operator>>(int8_t& data)
-    {
-        data = static_cast<int8_t>(read8());
-        return *this;
-    }
-
-    inline Deserialize&
-    operator>>(int16_t& data)
-    {
-        data = static_cast<int16_t>(read16());
-        return *this;
-    }
-
-    inline Deserialize&
-    operator>>(int32_t& data)
-    {
-        data = static_cast<int32_t>(read32());
-        return *this;
-    }
-
-    inline Deserialize&
-    operator>>(float& data)
-    {
-        data = readFloat();
-        return *this;
-    }
-
-    inline Deserialize&
-    operator>>(double& data)
-    {
-        data = readDouble();
-        return *this;
-    }
-
 
     /**
      * Get Pointer to the current location in the buffer.
