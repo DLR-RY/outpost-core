@@ -32,10 +32,15 @@ FILTER := *
 # is used to build the source files. And make has no option the extract the
 # number of request parallel processes from the "-j" option.
 ifneq ($(JOBS),)
-MAKEJOBS=-j$(JOBS)
+  MAKEJOBS=-j$(JOBS)
 else
-# Default is 3 parallel jobs. Use `JOBS=` to disable parallel build.
-MAKEJOBS=-j3
+  # Default is 3 parallel jobs. Use `JOBS=` to disable parallel build.
+  NPROCS:=1
+  OS:=$(shell uname -s)
+  ifeq ($(OS),Linux)
+    NPROCS:=$(shell nproc)
+  endif
+  MAKEJOBS=-j$(NPROCS)
 endif
 
 # Run clang static analyzer (see http://clang-analyzer.llvm.org/). Requires
