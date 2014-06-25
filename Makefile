@@ -97,7 +97,7 @@ style:
 	done
 
 metric:
-	for m in $(MODULES); do \
+	@for m in $(MODULES); do \
 		printf "$(CINFO)Generating code metrics for module \"$$m\" (sources):$(CEND)\n" ; \
 		sloccount --duplicates --wide modules/$$m/src ; \
 		printf "$(CINFO)Generating code metrics for module \"$$m\" (unittests):$(CEND)\n" ; \

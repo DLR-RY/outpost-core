@@ -6,12 +6,10 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_CALLABLE_H
-#define COBC_RTOS_CALLABLE_H
+#ifndef COBC_UTILS_CALLABLE_H
+#define COBC_UTILS_CALLABLE_H
 
 namespace cobc
-{
-namespace rtos
 {
 
 /**
@@ -24,6 +22,5 @@ class Callable
 };
 
 }
-}
 
-#endif // COBC_RTOS_CALLABLE_H
+#endif // COBC_UTILS_CALLABLE_H

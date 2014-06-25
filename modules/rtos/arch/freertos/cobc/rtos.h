@@ -25,6 +25,6 @@
 
 #include <cobc/rtos/failure_handler.h>
 #include <cobc/rtos/mutex_guard.h>
-#include <cobc/rtos/callable.h>
+#include <cobc/utils/callable.h>
 
 #endif // COBC_RTOS_H

@@ -11,7 +11,7 @@
 #include <rtems.h>
 #include <cobc/time/duration.h>
 
-#include <cobc/rtos/callable.h>
+#include <cobc/utils/callable.h>
 
 namespace cobc
 {

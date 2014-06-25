@@ -368,3 +368,4 @@ private:
 
 #endif // COBC_UTILS_SERIALIZE_H
 
+

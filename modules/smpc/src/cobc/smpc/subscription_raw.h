@@ -11,7 +11,6 @@
 
 #include <stddef.h>
 
-#include "list.h"
 #include "subscriber.h"
 #include "topic_raw.h"
 
@@ -31,10 +30,10 @@ namespace smpc
  * type of topic and subscriber this class works internally with void
  * pointers.
  *
- * \ingroup    smpc
- * \author    Fabian Greif
+ * \ingroup smpc
+ * \author  Fabian Greif
  */
-class SubscriptionRaw : public List<SubscriptionRaw>
+class SubscriptionRaw : public ImplicitList<SubscriptionRaw>
 {
 public:
     friend class TopicRaw;
@@ -53,9 +52,9 @@ public:
      */
     template <typename S>
     SubscriptionRaw(TopicRaw& topic,
-                 S * subscriber,
-                 void (S::*function)(const void * message, size_t length)) :
-        List<SubscriptionRaw>(listOfAllSubscriptions, this),
+                    S * subscriber,
+                    void (S::*function)(const void * message, size_t length)) :
+        ImplicitList<SubscriptionRaw>(listOfAllSubscriptions, this),
         topic(&topic),
         nextTopicSubscription(0),
         subscriber(reinterpret_cast<Subscriber *>(subscriber)),

@@ -9,7 +9,6 @@
 #ifndef COBC_SMPC_SUBSCRIPTION_H
 #define COBC_SMPC_SUBSCRIPTION_H
 
-#include "list.h"
 #include "subscriber.h"
 #include "topic.h"
 
@@ -30,16 +29,16 @@ namespace smpc
  * type of topic and subscriber this class works internally with void
  * pointers.
  *
- * \ingroup    smpc
- * \author    Fabian Greif
+ * \ingroup smpc
+ * \author  Fabian Greif
  */
-class Subscription : public List<Subscription>
+class Subscription : public ImplicitList<Subscription>
 {
 public:
     friend class TopicBase;
     friend class TestingTopicBase;  // for unit tests
     friend class SubscriptionRaw;
-    friend class List<Subscription>;
+    friend class ImplicitList<Subscription>;
 
     template <typename T, typename S>
     struct SubscriberFunction {
@@ -147,9 +146,9 @@ public:
 // Implementation of the template constructor
 template <typename T, typename S>
 cobc::smpc::Subscription::Subscription(Topic<T>& topic,
-        S *subscriber,
-        typename SubscriberFunction<T, S>::Type function) :
-    List<Subscription>(listOfAllSubscriptions, this),
+                                       S *subscriber,
+                                       typename SubscriberFunction<T, S>::Type function) :
+    ImplicitList<Subscription>(listOfAllSubscriptions, this),
     topic(&topic),
     nextTopicSubscription(0),
     subscriber(reinterpret_cast<Subscriber *>(subscriber)),

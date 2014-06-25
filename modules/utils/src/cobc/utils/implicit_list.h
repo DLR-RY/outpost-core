@@ -6,20 +6,20 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_SMPC_LIST_H
-#define COBC_SMPC_LIST_H
+#ifndef COBC_UTILS_IMPLICIT_LIST_H
+#define COBC_UTILS_IMPLICIT_LIST_H
 
 namespace cobc
 {
-namespace smpc
-{
+
 /**
  * Static single linked list.
  *
  * TODO example
  *
- * This implementation relies on the fact that zero-initialized static
- * variables are initialized before any constructor is called.
+ * This implementation relies for the \c next member on the fact that
+ * zero-initialized static variables are initialized before any constructor
+ * is called.
  *
  * See chapter 3.6.2 of the C++03 standard:
  *
@@ -36,7 +36,7 @@ namespace smpc
  * global variables.
  */
 template <typename T>
-class List
+class ImplicitList
 {
 public:
     /**
@@ -50,8 +50,8 @@ public:
      *         Element to add to the list (mostly \c this).
      */
     inline
-    List(T*& list,
-         T * element) :
+    ImplicitList(T*& list,
+                 T * element) :
         next(list)
     {
         list = element;
@@ -104,7 +104,7 @@ protected:
     /// Pointer to the next element
     T * next;
 };
-}
+
 }
 
-#endif // COBC_SMPC_LIST_H
+#endif // COBC_UTILS_IMPLICIT_LIST_H

@@ -14,7 +14,7 @@
 cobc::smpc::TopicRaw * cobc::smpc::TopicRaw::listOfAllTopics = 0;
 
 cobc::smpc::TopicRaw::TopicRaw() :
-    List<TopicRaw>(listOfAllTopics, this),
+    ImplicitList<TopicRaw>(listOfAllTopics, this),
     subscriptions(0)
 {
 }

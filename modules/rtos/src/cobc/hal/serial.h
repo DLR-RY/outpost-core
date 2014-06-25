@@ -17,7 +17,6 @@ namespace cobc
 {
 	namespace hal
 	{
-
 		/**
 		 * Serial Interface
 		 *
@@ -36,7 +35,7 @@ namespace cobc
 			open() = 0;
 
 			/**
-			 * CLose the UART device
+			 * Close the UART device
 			 */
 			virtual void
 			close() = 0;

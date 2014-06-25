@@ -13,8 +13,6 @@
 #include <cobc/rtos/mutex.h>
 #include <cobc/utils.h>
 
-#include "list.h"
-
 namespace cobc
 {
 namespace smpc
@@ -26,19 +24,19 @@ class Subscription;
  * Non-template base class for %Topic<>.
  *
  * \warning
- *         This class should only be used through cobc::smpc::Topic
- *         and never alone!
+ *      This class should only be used through cobc::smpc::Topic
+ *      and never alone!
  *
- * \see        Topic
- * \author    Fabian Greif
+ * \see     Topic
+ * \author  Fabian Greif
  */
-class TopicBase : protected List<TopicBase>
+class TopicBase : protected ImplicitList<TopicBase>
 {
 public:
     // Needed to allow Subscription() to append itself to the
     // subscription list
     friend class Subscription;
-    friend class List<TopicBase>;
+    friend class ImplicitList<TopicBase>;
     friend class TestingTopicBase;
 
     /**

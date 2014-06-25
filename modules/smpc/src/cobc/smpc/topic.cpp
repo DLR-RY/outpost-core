@@ -14,7 +14,7 @@
 cobc::smpc::TopicBase * cobc::smpc::TopicBase::listOfAllTopics = 0;
 
 cobc::smpc::TopicBase::TopicBase() :
-    List<TopicBase>(listOfAllTopics, this),
+    ImplicitList<TopicBase>(listOfAllTopics, this),
     subscriptions(0)
 {
 }

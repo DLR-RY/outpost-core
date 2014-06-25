@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+Import('envGlobal')
+
+envGlobal.SConscript(
+	[
+		'utils/src/SConscript',
+		'utils/ext/SConscript',
+		'time/src/SConscript',
+		'rtos/src/SConscript',
+		'smpc/src/SConscript',
+		'ccsds/src/SConscript',
+		'pus/src/SConscript',
+	],
+	exports='envGlobal')

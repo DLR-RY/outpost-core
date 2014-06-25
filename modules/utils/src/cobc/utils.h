@@ -11,6 +11,8 @@
 
 #include "utils/deque.h"
 #include "utils/pow.h"
+#include "utils/list.h"
+#include "utils/implicit_list.h"
 
 /**
  * Get the size of C style array
