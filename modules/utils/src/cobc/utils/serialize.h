@@ -111,9 +111,15 @@ public:
         return (buffer - begin);
     }
 
+    inline uint8_t *
+    getPointerToCurrentPosition()
+    {
+        return buffer;
+    }
+
     template <typename T>
     inline Serialize&
-    operator<<(const T& data)
+    operator <<(const T& data)
     {
         store<T>(data);
         return *this;
@@ -348,6 +354,12 @@ public:
      */
     inline const uint8_t *
     getPointer() const
+    {
+        return buffer;
+    }
+
+    inline const uint8_t *
+    getPointerToCurrentPosition()
     {
         return buffer;
     }
