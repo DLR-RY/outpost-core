@@ -195,13 +195,49 @@ cobc::List<T>::removeAll(Condition condition)
     {
         if (condition(*current)) {
             previous->next = current->next;
-            current = current->next;
         }
         else {
             previous = current;
+        }
+
             current = current->next;
         }
 
+    // Check first entry in the list
+    if (condition(*head)) {
+        head = head->next;
+    }
+}
+
+template <typename T>
+template <typename Condition, typename PostCondition>
+void
+cobc::List<T>::removeAll(Condition condition, PostCondition postCondition)
+{
+    if (head == 0)
+    {
+        // List is empty
+        return;
+    }
+
+    T* previous = head;
+    T* current  = head->next;
+
+    // Iterate trough the list and check all nodes. Iteration is started
+    // at the entry after the first one as the first entry needs a special
+    // handling.
+    while (current != 0)
+    {
+        T* node = current;
+        if (condition(*node)) {
+            previous->next = current->next;
+        }
+        else {
+            previous = current;
+        }
+        current = current->next;
+
+        postCondition(*node);
     }
 
     // Check first entry in the list

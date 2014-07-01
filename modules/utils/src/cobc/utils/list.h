@@ -113,6 +113,16 @@ public:
     removeAll(Condition condition);
 
     /**
+     * Remove all nodes that satisfy the given condition and apply
+     * a postcondition to the freed node.
+     *
+     * O(N)
+     */
+    template <typename Condition, typename PostCondition>
+    void
+    removeAll(Condition condition, PostCondition postCondition);
+
+    /**
      * Remove the first node from the list.
      *
      * O(1)
