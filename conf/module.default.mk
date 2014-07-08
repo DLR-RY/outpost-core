@@ -43,6 +43,9 @@ else
   MAKEJOBS=-j$(NPROCS)
 endif
 
+# Path relative from the module folders (e.g. '/trunk/modules/pus')
+POLYSPACE ?= ../../tools/polyspace
+
 # Run clang static analyzer (see http://clang-analyzer.llvm.org/). Requires
 # that the unittests are configured in the SConstruct file to be build
 # with the 'hosted-clang' module.
@@ -56,9 +59,18 @@ analyze-clang-view:
 	PATH=$(PATH):~/Downloads/llvm/tools/clang/tools/scan-view \
 	scan-view "$(CURDIR)/../../build/$(MODULE)/test/analyze-clang/$(FOLDER)"
 
+codingstyle: codingstyle-vera codingstyle-polyspace
+
 # Run style checker
-style:
+codingstyle-vera:
 	@find src/ -regex ".*\.\(h\|cpp\)" | vera++ -p cobc --show-rule --summary --root ../../tools/vera++
+
+codingstyle-polyspace:
+	@$(POLYSPACE)/QuickPS.sh -d "src/" -c "$(POLYSPACE)/profiles/$(MODULE)/options.cfg" -o "$(POLYSPACE)/profiles/$(MODULE)/options.txt" -i "$(POLYSPACE)/profiles/$(MODULE)/polyspace_header.h" -p "$(POLYSPACE)/ssh_info.txt"
+
+codingstyle-polyspace-view:
+	@$(POLYSPACE)/result_formater.py PolySpace_C_R2009a_src_latest.log PolySpace_C_R2009a_src_latest.1.log
+	@xdg-open PolySpace_C_R2009a_src_latest.1.log &
 
 doxygen:
 	@doxygen doc/doxygen/doxyfile

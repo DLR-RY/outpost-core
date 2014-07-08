@@ -83,14 +83,17 @@ coverage:
 	done
 	@printf "\n$(COK)[PASS] Coverage analysis done!$(CEND)\n"
 
-analyze:
+analyze-clang:
 	@for m in $(MODULES); do \
 		printf "$(CINFO)Run static analysis with clang for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m analyze-clang --no-print-directory || return 1 ; \
 	done
 	@printf "\n$(COK)[PASS] Coverage analysis done!$(CEND)\n"
 
-style:
+codestyle: codestyle-vera codestyle-jsf
+
+codestyle-jsf:
+codestyle-vera:
 	@for m in $(MODULES); do \
 		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m style --no-print-directory ; \
