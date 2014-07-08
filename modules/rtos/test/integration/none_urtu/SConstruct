@@ -1,4 +1,4 @@
-#!/usr/bin/env pythonrtems periodic timer
+#!/usr/bin/env python
 
 import os
 

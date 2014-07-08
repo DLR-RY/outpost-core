@@ -31,6 +31,8 @@ cobc::rtos::Mutex::acquire()
 bool
 cobc::rtos::Mutex::acquire(time::Duration timeout)
 {
+    (void) timeout;     // not used
+
     // TODO
     return false;
 }
