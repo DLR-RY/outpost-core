@@ -50,8 +50,9 @@ public:
     }
 
 protected:
-    inline FailureCode(uint32_t code) :
-        code(code)
+    explicit inline
+    FailureCode(uint32_t code_) :
+        code(code_)
     {
     }
 

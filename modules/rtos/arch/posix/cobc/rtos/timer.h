@@ -130,7 +130,7 @@ private:
     Function const function;
 
     timer_t tid;
-    struct itimerspec interval;
+    itimerspec interval;
 };
 
 }
