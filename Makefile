@@ -88,7 +88,7 @@ analyze-clang:
 		printf "$(CINFO)Run static analysis with clang for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m analyze-clang --no-print-directory || return 1 ; \
 	done
-	@printf "\n$(COK)[PASS] Coverage analysis done!$(CEND)\n"
+	@printf "\n$(COK)[PASS] Static analysis with clang done!$(CEND)\n"
 
 codestyle: codestyle-vera codestyle-jsf
 
