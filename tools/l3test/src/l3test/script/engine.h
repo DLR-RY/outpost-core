@@ -19,7 +19,7 @@ namespace script
  * Controls the Lua execution environment and provides means of communication
  * between Lua and C++.
  *
- * @author  Fabian Greif <fabian.greif@dlr.de>
+ * \author  Fabian Greif
  */
 class Engine
 {
@@ -29,13 +29,13 @@ public:
 	/**
 	 * Register channel for communication between Lua and C++.
 	 *
-	 * @param channel
+	 * \param channel
 	 *     Channel to register.
-	 * @param name
+	 * \param name
 	 *     Unique name of the channel.
 	 *
-	 * @retval true  Channel could be registered.
-	 * @retval false Channel was not registered due to a naming clash.
+	 * \retval true  Channel could be registered.
+	 * \retval false Channel was not registered due to a naming clash.
 	 */
 	bool
 	registerChannel(Channel::Ptr channel, const char * name);

@@ -96,9 +96,9 @@ l_bitstream_new(lua_State *L)
 // ----------------------------------------------------------------------------
 /**
  *
- * @param       L
+ * \param       L
  *     Lua interpreter state
- * @param[out]  mask
+ * \param[out]  mask
  *     Bitmask
  */
 static uint8_t*

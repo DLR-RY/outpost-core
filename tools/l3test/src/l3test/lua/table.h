@@ -67,15 +67,15 @@ namespace lua
 		/**
 		 * Look up variable in table.
 		 *
-		 * @tparam T
+		 * \tparam T
 		 *     Type of the variable.
-		 * @tparam U
+		 * \tparam U
 		 *     Type of the key (e.g. string or number).
-		 * @param  key
+		 * \param  key
 		 *     Key under which the variable is stored.
-		 * @return Value of the variable.
+		 * \return Value of the variable.
 		 *
-		 * @throw  lua::Error
+		 * \throw  lua::Error
 		 *     Thrown if T or U are not convertible to Lua types (see
 		 *     table::index).
 		 */
@@ -100,10 +100,10 @@ namespace lua
 		/**
 		 * Set variable in table.
 		 *
-		 * @param	key		variable key
-		 * @param	value	variable value
+		 * \param	key		variable key
+		 * \param	value	variable value
 		 *
-		 * @throw	lua::Error 	thrown if T or U are not convertible to
+		 * \throw	lua::Error 	thrown if T or U are not convertible to
 		 * 						Lua types (see table::index)
 		 */
 		template<typename T, typename U>

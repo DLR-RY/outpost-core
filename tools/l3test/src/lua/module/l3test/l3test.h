@@ -9,10 +9,10 @@ extern "C"
 /**
  *
  *
- * @param L
+ * \param L
  *      Lua State.
  *
- * @return
+ * \return
  */
 int
 luaopen_l3test(lua_State *L);

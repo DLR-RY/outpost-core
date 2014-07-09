@@ -19,8 +19,8 @@
  * See l3test_channel_register() on how to create a channel between Lua
  * and C++.
  *
- * @param L
- * @return
+ * \param L
+ * \return
  */
 int
 l3test_channel_new(lua_State *L);
@@ -29,7 +29,7 @@ l3test_channel_new(lua_State *L);
 /**
  * Opens the l3test.channel library
  *
- * @param L
+ * \param L
  *      Lua state
  */
 void
@@ -38,9 +38,9 @@ l3test_channel_open(lua_State *L);
 /**
  * Pushes a channel on the current Lua stack.
  *
- * @param L
+ * \param L
  *      Lua state.
- * @param channel
+ * \param channel
  *      Channel which should be used from within C++.
  */
 void

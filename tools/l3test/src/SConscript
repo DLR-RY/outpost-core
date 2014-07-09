@@ -8,12 +8,14 @@ envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 envGlobal.Append(CPPPATH=[os.path.abspath('../ext/lua-5.2.3/src')])
 env = envGlobal.Clone()
 
+# Binding code between Lua (written in C) and C++ has to use some C casts
+env.RemoveFromList('CXXFLAGS_warning', ['-Wold-style-cast'])
+
 files  = env.Glob('*/*.cpp')
 files += env.Glob('*/*/*.cpp')
+files += env.Glob('*/*/*/*.cpp')
 
-env.Append(CPPPATH=['../module'])
-
-files += ['../module/l3test/channel.cpp']
+env.Append(CPPPATH=['.'])
 
 objects = []
 for file in files:

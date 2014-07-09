@@ -1,0 +1,73 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+
+rootpath = '../../../'
+cobcpath = rootpath + '../../'
+modulepath = cobcpath + 'modules/'
+
+envGlobal = Environment(toolpath=[cobcpath + 'conf/scons/site_tools'],
+			            tools=['buildformat', 'hosted-gcc', 'buildpath', 'cobc'],
+				        ENV=os.environ)
+
+envGlobal['BASEPATH']  = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath(cobcpath + 'build/l3test/lua')
+
+envGlobal.Append(CPPPATH=[rootpath + 'ext/lua-5.2.3/src'])
+
+# Binding code between Lua (written in C) and C++ has to use some C casts
+envGlobal.RemoveFromList('CXXFLAGS_warning', ['-Wold-style-cast'])
+
+# -----------------------------------------------------------------------------
+# Build bitstream module
+
+env = envGlobal.Clone()
+
+bitstream_files   = env.Glob('bitstream/*.cpp')
+bitstream_library = env.SharedLibrary(rootpath + 'bin/lua/bitstream', bitstream_files, SHLIBPREFIX='')
+
+# -----------------------------------------------------------------------------
+# Build crc16 module
+
+env = envGlobal.Clone()
+
+# Overwrite the global enviroment to compile the libCOBC module with the
+# PIC settings. This is required to be able to link everything into a
+# shared library
+envGlobalTemp = envGlobal
+envGlobal = env
+
+env.Append(CCFLAGS=['-fPIC'])
+
+env.SConscript([
+        os.path.join(modulepath, 'utils/src/SConscript'),
+    ],
+    exports='envGlobal')
+
+env.Append(LIBS=['cobc_utils'])
+env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
+
+crc16_files   = env.Glob('crc16/*.cpp')
+crc16_library = env.SharedLibrary(rootpath + 'bin/lua/crc16', crc16_files, SHLIBPREFIX='')
+
+# restore global environment
+envGlobal = envGlobalTemp
+
+# -----------------------------------------------------------------------------
+# Build l3test module
+
+env = envGlobal.Clone()
+
+env['CXXFLAGS_language'] = ['-std=c++0x']
+env.Append(CPPPATH=[rootpath + 'src'])
+env.Append(CPPPATH=['.'])
+
+l3test_files   = env.Glob('l3test/*.cpp')
+l3test_files  += env.Glob(rootpath + 'src/l3test/*/*.cpp')
+
+l3test_library = env.SharedLibrary(rootpath + 'bin/lua/l3test', l3test_files, SHLIBPREFIX='')
+
+# -----------------------------------------------------------------------------
+# Global
+envGlobal.Default([bitstream_library, crc16_library, l3test_library])

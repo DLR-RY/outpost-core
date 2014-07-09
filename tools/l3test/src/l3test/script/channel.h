@@ -19,7 +19,7 @@ namespace script
  * Channels are used to communicate between Lua and C++. They provide a packet
  * based communication of raw (binary) data. Channels are implemented as Fifos.
  *
- * @author  Fabian Greif <fabian.greif@dlr.de>
+ * \author  Fabian Greif
  */
 class Channel
 {
@@ -34,9 +34,9 @@ public:
 	/**
 	 * Append data to the current packet.
 	 *
-	 * @param data
+	 * \param data
 	 *     Data to append.
-	 * @param numberOfBytes
+	 * \param numberOfBytes
 	 *     Number of bytes to append.
 	 */
 	void
@@ -54,14 +54,14 @@ public:
 	/**
 	 * Get the number of packets currently stored in the channel.
 	 *
-	 * @return  Number of packets.
+	 * \return  Number of packets.
 	 */
 	size_t
 	getNumberOfPackets() const;
 
 	/**
 	 *
-	 * @return Number of bytes in the current packet. Returns 0 if no packet
+	 * \return Number of bytes in the current packet. Returns 0 if no packet
 	 *     is available.
 	 */
 	size_t
@@ -73,9 +73,9 @@ public:
 	/**
 	 * Copy packet data in the supplied array.
 	 *
-	 * @param data
-	 * @param
-	 * @return
+	 * \param data
+	 * \param
+	 * \return
 	 */
 	size_t
 	getPacket(uint8_t * data, size_t numberOfBytes) const;

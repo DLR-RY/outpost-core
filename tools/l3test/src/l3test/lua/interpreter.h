@@ -44,12 +44,12 @@ namespace lua
 		 *
 		 * This does not import the built-in libraries.
 		 *
-		 * @see	openLibraries()
+		 * \see	openLibraries()
 		 */
 		Interpreter();
 
 		/**
-		 * @brief	Load built-in libraries
+		 * Load built-in libraries
 		 */
 		void
 		openLibraries();
@@ -60,9 +60,9 @@ namespace lua
 		/**
 		 * Run a string of Lua.
 		 *
-		 * @param  code
+		 * \param  code
 		 *     Lua code to execute.
-		 * @throw  lua::Error
+		 * \throw  lua::Error
 		 *     Thrown for syntax errors and uncaught runtime errors.
 		 */
 		void
@@ -71,7 +71,7 @@ namespace lua
 		/**
 		 * Run a Lua script.
 		 *
-		 * @param  path
+		 * \param  path
 		 *     Path to file to execute.
 		 * @throw  lua::Error
 		 *     Thrown for syntax errors and uncaught runtime errors.
@@ -82,7 +82,7 @@ namespace lua
 		/**
 		 * Get global table.
 		 *
-		 * @return	Reference to the global environment
+		 * \return	Reference to the global environment
 		 */
 		Table&
 		globals();
@@ -90,7 +90,7 @@ namespace lua
 		/**
 		 * Get global table.
 		 *
-		 * @return	Immutable reference to the global environment
+		 * \return	Immutable reference to the global environment
 		 */
 		const Table&
 		globals() const;

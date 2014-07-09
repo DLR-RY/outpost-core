@@ -3,7 +3,7 @@
 import os
 
 rootpath = '../../'
-cobcpath = '../../../../ext/libcobc/'
+cobcpath = rootpath + '../../'
 
 envGlobal = Environment(toolpath=[cobcpath + 'conf/scons/site_tools'],
                         tools=['cobc', 'buildformat'],
@@ -22,15 +22,15 @@ if ARGUMENTS.get('coverage') == '1':
     # detect GCC (g++) version
     version = envGlobal.DetectGccVersion()
     if version < 40700:
-        print("GCC <= 4.7 required")
+        print("GCC >= 4.7 required")
         env.Exit(1)
 
-    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(rootpath, 'build/test/coverage'))
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(cobcpath, 'build/l3test/test/coverage'))
 else:
     envGlobal.Tool('hosted-llvm')
     envGlobal.Tool('buildpath')
     
-    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(rootpath, 'build/test/unit'))
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(cobcpath, 'build/l3test/test/unit'))
 
 envGlobal['CXXFLAGS_language'] = ['-std=c++0x']
 

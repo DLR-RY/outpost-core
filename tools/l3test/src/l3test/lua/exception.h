@@ -51,7 +51,7 @@ namespace lua
 		/**
 		 * Standard constructor.
 		 *
-		 * @param message
+		 * \param message
 		 *     Error message
 		 */
 		explicit Exception(const std::string& message) :

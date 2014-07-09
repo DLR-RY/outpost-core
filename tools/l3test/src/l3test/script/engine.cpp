@@ -3,8 +3,8 @@
 
 #include <sstream>
 
-#include <l3test/channel.h>
-#include <l3test/lua/stackdump.h>
+#include <lua/module/l3test/channel.h>
+//#include <l3test/lua/stackdump.h> // for debugging
 
 using namespace l3test::script;
 

@@ -138,7 +138,7 @@ l_crc16_calculate(lua_State *L)
         size_t length;
         const char* str = lua_tolstring(L, 2, &length);
 
-        for (int i = 0; i <= length; ++i) {
+        for (size_t i = 0; i <= length; ++i) {
             d->update(str[i]);
         }
     }
