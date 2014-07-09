@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+
+import os
+
+Import('envGlobal')
+
+envGlobal.Append(CPPPATH=[os.path.abspath('lua-5.2.3/src')])
+
+env = envGlobal.Clone()
+
+files  = env.Glob('lua-5.2.3/src/*.c')
+
+# Remove warnings triggered by Lua 5.2.3
+env.RemoveFromList('CCFLAGS_warning', ['-Wcast-align', '-Wcast-qual'])
+
+objects = []
+for file in files:
+	objects.append(env.Object(file))
+envGlobal.Append(objects={'pus': objects})
+
+library = env.StaticLibrary('lua', objects)
+envGlobal.Install('$BUILDPATH/lib', library)
