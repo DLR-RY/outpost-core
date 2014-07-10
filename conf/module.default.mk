@@ -66,11 +66,16 @@ codingstyle-vera:
 	@find src/ -regex ".*\.\(h\|cpp\)" | vera++ -p cobc --show-rule --summary --root ../../tools/vera++
 
 codingstyle-polyspace:
-	@$(POLYSPACE)/QuickPS.sh -d "src/" -c "$(POLYSPACE)/profiles/$(MODULE)/options.cfg" -o "$(POLYSPACE)/profiles/$(MODULE)/options.txt" -i "$(POLYSPACE)/profiles/$(MODULE)/polyspace_header.h" -p "$(POLYSPACE)/ssh_info.txt"
+	@$(POLYSPACE)/QuickPS.sh -d "src/" \
+	                         -c "$(POLYSPACE)/profiles/$(MODULE)/options.cfg" \
+	                         -o "$(POLYSPACE)/profiles/$(MODULE)/options.txt" \
+	                         -i "$(POLYSPACE)/profiles/polyspace_header.h" \
+	                         -p "$(POLYSPACE)/ssh_info.txt"
 
 codingstyle-polyspace-view:
-	@$(POLYSPACE)/result_formater.py PolySpace_C_R2009a_src_latest.log PolySpace_C_R2009a_src_latest.1.log
-	@xdg-open PolySpace_C_R2009a_src_latest.1.log &
+	@$(POLYSPACE)/polyspace_report_formater.py $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.log \
+	                                           $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.1.log
+	@xdg-open $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.1.log &
 
 doxygen:
 	@doxygen doc/doxygen/doxyfile

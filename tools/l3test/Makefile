@@ -1,4 +1,6 @@
 
+all: test
+
 # Build the C++ extensions
 build-lua:
 	@scons -Q -C src/lua/module
