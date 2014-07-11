@@ -5,18 +5,29 @@ import os
 Import('envGlobal')
 
 envGlobal.Append(CPPPATH=[os.path.abspath('lua-5.2.3/src')])
+envGlobal.Append(LIBS=['dl'])
 
 env = envGlobal.Clone()
 
 files  = env.Glob('lua-5.2.3/src/*.c')
+toRemove = []
+for file in files:
+    filename = str(file)
+    if filename.endswith('lua.c') or filename.endswith('luac.c'):
+        toRemove.append(file)
+
+for file in toRemove:
+    files.remove(file)
 
 # Remove warnings triggered by Lua 5.2.3
 env.RemoveFromList('CCFLAGS_warning', ['-Wcast-align', '-Wcast-qual'])
 
+env.Append(CPPDEFINES=['LUA_USE_DLOPEN'])
+
 objects = []
 for file in files:
 	objects.append(env.Object(file))
-envGlobal.Append(objects={'pus': objects})
+envGlobal.Append(objects={'lua': objects})
 
-library = env.StaticLibrary('lua', objects)
+library = env.StaticLibrary('l3test_lua', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
