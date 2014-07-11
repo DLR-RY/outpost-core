@@ -62,17 +62,17 @@ analyze-clang-view:
 codingstyle: codingstyle-vera codingstyle-polyspace
 
 # Run style checker
-codingstyle-vera:
+codingstyle-simple:
 	@find src/ -regex ".*\.\(h\|cpp\)" | vera++ -p cobc --show-rule --summary --root ../../tools/vera++
 
-codingstyle-polyspace:
+codingstyle-jsf:
 	@$(POLYSPACE)/QuickPS.sh -d "src/" \
 	                         -c "$(POLYSPACE)/profiles/$(MODULE)/options.cfg" \
 	                         -o "$(POLYSPACE)/profiles/$(MODULE)/options.txt" \
 	                         -i "$(POLYSPACE)/profiles/polyspace_header.h" \
 	                         -p "$(POLYSPACE)/ssh_info.txt"
 
-codingstyle-polyspace-view:
+codingstyle-jsf-view:
 	@$(POLYSPACE)/polyspace_report_formater.py $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.log \
 	                                           $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.1.log
 	@xdg-open $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.1.log &
