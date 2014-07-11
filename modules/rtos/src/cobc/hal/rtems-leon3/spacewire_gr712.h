@@ -21,213 +21,218 @@
 
 #include "../spacewire.h"
 
-extern "C" {
+extern "C"
+{
 #include "../../../../ext/rtems-leon3/grspw/spw.h"
 }
 
-
-static void drv_register(){
-    extern void grspw_drv_register();
+static void
+drv_register()
+{
+    extern void
+    grspw_drv_register(void);
     grspw_drv_register();
 }
 
 namespace cobc
 {
     namespace leon3
-	{
-		static const char * spwPath[] = {
-				"/dev/grspw0", "/dev/grspw1", "/dev/grspw2", "/dev/grspw3", "/dev/grspw4", "/dev/grspw5"
-		};
+    {
 
-		/**
-		 * SpaceWire Driver Interface for GR712 ASIC
-		 *
-		 * Uses the SpaceWire GRSPW driver for RTEMS 4.10 on LEON3 from
-		 * RTEMS library
-		 *
-		 * \see        cobc::hal::Spacewire
-		 * \author    Muhammad Bassam
-		 */
-		class SpaceWireGR712 : public hal::SpaceWire
-		{
-			friend class DevPrinter;
-		public:
-			/**
-			 * Creates the SpW object with the device found in the
-			 * driver table and assign the node ID. Receive/Transmit
-			 * buffers are allocated statically.
-			 *
-			 * \param [node]
-			 * 		Node address of the device
-			 * \param [devId]
-			 * 		ID of the device corresponding to its path
-			 */
-			SpaceWireGR712(uint8_t node, uint8_t devId);
+        /**
+         * SpaceWire Driver Interface for GR712 ASIC
+         *
+         * Uses the SpaceWire GRSPW driver for RTEMS 4.10 on LEON3 from
+         * RTEMS library
+         *
+         * \see        cobc::hal::Spacewire
+         * \author    Muhammad Bassam
+         */
+        class SpaceWireGR712 : public hal::SpaceWire
+        {
+            friend class DevPrinter;
+        public:
+            /**
+             * Creates the SpW object with the device found in the
+             * driver table and assign the node ID. Receive/Transmit
+             * buffers are allocated statically.
+             *
+             * \param [node]
+             * 		Node address of the device
+             * \param [devId]
+             * 		ID of the device corresponding to its path
+             */
+            SpaceWireGR712(uint8_t node, uint8_t devId);
 
-			/**
-			 * Destroy the object and close the device if opened
-			 */
-			virtual
-			~SpaceWireGR712();
+            /**
+             * Destroy the object and close the device if opened
+             */
+            virtual
+            ~SpaceWireGR712();
 
-			/** \fn open()
-			 * \brief Opens the device for read-write accesses
-			 *
-			 * Device will be configured in successive steps after
-			 * successfully opening it and current device configuration
-			 * is being stored
-			 *
-			 * \return
-			 *         [True] if the device is opened successfully
-			 *         [False] error in opening
-			 */
-			virtual
-			bool open();
+            /**
+             * Opens the device for read-write accesses. Afterwards
+             * clock will be enabled to the device and configuration
+             * will took place
+             *
+             * \return
+             *         [True] if the device is opened successfully
+             *         [False] error in opening
+             */
+            virtual bool
+            open();
 
-			/** \fn close()
-			 * \brief Close the device if opened
-			 */
-			virtual
-			void close();
+            /**
+             * Disable the clock to the device and close the device
+             * if opened
+             */
+            virtual void
+            close();
 
-			/** \fn up(Blocking blockingMode = nonBlocking)
-			 * \brief Brings the link up
-			 *
-			 * Default is non blocking. In blocking mode the link
-			 * status has been checked and TX/RX is are forced to
-			 * start for specific timeout interval
-			 *
-			 * \param blockingMode
-			 *         Specify if the link should block during transmission
-			 *         or reception if no data is available
-			 */
-			virtual
-			void up(Blocking blockingMode = nonBlocking);
+            /**
+             * Brings the link up. Blocking and non blocking differentiate
+             * the waiting on the link for specific time to be up or no
+             * waiting
+             *
+             * \param blockingMode
+             *         Specify if the link should block during transmission
+             *         or reception if no data is available
+             */
+            virtual void
+            up(Blocking blockingMode = nonBlocking);
 
-			/** \fn down(Blocking blockingMode = nonBlocking)
-			 * \brief Shut down the link
-			 *
-			 * \param blockingMode
-			 *         Specify if the link should block during transmission
-			 *         or reception if no data is available
-			 */
-			virtual
-			void down(Blocking blockingMode = nonBlocking);
+            /**
+             * Shut down the link
+             *
+             * \param blockingMode
+             *         Specify if the link should block during transmission
+             *         or reception if no data is available
+             */
+            virtual void
+            down(Blocking blockingMode = nonBlocking);
 
-			/** \fn isUp()
-			 * \brief Verify if the link is up
-			 *
-			 * Before proceeding the transactions on the link, it has
-			 * to be verified if entered in Running state. Otherwise
-			 * the driver will return with error messages
-			 *
-			 * \param blockingMode
-			 *         Specify if the link should block during transmission
-			 *         or reception if no data is available
-			 * \return
-			 *         [True] if the device is opened successfully
-			 *         [False] error in opening
-			 */
-			virtual
-			bool isUp();
+            /**
+             * Before proceeding the transactions on the link, it has
+             * to be verified if entered in Running state. Otherwise
+             * the driver will return with error messages
+             *
+             * \param blockingMode
+             *         Specify if the link should block during transmission
+             *         or reception if no data is available
+             * \return
+             *         [True] if the device is opened successfully
+             *         [False] error in opening
+             */
+            virtual bool
+            isUp();
 
-			/** \fn requestBuffer(TransmitBuffer *& buffer, Blocking blockingMode = blocking)
-			 * \brief Request a send buffer
-			 *
-			 * A pointer to the transmit buffer has been passed for fill up. Currently it is
-			 * a minimal implementation without any buffer management
-			 *
-			 * \param[out]    buffer
-			 *         Pointer reference to a send buffer
-			 * \param[in]    blockingMode
-			 *         Default is blocking mode.
-			 * \return
-			 *         Success
-			 */
-			virtual
-			Result requestBuffer(TransmitBuffer *& buffer, Blocking blockingMode = blocking);
+            /**
+             * A pointer to the transmit buffer has been passed for fill up. Currently it is
+             * a minimal implementation without any buffer management
+             *
+             * \param[out]    buffer
+             *         Pointer reference to a send buffer
+             * \param[in]    blockingMode
+             *         Default is blocking mode.
+             * \return
+             *         Success
+             */
+            virtual Result
+            requestBuffer(TransmitBuffer *& buffer, Blocking blockingMode =
+                                  blocking);
 
-			/** \fn send(TransmitBuffer * buffer)
-			 * \brief Send the data block
-			 *
-			 * Sending the data over SpW link by using RTEMS standard IO calls
-			 *
-			 * \param buffer
-			 *         Pointer to the transmit buffer object
-			 * \return
-			 *         [Success] for sending specified data bytes
-			 *         [Failure] for failed to send specified data bytes
-			 */
-			virtual
-			Result send(TransmitBuffer * buffer);
+            /**
+             * Sending the data over SpW link by using RTEMS standard IO calls
+             *
+             * \param buffer
+             *         Pointer to the transmit buffer object
+             * \return
+             *         [Success] for sending specified data bytes
+             *         [Failure] for failed to send specified data bytes
+             */
+            virtual Result
+            send(TransmitBuffer * buffer);
 
-			/** \fn receive(ReceiveBuffer& buffer, Blocking blockingMode = blocking)
-			 * \brief Receive the data block
-			 *
-			 * Receiving the data over SpW link by using RTEMS standard IO calls
-			 *
-			 * \param buffer
-			 *         Reference to the receive buffer object
-			 * \param blockingMode
-			 *         Block the reception (Currently implemented in open() method call)
-			 * \return
-			 *         [Success] for sending specified data bytes
-			 *         [Failure] for failed to send specified data bytes
-			 */
-			virtual
-			Result receive(ReceiveBuffer& buffer, Blocking blockingMode = blocking);
+            /**
+             * Receiving the data over SpW link by using RTEMS standard IO calls
+             *
+             * \param buffer
+             *         Reference to the receive buffer object
+             * \param blockingMode
+             *         Block the reception (Currently implemented in open() method call)
+             * \return
+             *         [Success] for sending specified data bytes
+             *         [Failure] for failed to send specified data bytes
+             */
+            virtual Result
+            receive(ReceiveBuffer& buffer, Blocking blockingMode = blocking);
 
-			/** \fn releaseBuffer(const ReceiveBuffer& buffer)
-			 * \brief Intended to be used for releasing the receiving buffer
-			 *
-			 * Not implemented. As the buffer is internally handled in the
-			 * GRSPW driver provided by the vendor and provide on option for
-			 * releasing it
-			 *
-			 * \param buffer
-			 *         Reference to the receive buffer object
-			 */
-			virtual
-			void releaseBuffer(const ReceiveBuffer& buffer);
+            /**
+             * Intended to be used for releasing the receiving buffer
+             * Not implemented. As the buffer is internally handled in the
+             * GRSPW driver provided by the vendor and provide on option for
+             * releasing it
+             *
+             * \param buffer
+             *         Reference to the receive buffer object
+             */
+            virtual void
+            releaseBuffer(const ReceiveBuffer& buffer);
 
-			/**
-			 * Flush the buffers for the object
-			 */
-			virtual
-			void flushReceiveBuffer();
+            /**
+             * Flush the buffers for the object
+             */
+            virtual void
+            flushReceiveBuffer();
 
-			inline bool
-			isOpened(){
-				return opened;
-			}
+            inline bool
+            isOpened()
+            {
+                return opened;
+            }
 
-		private:
-			// Spacewire device access info
-			uint8_t node;                                       /**< SpaceWire node address */
-			uint8_t devId;										/**< Device ID corresponding to its access path */
-			int devHandle;                                      /**< SpaceWire access device handle */
-			//rtos::Semaphore txLock;
-			bool firstTransmit;
+        private:
 
-			// TX & RX buffer
-			TransmitBuffer txBuff;                              /**< Transmit buffer object */
-			uint8_t txBuffData[4500] ATTRIBUTE_ALIGNED(4);      /**< Transmit buffer place holder */
-			uint8_t rxBuffData[4500] ATTRIBUTE_ALIGNED(4);      /**< Receive buffer place holder */
+            static inline unsigned int
+            readReg(unsigned int addr)
+            {
+                return (*(volatile unsigned int *) (addr));
+            }
 
-			// Status information
-			uint32_t txCount;                                   /**< Transmit data counter */
-			uint32_t rxCount;                                   /**< Receive data counter */
-			bool opened;
-			spw_stats devStatus;                                /**< Device status information */
+            static inline void
+            writeReg(unsigned int addr, unsigned int val)
+            {
+                *((volatile unsigned int *) addr) = val;
+            }
 
-			// Spacewire device configuration
-			spw_config devConfig;                               /**< Device configuration */
-			spw_ioctl_packetsize devPacketSize;                 /**< Device packet configuration */
-			static const uint32_t rTimeout = 500;				/**< Read timeout constant in blocking mode [ms]*/
-		};
+            // Spacewire device access info
+            uint8_t node; /**< SpaceWire node address */
+            uint8_t devId; /**< Device ID corresponding to its access path */
+            int devHandle; /**< SpaceWire access device handle */
+            //rtos::Semaphore txLock;
+            bool firstTransmit;
 
-	}
+            // TX & RX buffer
+            TransmitBuffer txBuff; /**< Transmit buffer object */
+            uint8_t txBuffData[4500] ATTRIBUTE_ALIGNED(4); /**< Transmit buffer place holder */
+            uint8_t rxBuffData[4500] ATTRIBUTE_ALIGNED(4); /**< Receive buffer place holder */
+
+            // Status information
+            uint32_t txCount; /**< Transmit data counter */
+            uint32_t rxCount; /**< Receive data counter */
+            bool opened;
+            spw_stats devStatus; /**< Device status information */
+
+            // Spacewire device configuration
+            spw_config devConfig; /**< Device configuration */
+            spw_ioctl_packetsize devPacketSize; /**< Device packet configuration */
+            static const uint32_t rTimeout = 500; /**< Read timeout constant in blocking mode [ms]*/
+            static const unsigned int clockGatingUnlockReg = 0x80000D00;
+            static const unsigned int clockGatingEnableReg = 0x80000D04;
+            static const unsigned int clockGatingResetReg = 0x80000D08;
+        };
+
+    }
 }
-
 
 #endif // COBC_LEON3_SPACEWIRE_GR712_H_
