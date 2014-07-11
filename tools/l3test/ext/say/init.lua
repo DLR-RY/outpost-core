@@ -43,7 +43,7 @@ local __meta = {
       table.insert(strings, tostring(v))
     end
 
-    return #strings > 0 and str:format(unpack(strings)) or str
+    return #strings > 0 and str:format(table.unpack(strings)) or str
   end,
 
   __index = function(self, key)
