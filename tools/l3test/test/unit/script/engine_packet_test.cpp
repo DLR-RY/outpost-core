@@ -19,9 +19,12 @@ TEST(EnginePacketTest, sendDataFromLua)
 	engine.registerChannel(channel, "tm");
 
 	engine.execute(R"(
+assert = require "luassert"
 bitstream = require "bitstream"
 ccsds = require "packetgenerator.ccsds"
+)");
 
+	engine.execute(R"(
 frame = ccsds.transfer_frame {
     frame_header = {
         type = ccsds.TYPE_AD,
@@ -60,21 +63,18 @@ TEST(EnginePacketTest, sendDataToLua)
     Channel::Ptr channel(new Channel);
     engine.registerChannel(channel, "tc");
 
+    engine.execute(R"(
+assert = require "luassert"
+bitstream = require "bitstream"
+ccsds = require "packetgenerator.ccsds"
+)");
+
     uint8_t data[10] = { 0x00, 0x1B, 0x00 ,0x09, 0x01, 0x01, 0x02, 0x03, 0xF2, 0x93 };
 
     channel->append(data, sizeof(data));
     channel->finishPacket();
 
     engine.execute(R"(
-assert = require "luassert"
-bitstream = require "bitstream"
-ccsds = require "packetgenerator.ccsds"
-
-assert.equals(1, tc:getNumberOfPackets())
-
-packet = tc:get()
-tc:next()
-
 frame = ccsds.transfer_frame {
     frame_header = {
         type = ccsds.TYPE_AD,
@@ -84,6 +84,9 @@ frame = ccsds.transfer_frame {
     },
     application_data = bitstream.new('\x01\x02\x03')
 }
+
+packet = tc:get()
+tc:next()
 
 assert.same(frame:bytes(), packet)
 )");
