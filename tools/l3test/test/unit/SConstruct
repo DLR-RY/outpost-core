@@ -56,11 +56,15 @@ env.RemoveFromList('CCFLAGS_warning', [
 env.Append(CPPPATH=[
     '.'
 ])
-env.Append(LIBS=['cobc_utils', 'l3test', 'lua', 'gmock-1.6.0'])
+env.Append(LIBS=['cobc_utils', 'l3test', 'l3test_lua', 'gmock-1.6.0'])
 env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 
 files  = env.Glob('*.cpp')
 files += env.Glob('*/*.cpp')
+
+# Export the symbols into the dynamic symbol table. This is needed when
+# using dynamically loaded lua modules.
+env.Append(LINKFLAGS=['-Wl,--export-dynamic'])
 
 envGlobal.Alias('build', env.Program('unittest', files))
 

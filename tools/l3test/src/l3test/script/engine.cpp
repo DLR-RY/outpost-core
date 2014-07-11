@@ -4,15 +4,65 @@
 #include <sstream>
 
 #include <lua/module/l3test/channel.h>
-//#include <l3test/lua/stackdump.h> // for debugging
+#include <lua/exception.h>
+//#include <lua/stackdump.h> // for debugging
 
 using namespace l3test::script;
 
-Engine::Engine()
+namespace
 {
-    interpreter.openLibraries();
+    int atpanic(lua_State* L)
+    {
+        throw lua::Exception(lua_tostring(L, -1));
+    }
+}
 
-    l3test_channel_open(interpreter.getState());
+Engine::Engine() :
+        L(luaL_newstate())
+{
+    luaL_openlibs(L);
+    lua_atpanic(L, atpanic);
+
+    l3test_channel_open(L);
+}
+
+Engine::~Engine()
+{
+    lua_close(L);
+}
+
+static void
+setPath(lua_State* L, const char* field, const char* path)
+{
+    lua_getglobal(L, "package");
+    //lua_getfield(L, -1, field);
+
+    //std::string cur_path = lua_tostring(L, -1);
+    //lua_pop(L, 1);
+
+    //cur_path.append(";");
+    //cur_path.append(path);
+
+    std::string cur_path = path;
+
+    // Set the new path value
+    lua_pushstring(L, cur_path.c_str());
+    lua_setfield(L, -2, field);
+
+    // Remove the package table
+    lua_pop(L, 1);
+}
+
+void
+Engine::setLuaPath(const char* path)
+{
+    setPath(L, "path", path);
+}
+
+void
+Engine::setLuaCPath(const char* path)
+{
+    setPath(L, "cpath", path);
 }
 
 static std::vector<std::string> &
@@ -50,7 +100,6 @@ Engine::registerChannel(Channel::Ptr channel, const char * name)
 	auto nameElements = split(strName, '.');
 
 	channels.push_back(std::make_pair(strName, channel));
-	lua::State L = interpreter.getState();
 
 	if (nameElements.size() == 1) {
 	    l3test_channel_register(L, channel);
@@ -93,6 +142,9 @@ Engine::registerChannel(Channel::Ptr channel, const char * name)
 bool
 Engine::execute(const char* string)
 {
-	interpreter.doString(string);
+	int error = luaL_dostring(L, string);
+    if (error) {
+        lua_error(L);
+    }
 	return false;
 }

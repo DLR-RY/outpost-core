@@ -7,7 +7,10 @@
 
 #include "channel.h"
 
-#include "../lua/interpreter.h"
+extern "C"
+{
+#include <lua.h>
+}
 
 namespace l3test
 {
@@ -25,6 +28,14 @@ class Engine
 {
 public:
 	Engine();
+
+	~Engine();
+
+	void
+	setLuaPath(const char* path);
+
+	void
+	setLuaCPath(const char* path);
 
 	/**
 	 * Register channel for communication between Lua and C++.
@@ -44,7 +55,7 @@ public:
 	execute(const char* string);
 
 private:
-	lua::Interpreter interpreter;
+	lua_State* L;
 
 	std::list< std::pair<std::string, Channel::Ptr> > channels;
 };
