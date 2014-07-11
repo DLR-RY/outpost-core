@@ -90,13 +90,18 @@ analyze-clang:
 	done
 	@printf "\n$(COK)[PASS] Static analysis with clang done!$(CEND)\n"
 
-codestyle: codestyle-vera codestyle-jsf
+codingstyle: codingstyle-vera codingstyle-jsf
 
-codestyle-jsf:
-codestyle-vera:
+codingstyle-jsf:
 	@for m in $(MODULES); do \
 		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
-		make -C modules/$$m style --no-print-directory ; \
+		make -C modules/$$m codingstyle-polyspace --no-print-directory ; \
+	done
+	
+codingstyle-vera:
+	@for m in $(MODULES); do \
+		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
+		make -C modules/$$m codingstyle-vera --no-print-directory ; \
 	done
 
 metric:

@@ -150,4 +150,3 @@ Deserialize::read<double>()
 }
 
 #endif // COBC_UTILS_SERIALIZE_IMPL_H
-

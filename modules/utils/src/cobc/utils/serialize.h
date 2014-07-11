@@ -379,5 +379,3 @@ private:
 #include "serialize_impl.h"
 
 #endif // COBC_UTILS_SERIALIZE_H
-
-
