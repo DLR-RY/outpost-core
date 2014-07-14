@@ -73,9 +73,20 @@ codingstyle-jsf:
 	                         -p "$(POLYSPACE)/ssh_info.txt"
 
 codingstyle-jsf-view:
-	@$(POLYSPACE)/polyspace_report_formater.py $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.log \
-	                                           $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.1.log
+	@$(POLYSPACE)/polyspace_jsf_log_formater.py $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.log \
+	                                            $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.1.log
 	@xdg-open $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.1.log &
+
+codingstyle-jsf-annotate:
+	@$(POLYSPACE)/polyspace_jsf_annotate.py -d "src/" \
+	                                        -c "$(POLYSPACE)/profiles/$(MODULE)/options.cfg" \
+	                                        -r "$(POLYSPACE)/results/$(MODULE)/JSF-report.xml" \
+	                                        --annotate
+
+codingstyle-jsf-remove-annotations:
+	@$(POLYSPACE)/polyspace_jsf_annotate.py -d "src/" \
+	                                        -c "$(POLYSPACE)/profiles/$(MODULE)/options.cfg" \
+	                                        -r "$(POLYSPACE)/results/$(MODULE)/JSF-report.xml"
 
 doxygen:
 	@doxygen doc/doxygen/doxyfile
