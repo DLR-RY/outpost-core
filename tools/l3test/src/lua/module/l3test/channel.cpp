@@ -158,7 +158,6 @@ l_next_packet(lua_State *L)
     return 0;
 }
 
-
 // ---------------------------------------------------------------------------
 static const struct luaL_Reg arraylib_m[] = {
 	{ "__gc", l_destroy },
@@ -173,7 +172,6 @@ static const struct luaL_Reg arraylib_m[] = {
 
     { "get", l_get_packet },
     { "next", l_next_packet },
-
 
 	{ NULL, NULL },
 };

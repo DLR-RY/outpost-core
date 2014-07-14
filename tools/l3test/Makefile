@@ -13,7 +13,7 @@ test-cpp:
 	@scons -Q -C test/unit -j3
 	@../../build/l3test/test/unit/unittest
 
-test: test-cpp test-lua
+test: test-cpp build-lua test-lua
 
 coverage:
 	@scons -Q -C test/unit coverage=1 -j3
@@ -23,4 +23,4 @@ clean:
 	@scons -Q -C test/unit -c
 	@scons -Q -C src/lua/module -c
 
-.PHONY: test-lua test-cpp test clean
+.PHONY: build-lua test-lua test-cpp test clean
