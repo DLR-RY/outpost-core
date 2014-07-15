@@ -28,6 +28,16 @@ public:
     List();
 
     /**
+     * Destructor.
+     *
+     * \warning
+     *     The items contained in the list are not destroyed by deleting
+     *     the list. The list does not take ownership of items added to it,
+     *     therefore all items have to be destroyed by their original creator.
+     */
+    ~List();
+
+    /**
      * Remove all entries from the list.
      *
      * The nodes are not changed only the link to the first node is
@@ -49,10 +59,10 @@ public:
      *
      * O(1)
      */
-    T *
+    T*
     first();
 
-    const T *
+    const T*
     first() const;
 
     template <typename Condition>
@@ -65,7 +75,7 @@ public:
      * O(1)
      */
     void
-    add(T * node);
+    add(T* node);
 
     /**
      * Insert a node sorted into the list.
@@ -76,7 +86,7 @@ public:
      * O(N)
      */
     void
-    insert(T * node);
+    insert(T* node);
 
     /**
      * Remove a node from the list.
@@ -90,7 +100,7 @@ public:
      * \retval \c false if the node is not in the list.
      */
     bool
-    removeNode(T * node);
+    removeNode(T* node);
 
     /**
      * Remove the first node that satisfy the given condition.
@@ -140,19 +150,19 @@ public:
         Iterator(const Iterator& other);
 
         Iterator&
-        operator = (const Iterator& other);
+        operator =(const Iterator& other);
 
         Iterator&
-        operator ++ ();
+        operator ++();
 
         bool
-        operator == (const Iterator& other) const;
+        operator ==(const Iterator& other) const;
 
         bool
-        operator != (const Iterator& other) const;
+        operator !=(const Iterator& other) const;
 
         T&
-        operator * ();
+        operator *();
 
         T*
         operator->();
@@ -171,7 +181,14 @@ public:
     end();
 
 private:
-    T * head;
+    T* head;
+
+    // disable copy constructor
+    List(const List&);
+
+    // disable assignment operator
+    List&
+    operator =(const List&);
 };
 }
 

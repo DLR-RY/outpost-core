@@ -18,7 +18,9 @@ namespace cobc
 template <int N>
 struct PowerOfTwo
 {
-    enum { value = 2 * PowerOfTwo<N-1>::value };
+    static const int base = 2;
+
+    enum { value = base * PowerOfTwo<N-1>::value };
 };
 
 template <>

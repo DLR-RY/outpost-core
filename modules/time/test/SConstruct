@@ -5,7 +5,8 @@ import os
 vars = Variables('custom.py')
 vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 
-envGlobal = Environment(toolpath=['../../../../conf/scons/site_tools'],
+rootpath = '../../../'
+envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
                         tools=['cobc', 'buildformat'],
                         variables=vars,
                         ENV=os.environ)
@@ -14,8 +15,7 @@ Help(vars.GenerateHelpText(envGlobal))
 
 envGlobal.Append(CPPDEFINES={'UNITTEST': 1})
 
-modulepath  = '../../..'
-buildfolder = os.path.join(modulepath, '../build')
+buildfolder = os.path.join(rootpath, 'build')
 
 envGlobal['BASEPATH'] = os.path.abspath('.')
 if envGlobal['coverage']:
@@ -30,8 +30,9 @@ else:
     envGlobal.Tool('hosted-llvm')
     envGlobal.Tool('buildpath')
     
-    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'time/test/unit'))
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'time/test/unittest'))
 
+modulepath  = rootpath + '/modules'
 envGlobal.SConscript([
         os.path.join(modulepath, 'utils/src/SConscript'),
         os.path.join(modulepath, 'utils/ext/SConscript'),
@@ -58,5 +59,8 @@ env.Append(LIBS=['cobc_time', 'pthread', 'gmock-1.6.0'])
 env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 
 files  = env.Glob('*.cpp')
+files += env.Glob('*/*.cpp')
+files += env.Glob('*/*/*.cpp')
+files += env.Glob('*/*/*/*.cpp')
 
-envGlobal.Alias('build', env.Program('unittest', files))
+envGlobal.Alias('build', env.Program('runner', files))

@@ -39,6 +39,11 @@ public:
     friend class TimePoint;
     friend class TimeModel;
 
+    inline
+    ~Duration()
+    {
+    }
+
     /**
      * Copy constructor
      */
@@ -49,7 +54,7 @@ public:
     }
 
     inline Duration &
-    operator = (const Duration &other)
+    operator =(const Duration& other)
     {
         ticks = other.ticks;
         return *this;
@@ -116,7 +121,7 @@ public:
     }
 
     inline Duration
-    operator - () const
+    operator -() const
     {
         return Duration(-ticks);
     }

@@ -29,6 +29,28 @@ namespace smpc
  */
 class Subscriber
 {
+public:
+    inline
+    Subscriber()
+    {
+    }
+
+    inline
+    ~Subscriber()
+    {
+    }
+
+    inline
+    Subscriber(const Subscriber&)
+    {
+    }
+
+    inline
+    Subscriber&
+    operator =(const Subscriber&)
+    {
+        return *this;
+    }
 };
 
 }

@@ -19,6 +19,27 @@ namespace cobc
  */
 class Callable
 {
+public:
+    inline
+    Callable()
+    {
+    }
+
+    inline
+    ~Callable()
+    {
+    }
+
+    inline
+    Callable(const Callable&)
+    {
+    }
+
+    inline Callable&
+    operator =(const Callable&)
+    {
+        return *this;
+    }
 };
 
 }

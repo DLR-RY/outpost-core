@@ -44,9 +44,10 @@ public:
      * Acquire the mutex.
      *
      * \param m
-     *         The mutex to acquire.
+     *      The mutex to acquire.
      */
-    inline MutexGuard(Mutex& m) :
+    inline
+    MutexGuard(Mutex& m) :
         mutex(m)
     {
         mutex.acquire();
@@ -55,12 +56,20 @@ public:
     /**
      * Release the mutex.
      */
-    inline ~MutexGuard()
+    inline
+    ~MutexGuard()
     {
         mutex.release();
     }
 
 private:
+    // Disable copy constructor
+    MutexGuard(const MutexGuard&);
+
+    // Disable assignment operator
+    MutexGuard&
+    operator =(const MutexGuard& other);
+
     Mutex& mutex;
 };
 

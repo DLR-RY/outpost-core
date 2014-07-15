@@ -57,6 +57,17 @@ public:
     {
     }
 
+    inline
+    TimePoint(const TimePoint& other) :
+        time(other.time)
+    {
+    }
+
+    inline
+    ~TimePoint()
+    {
+    }
+
     inline Duration
     operator -(const TimePoint& other) const
     {

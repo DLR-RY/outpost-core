@@ -27,6 +27,17 @@ class TimeModel
 public:
     static TimePoint
     endOfEpoch();
+
+private:
+    // disable unneeded implicitly member functions
+    TimeModel();
+
+    ~TimeModel();
+
+    TimeModel(const TimeModel&);
+
+    TimeModel&
+    operator =(const TimeModel&);
 };
 
 }

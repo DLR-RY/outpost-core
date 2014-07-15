@@ -66,6 +66,13 @@ public:
     publish(void * message);
 
 protected:
+    // disable copy constructor
+    TopicBase(const TopicBase&);
+
+    // disable assignment operator
+    TopicBase&
+    operator =(const TopicBase&);
+
     /// List of all topics currently active.
     static TopicBase* listOfAllTopics;
 
@@ -150,6 +157,14 @@ public:
         NonConstType * ptr = const_cast< NonConstType * >(&message);
         TopicBase::publish(reinterpret_cast<void *>(ptr));
     }
+
+private:
+    // disable copy constructor
+    Topic(const Topic&);
+
+    // disable assignment operator
+    Topic&
+    operator =(const Topic&);
 };
 
 }

@@ -19,6 +19,11 @@ cobc::List<T>::List() :
 }
 
 template <typename T>
+cobc::List<T>::~List()
+{
+}
+
+template <typename T>
 bool
 cobc::List<T>::isEmpty() const
 {
@@ -26,14 +31,14 @@ cobc::List<T>::isEmpty() const
 }
 
 template <typename T>
-T *
+T*
 cobc::List<T>::first()
 {
     return head;
 }
 
 template <typename T>
-const T *
+const T*
 cobc::List<T>::first() const
 {
     return head;

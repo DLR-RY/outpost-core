@@ -64,42 +64,48 @@ template <>
 inline uint8_t
 Deserialize::peek<uint8_t>(size_t n) const
 {
-    return peek8(n);
+    uint8_t value = peek8(n);
+    return value;
 }
 
 template <>
 inline uint16_t
 Deserialize::peek<uint16_t>(size_t n) const
 {
-    return peek16(n);
+    uint16_t value = peek16(n);
+    return value;
 }
 
 template <>
 inline uint32_t
 Deserialize::peek<uint32_t>(size_t n) const
 {
-    return peek32(n);
+    uint32_t value = peek32(n);
+    return value;
 }
 
 template <>
 inline uint64_t
 Deserialize::peek<uint64_t>(size_t n) const
 {
-    return peek64(n);
+    uint64_t value = peek64(n);
+    return value;
 }
 
 template <>
 inline float
 Deserialize::peek<float>(size_t n) const
 {
-    return peekFloat(n);
+    float value = peekFloat(n);
+    return value;
 }
 
 template <>
 inline double
 Deserialize::peek<double>(size_t n) const
 {
-    return peekDouble(n);
+    double value = peekDouble(n);
+    return value;
 }
 
 // ----------------------------------------------------------------------------
@@ -108,35 +114,40 @@ template <>
 inline uint8_t
 Deserialize::read<uint8_t>()
 {
-    return read8();
+    uint8_t value = read8();
+    return value;
 }
 
 template <>
 inline uint16_t
 Deserialize::read<uint16_t>()
 {
-    return read16();
+    uint16_t value = read16();
+    return value;
 }
 
 template <>
 inline uint32_t
 Deserialize::read<uint32_t>()
 {
-    return read32();
+    uint32_t value = read32();
+    return value;
 }
 
 template <>
 inline uint64_t
 Deserialize::read<uint64_t>()
 {
-    return read64();
+    uint64_t value = read64();
+    return value;
 }
 
 template <>
 inline float
 Deserialize::read<float>()
 {
-    return readFloat();
+    float value = readFloat();
+    return value;
 }
 
 
@@ -144,7 +155,8 @@ template <>
 inline double
 Deserialize::read<double>()
 {
-    return readDouble();
+    double value = readDouble();
+    return value;
 }
 
 }

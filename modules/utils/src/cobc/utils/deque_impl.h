@@ -14,7 +14,11 @@
 template<typename T>
 cobc::Deque<T>::Deque(T* backendBuffer,
                       size_t n) :
-    buffer(backendBuffer), maxSize(n), head(0), tail(1), size(0)
+    buffer(backendBuffer),
+    maxSize(n),
+    head(0),
+    tail(1),
+    size(0)
 {
 }
 
@@ -23,21 +27,21 @@ template<typename T>
 bool
 cobc::Deque<T>::isEmpty() const
 {
-    return (this->size == 0);
+    return (size == 0);
 }
 
 template<typename T>
 bool
 cobc::Deque<T>::isFull() const
 {
-    return (this->size == maxSize);
+    return (size == maxSize);
 }
 
 template<typename T>
 typename cobc::Deque<T>::Size
 cobc::Deque<T>::getSize() const
 {
-    return this->size;
+    return size;
 }
 
 template<typename T>
@@ -59,9 +63,9 @@ template<typename T>
 void
 cobc::Deque<T>::clear()
 {
-    this->head = 0;
-    this->tail = 1;
-    this->size = 0;
+    head = 0;
+    tail = 1;
+    size = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -69,7 +73,7 @@ template<typename T>
 T&
 cobc::Deque<T>::getFront()
 {
-    return this->buffer[this->tail];
+    return buffer[tail];
 }
 
 
@@ -77,7 +81,7 @@ template<typename T>
 const T&
 cobc::Deque<T>::getFront() const
 {
-    return this->buffer[this->tail];
+    return buffer[tail];
 }
 
 // ----------------------------------------------------------------------------
@@ -85,14 +89,14 @@ template<typename T>
 T&
 cobc::Deque<T>::getBack()
 {
-    return this->buffer[this->head];
+    return buffer[head];
 }
 
 template<typename T>
 const T&
 cobc::Deque<T>::getBack() const
 {
-    return this->buffer[this->head];
+    return buffer[head];
 }
 
 // ----------------------------------------------------------------------------
@@ -100,38 +104,40 @@ template<typename T>
 bool
 cobc::Deque<T>::append(const T& value)
 {
-    if (this->isFull())
+    bool result = false;
+    if (!isFull())
     {
-        return false;
+        if (head >= (maxSize - 1))
+        {
+            head = 0;
+        }
+        else
+        {
+            head++;
+        }
+
+        buffer[head] = value;
+        size++;
+
+        result = true;
     }
 
-    if (this->head >= (maxSize - 1))
-    {
-        this->head = 0;
-    }
-    else
-    {
-        this->head++;
-    }
-
-    this->buffer[this->head] = value;
-    this->size++;
-    return true;
+    return result;
 }
 
 template<typename T>
 void
 cobc::Deque<T>::removeBack()
 {
-    if (this->head == 0)
+    if (head == 0)
     {
-        this->head = maxSize - 1;
+        head = maxSize - 1;
     }
     else
     {
-        this->head--;
+        head--;
     }
-    this->size--;
+    size--;
 }
 
 // ----------------------------------------------------------------------------
@@ -139,39 +145,41 @@ template<typename T>
 bool
 cobc::Deque<T>::prepend(const T& value)
 {
-    if (this->isFull())
+    bool result = false;
+    if (!isFull())
     {
-        return false;
+        if (tail == 0)
+        {
+            tail = maxSize - 1;
+        }
+        else
+        {
+            tail--;
+        }
+
+        buffer[tail] = value;
+        size++;
+
+        result = true;
     }
 
-    if (this->tail == 0)
-    {
-        this->tail = maxSize - 1;
-    }
-    else
-    {
-        this->tail--;
-    }
-
-    this->buffer[this->tail] = value;
-    this->size++;
-    return true;
+    return result;
 }
 
 template<typename T>
 void
 cobc::Deque<T>::removeFront()
 {
-    if (this->tail >= (maxSize - 1))
+    if (tail >= (maxSize - 1))
     {
-        this->tail = 0;
+        tail = 0;
     }
     else
     {
-        this->tail++;
+        tail++;
     }
 
-    this->size--;
+    size--;
 }
 
 #endif // COBC_DEQUE_IMPL_H

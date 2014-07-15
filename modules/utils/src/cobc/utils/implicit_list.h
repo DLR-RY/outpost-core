@@ -103,6 +103,14 @@ public:
 protected:
     /// Pointer to the next element
     T * next;
+
+private:
+    // disable copy constructor
+    ImplicitList(const ImplicitList&);
+
+    // disable assignment operator
+    ImplicitList&
+    operator =(const ImplicitList&);
 };
 
 }

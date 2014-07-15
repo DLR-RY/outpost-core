@@ -4,6 +4,8 @@
 #include <cobc/smpc/topic.h>
 #include <cobc/smpc/subscription.h>
 
+#include <unittest/smpc/testing_subscription.h>
+
 #include <cstring>
 #include <unittest/harness.h>
 
@@ -74,7 +76,7 @@ public:
 
     virtual void TearDown()
     {
-        cobc::smpc::TestingSubscription::releaseAllSubscriptions();
+        unittest::smpc::TestingSubscription::releaseAllSubscriptions();
     }
 
     Component component;
@@ -88,7 +90,7 @@ TEST_F(SubscriptionTest, receiveNone)
         EXPECT_FALSE(component.received[i]);
     }
 
-    cobc::smpc::TestingSubscription::connectSubscriptionsToTopics();
+    unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
     topic.publish(data);
     for (int i = 0; i < 4; ++i) {
@@ -101,7 +103,7 @@ TEST_F(SubscriptionTest, receiveTwo)
     cobc::smpc::Subscription * subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
     cobc::smpc::Subscription * subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
 
-    cobc::smpc::TestingSubscription::connectSubscriptionsToTopics();
+    unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
     topic.publish(data);
     EXPECT_TRUE(component.received[0]);
@@ -120,7 +122,7 @@ TEST_F(SubscriptionTest, receiveFour)
     cobc::smpc::Subscription * subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
     cobc::smpc::Subscription * subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
-    cobc::smpc::TestingSubscription::connectSubscriptionsToTopics();
+    unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
     topic.publish(data);
     EXPECT_TRUE(component.received[0]);
@@ -141,7 +143,7 @@ TEST_F(SubscriptionTest, receiveFourWithDelete)
     cobc::smpc::Subscription * subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
     cobc::smpc::Subscription * subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
-    cobc::smpc::TestingSubscription::connectSubscriptionsToTopics();
+    unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
     delete subscription1;
 
@@ -163,7 +165,7 @@ TEST_F(SubscriptionTest, receiveFourWithDelete2)
     cobc::smpc::Subscription * subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
     cobc::smpc::Subscription * subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
-    cobc::smpc::TestingSubscription::connectSubscriptionsToTopics();
+    unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
     delete subscription0;
     delete subscription3;

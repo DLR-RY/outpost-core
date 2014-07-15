@@ -99,6 +99,13 @@ public:
     removeFront();
 
 private:
+    // disable copy constructor
+    Deque(const Deque&);
+
+    // disable assignment operator
+    Deque&
+    operator =(const Deque&);
+
     T* const buffer;
     const Size maxSize;
 

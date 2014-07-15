@@ -18,7 +18,9 @@ namespace cobc
 
 struct uint24_t
 {
-    uint8_t value[3];
+    static const int byteLength = 3;
+
+    uint8_t value[byteLength];
 };
 
 /**
@@ -32,8 +34,21 @@ class Serialize
 {
 public:
     explicit inline
-    Serialize(uint8_t * outputBuffer) :
-            buffer(outputBuffer), begin(outputBuffer)
+    Serialize(uint8_t* outputBuffer) :
+            buffer(outputBuffer),
+            begin(outputBuffer)
+    {
+    }
+
+    inline
+    ~Serialize()
+    {
+    }
+
+    inline
+    Serialize(const Serialize& other) :
+        buffer(other.buffer),
+        begin(other.begin)
     {
     }
 
@@ -126,6 +141,10 @@ public:
     }
 
 private:
+    // disable assignment operator
+    Serialize&
+    operator =(const Serialize& other);
+
     uint8_t* buffer;
     const uint8_t* const begin;
 };
@@ -149,7 +168,20 @@ class Deserialize
 public:
     explicit inline
     Deserialize(const uint8_t* inputBuffer) :
-            buffer(inputBuffer), begin(inputBuffer)
+            buffer(inputBuffer),
+            begin(inputBuffer)
+    {
+    }
+
+    inline
+    ~Deserialize()
+    {
+    }
+
+    inline
+    Deserialize(const Deserialize& other) :
+        buffer(other.buffer),
+        begin(other.begin)
     {
     }
 
@@ -352,13 +384,13 @@ public:
     /**
      * Get Pointer to the current location in the buffer.
      */
-    inline const uint8_t *
+    inline const uint8_t*
     getPointer() const
     {
         return buffer;
     }
 
-    inline const uint8_t *
+    inline const uint8_t*
     getPointerToCurrentPosition()
     {
         return buffer;
@@ -371,6 +403,10 @@ public:
     }
 
 private:
+    // disable assignment operator
+    Deserialize&
+    operator =(const Deserialize& other);
+
     const uint8_t* buffer;
     const uint8_t* const begin;
 };

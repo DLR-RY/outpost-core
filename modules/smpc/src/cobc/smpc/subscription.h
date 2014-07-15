@@ -41,7 +41,8 @@ public:
     friend class ImplicitList<Subscription>;
 
     template <typename T, typename S>
-    struct SubscriberFunction {
+    struct SubscriberFunction
+    {
         typedef void (S::*Type)(typename Topic<T>::Type * message);
     };
 
@@ -116,6 +117,13 @@ protected:
     releaseAllSubscriptions();
 
 private:
+    // disable copy constructor
+    Subscription(const Subscription&);
+
+    // disable assignment operator
+    Subscription&
+    operator =(const Subscription&);
+
     /// List of all subscriptions currently in the system
     static Subscription * listOfAllSubscriptions;
 
@@ -131,14 +139,6 @@ private:
     Function const function;
 };
 
-#ifndef __DOXYGEN__
-class TestingSubscription : public Subscription
-{
-public:
-    using Subscription::connectSubscriptionsToTopics;
-    using Subscription::releaseAllSubscriptions;
-};
-#endif
 }
 }
 

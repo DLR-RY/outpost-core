@@ -122,14 +122,6 @@ private:
     Function const function;
 };
 
-#ifndef __DOXYGEN__
-class TestingSubscriptionRaw : public SubscriptionRaw
-{
-public:
-    using SubscriptionRaw::connectSubscriptionsToTopics;
-    using SubscriptionRaw::releaseAllSubscriptions;
-};
-#endif
 }
 }
 

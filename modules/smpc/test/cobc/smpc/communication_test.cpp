@@ -4,6 +4,8 @@
 #include <cobc/smpc/topic.h>
 #include <cobc/smpc/subscription.h>
 
+#include <unittest/smpc/testing_subscription.h>
+
 #include <cstring>
 #include <unittest/harness.h>
 
@@ -31,17 +33,17 @@ public:
         subscription(topic, this, &Component::onReceiveData)
     {
     }
-    
+
     void
     onReceiveData(const Data * data)
     {
         received = true;
         this->data = *data;
     }
-    
+
     bool received;
     Data data;
-    
+
 private:
     cobc::smpc::Subscription subscription;
 };
@@ -49,18 +51,18 @@ private:
 TEST(CommunicationTest, receiveSingle)
 {
     Component component;
-    
+
     cobc::smpc::Subscription::connectSubscriptionsToTopics();
-    
+
     Data data = {
         0x12345678,
         0x9876
     };
-    
+
     topic.publish(data);
-    
+
     ASSERT_TRUE(component.received);
     EXPECT_EQ(data, component.data);
-    
-    cobc::smpc::TestingSubscription::releaseAllSubscriptions();
+
+    unittest::smpc::TestingSubscription::releaseAllSubscriptions();
 }
