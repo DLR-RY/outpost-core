@@ -62,7 +62,8 @@ files  = env.Glob('*.cpp')
 files += env.Glob('*/*.cpp')
 files += env.Glob('*/*/*.cpp')
 files += env.Glob('*/*/*/*.cpp')
-files += env['objects_unittest']
+
+files += env.get('objects_unittest', [])
 
 envGlobal.Alias('build', env.Program('runner', files))
 
