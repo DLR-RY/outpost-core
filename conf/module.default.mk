@@ -46,6 +46,12 @@ endif
 # Path relative from the module folders (e.g. '/trunk/modules/pus')
 POLYSPACE ?= ../../tools/polyspace
 
+ifneq ($(RULES),)
+  POLYSPACE_RULES=--rules="$(RULES)"
+else
+  POLYSPACE_RULES=
+endif
+
 # Run clang static analyzer (see http://clang-analyzer.llvm.org/). Requires
 # that the unittests are configured in the SConstruct file to be build
 # with the 'hosted-clang' module.
@@ -82,7 +88,8 @@ codingstyle-jsf-annotate:
 	@$(POLYSPACE)/polyspace_jsf_annotate.py -d "src/" \
 	                                        -c "$(POLYSPACE)/profiles/$(MODULE)/options.cfg" \
 	                                        -r "$(POLYSPACE)/results/$(MODULE)/JSF-report.xml" \
-	                                        --annotate
+	                                        $(POLYSPACE_RULES) \
+	                                        --annotate 
 
 codingstyle-jsf-remove-annotations:
 	@$(POLYSPACE)/polyspace_jsf_annotate.py -d "src/" \
