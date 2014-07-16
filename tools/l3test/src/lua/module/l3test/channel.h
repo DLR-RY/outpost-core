@@ -23,7 +23,7 @@
  * \return
  */
 int
-l3test_channel_new(lua_State *L);
+l3test_channel_new(lua_State* L);
 
 // ---------------------------------------------------------------------------
 /**
@@ -33,7 +33,7 @@ l3test_channel_new(lua_State *L);
  *      Lua state
  */
 void
-l3test_channel_open(lua_State *L);
+l3test_channel_open(lua_State* L);
 
 /**
  * Pushes a channel on the current Lua stack.
@@ -44,6 +44,6 @@ l3test_channel_open(lua_State *L);
  *      Channel which should be used from within C++.
  */
 void
-l3test_channel_register(lua_State *L, l3test::script::Channel::Ptr channel);
+l3test_channel_register(lua_State* L, l3test::script::Channel::Ptr channel);
 
 #endif // LUA_L3TEST_CHANNEL_H

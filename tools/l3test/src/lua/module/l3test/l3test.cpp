@@ -10,7 +10,7 @@ static const struct luaL_Reg arraylib_f[] = {
 
 extern "C"
 int
-luaopen_l3test(lua_State *L)
+luaopen_l3test(lua_State* L)
 {
     l3test_channel_open(L);
 

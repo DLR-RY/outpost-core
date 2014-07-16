@@ -20,10 +20,12 @@ namespace time
 /**
  * Specifier for a location in the time continuum.
  *
- * Describes a time relative to an absolute time. The reference
- * absolute time is implementation defined and not fixed. The
- * class \c TimeModel is responsible for conversions between UTC
- * and this class.
+ * Describes a time relative to an absolute time. The reference absolute time
+ * is implementation defined and not fixed. The class \c TimeModel is
+ * responsible for conversions between UTC and this class.
+ *
+ * Another way of saying the same thing, is that a TimePoint represents an
+ * epoch plus or minus a duration.
  *
  * Available Operations:
  *
@@ -38,10 +40,10 @@ namespace time
  *     Duration - TimePoint  --> Undefined
  *     TimePoint + TimePoint --> Undefined
  *
- * Resolution is microseconds.
+ * The resolution of a TimePoint is microseconds.
  *
- * \ingroup    time
- * \author    Fabian Greif
+ * \ingroup time
+ * \author  Fabian Greif
  */
 class TimePoint
 {
@@ -50,12 +52,6 @@ public:
 
     typedef uint64_t Type;
     typedef int64_t SignedType;
-
-    explicit inline
-    TimePoint(const Type time = 0) :
-            time(time)
-    {
-    }
 
     inline
     TimePoint(const TimePoint& other) :
@@ -133,15 +129,16 @@ public:
     inline TimePoint&
     operator =(const TimePoint& other)
     {
+        // This gracefully handles self assignment
         time = other.time;
         return *this;
     }
 
-    // TODO remove this function
-    inline Type
-    asMicroseconds() const
+//protected:
+    explicit inline
+    TimePoint(const Type time = 0) :
+            time(time)
     {
-        return time;
     }
 
 private:

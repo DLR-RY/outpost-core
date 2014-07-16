@@ -17,7 +17,7 @@ Crc16Ccitt::update(uint8_t data)
 }
 
 uint16_t
-Crc16Ccitt::calculate(const uint8_t * data, size_t length)
+Crc16Ccitt::calculate(const uint8_t* data, size_t length)
 {
     Crc16Ccitt crc;
     for (size_t i = 0; i < length; ++i)

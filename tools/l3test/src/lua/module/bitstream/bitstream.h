@@ -7,7 +7,7 @@ extern "C"
 #include <lauxlib.h>
 
 int
-luaopen_bitstream(lua_State *L);
+luaopen_bitstream(lua_State* L);
 
 #ifdef __cplusplus
 }

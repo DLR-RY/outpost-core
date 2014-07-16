@@ -35,7 +35,7 @@ public:
     }
 
     void
-    onReceiveData(const Data * data)
+    onReceiveData(const Data* data)
     {
         received = true;
         this->data = *data;

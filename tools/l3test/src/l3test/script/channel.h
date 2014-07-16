@@ -40,7 +40,7 @@ public:
 	 *     Number of bytes to append.
 	 */
 	void
-	append(const uint8_t * data, size_t numberOfBytes);
+	append(const uint8_t* data, size_t numberOfBytes);
 
 	/**
 	 * Close the current packet and make it available for reception.
@@ -78,7 +78,7 @@ public:
 	 * \return
 	 */
 	size_t
-	getPacket(uint8_t * data, size_t numberOfBytes) const;
+	getPacket(uint8_t* data, size_t numberOfBytes) const;
 
 	/**
 	 * Drop the current packet and allow access to the next packet.

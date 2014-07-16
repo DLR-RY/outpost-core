@@ -168,7 +168,7 @@ public:
         operator->();
 
     private:
-        Iterator(T * node);
+        Iterator(T* node);
 
         /// Pointer to the next node. Set to NULL if end of list.
         T * node;

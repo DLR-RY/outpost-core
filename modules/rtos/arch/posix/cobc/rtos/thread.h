@@ -57,7 +57,7 @@ public:
      */
     Thread(uint8_t priority,
            size_t stack = 0,
-           const char * name = 0);
+           const char* name = 0);
 
     /**
      * Destructor.
@@ -134,8 +134,8 @@ protected:
     run() = 0;
 
 private:
-    static void *
-    wrapper(void * object);
+    static void* 
+    wrapper(void* object);
 
     bool isRunning;
     pthread_t pthreadId;

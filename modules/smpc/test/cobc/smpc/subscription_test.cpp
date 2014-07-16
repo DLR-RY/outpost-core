@@ -27,25 +27,25 @@ public:
     }
 
     void
-    onReceiveData0(const Data * data) {
+    onReceiveData0(const Data* data) {
         (void) data;
         received[0] = true;
     }
 
     void
-    onReceiveData1(const Data * data) {
+    onReceiveData1(const Data* data) {
         (void) data;
         received[1] = true;
     }
 
     void
-    onReceiveData2(const Data * data) {
+    onReceiveData2(const Data* data) {
         (void) data;
         received[2] = true;
     }
 
     void
-    onReceiveData3(const Data * data) {
+    onReceiveData3(const Data* data) {
         (void) data;
         received[3] = true;
     }
@@ -100,8 +100,8 @@ TEST_F(SubscriptionTest, receiveNone)
 
 TEST_F(SubscriptionTest, receiveTwo)
 {
-    cobc::smpc::Subscription * subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
-    cobc::smpc::Subscription * subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
+    cobc::smpc::Subscription* subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
+    cobc::smpc::Subscription* subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
@@ -117,10 +117,10 @@ TEST_F(SubscriptionTest, receiveTwo)
 
 TEST_F(SubscriptionTest, receiveFour)
 {
-    cobc::smpc::Subscription * subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
-    cobc::smpc::Subscription * subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
-    cobc::smpc::Subscription * subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
-    cobc::smpc::Subscription * subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
+    cobc::smpc::Subscription* subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
+    cobc::smpc::Subscription* subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
+    cobc::smpc::Subscription* subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
+    cobc::smpc::Subscription* subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
@@ -138,10 +138,10 @@ TEST_F(SubscriptionTest, receiveFour)
 
 TEST_F(SubscriptionTest, receiveFourWithDelete)
 {
-    cobc::smpc::Subscription * subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
-    cobc::smpc::Subscription * subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
-    cobc::smpc::Subscription * subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
-    cobc::smpc::Subscription * subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
+    cobc::smpc::Subscription* subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
+    cobc::smpc::Subscription* subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
+    cobc::smpc::Subscription* subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
+    cobc::smpc::Subscription* subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
@@ -160,10 +160,10 @@ TEST_F(SubscriptionTest, receiveFourWithDelete)
 
 TEST_F(SubscriptionTest, receiveFourWithDelete2)
 {
-    cobc::smpc::Subscription * subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
-    cobc::smpc::Subscription * subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
-    cobc::smpc::Subscription * subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
-    cobc::smpc::Subscription * subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
+    cobc::smpc::Subscription* subscription0 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData0);
+    cobc::smpc::Subscription* subscription1 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData1);
+    cobc::smpc::Subscription* subscription2 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData2);
+    cobc::smpc::Subscription* subscription3 = new cobc::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 

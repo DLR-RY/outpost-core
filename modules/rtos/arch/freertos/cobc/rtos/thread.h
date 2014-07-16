@@ -69,7 +69,7 @@ namespace cobc
              */
             Thread(uint8_t priority,
                     size_t stack = 0,
-                    const char * name = 0);
+                    const char* name = 0);
 
             /**
              * Destructor.
@@ -191,13 +191,13 @@ namespace cobc
             operator = (const Thread& other);
 
             static void
-            wrapper(void *object);
+            wrapper(void* object);
 
-            void * handle;    // FreeRTOS thread handle (xTaskHandle)
+            void* handle;    // FreeRTOS thread handle (xTaskHandle)
 
             const uint8_t priority;
             size_t stackSize;
-            const char * const name;
+            const char* const name;
         };
     }
 }

@@ -8,7 +8,7 @@
 //namespace tclap = ::TCLAP ;
 
 int
-main(int argc, char * argv[])
+main(int argc, char* argv[])
 {
 /*	try {
 		tclap::CmdLine cmd(

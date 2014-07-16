@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include "uart.h"
 
-static const char * uartPath[] = { "/dev/apbuart0", "/dev/apbuart1",
+static const char* uartPath[] = { "/dev/apbuart0", "/dev/apbuart1",
     "/dev/apbuart2", "/dev/apbuart3", "/dev/apbuart4", "/dev/apbuart5" };
 
 #define DEBUG_EN
@@ -88,7 +88,7 @@ cobc::leon3::UART::read(uint8_t* data,
 {
     (void) timeout;
     std::size_t retval = 0;
-    void *src = static_cast<void*>(data);
+    void* src = static_cast<void*>(data);
 
     if (devState != ENABLED || src == NULL)
         return 0;
@@ -108,7 +108,7 @@ cobc::leon3::UART::write(const uint8_t* data,
 {
     (void) timeout;
     std::size_t ret = 0;
-    uint8_t *src = const_cast<uint8_t*>(data);
+    uint8_t* src = const_cast<uint8_t*>(data);
 
     if (devState != ENABLED || src == NULL)
         return 0;

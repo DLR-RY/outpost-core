@@ -33,7 +33,7 @@ checkudata(lua_State* L)
  * Returns a crc object.
  */
 static int
-l_crc16_new(lua_State *L)
+l_crc16_new(lua_State* L)
 {
     Crc16Ccitt** d = (Crc16Ccitt**) lua_newuserdata(L, sizeof(d));
 
@@ -54,7 +54,7 @@ l_crc16_new(lua_State *L)
  * Returns the crc object.
  */
 static int
-l_crc16_reset(lua_State *L)
+l_crc16_reset(lua_State* L)
 {
     Crc16Ccitt* d = checkudata(L);
     d->reset();
@@ -68,7 +68,7 @@ l_crc16_reset(lua_State *L)
  *
  */
 static int
-l_crc16_update(lua_State *L)
+l_crc16_update(lua_State* L)
 {
     Crc16Ccitt* d = checkudata(L);
 
@@ -98,7 +98,7 @@ l_crc16_update(lua_State *L)
  * Returns the crc object.
  */
 static int
-l_crc16_calculate(lua_State *L)
+l_crc16_calculate(lua_State* L)
 {
     Crc16Ccitt* d = checkudata(L);
 
@@ -159,7 +159,7 @@ l_crc16_calculate(lua_State *L)
  * after this).
  */
 static int
-l_crc16_get(lua_State *L)
+l_crc16_get(lua_State* L)
 {
     Crc16Ccitt* d = checkudata(L);
 
@@ -182,7 +182,7 @@ l_crc16_get(lua_State *L)
  * \see crc:update()
  */
 static int
-l_crc16_call(lua_State *L)
+l_crc16_call(lua_State* L)
 {
     l_crc16_reset(L);
     l_crc16_update(L);
@@ -191,7 +191,7 @@ l_crc16_call(lua_State *L)
 }
 
 static int
-l_crc16_gc(lua_State *L)
+l_crc16_gc(lua_State* L)
 {
     Crc16Ccitt** d = (Crc16Ccitt **) luaL_checkudata(L, 1, "dlr.crc16");
 
@@ -221,7 +221,7 @@ static const struct luaL_Reg lib_methods[] = {
 // ----------------------------------------------------------------------------
 extern "C"
 int
-luaopen_crc16(lua_State *L)
+luaopen_crc16(lua_State* L)
 {
 	luaL_newmetatable(L, "dlr.crc16");
 

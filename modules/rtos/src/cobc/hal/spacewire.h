@@ -51,7 +51,7 @@ public:
      */
     struct TransmitBuffer
     {
-        TransmitBuffer(uint8_t * d) :
+        TransmitBuffer(uint8_t* d) :
             data(d), length(), end(eop)
         {
         }
@@ -60,7 +60,7 @@ public:
          * Points to preallocated memory section. Max. size is
          * implementation specific.
          */
-        uint8_t * const data;
+        uint8_t* const data;
         size_t length;
         EndMarker end;
     };
@@ -82,7 +82,7 @@ public:
             return *this;
         }
 
-        const uint8_t * data;
+        const uint8_t* data;
         size_t length;
         EndMarker end;
     };
@@ -136,7 +136,7 @@ public:
      *         was requested via requestBuffer() earlier.
      */
     virtual Result
-    send(TransmitBuffer * buffer) = 0;
+    send(TransmitBuffer* buffer) = 0;
 
     /**
      * Receive data.

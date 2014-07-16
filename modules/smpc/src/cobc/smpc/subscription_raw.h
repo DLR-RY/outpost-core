@@ -53,7 +53,7 @@ public:
     template <typename S>
     SubscriptionRaw(TopicRaw& topic,
                     S * subscriber,
-                    void (S::*function)(const void * message, size_t length)) :
+                    void (S::*function)(const void* message, size_t length)) :
         ImplicitList<SubscriptionRaw>(listOfAllSubscriptions, this),
         topic(&topic),
         nextTopicSubscription(0),
@@ -93,7 +93,7 @@ protected:
      * Relay message to the subscribing component.
      */
     inline void
-    notify(const void * message, size_t length) const
+    notify(const void* message, size_t length) const
     {
         (subscriber->*function)(message, length);
     }
@@ -110,15 +110,15 @@ protected:
 
 private:
     // List of all subscriptions currently in the system
-    static SubscriptionRaw * listOfAllSubscriptions;
+    static SubscriptionRaw* listOfAllSubscriptions;
 
     // Used by Subscription::connect to map the subscriptions to
     // their corresponding topics.
-    TopicRaw * const topic;
-    SubscriptionRaw * nextTopicSubscription;
+    TopicRaw* const topic;
+    SubscriptionRaw* nextTopicSubscription;
 
     // Object and member function to forward a received message to
-    Subscriber * const subscriber;
+    Subscriber* const subscriber;
     Function const function;
 };
 

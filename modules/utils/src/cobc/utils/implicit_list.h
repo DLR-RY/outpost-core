@@ -62,7 +62,7 @@ public:
      *
      * \return    Next element or zero if the end of the list is reached.
      */
-    inline T *
+    inline T* 
     getNext()
     {
         return next;

@@ -105,7 +105,7 @@ namespace cobc
              */
             virtual std::size_t
             read(uint8_t* data, std::size_t length, time::Duration timeout =
-                         time::Duration::infinity());
+                         time::Duration::max());
 
             /**
              * Write a block of bytes within a give duration
@@ -122,7 +122,7 @@ namespace cobc
             virtual std::size_t
             write(const uint8_t* data,
                   std::size_t length,
-                  time::Duration timeout = time::Duration::infinity());
+                  time::Duration timeout = time::Duration::max());
 
             /**
              * Sends eventually buffered data. Afterwards all internal buffers

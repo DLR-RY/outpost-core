@@ -8,7 +8,7 @@
 
 #include "subscription_raw.h"
 
-cobc::smpc::SubscriptionRaw * cobc::smpc::SubscriptionRaw::listOfAllSubscriptions = 0;
+cobc::smpc::SubscriptionRaw* cobc::smpc::SubscriptionRaw::listOfAllSubscriptions = 0;
 
 cobc::smpc::SubscriptionRaw::~SubscriptionRaw()
 {
@@ -23,7 +23,7 @@ cobc::smpc::SubscriptionRaw::connectSubscriptionsToTopics()
 {
     TopicRaw::clearSubscriptions();
 
-    for (SubscriptionRaw * it = listOfAllSubscriptions;
+    for (SubscriptionRaw* it = listOfAllSubscriptions;
             it != 0;
             it = it->getNext())
     {
@@ -35,7 +35,7 @@ cobc::smpc::SubscriptionRaw::connectSubscriptionsToTopics()
 void
 cobc::smpc::SubscriptionRaw::releaseAllSubscriptions()
 {
-    for (SubscriptionRaw * it = listOfAllSubscriptions;
+    for (SubscriptionRaw* it = listOfAllSubscriptions;
             it != 0;
             it = it->getNext())
     {

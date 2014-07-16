@@ -49,7 +49,7 @@ fromRtemsPriority(uint8_t rtemsPriority)
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t priority, size_t stack,
-        const char * name)
+        const char* name)
 {
     rtems_name taskName = 0;
     if (name == 0)

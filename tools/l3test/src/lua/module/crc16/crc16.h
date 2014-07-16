@@ -7,7 +7,7 @@ extern "C"
 #include <lauxlib.h>
 
 int
-luaopen_crc16(lua_State *L);
+luaopen_crc16(lua_State* L);
 
 #ifdef __cplusplus
 }

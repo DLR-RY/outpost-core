@@ -10,7 +10,7 @@ struct ListNode
     uint8_t value;
 
     // needed for the list handling
-    ListNode * next;
+    ListNode* next;
 };
 
 TEST(ListTest, createAndAdd)

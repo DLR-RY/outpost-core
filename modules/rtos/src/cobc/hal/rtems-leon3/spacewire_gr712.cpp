@@ -13,14 +13,14 @@
 #include <errno.h>
 #include "spacewire_gr712.h"
 
-static const char * spwPath[] = { "/dev/grspw0", "/dev/grspw1", "/dev/grspw2",
+static const char* spwPath[] = { "/dev/grspw0", "/dev/grspw1", "/dev/grspw2",
     "/dev/grspw3", "/dev/grspw4", "/dev/grspw5" };
 
 #define DEBUG_EN
 #ifdef DEBUG_EN
 #include <cstdio>
 #define DEBUG	printf
-static const char * devStates[6] = { "Error-reset", "Error-wait", "Ready",
+static const char* devStates[6] = { "Error-reset", "Error-wait", "Ready",
     "Started", "Connecting", "Run" };
 #else
 #define DEBUG(...)
@@ -260,7 +260,7 @@ cobc::leon3::SpaceWireGR712::isUp()
 }
 
 cobc::hal::SpaceWire::Result
-cobc::leon3::SpaceWireGR712::send(TransmitBuffer * buffer)
+cobc::leon3::SpaceWireGR712::send(TransmitBuffer* buffer)
 {
     int ret;
 

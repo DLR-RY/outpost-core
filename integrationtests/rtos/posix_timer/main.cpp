@@ -29,14 +29,14 @@ public:
     }
 
     void
-    test(rtos::Timer * timer)
+    test(rtos::Timer* timer)
     {
         printf("trigger1\n");
         timer->reset();
     }
 
     void
-    test2(rtos::Timer * timer)
+    test2(rtos::Timer* timer)
     {
         (void) timer;
         printf("trigger2\n");

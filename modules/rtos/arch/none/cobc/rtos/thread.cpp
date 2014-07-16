@@ -12,7 +12,7 @@
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t priority, size_t stack,
-        const char * name)
+        const char* name)
 {
     (void) priority;
     (void) stack;

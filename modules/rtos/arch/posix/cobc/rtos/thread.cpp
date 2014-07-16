@@ -17,8 +17,8 @@
 #include <cobc/rtos/failure_handler.h>
 
 // ----------------------------------------------------------------------------
-void *
-cobc::rtos::Thread::wrapper(void * object)
+void* 
+cobc::rtos::Thread::wrapper(void* object)
 {
     Thread* thread = reinterpret_cast<Thread *>(object);
 

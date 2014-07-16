@@ -151,7 +151,7 @@ namespace cobc
              *         [Failure] for failed to send specified data bytes
              */
             virtual Result
-            send(TransmitBuffer * buffer);
+            send(TransmitBuffer* buffer);
 
             /**
              * Receiving the data over SpW link by using RTEMS standard IO calls

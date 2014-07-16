@@ -64,7 +64,7 @@ namespace cobc
              */
             Thread(uint8_t priority,
                     size_t stack = 0,
-                    const char * name = 0);
+                    const char* name = 0);
 
             /**
              * Destructor.

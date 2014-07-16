@@ -86,7 +86,7 @@ split(const std::string &s, char delim)
 }
 
 bool
-Engine::registerChannel(Channel::Ptr channel, const char * name)
+Engine::registerChannel(Channel::Ptr channel, const char* name)
 {
 	for (auto c : channels)
 	{
@@ -106,7 +106,7 @@ Engine::registerChannel(Channel::Ptr channel, const char * name)
 	    lua_setglobal(L, name);
 	}
 	else {
-	    const char * globalTableName = nameElements[0].c_str();
+	    const char* globalTableName = nameElements[0].c_str();
 	    lua_getglobal(L, globalTableName);
 	    if (lua_isnil(L, -1)) {
 	        lua_pop(L, 1);

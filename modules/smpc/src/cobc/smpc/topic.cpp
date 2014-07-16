@@ -11,7 +11,7 @@
 
 #include <cobc/rtos/mutex_guard.h>
 
-cobc::smpc::TopicBase * cobc::smpc::TopicBase::listOfAllTopics = 0;
+cobc::smpc::TopicBase* cobc::smpc::TopicBase::listOfAllTopics = 0;
 
 cobc::smpc::TopicBase::TopicBase() :
     ImplicitList<TopicBase>(listOfAllTopics, this),
@@ -25,11 +25,11 @@ cobc::smpc::TopicBase::~TopicBase()
 }
 
 void
-cobc::smpc::TopicBase::publish(void * message)
+cobc::smpc::TopicBase::publish(void* message)
 {
     rtos::MutexGuard lock(mutex);
 
-    for (Subscription * topic = subscriptions;
+    for (Subscription* topic = subscriptions;
             topic != 0;
             topic = topic->nextTopicSubscription)
     {
@@ -40,7 +40,7 @@ cobc::smpc::TopicBase::publish(void * message)
 void
 cobc::smpc::TopicBase::clearSubscriptions()
 {
-    for (TopicBase * it = listOfAllTopics;
+    for (TopicBase* it = listOfAllTopics;
             it != 0;
             it = it->getNext())
     {

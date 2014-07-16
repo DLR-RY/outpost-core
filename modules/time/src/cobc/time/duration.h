@@ -56,15 +56,37 @@ public:
     inline Duration &
     operator =(const Duration& other)
     {
+        // This gracefully handles self assignment
         ticks = other.ticks;
         return *this;
     }
 
     /**
+     * Get duration in hours.
+     *
+     * \return  Returns number of hours truncating any fractional hours.
+     */
+    inline int64_t
+    hours() const
+    {
+        return ticks / static_cast<int64_t>(60 * 60 * 1000 * 1000L);
+    }
+
+    /**
+     * Get duration in minutes.
+     *
+     * \return  Returns number of minutes truncating any fractional minutes.
+     */
+    inline int64_t
+    minutes() const
+    {
+        return ticks / (60 * 1000 * 1000);
+    }
+
+    /**
      * Get duration in seconds.
      *
-     * \return    Returns number of seconds truncating any
-     *             fractional seconds.
+     * \return  Returns number of seconds truncating any fractional seconds.
      */
     inline int64_t
     seconds() const
@@ -97,27 +119,15 @@ public:
     }
 
     static inline Duration
-    infinity()
+    max()
     {
         return Duration(maximumValue);
     }
 
-    inline bool
-    isInfinite() const
+    static inline Duration
+    zero()
     {
-        return (ticks == maximumValue);
-    }
-
-    /**
-     * Check if the duration points to the past (is negative, zero included)
-     *
-     * \return    \c true if the interval is negative or zero, \c false if
-     *             it is strictly positive.
-     */
-    inline bool
-    isZeroOrNegative() const
-    {
-        return (ticks <= 0);
+        return Duration(0);
     }
 
     inline Duration
@@ -227,12 +237,13 @@ protected:
     {
     }
 
+// FIXME make this private again -> currently problem in cobc/pus/command_schedule/scheduled_command.h
+//private:
     // When using a microsecond resolution a 32 bit value would only
     // provide a range of ~2200 seconds which is insufficient.
     // With 64 bit a time span of 9 * 10^12 seconds is possible.
     int64_t ticks;
 
-private:
     static const int64_t minimalValue = (-(9223372036854775807LL)-1);
     static const int64_t maximumValue = ((9223372036854775807LL));
 };

@@ -49,7 +49,7 @@ public:
 	 * \retval false Channel was not registered due to a naming clash.
 	 */
 	bool
-	registerChannel(Channel::Ptr channel, const char * name);
+	registerChannel(Channel::Ptr channel, const char* name);
 
 	bool
 	execute(const char* string);

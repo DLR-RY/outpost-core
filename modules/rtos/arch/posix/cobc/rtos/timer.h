@@ -37,11 +37,11 @@ public:
      *         Timer which caused the function to be called. Can be used
      *         to restart the timer.
      */
-    typedef void (Callable::*Function)(Timer *timer);
+    typedef void (Callable::*Function)(Timer* timer);
 
     template <typename T>
     struct TimerFunction {
-        typedef void (T::*type)(Timer *timer);
+        typedef void (T::*type)(Timer* timer);
     };
 
     /**
@@ -60,7 +60,7 @@ public:
      * \see    cobc::Callable
      */
     template <typename T>
-    Timer(T *object,
+    Timer(T* object,
           typename TimerFunction<T>::type function,
           const char* name = "TIM-");
 
@@ -126,7 +126,7 @@ private:
     invokeTimer(union sigval parameter);
 
     /// Object and member function to call when the timer expires.
-    Callable * const object;
+    Callable* const object;
     Function const function;
 
     timer_t tid;
@@ -139,7 +139,7 @@ private:
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
-cobc::rtos::Timer::Timer(T *object,
+cobc::rtos::Timer::Timer(T* object,
                          typename TimerFunction<T>::type function,
                          const char* name) :
     object(reinterpret_cast<Callable *>(object)),

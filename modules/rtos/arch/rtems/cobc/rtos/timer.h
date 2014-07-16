@@ -45,7 +45,7 @@ namespace cobc
              *         Timer which caused the function to be called. Can be used
              *         to restart the timer.
              */
-            typedef void (Callable::*Function)(Timer *timer);
+            typedef void (Callable::*Function)(Timer* timer);
 
             /**
              * Create a timer.
@@ -99,7 +99,7 @@ namespace cobc
              * \see    cobc::Callable
              */
             template <typename T>
-            Timer(T *object, void (T::*function)(Timer* timer), const char* name = "TIM-");
+            Timer(T* object, void (T::*function)(Timer* timer), const char* name = "TIM-");
 
             /**
              * Delete the timer.
@@ -169,10 +169,10 @@ namespace cobc
              * member function pointer and call the member function.
              */
             static void
-            invokeTimer(rtems_id id, void * timer);
+            invokeTimer(rtems_id id, void* timer);
 
             /// Object and member function to call when the timer expires.
-            Callable * const object;
+            Callable* const object;
             Function const function;
 
             rtems_id tid;
@@ -183,7 +183,7 @@ namespace cobc
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
-cobc::rtos::Timer::Timer(T *object, void (T::*function)(Timer *timer), const char* name) :
+cobc::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
     object(reinterpret_cast<Callable *>(object)),
     function(reinterpret_cast<Function>(function)),
     tid()

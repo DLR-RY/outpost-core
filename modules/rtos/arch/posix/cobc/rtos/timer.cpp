@@ -105,6 +105,6 @@ cobc::rtos::Timer::createTimer(const char* name)
 void
 cobc::rtos::Timer::invokeTimer(union sigval parameter)
 {
-    Timer * timer = reinterpret_cast<Timer *>(parameter.sival_ptr);
+    Timer* timer = reinterpret_cast<Timer *>(parameter.sival_ptr);
     (timer->object->*(timer->function))(timer);
 }

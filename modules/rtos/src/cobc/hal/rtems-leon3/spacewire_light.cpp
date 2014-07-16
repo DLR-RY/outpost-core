@@ -105,7 +105,7 @@ cobc::leon3::SpaceWireLight::requestBuffer(TransmitBuffer *& buffer, Blocking bl
 
     // TODO buffer management
     if (!firstTransmit) {
-        struct spwl_txbuf * reclaimedBuffer;
+        struct spwl_txbuf* reclaimedBuffer;
         rtems_status_code status = spwl_reclaim_txbuf(handle, &reclaimedBuffer, SPWL_WAIT);
         if (status != RTEMS_SUCCESSFUL) {
             return failure;
@@ -123,7 +123,7 @@ cobc::leon3::SpaceWireLight::requestBuffer(TransmitBuffer *& buffer, Blocking bl
 }
 
 cobc::hal::SpaceWire::Result
-cobc::leon3::SpaceWireLight::send(TransmitBuffer * buffer)
+cobc::leon3::SpaceWireLight::send(TransmitBuffer* buffer)
 {
     spwlBuffer.data = buffer->data;
     spwlBuffer.nbytes = buffer->length;
@@ -144,7 +144,7 @@ cobc::leon3::SpaceWireLight::receive(ReceiveBuffer& buffer, Blocking blockingMod
 {
     (void) blockingMode;    // TODO
 
-    void * data;
+    void* data;
     uint16_t bytesReceived;
     unsigned int eopFlags;
 

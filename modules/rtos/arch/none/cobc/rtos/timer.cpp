@@ -39,8 +39,8 @@ cobc::rtos::Timer::createTimer(const char* name)
 
 // ----------------------------------------------------------------------------
 //void
-//cobc::rtos::Timer::invokeTimer(rtems_id id, void * parameter)
+//cobc::rtos::Timer::invokeTimer(rtems_id id, void* parameter)
 //{
-//    Timer * timer = reinterpret_cast<Timer *>(parameter);
+//    Timer* timer = reinterpret_cast<Timer *>(parameter);
 //    (timer->object->*(timer->function))(timer);
 //}

@@ -41,7 +41,7 @@ public:
      *     calculated checksum
      */
     static uint16_t
-    calculate(const uint8_t * data, size_t length);
+    calculate(const uint8_t* data, size_t length);
 
     /**
      * Reset CRC calculation

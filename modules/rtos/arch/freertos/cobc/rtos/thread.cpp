@@ -32,7 +32,7 @@ cobc::rtos::Thread::wrapper(void* object)
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char * name) :
+cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char* name) :
     handle(0),
     priority(priority),
     stackSize(stack),

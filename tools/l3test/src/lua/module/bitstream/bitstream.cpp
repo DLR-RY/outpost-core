@@ -47,7 +47,7 @@ numberOfWords(size_t n)
  * Create a new bitstream object.
  */
 static int
-l_bitstream_new(lua_State *L)
+l_bitstream_new(lua_State* L)
 {
     int type = lua_type(L, 1);
     if (type == LUA_TNUMBER)
@@ -68,7 +68,7 @@ l_bitstream_new(lua_State *L)
     }
     else if (type == LUA_TSTRING)
     {
-        const char *s = luaL_checkstring(L, 1);
+        const char* s = luaL_checkstring(L, 1);
         int string_length = luaL_len(L, 1);
 
         size_t nbytes = sizeof(Bitstream) - sizeof(uint8_t) + string_length;
@@ -102,7 +102,7 @@ l_bitstream_new(lua_State *L)
  *     Bitmask
  */
 static uint8_t*
-getindex(lua_State *L, uint8_t *mask)
+getindex(lua_State* L, uint8_t* mask)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -121,10 +121,10 @@ getindex(lua_State *L, uint8_t *mask)
  *   bitstream:set(index, value)
  */
 static int
-l_bitstream_set(lua_State *L)
+l_bitstream_set(lua_State* L)
 {
 	uint8_t mask;
-	uint8_t *entry = getindex(L, &mask);
+	uint8_t* entry = getindex(L, &mask);
 
 	luaL_checkany(L, 3);
 	bool value;
@@ -151,10 +151,10 @@ l_bitstream_set(lua_State *L)
  *   value = bitstream:get(index)
  */
 static int
-l_bitstream_get(lua_State *L)
+l_bitstream_get(lua_State* L)
 {
 	uint8_t mask;
-	uint8_t *entry = getindex(L, &mask);
+	uint8_t* entry = getindex(L, &mask);
 
 	lua_pushinteger(L, (*entry & mask) ? 1 : 0);
 
@@ -162,8 +162,8 @@ l_bitstream_get(lua_State *L)
 }
 
 // ----------------------------------------------------------------------------
-static Bitstream *
-check_and_get_field_arguments(lua_State *L, int& startPos, int& width)
+static Bitstream* 
+check_and_get_field_arguments(lua_State* L, int& startPos, int& width)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -201,12 +201,12 @@ get_bit(uint8_t* field, size_t index)
 }
 
 static int
-l_bitstream_insert(lua_State *L)
+l_bitstream_insert(lua_State* L)
 {
 	int startPos;
 	int width;
 
-	Bitstream *a = check_and_get_field_arguments(L, startPos, width);
+	Bitstream* a = check_and_get_field_arguments(L, startPos, width);
 
 	uint32_t value = luaL_checkint(L, 4);
 	uint32_t mask = 1 << (width - 1);
@@ -221,7 +221,7 @@ l_bitstream_insert(lua_State *L)
 
 // ----------------------------------------------------------------------------
 static Bitstream*
-concat(lua_State *L, Bitstream** own)
+concat(lua_State* L, Bitstream** own)
 {
     Bitstream* field = 0;
 
@@ -255,7 +255,7 @@ concat(lua_State *L, Bitstream** own)
             luaL_error(L, "bitstream size (here: %d) must be divisible by 8", (*own)->size);
         }
 
-        const char *s = luaL_checkstring(L, 2);
+        const char* s = luaL_checkstring(L, 2);
         int string_length = luaL_len(L, 2);
 
         int old_size = sizeof(Bitstream) - sizeof(uint8_t) + d.quot;
@@ -285,7 +285,7 @@ concat(lua_State *L, Bitstream** own)
  * \return  Returns the original bitstream
  */
 static int
-l_bitstream_concat(lua_State *L)
+l_bitstream_concat(lua_State* L)
 {
     Bitstream** own   = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -308,7 +308,7 @@ l_bitstream_concat(lua_State *L)
  * \return  Returns a new bitstream
  */
 static int
-l_bitstream_append(lua_State *L)
+l_bitstream_append(lua_State* L)
 {
     Bitstream** own   = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -324,12 +324,12 @@ l_bitstream_append(lua_State *L)
 
 // ----------------------------------------------------------------------------
 static int
-l_bitstream_extract(lua_State *L)
+l_bitstream_extract(lua_State* L)
 {
 	int startPos;
 	int width;
 
-	Bitstream *a = check_and_get_field_arguments(L, startPos, width);
+	Bitstream* a = check_and_get_field_arguments(L, startPos, width);
 
 	int32_t value = 0;
 	for (uint_fast8_t i = 0; i < width; ++i) {
@@ -348,7 +348,7 @@ l_bitstream_extract(lua_State *L)
  * Get the length in bits.
  */
 static int
-l_bitstream_bit_length(lua_State *L)
+l_bitstream_bit_length(lua_State* L)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -363,7 +363,7 @@ l_bitstream_bit_length(lua_State *L)
  * \warning May fail if the length is not divisible by eight.
  */
 static int
-l_bitstream_length(lua_State *L)
+l_bitstream_length(lua_State* L)
 {
     Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -381,7 +381,7 @@ l_bitstream_length(lua_State *L)
  * Create a copy of a bitstream.
  */
 static int
-l_bitstream_copy(lua_State *L)
+l_bitstream_copy(lua_State* L)
 {
 	Bitstream** orig = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -406,7 +406,7 @@ l_bitstream_copy(lua_State *L)
  * Create a string of the binary representation.
  */
 static int
-l_bitstream_to_binary(lua_State *L)
+l_bitstream_to_binary(lua_State* L)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -439,7 +439,7 @@ l_bitstream_to_binary(lua_State *L)
  * Works only for bitstreams whose size is divisible by eight.
  */
 static int
-l_bitstream_bytes(lua_State *L)
+l_bitstream_bytes(lua_State* L)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -464,7 +464,7 @@ l_bitstream_bytes(lua_State *L)
  * Create a string representation.
  */
 static int
-l_bitstream_representation(lua_State *L)
+l_bitstream_representation(lua_State* L)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 	lua_pushfstring(L, "bitstream(%d)", (*b)->size);
@@ -473,7 +473,7 @@ l_bitstream_representation(lua_State *L)
 
 // ----------------------------------------------------------------------------
 static int
-l_bitstream_gc(lua_State *L)
+l_bitstream_gc(lua_State* L)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
@@ -515,7 +515,7 @@ static const struct luaL_Reg arraylib_m[] = {
 // ----------------------------------------------------------------------------
 extern "C"
 int
-luaopen_bitstream(lua_State *L)
+luaopen_bitstream(lua_State* L)
 {
 	luaL_newmetatable(L, "dlr.bitstream");
 

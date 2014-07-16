@@ -15,7 +15,7 @@ extern "C"
  * \return
  */
 int
-luaopen_l3test(lua_State *L);
+luaopen_l3test(lua_State* L);
 }
 
 #endif // L3TEST_H

@@ -13,7 +13,7 @@ Channel::~Channel()
 
 // ----------------------------------------------------------------------------
 void
-Channel::append(const uint8_t * data, size_t numberOfBytes)
+Channel::append(const uint8_t* data, size_t numberOfBytes)
 {
 	currentPacket.reserve(currentPacket.size() + numberOfBytes);
 
@@ -59,7 +59,7 @@ Channel::getPacket() const
 }
 
 size_t
-Channel::getPacket(uint8_t * data, size_t numberOfBytes) const
+Channel::getPacket(uint8_t* data, size_t numberOfBytes) const
 {
 	auto length = std::min(numberOfBytes, packets.front().size());
 

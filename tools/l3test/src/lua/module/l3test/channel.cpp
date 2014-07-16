@@ -13,7 +13,7 @@ using namespace l3test::script;
  * Create a new channel object.
  */
 int
-l3test_channel_new(lua_State *L)
+l3test_channel_new(lua_State* L)
 {
 	void* ptr = lua_newuserdata(L, sizeof(Channel::Ptr));
 	new (ptr) Channel::Ptr(new Channel());
@@ -25,16 +25,16 @@ l3test_channel_new(lua_State *L)
 }
 
 static inline Channel*
-getChannel(lua_State *L)
+getChannel(lua_State* L)
 {
     Channel::Ptr* ptr = reinterpret_cast<Channel::Ptr *>(luaL_checkudata(L, 1, "dlr.l3test.channel"));
     return ptr->get();
 }
 
 static int
-l_destroy(lua_State *L)
+l_destroy(lua_State* L)
 {
-    Channel::Ptr *c = reinterpret_cast<Channel::Ptr *>(luaL_checkudata(L, 1, "dlr.l3test.channel"));
+    Channel::Ptr* c = reinterpret_cast<Channel::Ptr *>(luaL_checkudata(L, 1, "dlr.l3test.channel"));
 
     typedef Channel::Ptr ChannelPtr;
     c->~ChannelPtr();
@@ -48,7 +48,7 @@ l_destroy(lua_State *L)
  * Create a string representation.
  */
 static int
-l_string_representation(lua_State *L)
+l_string_representation(lua_State* L)
 {
 	Channel* c = getChannel(L);
 	lua_pushfstring(L, "l3test.channel(%d)", c->getNumberOfPackets());
@@ -58,7 +58,7 @@ l_string_representation(lua_State *L)
 
 // ---------------------------------------------------------------------------
 static int
-l_append(lua_State *L)
+l_append(lua_State* L)
 {
     Channel* c = getChannel(L);
 
@@ -66,7 +66,7 @@ l_append(lua_State *L)
         lua_len(L, 2);
         int length = lua_tointeger(L, -1);
 
-        uint8_t *a = reinterpret_cast<uint8_t *>(alloca(length));
+        uint8_t* a = reinterpret_cast<uint8_t *>(alloca(length));
         for (int i = 0; i < length; ++i) {
             lua_rawgeti(L, 2, i+1);
             a[i] = lua_tointeger(L, -1);
@@ -87,7 +87,7 @@ l_append(lua_State *L)
 }
 
 static int
-l_finish_packet(lua_State *L)
+l_finish_packet(lua_State* L)
 {
     Channel* c = getChannel(L);
     c->finishPacket();
@@ -96,7 +96,7 @@ l_finish_packet(lua_State *L)
 }
 
 static int
-l_send(lua_State *L)
+l_send(lua_State* L)
 {
     l_append(L);
     l_finish_packet(L);
@@ -106,7 +106,7 @@ l_send(lua_State *L)
 
 // ---------------------------------------------------------------------------
 static int
-l_is_packet_available(lua_State *L)
+l_is_packet_available(lua_State* L)
 {
     Channel* c = getChannel(L);
     lua_pushboolean(L, c->hasPackets() ? 1 : 0);
@@ -115,7 +115,7 @@ l_is_packet_available(lua_State *L)
 }
 
 static int
-l_number_of_packets(lua_State *L)
+l_number_of_packets(lua_State* L)
 {
     Channel* c = getChannel(L);
     lua_pushinteger(L, c->getNumberOfPackets());
@@ -127,7 +127,7 @@ l_number_of_packets(lua_State *L)
  * Returns an array with an entry per byte.
  */
 static int
-l_get_packet(lua_State *L)
+l_get_packet(lua_State* L)
 {
     Channel* c = getChannel(L);
 
@@ -150,7 +150,7 @@ l_get_packet(lua_State *L)
 }
 
 static int
-l_next_packet(lua_State *L)
+l_next_packet(lua_State* L)
 {
     Channel* c = getChannel(L);
     c->nextPacket();
@@ -177,7 +177,7 @@ static const struct luaL_Reg arraylib_m[] = {
 };
 
 void
-l3test_channel_open(lua_State *L)
+l3test_channel_open(lua_State* L)
 {
     luaL_newmetatable(L, "dlr.l3test.channel");
 
@@ -190,7 +190,7 @@ l3test_channel_open(lua_State *L)
 }
 
 void
-l3test_channel_register(lua_State *L, l3test::script::Channel::Ptr channel)
+l3test_channel_register(lua_State* L, l3test::script::Channel::Ptr channel)
 {
     void* ptr = lua_newuserdata(L, sizeof(Channel::Ptr));
     new (ptr) Channel::Ptr(channel);

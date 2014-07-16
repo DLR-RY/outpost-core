@@ -10,10 +10,10 @@ extern "C"
 namespace lua
 {
 void
-stackDump(lua_State * L);
+stackDump(lua_State* L);
 
 void
-stackDump(lua_State * L)
+stackDump(lua_State* L)
 {
     int top = lua_gettop(L);
     for (int i = 1; i <= top; ++i)

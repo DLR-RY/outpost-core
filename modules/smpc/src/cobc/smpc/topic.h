@@ -63,7 +63,7 @@ public:
      * function is thread safe.
      */
     void
-    publish(void * message);
+    publish(void* message);
 
 protected:
     // disable copy constructor
@@ -154,8 +154,8 @@ public:
         // The qualifiers are only stripped for the internal
         // processing which is done invisible to the user.
         // See also cobc::com::Subscription::Subscription().
-        NonConstType * ptr = const_cast< NonConstType * >(&message);
-        TopicBase::publish(reinterpret_cast<void *>(ptr));
+        NonConstType* ptr = const_cast<NonConstType*>(&message);
+        TopicBase::publish(reinterpret_cast<void*>(ptr));
     }
 
 private:

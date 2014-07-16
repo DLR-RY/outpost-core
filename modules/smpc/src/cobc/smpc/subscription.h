@@ -43,7 +43,7 @@ public:
     template <typename T, typename S>
     struct SubscriberFunction
     {
-        typedef void (S::*Type)(typename Topic<T>::Type * message);
+        typedef void (S::*Type)(typename Topic<T>::Type* message);
     };
 
     /**
@@ -60,7 +60,7 @@ public:
      */
     template <typename T, typename S>
     Subscription(Topic<T>& topic,
-                 S *subscriber,
+                 S* subscriber,
                  typename SubscriberFunction<T, S>::Type function);
 
     /**
@@ -101,7 +101,7 @@ protected:
      * Relay message to the subscribing component.
      */
     inline void
-    notify(void * message) const
+    notify(void* message) const
     {
         (subscriber->*function)(message);
     }
@@ -125,17 +125,17 @@ private:
     operator =(const Subscription&);
 
     /// List of all subscriptions currently in the system
-    static Subscription * listOfAllSubscriptions;
+    static Subscription* listOfAllSubscriptions;
 
     /**
      * Used by Subscription::connectSubscriptionsToTopics to map the
      * subscriptions to their corresponding topics.
      */
-    TopicBase * const topic;
-    Subscription * nextTopicSubscription;
+    TopicBase* const topic;
+    Subscription* nextTopicSubscription;
 
     /// Object and member function to forward a received message to
-    Subscriber * const subscriber;
+    Subscriber* const subscriber;
     Function const function;
 };
 
@@ -146,7 +146,7 @@ private:
 // Implementation of the template constructor
 template <typename T, typename S>
 cobc::smpc::Subscription::Subscription(Topic<T>& topic,
-                                       S *subscriber,
+                                       S* subscriber,
                                        typename SubscriberFunction<T, S>::Type function) :
     ImplicitList<Subscription>(listOfAllSubscriptions, this),
     topic(&topic),

@@ -65,7 +65,7 @@ namespace cobc
             requestBuffer(TransmitBuffer *& buffer, Blocking blockingMode = blocking);
 
             virtual Result
-            send(TransmitBuffer * buffer);
+            send(TransmitBuffer* buffer);
 
 
             virtual Result

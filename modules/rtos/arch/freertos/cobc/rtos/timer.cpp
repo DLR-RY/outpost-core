@@ -77,6 +77,6 @@ cobc::rtos::Timer::createTimer(const char* name)
 void
 cobc::rtos::Timer::invokeTimer(void* handle)
 {
-    Timer * timer = reinterpret_cast<Timer *>(pvTimerGetTimerID(handle));
+    Timer* timer = reinterpret_cast<Timer *>(pvTimerGetTimerID(handle));
     (timer->object->*(timer->function))(timer);
 }

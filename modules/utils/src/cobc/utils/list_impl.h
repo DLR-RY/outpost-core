@@ -71,7 +71,7 @@ cobc::List<T>::reset()
 // ----------------------------------------------------------------------------
 template <typename T>
 void
-cobc::List<T>::add(T * node)
+cobc::List<T>::add(T* node)
 {
     node->next = head;
     head = node;
@@ -79,7 +79,7 @@ cobc::List<T>::add(T * node)
 
 template <typename T>
 void
-cobc::List<T>::insert(T * node)
+cobc::List<T>::insert(T* node)
 {
     if (head == 0 || (*node < *head))
     {
@@ -106,7 +106,7 @@ cobc::List<T>::insert(T * node)
 // ----------------------------------------------------------------------------
 template <typename T>
 bool
-cobc::List<T>::removeNode(T * node)
+cobc::List<T>::removeNode(T* node)
 {
     if (head == 0)
     {
