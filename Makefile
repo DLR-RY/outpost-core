@@ -99,7 +99,7 @@ codingstyle-simple:
 codingstyle-jsf:
 	@for m in $(MODULES); do \
 		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
-		make -C modules/$$m codingstyle-polyspace --no-print-directory ; \
+		make -C modules/$$m codingstyle-jsf --no-print-directory ; \
 	done
 
 codingstyle: codingstyle-simple codingstyle-jsf

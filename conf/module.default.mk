@@ -70,7 +70,8 @@ codingstyle-jsf:
 	                         -c "$(POLYSPACE)/profiles/$(MODULE)/options.cfg" \
 	                         -o "$(POLYSPACE)/profiles/$(MODULE)/options.txt" \
 	                         -i "$(POLYSPACE)/profiles/polyspace_header.h" \
-	                         -p "$(POLYSPACE)/ssh_info.txt"
+	                         -p "$(POLYSPACE)/ssh_info.txt" \
+	                         -x
 
 codingstyle-jsf-view:
 	@$(POLYSPACE)/polyspace_jsf_log_formater.py $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.log \
