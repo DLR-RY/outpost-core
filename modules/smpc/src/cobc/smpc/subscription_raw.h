@@ -38,6 +38,12 @@ class SubscriptionRaw : public ImplicitList<SubscriptionRaw>
 public:
     friend class TopicRaw;
 
+    template <typename S>
+    struct SubscriberFunction
+    {
+        typedef void (S::*Type)(const void* message, size_t length);
+    };
+
     /**
      * Constructor.
      *
@@ -52,15 +58,8 @@ public:
      */
     template <typename S>
     SubscriptionRaw(TopicRaw& topic,
-                    S * subscriber,
-                    void (S::*function)(const void* message, size_t length)) :
-        ImplicitList<SubscriptionRaw>(listOfAllSubscriptions, this),
-        topic(&topic),
-        nextTopicSubscription(0),
-        subscriber(reinterpret_cast<Subscriber *>(subscriber)),
-        function(reinterpret_cast<Function>(function))
-    {
-    }
+                    S* subscriber,
+                    typename SubscriberFunction<S>::Type function);
 
     /**
      * Destroy the subscription
@@ -87,7 +86,7 @@ public:
 
 protected:
     /** Base-type to cast all member function pointers to. */
-    typedef void (Subscriber::*Function)(const void *, size_t);
+    typedef void (Subscriber::*Function)(const void*, size_t);
 
     /**
      * Relay message to the subscribing component.
@@ -121,6 +120,20 @@ private:
     Subscriber* const subscriber;
     Function const function;
 };
+
+// ----------------------------------------------------------------------------
+// Implementation of the template constructor
+template <typename S>
+SubscriptionRaw::SubscriptionRaw(TopicRaw& topic,
+                                 S* subscriber,
+                                 typename SubscriberFunction<S>::Type function) :
+    ImplicitList<SubscriptionRaw>(listOfAllSubscriptions, this),
+    topic(&topic),
+    nextTopicSubscription(0),
+    subscriber(reinterpret_cast<Subscriber *>(subscriber)),
+    function(reinterpret_cast<Function>(function))
+{
+}
 
 }
 }

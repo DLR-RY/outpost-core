@@ -40,7 +40,8 @@ public:
     typedef void (Callable::*Function)(Timer* timer);
 
     template <typename T>
-    struct TimerFunction {
+    struct TimerFunction
+    {
         typedef void (T::*type)(Timer* timer);
     };
 

@@ -9,16 +9,9 @@
 
 #include <time.h>
 
-#ifdef UNITTEST
-static cobc::time::TimePoint currentTime;
-#endif
-
 cobc::time::TimePoint
-cobc::rtos::Clock::now()
+cobc::rtos::SystemClock::now() const
 {
-#ifdef UNITTEST
-    return currentTime;
-#else
     struct timespec time;
     clock_gettime(CLOCK_MONOTONIC, &time);
 
@@ -26,13 +19,4 @@ cobc::rtos::Clock::now()
     uint64_t microseconds = (time.tv_nsec / 1000) + (time.tv_sec * 1000000);
 
     return cobc::time::TimePoint(microseconds);
-#endif
 }
-
-#ifdef UNITTEST
-void
-cobc::rtos::TestingClock::setTime(time::TimePoint time)
-{
-    currentTime = time;
-}
-#endif

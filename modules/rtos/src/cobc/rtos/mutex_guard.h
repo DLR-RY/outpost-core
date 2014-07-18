@@ -46,7 +46,7 @@ public:
      * \param m
      *      The mutex to acquire.
      */
-    inline
+    explicit inline
     MutexGuard(Mutex& m) :
         mutex(m)
     {

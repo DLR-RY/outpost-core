@@ -31,6 +31,14 @@ public:
 
     virtual TimePoint
     now() const = 0;
+
+private:
+    // disable copy constructor
+    Clock(const Clock&);
+
+    // disable assignment operator
+    Clock&
+    operator =(const Clock&);
 };
 
 }

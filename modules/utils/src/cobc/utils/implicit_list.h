@@ -51,7 +51,7 @@ public:
      */
     inline
     ImplicitList(T*& list,
-                 T * element) :
+                 T* element) :
         next(list)
     {
         list = element;
@@ -62,7 +62,7 @@ public:
      *
      * \return    Next element or zero if the end of the list is reached.
      */
-    inline T* 
+    inline T*
     getNext()
     {
         return next;
@@ -77,32 +77,31 @@ public:
      *         Element to remove.
      */
     static inline void
-    removeFromList(T ** head,
-                   T * element)
+    removeFromList(T** head,
+                   T* element)
     {
-        if (*head == 0) {
-            return;
+        if (*head != 0)
+        {
+            if (*head == element)
+            {
+                *head = element->next;
+            }
+            else
+            {
+                T* previous = *head;
+                T* node = (*head)->next;
+
+                while (node != element)
+                {
+                    previous = node;
+                    node = node->next;
+                }
+
+                previous->next = node->next;
+            }
         }
-
-        if (*head == element) {
-            *head = element->next;
-            return;
-        }
-
-        T * previous = *head;
-        T * node = (*head)->next;
-
-        while (node != element) {
-            previous = node;
-            node = node->next;
-        }
-
-        previous->next = node->next;
     }
 
-protected:
-    /// Pointer to the next element
-    T * next;
 
 private:
     // disable copy constructor
@@ -111,6 +110,9 @@ private:
     // disable assignment operator
     ImplicitList&
     operator =(const ImplicitList&);
+
+    /// Pointer to the next element
+    T* next;
 };
 
 }

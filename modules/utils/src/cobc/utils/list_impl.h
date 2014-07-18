@@ -50,15 +50,11 @@ T*
 cobc::List<T>::get(Condition condition)
 {
     T* current = head;
-    while (current != 0)
+    while ((current != 0) && !condition(*current))
     {
-        if (condition(*current)) {
-            return current;
-        }
         current = current->next;
     }
-
-    return 0;
+    return current;
 }
 
 template <typename T>
@@ -81,7 +77,7 @@ template <typename T>
 void
 cobc::List<T>::insert(T* node)
 {
-    if (head == 0 || (*node < *head))
+    if ((head == 0) || (*node < *head))
     {
         // Node is the first in the list
         node->next = head;
@@ -91,8 +87,7 @@ cobc::List<T>::insert(T* node)
     {
         // Traverse list until the list ends or a "bigger" entry is found.
         T* current = head;
-        while (current->next != 0 &&
-                (*current->next < *node))
+        while ((current->next != 0) && (*current->next < *node))
         {
             current = current->next;
         }
@@ -108,36 +103,36 @@ template <typename T>
 bool
 cobc::List<T>::removeNode(T* node)
 {
-    if (head == 0)
+    bool nodeFound = false;
+    if (head != 0)
     {
-        // Error: List is empty
-        return false;
-    }
+        if (head == node)
+        {
+            // Entry is the first one in the list
+            head = head->next;
+            nodeFound = true;
+        }
+        else
+        {
+            T* previous = head;
+            T* current  = head->next;
 
-    if (head == node)
-    {
-        // Entry is the first one in the list
-        head = head->next;
-        return true;
-    }
+            // Iterate trough the list until the node is found
+            while ((current != 0) && (current != node))
+            {
+                previous = current;
+                current = current->next;
+            }
 
-    T* previous = head;
-    T* current  = head->next;
-
-    // Iterate trough the list until the node is found
-    while (current != node)
-    {
-        previous = current;
-        current = current->next;
-
-        if (current == 0) {
-            // Error: End of the list detected => 'node' not found in the list!
-            return false;
+            if (current != 0)
+            {
+                previous->next = current->next;
+                nodeFound = true;
+            }
         }
     }
 
-    previous->next = current->next;
-    return true;
+    return nodeFound;
 }
 
 // ----------------------------------------------------------------------------
@@ -146,37 +141,37 @@ template <typename Condition>
 T*
 cobc::List<T>::remove(Condition condition)
 {
-    if (head == 0)
+    T* node = 0;
+
+    if (head != 0)
     {
-        // Error: List is empty
-        return 0;
-    }
+        if (condition(*head))
+        {
+            // Entry is the first one in the list
+            node = head;
+            head = head->next;
+        }
+        else
+        {
+            T* previous = head;
+            node        = head->next;
 
-    if (condition(*head))
-    {
-        // Entry is the first one in the list
-        T* node = head;
-        head = head->next;
-        return node;
-    }
+            // Iterate trough the list until the node is found
+            while ((node != 0) && !condition(*node))
+            {
+                previous = node;
+                node = node->next;
+            }
 
-    T* previous = head;
-    T* current  = head->next;
-
-    // Iterate trough the list until the node is found
-    while (!condition(*current))
-    {
-        previous = current;
-        current = current->next;
-
-        if (current == 0) {
-            // Error: End of the list detected => node not found in the list!
-            return 0;
+            if (node != 0)
+            {
+                // remove node from the list
+                previous->next = node->next;
+            }
         }
     }
 
-    previous->next = current->next;
-    return current;
+    return node;
 }
 
 template <typename T>
@@ -184,33 +179,33 @@ template <typename Condition>
 void
 cobc::List<T>::removeAll(Condition condition)
 {
-    if (head == 0)
+    if (head != 0)
     {
-        // List is empty
-        return;
-    }
+        // List is not empty
+        T* previous = head;
+        T* current  = head->next;
 
-    T* previous = head;
-    T* current  = head->next;
-
-    // Iterate trough the list and check all nodes. Iteration is started
-    // at the entry after the first one as the first entry needs a special
-    // handling.
-    while (current != 0)
-    {
-        if (condition(*current)) {
-            previous->next = current->next;
-        }
-        else {
-            previous = current;
-        }
-
+        // Iterate trough the list and check all nodes. Iteration is started
+        // at the entry after the first one as the first entry needs a special
+        // handling.
+        while (current != 0)
+        {
+            if (condition(*current))
+            {
+                previous->next = current->next;
+            }
+            else
+            {
+                previous = current;
+            }
             current = current->next;
         }
 
-    // Check first entry in the list
-    if (condition(*head)) {
-        head = head->next;
+        // Check first entry in the list
+        if (condition(*head))
+        {
+            head = head->next;
+        }
     }
 }
 
@@ -219,35 +214,36 @@ template <typename Condition, typename PostCondition>
 void
 cobc::List<T>::removeAll(Condition condition, PostCondition postCondition)
 {
-    if (head == 0)
+    if (head != 0)
     {
-        // List is empty
-        return;
-    }
+        // List is not empty
+        T* previous = head;
+        T* current  = head->next;
 
-    T* previous = head;
-    T* current  = head->next;
+        // Iterate trough the list and check all nodes. Iteration is started
+        // at the entry after the first one as the first entry needs a special
+        // handling.
+        while (current != 0)
+        {
+            T* node = current;
+            if (condition(*node))
+            {
+                previous->next = current->next;
+            }
+            else
+            {
+                previous = current;
+            }
+            current = current->next;
 
-    // Iterate trough the list and check all nodes. Iteration is started
-    // at the entry after the first one as the first entry needs a special
-    // handling.
-    while (current != 0)
-    {
-        T* node = current;
-        if (condition(*node)) {
-            previous->next = current->next;
+            postCondition(*node);
         }
-        else {
-            previous = current;
+
+        // Check first entry in the list
+        if (condition(*head))
+        {
+            head = head->next;
         }
-        current = current->next;
-
-        postCondition(*node);
-    }
-
-    // Check first entry in the list
-    if (condition(*head)) {
-        head = head->next;
     }
 }
 
@@ -256,14 +252,12 @@ template <typename T>
 void
 cobc::List<T>::removeFirst()
 {
-    if (head == 0) {
-        // List is already empty
-        return;
+    if (head != 0)
+    {
+        T* next = head->next;
+        head->next = 0;
+        head = next;
     }
-
-    T* next = head->next;
-    head->next = 0;
-    head = next;
 }
 
 // ----------------------------------------------------------------------------

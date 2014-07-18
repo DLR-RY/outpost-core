@@ -9,7 +9,7 @@
 #ifndef COBC_SMPC_TOPIC_RAW_H
 #define COBC_SMPC_TOPIC_RAW_H
 
-#include <cstddef>
+#include <stddef.h>
 #include <stdint.h>
 
 #include <cobc/rtos/mutex.h>
@@ -40,12 +40,12 @@ class SubscriptionRaw;
  */
 class TopicRaw : protected ImplicitList<TopicRaw>
 {
+public:
     // Needed to allow SubscriptionRaw() to append itself to the
     // subscription list
     friend class SubscriptionRaw;
     friend class ImplicitList<TopicRaw>;
 
-public:
     /**
      * Create a new raw topic.
      */
@@ -71,7 +71,7 @@ public:
     void
     publish(const void* message, size_t length);
 
-protected:
+private:
     /// List of all raw topics currently active.
     static TopicRaw* listOfAllTopics;
 
@@ -82,6 +82,13 @@ protected:
     SubscriptionRaw* subscriptions;
 
 private:
+    // disable copy constructor
+    TopicRaw(const TopicRaw&);
+
+    // disable assignment operator
+    TopicRaw&
+    operator =(const TopicRaw&);
+
     static void
     clearSubscriptions();
 };

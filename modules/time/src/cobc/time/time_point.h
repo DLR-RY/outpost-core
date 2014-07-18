@@ -36,8 +36,8 @@ namespace time
  * Unlike regular numeric types, the following operations are
  * undefined:
  *
- *     Duration + TimePoint  --> Undefined
- *     Duration - TimePoint  --> Undefined
+ *     Duration  + TimePoint --> Undefined
+ *     Duration  - TimePoint --> Undefined
  *     TimePoint + TimePoint --> Undefined
  *
  * The resolution of a TimePoint is microseconds.
@@ -50,12 +50,11 @@ class TimePoint
 public:
     friend class TimeModel;
 
-    typedef uint64_t Type;
-    typedef int64_t SignedType;
+    typedef int64_t Type;
 
     inline
     TimePoint(const TimePoint& other) :
-        time(other.time)
+        ticks(other.ticks)
     {
     }
 
@@ -65,84 +64,84 @@ public:
     }
 
     inline Duration
-    operator -(const TimePoint& other) const
+    operator -(TimePoint other) const
     {
-        return Duration(time - other.time);
+        return Duration(ticks - other.ticks);
     }
 
     inline TimePoint
-    operator -=(const Duration& d)
+    operator -=(Duration d)
     {
-        time = time - d.ticks;
-        return TimePoint(time);
+        ticks = ticks - d.ticks;
+        return TimePoint(ticks);
     }
 
     inline TimePoint
-    operator +(const Duration& d) const
+    operator +(Duration d) const
     {
-        return TimePoint(time + d.ticks);
+        return TimePoint(ticks + d.ticks);
     }
 
     inline TimePoint
-    operator +=(const Duration& d)
+    operator +=(Duration d)
     {
-        time = time + d.ticks;
-        return TimePoint(time);
+        ticks = ticks + d.ticks;
+        return TimePoint(ticks);
     }
 
     inline bool
-    operator ==(const TimePoint& other) const
+    operator ==(TimePoint other) const
     {
-        return (time == other.time);
+        return (ticks == other.ticks);
     }
 
     inline bool
-    operator !=(const TimePoint& other) const
+    operator !=(TimePoint other) const
     {
-        return (time != other.time);
+        return (ticks != other.ticks);
     }
 
     inline bool
-    operator <(const TimePoint& other) const
+    operator <(TimePoint other) const
     {
-        return (static_cast<SignedType>(time - other.time)) < 0;
+        return (ticks - other.ticks) < 0;
     }
 
     inline bool
-    operator >(const TimePoint& other) const
+    operator >(TimePoint other) const
     {
-        return (static_cast<SignedType>(time - other.time)) > 0;
+        return (ticks - other.ticks) > 0;
     }
 
     inline bool
-    operator <=(const TimePoint& other) const
+    operator <=(TimePoint other) const
     {
-        return (static_cast<SignedType>(time - other.time)) <= 0;
+        return (ticks - other.ticks) <= 0;
     }
 
     inline bool
-    operator >=(const TimePoint& other) const
+    operator >=(TimePoint other) const
     {
-        return (static_cast<SignedType>(time - other.time)) >= 0;
+        return (ticks - other.ticks) >= 0;
     }
 
     inline TimePoint&
-    operator =(const TimePoint& other)
+    operator =(TimePoint other)
     {
         // This gracefully handles self assignment
-        time = other.time;
+        ticks = other.ticks;
         return *this;
     }
 
 //protected:
     explicit inline
-    TimePoint(const Type time = 0) :
-            time(time)
+    TimePoint(const Type timePoint = 0) :
+            ticks(timePoint)
     {
     }
 
 private:
-    Type time;
+    Type ticks;
 };
 
 }

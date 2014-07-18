@@ -171,7 +171,7 @@ public:
         Iterator(T* node);
 
         /// Pointer to the next node. Set to NULL if end of list.
-        T * node;
+        T* node;
     };
 
     Iterator

@@ -36,8 +36,13 @@ namespace time
 class Duration
 {
 public:
-    friend class TimePoint;
     friend class TimeModel;
+    friend class TimePoint;
+
+    static const int64_t numberOfMicrosecondsPerMillisecond = 1000;
+    static const int64_t numberOfMillisecondsPerSecond = 1000;
+    static const int64_t numberOfSecondsPerMinute = 1000;
+    static const int64_t numberOfMinutesPerHour = 1000;
 
     inline
     ~Duration()
@@ -53,7 +58,7 @@ public:
     {
     }
 
-    inline Duration &
+    inline Duration&
     operator =(const Duration& other)
     {
         // This gracefully handles self assignment
@@ -69,7 +74,10 @@ public:
     inline int64_t
     hours() const
     {
-        return ticks / static_cast<int64_t>(60 * 60 * 1000 * 1000L);
+        return ticks / (numberOfMicrosecondsPerMillisecond *
+                        numberOfMillisecondsPerSecond *
+                        numberOfSecondsPerMinute *
+                        numberOfMinutesPerHour);
     }
 
     /**
@@ -80,7 +88,9 @@ public:
     inline int64_t
     minutes() const
     {
-        return ticks / (60 * 1000 * 1000);
+        return ticks / (numberOfMicrosecondsPerMillisecond *
+                        numberOfMillisecondsPerSecond *
+                        numberOfSecondsPerMinute);
     }
 
     /**
@@ -91,7 +101,8 @@ public:
     inline int64_t
     seconds() const
     {
-        return ticks / (1000 * 1000);
+        return ticks / (numberOfMicrosecondsPerMillisecond *
+                        numberOfMillisecondsPerSecond);
     }
 
     /**
@@ -103,7 +114,7 @@ public:
     inline int64_t
     milliseconds() const
     {
-        return ticks / 1000;
+        return ticks / numberOfMicrosecondsPerMillisecond;
     }
 
     /**
@@ -137,19 +148,19 @@ public:
     }
 
     inline Duration
-    operator -(const Duration& other) const
+    operator -(Duration other) const
     {
         return Duration(ticks - other.ticks);
     }
 
     inline Duration
-    operator +(const Duration& other) const
+    operator +(Duration other) const
     {
         return Duration(ticks + other.ticks);
     }
 
     inline Duration
-    operator *(const Duration& other) const
+    operator *(Duration other) const
     {
         return Duration(ticks + other.ticks);
     }
@@ -161,14 +172,14 @@ public:
     }
 
     inline Duration
-    operator -=(const Duration& other)
+    operator -=(Duration other)
     {
         ticks = ticks - other.ticks;
         return Duration(ticks);
     }
 
     inline Duration
-    operator +=(const Duration& other)
+    operator +=(Duration other)
     {
         ticks = ticks + other.ticks;
         return Duration(ticks);
@@ -195,37 +206,37 @@ public:
     }
 
     inline bool
-    operator <(const Duration& rhs)  const
+    operator <(Duration rhs)  const
     {
         return ticks < rhs.ticks;
     }
 
     inline bool
-    operator >(const Duration& rhs)  const
+    operator >(Duration rhs)  const
     {
         return ticks > rhs.ticks;
     }
 
     inline bool
-    operator <=(const Duration& rhs)  const
+    operator <=(Duration rhs)  const
     {
         return ticks <= rhs.ticks;
     }
 
     inline bool
-    operator >=(const Duration& rhs)  const
+    operator >=(Duration rhs)  const
     {
         return ticks >= rhs.ticks;
     }
 
     inline bool
-    operator ==(const Duration& rhs)  const
+    operator ==(Duration rhs)  const
     {
         return ticks == rhs.ticks;
     }
 
     inline bool
-    operator !=(const Duration& rhs)  const
+    operator !=(Duration rhs)  const
     {
         return ticks != rhs.ticks;
     }
@@ -244,8 +255,8 @@ protected:
     // With 64 bit a time span of 9 * 10^12 seconds is possible.
     int64_t ticks;
 
-    static const int64_t minimalValue = (-(9223372036854775807LL)-1);
-    static const int64_t maximumValue = ((9223372036854775807LL));
+    static const int64_t maximumValue = 9223372036854775807LL;
+    static const int64_t minimalValue = -maximumValue - 1;
 };
 
 /**
@@ -257,8 +268,9 @@ class Seconds : public Duration
 {
 public:
     explicit inline
-    Seconds(int32_t seconds) :
-        Duration(static_cast<int64_t>(seconds) * 1000 * 1000)
+    Seconds(int32_t value) :
+        Duration(static_cast<int64_t>(value) * numberOfMillisecondsPerSecond *
+                                               numberOfMicrosecondsPerMillisecond)
     {
     }
 };
@@ -272,8 +284,8 @@ class Milliseconds : public Duration
 {
 public:
     explicit inline
-    Milliseconds(int32_t milliseconds) :
-        Duration(static_cast<int64_t>(milliseconds) * 1000)
+    Milliseconds(int32_t value) :
+        Duration(static_cast<int64_t>(value) * numberOfMicrosecondsPerMillisecond)
     {
     }
 };
@@ -287,8 +299,8 @@ class Microseconds : public Duration
 {
 public:
     explicit inline
-    Microseconds(int32_t microseconds) :
-        Duration(static_cast<int64_t>(microseconds))
+    Microseconds(int32_t value) :
+        Duration(static_cast<int64_t>(value))
     {
     }
 };

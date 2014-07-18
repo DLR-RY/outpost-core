@@ -7,27 +7,11 @@
 
 #include "clock.h"
 
-#ifdef UNITTEST
-static cobc::time::TimePoint currentTime;
-#endif
-
 cobc::time::TimePoint
-cobc::rtos::Clock::now()
+cobc::rtos::SystemClock::now()
 {
-#ifdef UNITTEST
-    return currentTime;
-#else
     // convert to microseconds
     uint64_t us = 0;
 
     return cobc::time::TimePoint(us);
-#endif
 }
-
-#ifdef UNITTEST
-void
-cobc::rtos::TestingClock::setTime(time::TimePoint time)
-{
-    currentTime = time;
-}
-#endif

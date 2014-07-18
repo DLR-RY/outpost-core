@@ -9,16 +9,9 @@
 
 #include <rtems.h>
 
-#ifdef UNITTEST
-static cobc::time::TimePoint currentTime;
-#endif
-
 cobc::time::TimePoint
-cobc::rtos::Clock::now()
+cobc::rtos::SystemClock::now() const
 {
-#ifdef UNITTEST
-    return currentTime;
-#else
     rtems_interval ticks_since_boot;
     rtems_interval us_per_tick = rtems_configuration_get_microseconds_per_tick();
 
@@ -29,13 +22,4 @@ cobc::rtos::Clock::now()
                   static_cast<uint64_t>(us_per_tick);
 
     return cobc::time::TimePoint(us);
-#endif
 }
-
-#ifdef UNITTEST
-void
-cobc::rtos::TestingClock::setTime(time::TimePoint time)
-{
-    currentTime = time;
-}
-#endif

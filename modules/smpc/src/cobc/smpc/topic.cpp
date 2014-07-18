@@ -25,7 +25,7 @@ cobc::smpc::TopicBase::~TopicBase()
 }
 
 void
-cobc::smpc::TopicBase::publish(void* message)
+cobc::smpc::TopicBase::publishTypeUnsafe(void* message)
 {
     rtos::MutexGuard lock(mutex);
 

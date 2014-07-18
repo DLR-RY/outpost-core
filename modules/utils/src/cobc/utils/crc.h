@@ -10,7 +10,7 @@
 #define COBC_CRC_H
 
 #include <stdint.h>
-#include <cstddef>
+#include <stddef.h>
 
 namespace cobc
 {
@@ -25,7 +25,13 @@ namespace cobc
 class Crc16Ccitt
 {
 public:
-    inline Crc16Ccitt() : crc(initialValue)
+    inline
+    Crc16Ccitt() : crc(initialValue)
+    {
+    }
+
+    inline
+    ~Crc16Ccitt()
     {
     }
 
@@ -71,7 +77,20 @@ public:
     }
 
 private:
+    // disable copy constructor
+    Crc16Ccitt(const Crc16Ccitt&);
+
+    // disable assignment operator
+    Crc16Ccitt&
+    operator =(const Crc16Ccitt&);
+
     static const uint16_t initialValue = 0xFFFF;
+    static const int numberOfBitsPerByte = 8;
+    static const int numberOfValuesPerByte = 256;
+
+    /// Pre-calculated CRC table for one byte
+    static const uint16_t crcTable[numberOfValuesPerByte];
+
     uint16_t crc;
 };
 }

@@ -9,31 +9,25 @@
 #define COBC_RTOS_NONE_CLOCK_H
 
 #include <cobc/time/time_point.h>
+#include <cobc/time/clock.h>
 
 namespace cobc
 {
-    namespace rtos
-    {
-        /**
-         *
-         * \ingroup    rtos
-         */
-        class Clock
-        {
-        public:
-            static time::TimePoint
-            now();
-        };
+namespace rtos
+{
 
-#ifdef UNITTEST
-        class TestingClock
-        {
-        public:
-            static void
-            setTime(time::TimePoint time);
-        };
-#endif
-    }
+/**
+ *
+ * \ingroup    rtos
+ */
+class SystemClock : public time::Clock
+{
+public:
+    virtual time::TimePoint
+    now() const;
+};
+
+}
 }
 
 #endif // COBC_RTOS_NONE_CLOCK_H

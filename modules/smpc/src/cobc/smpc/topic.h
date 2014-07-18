@@ -63,7 +63,7 @@ public:
      * function is thread safe.
      */
     void
-    publish(void* message);
+    publishTypeUnsafe(void* message);
 
 protected:
     // disable copy constructor
@@ -119,7 +119,8 @@ public:
     /**
      * Constructor.
      */
-    inline Topic() :
+    inline
+    Topic() :
         TopicBase()
     {
     }
@@ -155,7 +156,7 @@ public:
         // processing which is done invisible to the user.
         // See also cobc::com::Subscription::Subscription().
         NonConstType* ptr = const_cast<NonConstType*>(&message);
-        TopicBase::publish(reinterpret_cast<void*>(ptr));
+        TopicBase::publishTypeUnsafe(reinterpret_cast<void*>(ptr));
     }
 
 private:

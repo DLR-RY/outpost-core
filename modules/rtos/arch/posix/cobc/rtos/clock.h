@@ -10,6 +10,7 @@
 #define COBC_RTOS_POSIX_CLOCK_H
 
 #include <cobc/time/time_point.h>
+#include <cobc/time/clock.h>
 
 namespace cobc
 {
@@ -20,21 +21,12 @@ namespace rtos
  *
  * \ingroup    rtos
  */
-class Clock
+class SystemClock : public time::Clock
 {
 public:
-    static time::TimePoint
-    now();
+    virtual time::TimePoint
+    now() const;
 };
-
-#ifdef UNITTEST
-class TestingClock
-{
-public:
-    static void
-    setTime(time::TimePoint time);
-};
-#endif
 
 }
 }
