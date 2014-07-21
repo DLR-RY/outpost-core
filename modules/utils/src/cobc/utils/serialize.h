@@ -126,7 +126,7 @@ public:
         return (buffer - begin);
     }
 
-    inline uint8_t* 
+    inline uint8_t*
     getPointerToCurrentPosition()
     {
         return buffer;
