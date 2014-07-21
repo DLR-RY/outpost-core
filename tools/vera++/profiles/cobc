@@ -20,6 +20,7 @@ set rules {
 	T008
 	T009
 	T010
+	T011
 	T013
 	T015
 	T016
@@ -28,7 +29,6 @@ set rules {
 	T019
 }
 
-# T011 -> closing curly bracket not in the same line or column
 # TODO extend to allow for other styles
-
 # T012 -> negation operator used in its short form
+
