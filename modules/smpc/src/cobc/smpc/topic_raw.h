@@ -87,7 +87,7 @@ private:
 
     // disable assignment operator
     TopicRaw&
-    operator =(const TopicRaw&);
+    operator=(const TopicRaw&);
 
     static void
     clearSubscriptions();

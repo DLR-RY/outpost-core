@@ -38,7 +38,7 @@ TEST(ListTest, get)
         }
 
         inline bool
-        operator ()(const ListNode& node)
+        operator()(const ListNode& node)
         {
             return (node.value == value);
         }
@@ -111,7 +111,7 @@ TEST(ListTest, removeWithFunctor)
         }
 
         inline bool
-        operator ()(const ListNode& node)
+        operator()(const ListNode& node)
         {
             return (node.value == value);
         }

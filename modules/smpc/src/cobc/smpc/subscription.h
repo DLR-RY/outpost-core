@@ -122,7 +122,7 @@ private:
 
     // disable assignment operator
     Subscription&
-    operator =(const Subscription&);
+    operator=(const Subscription&);
 
     /// List of all subscriptions currently in the system
     static Subscription* listOfAllSubscriptions;

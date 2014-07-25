@@ -170,7 +170,7 @@ namespace cobc
 
             // disable assignment operator
             Thread&
-            operator = (const Thread& other);
+            operator=(const Thread& other);
 
             static void
             wrapper(rtems_task_argument object);

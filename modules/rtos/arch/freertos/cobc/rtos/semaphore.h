@@ -88,7 +88,7 @@ namespace cobc
 
             // disable assignment operator
             Semaphore&
-            operator = (const Semaphore& other);
+            operator=(const Semaphore& other);
 
             void* handle;
         };
@@ -169,7 +169,7 @@ namespace cobc
 
             // disable assignment operator
             BinarySemaphore&
-            operator = (const BinarySemaphore& other);
+            operator=(const BinarySemaphore& other);
 
             void* handle;
         };

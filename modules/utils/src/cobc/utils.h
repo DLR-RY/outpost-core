@@ -14,28 +14,6 @@
 #include "utils/list.h"
 #include "utils/implicit_list.h"
 
-/**
- * Get the size of C style array
- *
- * Example:
- *
- *     uint32_t a[2] = { ... };
- *     SIZEOF_ARRAY(a) => 2
- */
-#define    SIZEOF_ARRAY(array)        (sizeof(array)/sizeof(array[0]))
-
-/**
- * Align a variable to n byte border:
- *
- *     // 32 bit alignment
- *     uint8_t foo[10] ATTRIBUTE_ALIGNED(4) = { ... };
- *
- *     // 16 bit alignment
- *     uint8_t bar[123] ATTRIBUTE_ALIGNED(2) = { ... };
- *
- *     ...
- */
-#define    ATTRIBUTE_ALIGNED(n)    __attribute__((aligned(n)))
 
 namespace cobc
 {
@@ -61,6 +39,7 @@ struct Select<false, T, U>
 {
     typedef U Result;
 };
+
 
 template<typename T>
 struct remove_const

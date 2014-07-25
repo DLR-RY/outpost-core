@@ -73,7 +73,7 @@ public:
         }
 
         const ReceiveBuffer&
-        operator = (const ReceiveBuffer& other)
+        operator=(const ReceiveBuffer& other)
         {
             data = other.data;
             length = other.length;

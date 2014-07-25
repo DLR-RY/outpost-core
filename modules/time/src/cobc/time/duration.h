@@ -59,7 +59,7 @@ public:
     }
 
     inline Duration&
-    operator =(const Duration& other)
+    operator=(const Duration& other)
     {
         // This gracefully handles self assignment
         ticks = other.ticks;
@@ -142,101 +142,101 @@ public:
     }
 
     inline Duration
-    operator -() const
+    operator-() const
     {
         return Duration(-ticks);
     }
 
     inline Duration
-    operator -(Duration other) const
+    operator-(Duration other) const
     {
         return Duration(ticks - other.ticks);
     }
 
     inline Duration
-    operator +(Duration other) const
+    operator+(Duration other) const
     {
         return Duration(ticks + other.ticks);
     }
 
     inline Duration
-    operator *(Duration other) const
+    operator*(Duration other) const
     {
         return Duration(ticks + other.ticks);
     }
 
     inline Duration
-    operator /(int divisor) const
+    operator/(int divisor) const
     {
         return Duration(ticks / divisor);
     }
 
     inline Duration
-    operator -=(Duration other)
+    operator-=(Duration other)
     {
         ticks = ticks - other.ticks;
         return Duration(ticks);
     }
 
     inline Duration
-    operator +=(Duration other)
+    operator+=(Duration other)
     {
         ticks = ticks + other.ticks;
         return Duration(ticks);
     }
 
     inline Duration
-    operator /=(int divisor)
+    operator/=(int divisor)
     {
         ticks = ticks / divisor;
         return Duration(ticks);
     }
 
     inline Duration
-    operator *(int rhs) const
+    operator*(int rhs) const
     {
         return Duration(ticks * rhs);
     }
 
     inline Duration
-    operator *=(int divisor)
+    operator*=(int divisor)
     {
         ticks = ticks * divisor;
         return Duration(ticks);
     }
 
     inline bool
-    operator <(Duration rhs)  const
+    operator<(Duration rhs)  const
     {
         return ticks < rhs.ticks;
     }
 
     inline bool
-    operator >(Duration rhs)  const
+    operator>(Duration rhs)  const
     {
         return ticks > rhs.ticks;
     }
 
     inline bool
-    operator <=(Duration rhs)  const
+    operator<=(Duration rhs)  const
     {
         return ticks <= rhs.ticks;
     }
 
     inline bool
-    operator >=(Duration rhs)  const
+    operator>=(Duration rhs)  const
     {
         return ticks >= rhs.ticks;
     }
 
     inline bool
-    operator ==(Duration rhs)  const
+    operator==(Duration rhs)  const
     {
         return ticks == rhs.ticks;
     }
 
     inline bool
-    operator !=(Duration rhs)  const
+    operator!=(Duration rhs)  const
     {
         return ticks != rhs.ticks;
     }

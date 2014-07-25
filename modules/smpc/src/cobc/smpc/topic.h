@@ -71,7 +71,7 @@ protected:
 
     // disable assignment operator
     TopicBase&
-    operator =(const TopicBase&);
+    operator=(const TopicBase&);
 
     /// List of all topics currently active.
     static TopicBase* listOfAllTopics;
@@ -165,7 +165,7 @@ private:
 
     // disable assignment operator
     Topic&
-    operator =(const Topic&);
+    operator=(const Topic&);
 };
 
 }

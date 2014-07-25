@@ -86,7 +86,7 @@ private:
 
     // disable assignment operator
     Semaphore&
-    operator = (const Semaphore& other);
+    operator=(const Semaphore& other);
 
     /// POSIX semaphore handle
     sem_t sid;
@@ -162,7 +162,7 @@ private:
 
     // disable assignment operator
     BinarySemaphore&
-    operator = (const BinarySemaphore& other);
+    operator=(const BinarySemaphore& other);
 
     // POSIX handles
     pthread_mutex_t mutex;

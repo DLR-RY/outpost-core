@@ -31,7 +31,7 @@ class ErrorCode
     // A normal cast operator to bool would enable some invalid sematics
     // for this class. For a C++11 a explicit cast operator could be used
     // instead.
-    typedef void (ErrorCode::*boot_type)() const;
+    typedef void (ErrorCode::*bool_type)() const;
 
     void
     this_type_does_no_support_comparisons() const
@@ -101,7 +101,7 @@ public:
     //         return isSuccess();
     //     }
     //
-    operator boot_type() const
+    operator bool_type() const
     {
         return (isSuccess() ? &ErrorCode::this_type_does_no_support_comparisons : 0);
     }
@@ -139,19 +139,19 @@ public:
     }
 
     inline bool
-    operator == (const ErrorCode& other) const
+    operator==(const ErrorCode& other) const
     {
         return (errorCode == other.errorCode);
     }
 
     inline bool
-    operator != (const ErrorCode& other) const
+    operator!=(const ErrorCode& other) const
     {
         return (errorCode != other.errorCode);
     }
 
     inline bool
-    operator !() const
+    operator!() const
     {
         return !isSuccess();
     }
@@ -165,7 +165,7 @@ protected:
     // Disable assignment operator as errorCode is \c const and can not be
     // overwritten.
     ErrorCode&
-    operator = (const ErrorCode& other);
+    operator=(const ErrorCode& other);
 
 private:
     const int16_t errorCode;

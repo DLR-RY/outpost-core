@@ -22,42 +22,46 @@ namespace cobc
 namespace rtos
 {
 
+// FIXME create an overview of the values used here
 class FailureCode
 {
 public:
     inline static FailureCode
     resourceAllocationFailed()
     {
-        return FailureCode(0x0100);
+        FailureCode code = FailureCode(0x0100);
+        return code;
     }
 
     inline static FailureCode
     returnFromThread()
     {
-        return FailureCode(0x01FF);
+        FailureCode code = FailureCode(0x01FF);
+        return code;
     }
 
     inline static FailureCode
     genericRuntimeError()
     {
-        return FailureCode(0x0200);
+        FailureCode code = FailureCode(0x0200);
+        return code;
     }
 
     inline uint32_t
     getCode() const
     {
-        return code;
+        return mCode;
     }
 
 protected:
     explicit inline
-    FailureCode(uint32_t code_) :
-        code(code_)
+    FailureCode(uint32_t code) :
+        mCode(code)
     {
     }
 
 private:
-    const uint32_t code;
+    const uint32_t mCode;
 };
 
 class FailureHandler

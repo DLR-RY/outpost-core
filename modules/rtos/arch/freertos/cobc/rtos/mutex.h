@@ -82,7 +82,7 @@ namespace cobc
 
             // disable assignment operator
             Mutex&
-            operator = (const Mutex& other);
+            operator=(const Mutex& other);
 
             void* handle;
         };

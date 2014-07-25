@@ -38,7 +38,7 @@ private:
 
     // disable assignment operator
     Clock&
-    operator =(const Clock&);
+    operator=(const Clock&);
 };
 
 }

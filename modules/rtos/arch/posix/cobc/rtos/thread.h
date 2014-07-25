@@ -55,6 +55,7 @@ public:
      *
      * \see    rtos::FailureHandler::fatal()
      */
+    explicit
     Thread(uint8_t priority,
            size_t stack = 0,
            const char* name = 0);
@@ -134,7 +135,7 @@ protected:
     run() = 0;
 
 private:
-    static void* 
+    static void*
     wrapper(void* object);
 
     bool isRunning;

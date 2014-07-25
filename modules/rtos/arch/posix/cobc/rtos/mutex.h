@@ -29,7 +29,7 @@ public:
     inline
     Mutex()
     {
-        pthread_mutex_init(&mutex, NULL);
+        pthread_mutex_init(&mutex, 0);
     }
 
     inline
@@ -81,7 +81,7 @@ private:
 
     // disable assignment operator
     Mutex&
-    operator = (const Mutex& other);
+    operator=(const Mutex& other);
 
     pthread_mutex_t mutex;
 };

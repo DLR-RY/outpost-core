@@ -282,7 +282,7 @@ cobc::List<T>::Iterator::Iterator(const Iterator& other) :
 // ----------------------------------------------------------------------------
 template <typename T>
 typename cobc::List<T>::Iterator&
-cobc::List<T>::Iterator::operator = (const Iterator& other)
+cobc::List<T>::Iterator::operator=(const Iterator& other)
 {
     // Handles self assignment correctly
     this->node = other.node;
@@ -291,7 +291,7 @@ cobc::List<T>::Iterator::operator = (const Iterator& other)
 
 template <typename T>
 typename cobc::List<T>::Iterator&
-cobc::List<T>::Iterator::operator ++ ()
+cobc::List<T>::Iterator::operator++()
 {
     this->node = this->node->next;
     return *this;
@@ -299,7 +299,7 @@ cobc::List<T>::Iterator::operator ++ ()
 
 template <typename T>
 bool
-cobc::List<T>::Iterator::operator == (
+cobc::List<T>::Iterator::operator==(
 const Iterator& other) const
 {
     return (node == other.node);
@@ -307,7 +307,7 @@ const Iterator& other) const
 
 template <typename T>
 bool
-cobc::List<T>::Iterator::operator != (
+cobc::List<T>::Iterator::operator!=(
 const Iterator& other) const
 {
     return (node != other.node);
@@ -315,7 +315,7 @@ const Iterator& other) const
 
 template <typename T>
 T&
-cobc::List<T>::Iterator::operator * ()
+cobc::List<T>::Iterator::operator*()
 {
     return this->node;
 }

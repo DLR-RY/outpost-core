@@ -134,7 +134,7 @@ public:
 
     template <typename T>
     inline Serialize&
-    operator <<(const T& data)
+    operator<<(const T& data)
     {
         store<T>(data);
         return *this;
@@ -143,7 +143,7 @@ public:
 private:
     // disable assignment operator
     Serialize&
-    operator =(const Serialize& other);
+    operator=(const Serialize& other);
 
     uint8_t* buffer;
     const uint8_t* const begin;
@@ -375,7 +375,7 @@ public:
 
     template <typename T>
     inline Deserialize&
-    operator >>(T& data)
+    operator>>(T& data)
     {
         data = read<T>();
         return *this;
@@ -402,10 +402,17 @@ public:
         return (buffer - begin);
     }
 
+    template <typename T>
+    inline T
+    getPosition() const
+    {
+        return static_cast<T>(buffer - begin);
+    }
+
 private:
     // disable assignment operator
     Deserialize&
-    operator =(const Deserialize& other);
+    operator=(const Deserialize& other);
 
     const uint8_t* buffer;
     const uint8_t* const begin;

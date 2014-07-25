@@ -109,7 +109,7 @@ private:
 
     // disable assignment operator
     ImplicitList&
-    operator =(const ImplicitList&);
+    operator=(const ImplicitList&);
 
     /// Pointer to the next element
     T* next;

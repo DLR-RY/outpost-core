@@ -64,69 +64,69 @@ public:
     }
 
     inline Duration
-    operator -(TimePoint other) const
+    operator-(TimePoint other) const
     {
         return Duration(ticks - other.ticks);
     }
 
     inline TimePoint
-    operator -=(Duration d)
+    operator-=(Duration d)
     {
         ticks = ticks - d.ticks;
         return TimePoint(ticks);
     }
 
     inline TimePoint
-    operator +(Duration d) const
+    operator+(Duration d) const
     {
         return TimePoint(ticks + d.ticks);
     }
 
     inline TimePoint
-    operator +=(Duration d)
+    operator+=(Duration d)
     {
         ticks = ticks + d.ticks;
         return TimePoint(ticks);
     }
 
     inline bool
-    operator ==(TimePoint other) const
+    operator==(TimePoint other) const
     {
         return (ticks == other.ticks);
     }
 
     inline bool
-    operator !=(TimePoint other) const
+    operator!=(TimePoint other) const
     {
         return (ticks != other.ticks);
     }
 
     inline bool
-    operator <(TimePoint other) const
+    operator<(TimePoint other) const
     {
         return (ticks - other.ticks) < 0;
     }
 
     inline bool
-    operator >(TimePoint other) const
+    operator>(TimePoint other) const
     {
         return (ticks - other.ticks) > 0;
     }
 
     inline bool
-    operator <=(TimePoint other) const
+    operator<=(TimePoint other) const
     {
         return (ticks - other.ticks) <= 0;
     }
 
     inline bool
-    operator >=(TimePoint other) const
+    operator>=(TimePoint other) const
     {
         return (ticks - other.ticks) >= 0;
     }
 
     inline TimePoint&
-    operator =(TimePoint other)
+    operator=(TimePoint other)
     {
         // This gracefully handles self assignment
         ticks = other.ticks;

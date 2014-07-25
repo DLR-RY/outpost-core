@@ -68,7 +68,7 @@ private:
 
     // Disable assignment operator
     MutexGuard&
-    operator =(const MutexGuard& other);
+    operator=(const MutexGuard& other);
 
     Mutex& mutex;
 };

@@ -82,7 +82,7 @@ private:
 
     // disable assignment operator
     Crc16Ccitt&
-    operator =(const Crc16Ccitt&);
+    operator=(const Crc16Ccitt&);
 
     static const uint16_t initialValue = 0xFFFF;
     static const int numberOfBitsPerByte = 8;

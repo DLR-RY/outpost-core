@@ -150,24 +150,25 @@ public:
         Iterator(const Iterator& other);
 
         Iterator&
-        operator =(const Iterator& other);
+        operator=(const Iterator& other);
 
         Iterator&
-        operator ++();
+        operator++();
 
         bool
-        operator ==(const Iterator& other) const;
+        operator==(const Iterator& other) const;
 
         bool
-        operator !=(const Iterator& other) const;
+        operator!=(const Iterator& other) const;
 
         T&
-        operator *();
+        operator*();
 
         T*
         operator->();
 
     private:
+        explicit
         Iterator(T* node);
 
         /// Pointer to the next node. Set to NULL if end of list.
@@ -188,7 +189,7 @@ private:
 
     // disable assignment operator
     List&
-    operator =(const List&);
+    operator=(const List&);
 };
 }
 

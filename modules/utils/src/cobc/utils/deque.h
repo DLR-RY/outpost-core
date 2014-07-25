@@ -104,7 +104,7 @@ private:
 
     // disable assignment operator
     Deque&
-    operator =(const Deque&);
+    operator=(const Deque&);
 
     T* const buffer;
     const Size maxSize;

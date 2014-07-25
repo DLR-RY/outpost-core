@@ -37,7 +37,7 @@ private:
     TimeModel(const TimeModel&);
 
     TimeModel&
-    operator =(const TimeModel&);
+    operator=(const TimeModel&);
 };
 
 }
