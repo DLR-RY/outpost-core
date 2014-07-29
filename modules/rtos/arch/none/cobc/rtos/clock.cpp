@@ -8,7 +8,7 @@
 #include "clock.h"
 
 cobc::time::TimePoint
-cobc::rtos::SystemClock::now()
+cobc::rtos::SystemClock::now() const
 {
     // convert to microseconds
     uint64_t us = 0;
