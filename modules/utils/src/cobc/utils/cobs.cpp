@@ -8,8 +8,10 @@
 
 #include "cobs.h"
 
+#include <string.h>     // for memcpy
+
 using cobc::utils::CobsEncodingGenerator;
-using cobc::utils::CobsEncoder;
+using cobc::utils::Cobs;
 
 // ----------------------------------------------------------------------------
 CobsEncodingGenerator::CobsEncodingGenerator(const uint8_t* data,
@@ -69,7 +71,7 @@ CobsEncodingGenerator::getNextByte()
         }
         mNextBlock = findNextBlock();
 
-        if (mNextBlock == 254)
+        if (mNextBlock == maximumBlockLength)
         {
             mZeroElementSkip = false;
         }
@@ -86,12 +88,6 @@ CobsEncodingGenerator::getNextByte()
     return value;
 }
 
-bool
-CobsEncodingGenerator::isFinished()
-{
-    return (mCurrentPosition == mLength);
-}
-
 uint8_t
 CobsEncodingGenerator::findNextBlock()
 {
@@ -103,7 +99,7 @@ CobsEncodingGenerator::findNextBlock()
     // - No zero is found for 254 consecutive bytes
     // - The end of the input array is reached.
     while ((mData[position] != 0) &&
-           (blockSize < 254) &&
+           (blockSize < maximumBlockLength) &&
            (position < mLength))
     {
         position++;
@@ -115,70 +111,73 @@ CobsEncodingGenerator::findNextBlock()
 
 // ----------------------------------------------------------------------------
 size_t
-CobsEncoder::encode(const uint8_t* input,
-                    size_t inputLength,
-                    uint8_t* output,
-                    size_t maximumOutputLength)
+Cobs::encode(const uint8_t* input,
+             size_t inputLength,
+             uint8_t* output,
+             size_t maximumOutputLength)
 {
     const uint8_t* inputEnd = input + inputLength;
 
     // Pointer to the position where later the block length is inserted
     uint8_t* blockLengthPtr = output++;
     size_t length = 1;
-    uint8_t code = 1;
+    uint8_t blockLength = 0;
 
-    while ((input < inputEnd) && (length < (maximumOutputLength - 1)))
+    while ((input < inputEnd) && (length < maximumOutputLength))
     {
         if (*input == 0)
         {
-            *blockLengthPtr = code;
+            *blockLengthPtr = blockLength + 1;
             blockLengthPtr = output++;
             length++;
-            code = 1;
+            blockLength = 0;
         }
         else
         {
             *output++ = *input;
             length++;
-            code++;
-            if (code == 255)
+            blockLength++;
+            if ((blockLength == maximumBlockLength) && (length < maximumOutputLength))
             {
-                *blockLengthPtr = code;
+                *blockLengthPtr = blockLength + 1;
                 blockLengthPtr = output++;
                 length++;
-                code = 1;
+                blockLength = 0;
             }
         }
         input++;
     }
-    *blockLengthPtr = code;
+    *blockLengthPtr = blockLength + 1;
 
     return length;
 }
 
 size_t
-CobsEncoder::decode(const uint8_t* input,
-                    size_t inputLength,
-                    uint8_t* output)
+Cobs::decode(const uint8_t* input,
+             size_t inputLength,
+             uint8_t* output)
 {
-    size_t length = 0;
+    size_t outputPosition = 0;
     const uint8_t* end = input + inputLength;
 
     while (input < end)
     {
-        int i;
-        int code = *input++;
-        for (i = 1; i < code; i++)
+        uint8_t blockLength = *input++ - 1;
+
+        memcpy(&output[outputPosition], input, blockLength);
+        outputPosition += blockLength;
+        input += blockLength;
+
+        if (blockLength < maximumBlockLength)
         {
-            *output++ = *input++;
-            length++;
-        }
-        // The last (implicit) zero is suppressed and not output.
-        if ((code < 0xFF) && (input < end)) {
-            *output++ = 0;
-            length++;
+            // The last (implicit) zero is suppressed and not output.
+            if (input < end)
+            {
+                output[outputPosition] = 0;
+                outputPosition++;
+            }
         }
     }
 
-    return length;
+    return outputPosition;
 }

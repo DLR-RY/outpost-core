@@ -48,12 +48,13 @@ const uint16_t Crc16Ccitt::crcTable[numberOfValuesPerByte] = {
 void
 Crc16Ccitt::update(uint8_t data)
 {
-    crc = static_cast<uint16_t>((crc << numberOfBitsPerByte) ^
-                                crcTable[(crc >> numberOfBitsPerByte) ^ data]);
+    mCrc = static_cast<uint16_t>((mCrc << numberOfBitsPerByte) ^
+                                crcTable[(mCrc >> numberOfBitsPerByte) ^ data]);
 }
 
 uint16_t
-Crc16Ccitt::calculate(const uint8_t* data, size_t length)
+Crc16Ccitt::calculate(const uint8_t* data,
+                      size_t length)
 {
     Crc16Ccitt generator;
     for (size_t i = 0; i < length; ++i)

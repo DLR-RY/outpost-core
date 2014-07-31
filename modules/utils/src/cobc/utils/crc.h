@@ -25,8 +25,10 @@ namespace cobc
 class Crc16Ccitt
 {
 public:
+    // LCOV_EXCL_START
     inline
-    Crc16Ccitt() : crc(initialValue)
+    Crc16Ccitt() :
+        mCrc(initialValue)
     {
     }
 
@@ -34,6 +36,7 @@ public:
     ~Crc16Ccitt()
     {
     }
+    // LCOV_EXCL_STOP
 
     /**
      * Calculate CRC from a block of data.
@@ -47,7 +50,8 @@ public:
      *     calculated checksum
      */
     static uint16_t
-    calculate(const uint8_t* data, size_t length);
+    calculate(const uint8_t* data,
+              size_t length);
 
     /**
      * Reset CRC calculation
@@ -55,7 +59,7 @@ public:
     inline void
     reset()
     {
-        crc = initialValue;
+        mCrc = initialValue;
     }
 
     /**
@@ -67,14 +71,16 @@ public:
     void
     update(uint8_t data);
 
+    // LCOV_EXCL_START
     /**
      * Get result of CRC calculation.
      */
     inline uint16_t
     getValue() const
     {
-        return crc;
+        return mCrc;
     }
+    // LCOV_EXCL_STOP
 
 private:
     // disable copy constructor
@@ -91,7 +97,7 @@ private:
     /// Pre-calculated CRC table for one byte
     static const uint16_t crcTable[numberOfValuesPerByte];
 
-    uint16_t crc;
+    uint16_t mCrc;
 };
 }
 

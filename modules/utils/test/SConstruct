@@ -22,6 +22,18 @@ if envGlobal['coverage']:
     envGlobal.Tool('hosted-gcc')
     envGlobal.Tool('buildpath')
     
+    envGlobal['CCFLAGS_optimize'] = [
+    	'-O0',
+    	'-fno-default-inline',
+    	'-fno-inline-functions',
+    	'-fno-inline',
+    	# The C++ standard allows an implementation to omit creating a temporary
+    	# which is only used to initialize another object of the same type.
+    	# Specifying this option disables that optimization, and forces G++ to
+    	# call the copy constructor in all cases. 
+    	'-fno-elide-constructors'
+    ]
+    
     envGlobal.Append(CCFLAGS='--coverage')
     envGlobal.Append(LINKFLAGS='--coverage')
 
@@ -69,3 +81,4 @@ files += env['objects']['utils']
 files += env.get('objects_unittest', [])
 
 envGlobal.Alias('build', env.Program('runner', files))
+
