@@ -17,20 +17,20 @@ namespace cobc
 namespace utils
 {
 
-class ConsistentOverheadByteStuffing
+class CobsEncodingGenerator
 {
 public:
-    ConsistentOverheadByteStuffing();
+    CobsEncodingGenerator(const uint8_t* data, size_t length);
 
-    void
-    start(const uint8_t* data,
-          size_t length);
+    ~CobsEncodingGenerator();
+
+    CobsEncodingGenerator(const CobsEncodingGenerator& other);
+
+    CobsEncodingGenerator&
+    operator =(const CobsEncodingGenerator& other);
 
     uint8_t
     getNextByte();
-
-    size_t
-    getEncodedArray(uint8_t* data, size_t maximumLength);
 
     bool
     isFinished();
@@ -42,8 +42,23 @@ private:
     const uint8_t* mData;
     size_t mLength;
     size_t mCurrentPosition;
-    uint8_t mNextBlockSize;
-    bool mBlockWithoutZero;
+    uint8_t mNextBlock;
+    bool mZeroElementSkip;
+};
+
+class CobsEncoder
+{
+public:
+    static size_t
+    encode(const uint8_t* input,
+           size_t inputLength,
+           uint8_t* output,
+           size_t maximumOutputLength);
+
+    static size_t
+    decode(const uint8_t* input,
+           size_t inputLength,
+           uint8_t* output);
 };
 
 }
