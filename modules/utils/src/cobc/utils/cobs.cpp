@@ -153,6 +153,15 @@ Cobs::encode(const uint8_t* input,
 }
 
 size_t
+Cobs::getMaximumSizeOfEncodedData(size_t inputLength)
+{
+    size_t length = inputLength + 1;
+    length += (inputLength + Cobs::maximumBlockLength - 1) / Cobs::maximumBlockLength;
+
+    return length;
+}
+
+size_t
 Cobs::decode(const uint8_t* input,
              size_t inputLength,
              uint8_t* output)

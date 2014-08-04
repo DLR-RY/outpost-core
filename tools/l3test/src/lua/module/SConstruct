@@ -51,6 +51,10 @@ env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 crc16_files   = env.Glob('crc16/*.cpp')
 crc16_library = env.SharedLibrary(rootpath + 'bin/lua/crc16', crc16_files, SHLIBPREFIX='')
 
+# Build COBS module
+cobs_files   = env.Glob('cobs/*.cpp')
+cobs_library = env.SharedLibrary(rootpath + 'bin/lua/cobs', cobs_files, SHLIBPREFIX='')
+
 # restore global environment
 envGlobal = envGlobalTemp
 
@@ -70,4 +74,4 @@ l3test_library = env.SharedLibrary(rootpath + 'bin/lua/l3test', l3test_files, SH
 
 # -----------------------------------------------------------------------------
 # Global
-envGlobal.Default([bitstream_library, crc16_library, l3test_library])
+envGlobal.Default([bitstream_library, crc16_library, l3test_library, cobs_library])

@@ -115,6 +115,9 @@ public:
            uint8_t* output,
            size_t maximumOutputLength);
 
+    static size_t
+    getMaximumSizeOfEncodedData(size_t inputLength);
+
     /**
      * Decode a COBS encoded array.
      *
