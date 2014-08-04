@@ -202,9 +202,9 @@ Engine::registerChannel(Channel::Ptr channel, const char* name)
 }
 
 bool
-Engine::execute(const char* string)
+Engine::execute(std::string code)
 {
-	int error = luaL_dostring(L, string);
+	int error = luaL_dostring(L, code.c_str());
     if (error) {
         lua_error(L);
     }

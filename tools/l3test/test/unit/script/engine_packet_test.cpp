@@ -40,7 +40,9 @@ tm:send(frame:bytes())
 	ASSERT_TRUE(channel->hasPackets());
 	EXPECT_EQ(10U, channel->getPacketLength());
 
-	auto packet = channel->getPacket();
+	Channel::Packet& packet = channel->getPacket();
+
+	EXPECT_EQ(10U, packet.size());
 
 	uint8_t data[10] = { 0x00, 0x1B, 0x00 ,0x09, 0x01, 0x01, 0x02, 0x03, 0xF2, 0x93 };
 	EXPECT_ARRAY_EQ(uint8_t, data, packet.data(), 10);

@@ -13,7 +13,8 @@ Channel::~Channel()
 
 // ----------------------------------------------------------------------------
 void
-Channel::append(const uint8_t* data, size_t numberOfBytes)
+Channel::append(const uint8_t* data,
+                size_t numberOfBytes)
 {
 	currentPacket.reserve(currentPacket.size() + numberOfBytes);
 
@@ -45,23 +46,20 @@ Channel::getNumberOfPackets() const
 size_t
 Channel::getPacketLength() const
 {
-	if (hasPackets()) {
-		return packets.front().size();
-	}
-
-	return 0;
+	return packets.front().size();
 }
 
-std::vector<uint8_t>
-Channel::getPacket() const
+Channel::Packet&
+Channel::getPacket()
 {
 	return packets.front();
 }
 
 size_t
-Channel::getPacket(uint8_t* data, size_t numberOfBytes) const
+Channel::getPacket(uint8_t* data,
+                   size_t numberOfBytes) const
 {
-	auto length = std::min(numberOfBytes, packets.front().size());
+	auto length = std::min(numberOfBytes, getPacketLength());
 
 	for (size_t i = 0; i < length; ++i) {
 		data[i] = packets.front()[i];

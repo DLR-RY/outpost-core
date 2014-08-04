@@ -62,7 +62,7 @@ public:
 	registerChannel(Channel::Ptr channel, const char* name);
 
 	bool
-	execute(const char* string);
+	execute(std::string code);
 
 private:
 	static const std::string defaultPath[];

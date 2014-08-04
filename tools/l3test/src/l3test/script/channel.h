@@ -26,6 +26,7 @@ class Channel
 public:
     /// Shared pointer to a channel object
     typedef std::shared_ptr<l3test::script::Channel> Ptr;
+    typedef std::vector<uint8_t> Packet;
 
 	Channel();
 
@@ -67,8 +68,8 @@ public:
 	size_t
 	getPacketLength() const;
 
-	std::vector<uint8_t>
-	getPacket() const;
+	Packet&
+	getPacket();
 
 	/**
 	 * Copy packet data in the supplied array.
@@ -87,8 +88,8 @@ public:
 	nextPacket();
 
 private:
-	std::vector<uint8_t> currentPacket;
-	std::list< std::vector<uint8_t> > packets;
+	Packet currentPacket;
+	std::list< Packet > packets;
 };
 }
 }
