@@ -10,7 +10,9 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-#include "../mutex.h"
+#include <cobc/rtos/mutex.h>
+#include <cobc/rtos/mutex_guard.h>
+
 #include "traits.h"
 
 using namespace cobc::rtos;

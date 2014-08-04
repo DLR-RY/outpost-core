@@ -11,7 +11,7 @@
 #include <freertos/task.h>
 
 cobc::time::TimePoint
-cobc::rtos::SystemClock::now()
+cobc::rtos::SystemClock::now() const
 {
     // TODO Check when this will overflow
     uint64_t ticks_since_boot = static_cast<uint64_t>(xTaskGetTickCount());

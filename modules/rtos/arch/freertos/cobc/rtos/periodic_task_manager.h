@@ -13,6 +13,7 @@
 #include <freertos/FreeRTOS.h>
 
 #include <cobc/rtos/failure_handler.h>
+#include <cobc/rtos/mutex.h>
 
 namespace cobc
 {

@@ -79,14 +79,14 @@ cobc::rtos::Thread::getIdentifier() const
         return invalidIdentifier;
     }
     else {
-        return handle;
+        return reinterpret_cast<Identifier>(handle);
     }
 }
 
 cobc::rtos::Thread::Identifier
 cobc::rtos::Thread::getCurrentThreadIdentifier()
 {
-    return xTaskGetCurrentTaskHandle();
+    return reinterpret_cast<Identifier>(xTaskGetCurrentTaskHandle());
 }
 
 // ----------------------------------------------------------------------------
