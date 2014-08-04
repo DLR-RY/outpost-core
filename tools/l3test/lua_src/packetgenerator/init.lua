@@ -1,5 +1,5 @@
 --[[
-Copyright (c) 2013, German Aerospace Center (DLR)
+Copyright (c) 2014, German Aerospace Center (DLR)
 All Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,8 @@ POSSIBILITY OF SUCH DAMAGE.
 local current_folder = (...):gsub('%.init$', '')
 
 local generator = require(current_folder .. '.generator')
-local generator = require(current_folder .. '.ccsds')
-local generator = require(current_folder .. '.pus')
+local spp = require(current_folder .. '.spp')
+local pus = require(current_folder .. '.pus')
 
 -- ----------------------------------------------------------------------------
 local function tostring(packet)
@@ -46,7 +46,7 @@ return {
 
 	-- modules
 	generator = generator,
-	ccsds = ccsds,
+	spp = spp,
 	pus = pus,
 }
 

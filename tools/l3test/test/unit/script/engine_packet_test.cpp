@@ -12,8 +12,7 @@ TEST(EnginePacketTest, sendDataFromLua)
 {
 	Engine engine;
 
-	engine.setLuaPath("lua_src/?.lua;lua_src/?/init.lua;ext/?/init.lua;ext/?.lua");
-	engine.setLuaCPath("bin/lua/?.so");
+	engine.appendDefaultLuaPath("./");
 
 	Channel::Ptr channel(new Channel);
 	engine.registerChannel(channel, "tm");
@@ -21,13 +20,13 @@ TEST(EnginePacketTest, sendDataFromLua)
 	engine.execute(R"(
 assert = require "luassert"
 bitstream = require "bitstream"
-ccsds = require "packetgenerator.ccsds"
+spp = require "packetgenerator.spp"
 )");
 
 	engine.execute(R"(
-frame = ccsds.transfer_frame {
+frame = spp.tc.transfer_frame {
     frame_header = {
-        type = ccsds.TYPE_AD,
+        type = spp.tc.TYPE_AD,
         scid = 0x1B,
         vcid = 0,
         sequence_count = 1
@@ -57,8 +56,7 @@ TEST(EnginePacketTest, sendDataToLua)
 {
     Engine engine;
 
-    engine.setLuaPath("lua_src/?.lua;lua_src/?/init.lua;ext/?/init.lua;ext/?.lua");
-    engine.setLuaCPath("bin/lua/?.so");
+    engine.appendDefaultLuaPath("./");
 
     Channel::Ptr channel(new Channel);
     engine.registerChannel(channel, "tc");
@@ -66,7 +64,7 @@ TEST(EnginePacketTest, sendDataToLua)
     engine.execute(R"(
 assert = require "luassert"
 bitstream = require "bitstream"
-ccsds = require "packetgenerator.ccsds"
+spp = require "packetgenerator.spp"
 )");
 
     uint8_t data[10] = { 0x00, 0x1B, 0x00 ,0x09, 0x01, 0x01, 0x02, 0x03, 0xF2, 0x93 };
@@ -75,9 +73,9 @@ ccsds = require "packetgenerator.ccsds"
     channel->finishPacket();
 
     engine.execute(R"(
-frame = ccsds.transfer_frame {
+frame = spp.tc.transfer_frame {
     frame_header = {
-        type = ccsds.TYPE_AD,
+        type = spp.tc.TYPE_AD,
         scid = 0x1B,
         vcid = 0,
         sequence_count = 1
