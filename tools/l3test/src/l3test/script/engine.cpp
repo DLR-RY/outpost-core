@@ -2,46 +2,41 @@
 #include "engine.h"
 
 #include <sstream>
+#include <array>
 
 #include <lua/module/l3test/channel.h>
 #include <lua/exception.h>
-//#include <lua/stackdump.h> // for debugging
 
 using namespace l3test::script;
 
+const std::string Engine::defaultPath[] =
+{
+    // all strings here except for the last have to end with the Lua path
+    // separator (semicolon).
+    std::string("lua_src/?.lua;"),
+    std::string("lua_src/?/init.lua;"),
+    std::string("ext/?/init.lua;"),
+    std::string("ext/?.lua"),
+};
+
+const std::string Engine::defaultCPath[] =
+{
+    "bin/lua/?.so",
+};
+
 namespace
 {
-    int atpanic(lua_State* L)
-    {
-        throw lua::Exception(lua_tostring(L, -1));
-    }
-}
-
-Engine::Engine() :
-        L(luaL_newstate())
+int atpanic(lua_State* L)
 {
-    luaL_openlibs(L);
-    lua_atpanic(L, atpanic);
-
-    l3test_channel_open(L);
+    throw lua::Exception(lua_tostring(L, -1));
+}
 }
 
-Engine::~Engine()
-{
-    lua_close(L);
-}
-
+// ----------------------------------------------------------------------------
 static void
 setPath(lua_State* L, const char* field, const char* path)
 {
     lua_getglobal(L, "package");
-    //lua_getfield(L, -1, field);
-
-    //std::string cur_path = lua_tostring(L, -1);
-    //lua_pop(L, 1);
-
-    //cur_path.append(";");
-    //cur_path.append(path);
 
     std::string cur_path = path;
 
@@ -51,6 +46,72 @@ setPath(lua_State* L, const char* field, const char* path)
 
     // Remove the package table
     lua_pop(L, 1);
+}
+
+static void
+appendPath(lua_State* L, const char* field, const std::string path)
+{
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1, field);
+
+    std::string currentPath = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    currentPath.append(";");
+    currentPath.append(path);
+
+    // Set the new path value
+    lua_pushstring(L, currentPath.c_str());
+    lua_setfield(L, -2, field);
+
+    // Remove the package table
+    lua_pop(L, 1);
+}
+
+// ----------------------------------------------------------------------------
+Engine::Engine() :
+        L(luaL_newstate())
+{
+    luaL_openlibs(L);
+    lua_atpanic(L, atpanic);
+
+    l3test_channel_open(L);
+
+    // clear the include path
+    setPath(L, "path", "./?.lua");
+    setPath(L, "cpath", "./?.so");
+}
+
+Engine::~Engine()
+{
+    lua_close(L);
+}
+
+// ----------------------------------------------------------------------------
+void
+Engine::appendDefaultLuaPath(std::string prefix)
+{
+    // The prefix path has to end with a slash.
+    if (prefix.back() != '/')
+    {
+        prefix.append("/");
+    }
+
+    std::string path;
+    for (auto p : defaultPath)
+    {
+        path.append(prefix);
+        path.append(p);
+    }
+    appendPath(L, "path", path);
+
+    std::string cPath;
+    for (auto p : defaultCPath)
+    {
+        cPath.append(prefix);
+        cPath.append(p);
+    }
+    appendPath(L, "cpath", cPath);
 }
 
 void
@@ -65,12 +126,13 @@ Engine::setLuaCPath(const char* path)
     setPath(L, "cpath", path);
 }
 
-static std::vector<std::string> &
+static std::vector<std::string>&
 split(const std::string &s, char delim, std::vector<std::string> &elems)
 {
     std::stringstream ss(s);
     std::string item;
-    while (std::getline(ss, item, delim)) {
+    while (std::getline(ss, item, delim))
+    {
         elems.push_back(item);
     }
     return elems;

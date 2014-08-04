@@ -31,6 +31,16 @@ public:
 
 	~Engine();
 
+	/**
+	 * Set the default path for
+	 *
+	 * \param prefix
+	 *     Prefix to the default Lua and Lua C path. The prefix should point
+	 *     to the l3test folder.
+	 */
+	void
+	appendDefaultLuaPath(std::string prefix);
+
 	void
 	setLuaPath(const char* path);
 
@@ -55,6 +65,9 @@ public:
 	execute(const char* string);
 
 private:
+	static const std::string defaultPath[];
+	static const std::string defaultCPath[];
+
 	lua_State* L;
 
 	std::list< std::pair<std::string, Channel::Ptr> > channels;
