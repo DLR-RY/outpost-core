@@ -28,7 +28,20 @@ require("busted")
 
 local bitstream = require "bitstream"
 
+local function create_bitstream_from_bit_table(input)
+	local length = #input
+	local b = bitstream.new(length)
+	
+	-- fill bitstream with data
+	for i = 1, length do
+		b:set(i, input[i])
+	end
+	
+	return b
+end
+
 describe("bitstream (C++) module test", function()
+
 	it("should have the correct size", function()
 		b = bitstream.new(45)
 		assert.equals(45, b:bit_length())
@@ -108,18 +121,11 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should extract fields", function()
-		input = {
+		b = create_bitstream_from_bit_table {
 			1, 0, 0, 1, 1, 1, 0, 0,
 			0, 0, 1, 1, 0, 1, 1, 0,
 			0, 1, 1, 1
 		}
-		
-		b = bitstream.new(20)
-		
-		-- fill bitstream with data
-		for i = 1, #input do
-			b:set(i, input[i])
-		end
 		
 		assert.equals(19,   b:extract(1, 5))
 		assert.equals(4,    b:extract(6, 3))
@@ -133,13 +139,7 @@ describe("bitstream (C++) module test", function()
 			0, 0, 1, 1, 0, 1, 1, 0,
 			0, 1, 1, 1
 		}
-		
-		a = bitstream.new(20)
-		
-		-- fill bitstream with data
-		for i = 1, #input do
-			a:set(i, input[i])
-		end
+		a = create_bitstream_from_bit_table(input)
 		
 		b = a:copy()
 		
@@ -155,17 +155,10 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should create byte tables", function()
-		input = {
+		b = create_bitstream_from_bit_table {
 			1, 0, 0, 1, 1, 1, 0, 0,
 			0, 0, 1, 1, 0, 1, 1, 0,
 		}
-		
-		b = bitstream.new(16)
-		
-		-- fill bitstream with data
-		for i = 1, #input do
-			b:set(i, input[i])
-		end
 		
 		t = b:bytes()
 		
@@ -174,7 +167,7 @@ describe("bitstream (C++) module test", function()
 		assert.equals(0x36, t[2])
 	end)
 	
-	it("shoud support creating from strings", function()
+	it("shoud support creating bitstreams from strings", function()
 		b = bitstream.new('\x12\x23\xab\xcd')
 		
 		assert.equals(4, #b)
@@ -186,6 +179,21 @@ describe("bitstream (C++) module test", function()
 		assert.equals(0x23, t[2])
 		assert.equals(0xab, t[3])
 		assert.equals(0xcd, t[4])
+	end)
+	
+	it("should output hexadezimal strings", function()
+		b = bitstream.new('\x12\x23\xab\xcd')
+		assert.equals('12 23 AB CD', b:to_hex())
+	end)
+	
+	it("should output hexadezimal strings for inputs with a length not divable by 8", function()
+		b = create_bitstream_from_bit_table {
+			1, 0, 0, 1, 1, 1, 0, 0,
+			0, 0, 1, 1, 0, 1, 1, 0,
+			1, 1, 1
+		}
+		
+		assert.equals('9C 36 E0', b:to_hex())
 	end)
 	
 	it("should fail on byte tables with invalid size", function()

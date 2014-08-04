@@ -162,7 +162,7 @@ l_bitstream_get(lua_State* L)
 }
 
 // ----------------------------------------------------------------------------
-static Bitstream* 
+static Bitstream*
 check_and_get_field_arguments(lua_State* L, int& startPos, int& width)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
@@ -433,6 +433,59 @@ l_bitstream_to_binary(lua_State* L)
 }
 
 // ----------------------------------------------------------------------------
+static char
+nibbleToHex(uint8_t nibble)
+{
+    char output;
+    if (nibble <= 9)
+    {
+        output = nibble + '0';
+    }
+    else
+    {
+        output = nibble + 'A' - 10;
+    }
+
+    return output;
+}
+
+/**
+ * Create a string of the hexadezimal representation.
+ */
+static int
+l_bitstream_to_hex(lua_State* L)
+{
+    Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
+
+    div_t d = div((*b)->size, 8);
+
+    size_t numberOfBytes = d.quot;
+    if (d.rem > 0)
+    {
+        numberOfBytes += 1;
+    }
+
+    // 3 characters per byte. The zero byte is part of the last character.
+    size_t length = numberOfBytes * 3;
+    char* s = new char[length];
+
+    uint32_t index = 0;
+    for (size_t i = 0; i < numberOfBytes; ++i) {
+        s[index++] = nibbleToHex((*b)->values[i] >> 4);
+        s[index++] = nibbleToHex((*b)->values[i] & 0x0F);
+        s[index++] = ' ';
+    }
+    // Overwrite the last space character with the zero byte.
+    index--;
+    s[index] = '\0';
+
+    lua_pushstring(L, s);
+
+    delete [] s;
+    return 1;
+}
+
+// ----------------------------------------------------------------------------
 /**
  * Create a table with an entry per byte of the bitstream.
  *
@@ -499,6 +552,7 @@ static const struct luaL_Reg arraylib_m[] = {
 	{ "length", l_bitstream_length },
 	{ "copy", l_bitstream_copy },
 	{ "to_binary", l_bitstream_to_binary },
+	{ "to_hex", l_bitstream_to_hex },
 	{ "bytes", l_bitstream_bytes },
 
 	// TODO why doesn't this work?
