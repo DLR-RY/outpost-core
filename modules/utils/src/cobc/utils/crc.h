@@ -20,7 +20,7 @@ namespace cobc
  * Polynomial    : x^16 + x^12 + x^5 + 1 (0x8408, LSB first)
  * Initial value : 0xffff
  *
- * Used for CCSDS transfer frames.
+ * Used for SPP transfer frames.
  */
 class Crc16Ccitt
 {

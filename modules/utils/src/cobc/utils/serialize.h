@@ -153,7 +153,7 @@ private:
 
 // ----------------------------------------------------------------------------
 /**
- * Deserialize the application data of a CCSDS/PUS packet.
+ * Deserialize the application data of a SPP/PUS packet.
  *
  * The read8(), read16() and read32() functions read the number of bits
  * from the current location and move the data pointer forward

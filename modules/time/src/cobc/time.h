@@ -22,7 +22,7 @@
  * satellite.
  *
  * cobc::TimeModel is responsible for converting between local Time and UTC,
- * while ccsds::Time is used to convert between CDS and UTC and CUC and
+ * while spp::Time is used to convert between CDS and UTC and CUC and
  * local time.
  */
 

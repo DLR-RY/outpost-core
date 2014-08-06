@@ -9,7 +9,7 @@ envGlobal.SConscript(
 		'time/src/SConscript',
 		'rtos/src/SConscript',
 		'smpc/src/SConscript',
-		'ccsds/src/SConscript',
+		'spp/src/SConscript',
 		'pus/src/SConscript',
 	],
 	exports='envGlobal')

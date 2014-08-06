@@ -23,14 +23,14 @@ envGlobal.SConscript(
         modulepath + 'time/src/SConscript',
         modulepath + 'rtos/src/SConscript',
         modulepath + 'smpc/src/SConscript',
-        modulepath + 'ccsds/src/SConscript',
+        modulepath + 'spp/src/SConscript',
         modulepath + 'pus/src/SConscript',
     ],
     exports='envGlobal')
 
 env = envGlobal.Clone()
 
-env.Append(LIBS=['cobc_pus', 'cobc_ccsds', 'cobc_smpc', 'cobc_rtos', 'cobc_time'])
+env.Append(LIBS=['cobc_pus', 'cobc_spp', 'cobc_smpc', 'cobc_rtos', 'cobc_time'])
 env.Append(LIBPATH=['$BUILDPATH/lib'])
 
 # Combine all libraries into one
