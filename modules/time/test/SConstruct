@@ -32,6 +32,9 @@ else:
     
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'time/test/unittest'))
 
+# Use the default global configuration
+envGlobal.Append(CPPPATH=[rootpath + 'default/'])
+
 modulepath  = rootpath + '/modules'
 envGlobal.SConscript([
         os.path.join(modulepath, 'utils/src/SConscript'),
