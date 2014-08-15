@@ -35,7 +35,7 @@ local function tostring(packet)
 	local t = {}
 	local b = packet:bytes()
 	for i = 1, #b do
-		t[#t + 1] =  string.format('0x%02x', b[i])
+		t[#t + 1] =  string.format('0x%02X', b[i])
 	end
 	return table.concat(t, ', ')
 end

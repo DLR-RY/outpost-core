@@ -37,7 +37,7 @@ frame = spp.tc.transfer_frame {
 tm:send(frame:bytes())
 )");
 
-	ASSERT_TRUE(channel->hasPackets());
+	ASSERT_TRUE(channel->hasPacket());
 	EXPECT_EQ(10U, channel->getPacketLength());
 
 	Channel::Packet& packet = channel->getPacket();

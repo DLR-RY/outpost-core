@@ -32,7 +32,7 @@ Channel::finishPacket()
 
 // ----------------------------------------------------------------------------
 bool
-Channel::hasPackets() const
+Channel::hasPacket() const
 {
 	return (packets.size() > 0);
 }

@@ -12,6 +12,7 @@ static const unsigned int bitsPerWord = 8;
 
 struct Bitstream
 {
+    /// Size of the bitstream in bits
 	int size;
 
 	// used as a placeholder for the complete array
@@ -82,8 +83,9 @@ l_bitstream_new(lua_State* L)
             (*b)->values[i] = s[i];
         }
     }
-    else {
-        luaL_argcheck(L, false, 2, "Invalid type");
+    else
+    {
+        luaL_argcheck(L, false, 1, "Invalid type, expected string with values or number of bits to store");
     }
 
 
@@ -95,8 +97,27 @@ l_bitstream_new(lua_State* L)
 
 // ----------------------------------------------------------------------------
 /**
+ * Create a new bitstream object.
+ */
+static int
+l_bitstream_empty(lua_State* L)
+{
+    int numberOfArguments = lua_gettop(L);
+    if (numberOfArguments != 0)
+    {
+        return luaL_error(L, "Invalid number of arguments (expected 0, got %d)", numberOfArguments);
+    }
+    else
+    {
+        lua_pushinteger(L, 0);
+        return l_bitstream_new(L);
+    }
+}
+
+// ----------------------------------------------------------------------------
+/**
  *
- * \param       L
+ * \param L
  *     Lua interpreter state
  * \param[out]  mask
  *     Bitmask
@@ -171,7 +192,7 @@ check_and_get_field_arguments(lua_State* L, int& startPos, int& width)
 	luaL_argcheck(L, (startPos >= 0) && (startPos < (*b)->size), 2, "index out of range");
 
 	width = luaL_checkint(L, 3);
-	luaL_argcheck(L, (width >= 0) && (width < 32), 3, "invalid word width");
+	luaL_argcheck(L, (width >= 0) && (width <= 32), 3, "invalid word width, must be in range [0,32]");
 	luaL_argcheck(L, (startPos + width) <= (*b)->size, 3, "word access out of range");
 
 	return (*b);
@@ -517,10 +538,12 @@ l_bitstream_bytes(lua_State* L)
  * Create a string representation.
  */
 static int
-l_bitstream_representation(lua_State* L)
+l_bitstream_to_string(lua_State* L)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
-	lua_pushfstring(L, "bitstream(%d)", (*b)->size);
+	size_t nbytes = numberOfWords((*b)->size);
+
+	lua_pushlstring(L, reinterpret_cast<const char*>((*b)->values), nbytes);
 	return 1;
 }
 
@@ -539,6 +562,7 @@ l_bitstream_gc(lua_State* L)
 // ----------------------------------------------------------------------------
 static const struct luaL_Reg arraylib_f[] = {
 	{ "new", l_bitstream_new },
+	{ "empty", l_bitstream_empty },
 	{ NULL, NULL }
 };
 
@@ -553,13 +577,14 @@ static const struct luaL_Reg arraylib_m[] = {
 	{ "copy", l_bitstream_copy },
 	{ "to_binary", l_bitstream_to_binary },
 	{ "to_hex", l_bitstream_to_hex },
+	{ "to_string", l_bitstream_to_string },
 	{ "bytes", l_bitstream_bytes },
 
 	// TODO why doesn't this work?
 	//{ "__newindex", l_bitstream_set },
 	//{ "__index", l_bitstream_get },
 	{ "__len", l_bitstream_length },
-	{ "__tostring", l_bitstream_representation },
+	{ "__tostring", l_bitstream_to_string },
 	{ "__concat", l_bitstream_concat },
 	{ "__gc", l_bitstream_gc },
 

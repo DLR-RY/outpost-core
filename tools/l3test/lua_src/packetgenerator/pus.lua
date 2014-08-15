@@ -39,7 +39,7 @@ local data_field_header_definition = {
 	}
 }
 
-local function data_field_header(values)
+local function tc_data_field_header(values)
 	local packet = generator.new(data_field_header_definition)
 	packet:set {
 		ack = values.ack,
@@ -55,21 +55,28 @@ return {
 	_DESCRIPTION = [[ TODO ]],
 	_LICENSE = [[2-clause BSD License]],
 	
-	-- functions
-	data_field_header = data_field_header,
-	
-	-- variables
-	
-	-- constants
-	ACK = {
-		NONE = 0,
-	
-		ACCEPTANCE = 0x1,
-		START = 0x2,
-		PROGRESS = 0x4,
-		COMPLETION = 0x8,
+	-- Telecommand
+	tc = {
+		-- functions
+		data_field_header = tc_data_field_header,
 		
-		ALL = 0xF
+		-- constants
+		ack = {
+			NONE = 0,
+	
+			ACCEPTANCE = 0x1,
+			START = 0x2,
+			PROGRESS = 0x4,
+			COMPLETION = 0x8,
+		
+			ALL = 0xF
+		},
+	},
+	
+	-- Telemetry
+	tm = {
+		-- functions
+		data_field_header = tm_data_field_header,
 	},
 }
 

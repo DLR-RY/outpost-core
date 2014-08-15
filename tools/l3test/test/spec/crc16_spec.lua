@@ -32,7 +32,7 @@ describe("Lua modules", function()
 	describe("crc16 (C++) module", function()
 		-- based on ECSS-E-70-41A Annex A (Version from January 2003).
 		it("should pass PUS test 1", function()
-			c = crc16.new()
+			local c = crc16.new()
 			
 			c:update(0x00)
 			c:update(0x00)
@@ -42,7 +42,7 @@ describe("Lua modules", function()
 		
 		-- based on ECSS-E-70-41A Annex A (Version from January 2003).
 		it("should pass PUS test 2", function()
-			c = crc16.new()
+			local c = crc16.new()
 			
 			c:update(0x00)
 			c:update(0x00)
@@ -53,7 +53,7 @@ describe("Lua modules", function()
 		
 		-- based on ECSS-E-70-41A Annex A (Version from January 2003).
 		it("should pass PUS test 3", function()
-			c = crc16.new()
+			local c = crc16.new()
 			
 			c:update(0xAB)
 			c:update(0xCD)
@@ -65,7 +65,7 @@ describe("Lua modules", function()
 		
 		-- based on ECSS-E-70-41A Annex A (Version from January 2003).
 		it("should pass PUS test 4", function()
-			c = crc16.new()
+			local c = crc16.new()
 			
 			c:update(0x14)
 			c:update(0x56)
@@ -78,7 +78,7 @@ describe("Lua modules", function()
 		end)
 		
 		it("should get zero when including the CRC value", function()
-			c = crc16.new()
+			local c = crc16.new()
 			
 			c:update(0x14)
 			c:update(0x56)
@@ -93,9 +93,9 @@ describe("Lua modules", function()
 		end)
 		
 		it("should work on tables of bytes", function()
-			c = crc16.new()
+			local c = crc16.new()
 			
-			t = {
+			local t = {
 				0x10, 0x82, 0x8F, 0x7D, 0x01,
 				0x7E, 0x10, 0x81, 0x08, 0x34, 0x7E, 0xE5, 0xC3,
 			}
@@ -106,9 +106,9 @@ describe("Lua modules", function()
 		end)
 		
 		it("should work on a subset", function()
-			c = crc16.new()
+			local c = crc16.new()
 			
-			t = {
+			local t = {
 				0x14, 0x56, 0xF8, 0x9A, 0x00, 0x01, 0x7F, 0xD5
 			}
 			
@@ -119,7 +119,15 @@ describe("Lua modules", function()
 		end)
 		
 		it("should work with strings", function()
+			local c = crc16.new()
 			
+			c:calculate('\x14\x56\xF8\x9A\x00\x01')
+			
+			assert.equals(0x7FD5, c:get())
+		end)
+		
+		it("should have a short version for the calculation", function()
+			assert.equals(0x7FD5, crc16.calculate('\x14\x56\xF8\x9A\x00\x01'))
 		end)
 	end)
 end)

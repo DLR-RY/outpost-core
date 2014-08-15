@@ -109,7 +109,7 @@ static int
 l_is_packet_available(lua_State* L)
 {
     Channel* c = getChannel(L);
-    lua_pushboolean(L, c->hasPackets() ? 1 : 0);
+    lua_pushboolean(L, c->hasPacket() ? 1 : 0);
 
     return 1;
 }
@@ -131,7 +131,7 @@ l_get_packet(lua_State* L)
 {
     Channel* c = getChannel(L);
 
-    if (!c->hasPackets()) {
+    if (!c->hasPacket()) {
         luaL_error(L, "No packet available");
     }
 

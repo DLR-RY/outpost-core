@@ -107,7 +107,7 @@ data = { 1, 2, 3, 4, 5, 6 }
 tm:send(data)
 )--");
 
-	ASSERT_TRUE(channel->hasPackets());
+	ASSERT_TRUE(channel->hasPacket());
 	EXPECT_EQ(6U, channel->getPacketLength());
 
 	auto packet = channel->getPacket();

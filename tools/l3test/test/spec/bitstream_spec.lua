@@ -43,40 +43,46 @@ end
 describe("bitstream (C++) module test", function()
 
 	it("should have the correct size", function()
-		b = bitstream.new(45)
+		local b = bitstream.new(45)
 		assert.equals(45, b:bit_length())
 	end)
 	
 	it("should return the length in bytes", function()
-		b = bitstream.new(48)
+		local b = bitstream.new(48)
 		assert.equals(6, b:length())
 	end)
 	
 	it("should provide a length operator", function()
-		b = bitstream.new(32)
+		local b = bitstream.new(32)
 		assert.equals(4, #b)
 	end)
 	
 	it("should fail for non byte sizes", function()
-		b = bitstream.new(25)
+		local b = bitstream.new(25)
 		assert.error(function() b:length() end)
 	end)
 
 	it("should be initialized to zero", function()
-		b = bitstream.new(10)
+		local b = bitstream.new(10)
 		for i = 1, 10 do
 			assert.equals(0, b:get(i))
 		end
 	end)
 	
+	it("should support bitstreams of size 0", function()
+		local b = bitstream.new(0)
+		local t = b:bytes()
+		assert.equals(0, #t)
+	end)
+	
 	it("should support empty bitstreams", function()
-		b = bitstream.new(0)
-		t = b:bytes()
+		local b = bitstream.empty()
+		local t = b:bytes()
 		assert.equals(0, #t)
 	end)
 	
 	it("should store bits", function()
-		b = bitstream.new(10)
+		local b = bitstream.new(10)
 		b:set(3, 0)
 		b:set(5, true)
 		b:set(6, false)
@@ -84,6 +90,7 @@ describe("bitstream (C++) module test", function()
 		b:set(9, 10)
 		
 		for i = 1, 10 do
+			local value
 			if i == 5 or i == 7 or i == 9 then
 				value = 1
 			else
@@ -95,7 +102,7 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should fail on out-of-bounds access", function()
-		b = bitstream.new(10)
+		local b = bitstream.new(10)
 		
 		assert.error(function() b:set(0,   0) end)
 		assert.error(function() b:set(11,  1) end)
@@ -103,13 +110,13 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should store fields", function()
-		expected = {
+		local expected = {
 			1, 0, 0, 1, 1, 1, 0, 0,
 			0, 0, 1, 1, 0, 1, 1, 0,
 			0, 1, 1, 1
 		}
 		
-		b = bitstream.new(20)
+		local b = bitstream.new(20)
 		b:insert(1, 5, 19)
 		b:insert(6, 3, 4)
 		b:insert(11, 2, 3)
@@ -121,7 +128,7 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should extract fields", function()
-		b = create_bitstream_from_bit_table {
+		local b = create_bitstream_from_bit_table {
 			1, 0, 0, 1, 1, 1, 0, 0,
 			0, 0, 1, 1, 0, 1, 1, 0,
 			0, 1, 1, 1
@@ -134,14 +141,14 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should copy bitstreams", function()
-		input = {
+		local input = {
 			1, 0, 0, 1, 1, 1, 0, 0,
 			0, 0, 1, 1, 0, 1, 1, 0,
 			0, 1, 1, 1
 		}
-		a = create_bitstream_from_bit_table(input)
+		local a = create_bitstream_from_bit_table(input)
 		
-		b = a:copy()
+		local b = a:copy()
 		
 		a:set(2, 1)
 		a:set(20, 0)
@@ -155,12 +162,12 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should create byte tables", function()
-		b = create_bitstream_from_bit_table {
+		local b = create_bitstream_from_bit_table {
 			1, 0, 0, 1, 1, 1, 0, 0,
 			0, 0, 1, 1, 0, 1, 1, 0,
 		}
 		
-		t = b:bytes()
+		local t = b:bytes()
 		
 		assert.equals(2, #t)
 		assert.equals(0x9C, t[1])
@@ -168,11 +175,11 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("shoud support creating bitstreams from strings", function()
-		b = bitstream.new('\x12\x23\xab\xcd')
+		local b = bitstream.new('\x12\x23\xab\xcd')
 		
 		assert.equals(4, #b)
 		
-		t = b:bytes()
+		local t = b:bytes()
 		
 		assert.equals(4, #t)
 		assert.equals(0x12, t[1])
@@ -182,12 +189,12 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should output hexadezimal strings", function()
-		b = bitstream.new('\x12\x23\xab\xcd')
+		local b = bitstream.new('\x12\x23\xab\xcd')
 		assert.equals('12 23 AB CD', b:to_hex())
 	end)
 	
 	it("should output hexadezimal strings for inputs with a length not divable by 8", function()
-		b = create_bitstream_from_bit_table {
+		local b = create_bitstream_from_bit_table {
 			1, 0, 0, 1, 1, 1, 0, 0,
 			0, 0, 1, 1, 0, 1, 1, 0,
 			1, 1, 1
@@ -197,29 +204,29 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should fail on byte tables with invalid size", function()
-		b = bitstream.new(23)
+		local b = bitstream.new(23)
 		
 		-- size must be devidable by 8 to use the bytes function
 		assert.error(function() b:bytes() end)
 	end)
 	
 	it("should append bitstreams", function()
-		input1 = {
+		local input1 = {
 			1, 0, 0, 1, 1, 1, 0, 0,
 			0, 0, 1, 1, 0,
 		}
 		
-		input2 = {
+		local input2 = {
 			1, 1, 0, 1, 0,
 		}
 
-		input3 = {
+		local input3 = {
 			0, 1, 1, 0, 1, 0,
 		}
 					
-		b1 = bitstream.new(13)
-		b2 = bitstream.new(5)
-		b3 = bitstream.new(6)
+		local b1 = bitstream.new(13)
+		local b2 = bitstream.new(5)
+		local b3 = bitstream.new(6)
 		
 		-- fill bitstream with data
 		for i = 1, #input1 do
@@ -242,7 +249,7 @@ describe("bitstream (C++) module test", function()
 		
 		assert.equals(24, b1:bit_length())
 		
-		t = b1:bytes()
+		local t = b1:bytes()
 		
 		assert.equals(3, #t)
 		assert.equals(0x9C, t[1])
@@ -293,7 +300,7 @@ describe("bitstream (C++) module test", function()
 		assert.equals(11, b4:bit_length())
 		assert.equals(24, b5:bit_length())
 		
-		t = b5:bytes()
+		local t = b5:bytes()
 		
 		assert.equals(3, #t)
 		assert.equals(0x9C, t[1])
@@ -302,16 +309,25 @@ describe("bitstream (C++) module test", function()
 	end)
 	
 	it("should append strings", function()
-		b = bitstream.new(8)
+		local b = bitstream.new(8)
 		
 		b:append('\x12\x23')
 		
 		assert.equals(3, #b)
 		
-		t = b:bytes()
+		local t = b:bytes()
 		assert.equals(0x00, t[1])
 		assert.equals(0x12, t[2])
 		assert.equals(0x23, t[3])
+	end)
+	
+	it("should be convertiable to a string", function()
+		local input = '\xC2\xF5\x45\x01\x8B'
+		local b = bitstream.new(input)
+		
+		assert.equals(5, #b)
+		assert.equals(input, b:to_string())
+		assert.equals(input, tostring(b))
 	end)
 end)
 

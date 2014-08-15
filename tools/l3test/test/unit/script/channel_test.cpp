@@ -7,27 +7,26 @@ using namespace l3test::script;
 /*
  * Check the default values of the object.
  */
-TEST(ChannelTest, creation)
+TEST(ChannelTest, channelHasNoPacketAfterCreation)
 {
 	Channel channel;
 
-	EXPECT_FALSE(channel.hasPackets());
-	EXPECT_EQ(0U, channel.getPacketLength());
+	EXPECT_FALSE(channel.hasPacket());
 }
 
-TEST(ChannelTest, pushData)
+TEST(ChannelTest, channelHasPacketAfterPushingData)
 {
 	Channel channel;
 
 	uint8_t data[16];
 	channel.append(data, 16);
-	EXPECT_FALSE(channel.hasPackets());
+	EXPECT_FALSE(channel.hasPacket());
 
 	channel.finishPacket();
-	EXPECT_TRUE(channel.hasPackets());
+	EXPECT_TRUE(channel.hasPacket());
 }
 
-TEST(ChannelTest, receiveData)
+TEST(ChannelTest, pushedDataAreReceivedCorrectly)
 {
 	Channel channel;
 
@@ -39,7 +38,7 @@ TEST(ChannelTest, receiveData)
 	channel.append(data, 16);
 	channel.finishPacket();
 
-	ASSERT_TRUE(channel.hasPackets());
+	ASSERT_TRUE(channel.hasPacket());
 	EXPECT_EQ(16U, channel.getPacketLength());
 
 	std::vector<uint8_t> recv = channel.getPacket();
@@ -49,7 +48,7 @@ TEST(ChannelTest, receiveData)
 
 	// remove the packet form the list
 	channel.nextPacket();
-	EXPECT_FALSE(channel.hasPackets());
+	EXPECT_FALSE(channel.hasPacket());
 }
 
 /*
@@ -57,7 +56,7 @@ TEST(ChannelTest, receiveData)
  *
  * Check that the order of packets is correct.
  */
-TEST(ChannelTest, receiveMultiple)
+TEST(ChannelTest, receiveMultiplePacketsAndValidateData)
 {
 	Channel channel;
 	uint8_t data[16];
@@ -77,7 +76,7 @@ TEST(ChannelTest, receiveMultiple)
 	channel.append(data2, 8);
 	channel.finishPacket();
 
-	ASSERT_TRUE(channel.hasPackets());
+	ASSERT_TRUE(channel.hasPacket());
 	EXPECT_EQ(16U, channel.getPacketLength());
 
 	std::vector<uint8_t> recv = channel.getPacket();
@@ -88,7 +87,7 @@ TEST(ChannelTest, receiveMultiple)
 	// remove the packet form the list
 	channel.nextPacket();
 
-	ASSERT_TRUE(channel.hasPackets());
+	ASSERT_TRUE(channel.hasPacket());
 	EXPECT_EQ(8U, channel.getPacketLength());
 
 	std::vector<uint8_t> recv2 = channel.getPacket();
@@ -99,5 +98,5 @@ TEST(ChannelTest, receiveMultiple)
 	// remove the packet form the list
 	channel.nextPacket();
 
-	EXPECT_FALSE(channel.hasPackets());
+	EXPECT_FALSE(channel.hasPacket());
 }

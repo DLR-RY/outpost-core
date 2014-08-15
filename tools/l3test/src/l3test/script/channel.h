@@ -50,7 +50,7 @@ public:
 	finishPacket();
 
 	bool
-	hasPackets() const;
+	hasPacket() const;
 
 	/**
 	 * Get the number of packets currently stored in the channel.
@@ -61,9 +61,11 @@ public:
 	getNumberOfPackets() const;
 
 	/**
+	 * Get the length of the current packet.
 	 *
-	 * \return Number of bytes in the current packet. Returns 0 if no packet
-	 *     is available.
+	 * Only valid when hasPacket() returns \c true.
+	 *
+	 * \return Number of bytes in the current packet.
 	 */
 	size_t
 	getPacketLength() const;

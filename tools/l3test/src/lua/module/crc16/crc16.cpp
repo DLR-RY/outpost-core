@@ -33,7 +33,7 @@ checkudata(lua_State* L)
  * Returns a crc object.
  */
 static int
-l_crc16_new(lua_State* L)
+l_crc16_function_new(lua_State* L)
 {
     Crc16Ccitt** d = (Crc16Ccitt**) lua_newuserdata(L, sizeof(d));
 
@@ -83,6 +83,70 @@ l_crc16_update(lua_State* L)
 }
 
 /**
+ *
+ * \param L
+ *      Lua state
+ * \param offset
+ *      Offset of the argument on the stack
+ * \param d
+ *      CRC object
+ */
+static void
+calculate(lua_State* L, int offset, Crc16Ccitt* d)
+{
+    int type = lua_type(L, offset);
+    if (type == LUA_TTABLE)
+    {
+        int start = luaL_optinteger(L, offset + 1, 1);
+        int end = luaL_optinteger(L, offset + 2, -1);
+
+        // remove optional start and end parameters from the stack
+        lua_settop(L, offset);
+
+        // Make the end relative to the start of the table, not the end
+        if (end < 0)
+        {
+            // Get table size
+            lua_len(L, offset);
+            size_t len = lua_tointeger(L, -1);
+            lua_pop(L, 1);
+
+            // 'end = -1' refers to the last entry, which is equal to 'len'.
+            // Therefore adding one is required.
+            end = len + end + 1;
+        }
+
+        for (int i = start; i <= end; ++i)
+        {
+            lua_rawgeti(L, offset, i);
+            int value = lua_tointeger(L, -1);
+            lua_pop(L, 1);
+
+            if (value > 0xff || value < 0)
+            {
+                luaL_argcheck(L, false, offset, "Table contains invalid values");
+            }
+            d->update(value);
+        }
+
+    }
+    else if (type == LUA_TSTRING)
+    {
+        size_t length;
+        const char* str = lua_tolstring(L, offset, &length);
+
+        for (size_t i = 0; i < length; ++i)
+        {
+            d->update(str[i]);
+        }
+    }
+    else
+    {
+        luaL_argcheck(L, false, offset, "Invalid type");
+    }
+}
+
+/**
  * Process a substring of bytes.
  *
  *   self = crc:update(bytes, [start, [, end]])
@@ -98,53 +162,11 @@ l_crc16_update(lua_State* L)
  * Returns the crc object.
  */
 static int
-l_crc16_calculate(lua_State* L)
+l_crc16_method_calculate(lua_State* L)
 {
     Crc16Ccitt* d = checkudata(L);
 
-    int type = lua_type(L, 2);
-    if (type == LUA_TTABLE) {
-        int start = luaL_optinteger(L, 3, 1);
-        int end = luaL_optinteger(L, 4, -1);
-
-        // remove optional start and end parameters from the stack
-        lua_settop(L, 2);
-
-        // Make the end relative to the start of the table, not the end
-        if (end < 0) {
-            // Get table size
-            lua_len(L, 2);
-            size_t len = lua_tointeger(L, -1);
-            lua_pop(L, 1);
-
-            // 'end = -1' refers to the last entry, which is equal to 'len'.
-            // Therefore adding one is required.
-            end = len + end + 1;
-        }
-
-        for (int i = start; i <= end; ++i) {
-            lua_rawgeti(L, 2, i);
-            int value = lua_tointeger(L, -1);
-            lua_pop(L, 1);
-
-            if (value > 0xff || value < 0) {
-                luaL_argcheck(L, false, 2, "Table contains invalid values");
-            }
-            d->update(value);
-        }
-
-    }
-    else if (type == LUA_TSTRING) {
-        size_t length;
-        const char* str = lua_tolstring(L, 2, &length);
-
-        for (size_t i = 0; i <= length; ++i) {
-            d->update(str[i]);
-        }
-    }
-    else {
-        luaL_argcheck(L, false, 2, "Invalid type");
-    }
+    calculate(L, 2, d);
 
     lua_settop(L, 1);
     return 1;
@@ -191,6 +213,16 @@ l_crc16_call(lua_State* L)
 }
 
 static int
+l_crc16_function_calculate(lua_State* L)
+{
+    Crc16Ccitt crc;
+    calculate(L, 1, &crc);
+
+    lua_pushinteger(L, crc.getValue());
+    return 1;
+}
+
+static int
 l_crc16_gc(lua_State* L)
 {
     Crc16Ccitt** d = (Crc16Ccitt **) luaL_checkudata(L, 1, "dlr.crc16");
@@ -203,14 +235,15 @@ l_crc16_gc(lua_State* L)
 
 // ----------------------------------------------------------------------------
 static const struct luaL_Reg lib_functions[] = {
-	{ "new", l_crc16_new },
+	{ "new", l_crc16_function_new },
+	{ "calculate", l_crc16_function_calculate },
 	{ NULL, NULL }
 };
 
 static const struct luaL_Reg lib_methods[] = {
 	{ "reset", l_crc16_reset },
 	{ "update", l_crc16_update },
-	{ "calculate", l_crc16_calculate },
+	{ "calculate", l_crc16_method_calculate },
 	{ "get", l_crc16_get },
 	{ "__call", l_crc16_call},
 	{ "__gc", l_crc16_gc},
