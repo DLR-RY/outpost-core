@@ -119,6 +119,25 @@ public:
     inline void
     store(T data);
 
+    /**
+     * Skip forward the given number of bytes.
+     *
+     * \param bytes
+     *      Number of byte to skip forward.
+     */
+    inline void
+    skip(size_t bytes)
+    {
+        buffer += bytes;
+    }
+
+    template <typename T>
+    inline void
+    skip()
+    {
+        buffer += sizeof(T);
+    }
+
     // get position of the buffer
     inline ptrdiff_t
     getPosition() const
@@ -371,6 +390,13 @@ public:
     skip(size_t bytes)
     {
         buffer += bytes;
+    }
+
+    template <typename T>
+    inline void
+    skip()
+    {
+        buffer += sizeof(T);
     }
 
     template <typename T>
