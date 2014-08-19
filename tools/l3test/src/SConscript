@@ -20,7 +20,7 @@ env.Append(CPPPATH=['.'])
 objects = []
 for file in files:
 	objects.append(env.Object(file))
-envGlobal.Append(objects={'pus': objects})
+envGlobal.Append(objects={'l3test': objects})
 
 library = env.StaticLibrary('l3test', objects)
 envGlobal.Install('$BUILDPATH/lib', library)

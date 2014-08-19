@@ -262,5 +262,11 @@ function module.new(value)
 	return self
 end
 
+function module.render(definition, values)
+	local g = module.new(definition)
+	g:set(values)
+	return g:render()
+end
+
 return module
 

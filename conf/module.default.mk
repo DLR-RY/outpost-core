@@ -65,7 +65,7 @@ analyze-clang-view:
 	PATH=$(PATH):~/Downloads/llvm/tools/clang/tools/scan-view \
 	scan-view "$(CURDIR)/../../build/$(MODULE)/test/analyze-clang/$(FOLDER)"
 
-codingstyle: codingstyle-vera codingstyle-polyspace
+codingstyle: codingstyle-simple codingstyle-jsf
 
 # Run style checker
 codingstyle-simple:

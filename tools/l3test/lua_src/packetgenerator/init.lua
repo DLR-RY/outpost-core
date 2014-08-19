@@ -31,13 +31,32 @@ local spp = require(current_folder .. '.spp')
 local pus = require(current_folder .. '.pus')
 
 -- ----------------------------------------------------------------------------
-local function tostring(packet)
+-- Print a packet represented by a bitstream
+--
+-- @param packet
+--     Bitstream to print
+-- @param linebreak
+--     Number of bytes after which a linebreak is added. Default is 8, set to
+--     zero to disable it.
+--
+local function tostring(packet, linebreak)
 	local t = {}
 	local b = packet:bytes()
+	local linebreak = linebreak or 8
+	
 	for i = 1, #b do
-		t[#t + 1] =  string.format('0x%02X', b[i])
+		t[#t + 1] = string.format('0x%02X', b[i])
+		
+		if i ~= #b then
+			t[#t + 1] = ', '
+		end
+		if linebreak ~= 0 then
+			if (i - 1) % linebreak == (linebreak - 1) then
+				t[#t + 1] = '\n'
+			end
+		end
 	end
-	return table.concat(t, ', ')
+	return table.concat(t)
 end
 
 return {
