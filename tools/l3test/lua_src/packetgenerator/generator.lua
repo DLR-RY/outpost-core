@@ -203,11 +203,12 @@ function _fill(packet, position, structure, values)
 			for i = 1, #t do
 				packet:insert(pos + (i - 1) * 8, 8, t[i])
 			end
+			pos = pos + (#t * 8)
 		else
 			packet:insert(pos, entry.length, value)
+			pos = pos + entry.length
 		end
 		
-		pos = pos + entry.length
 		if entry.group ~= nil then
 			pos = _fill_group(packet, pos, entry.group, values[entry.name])
 		end

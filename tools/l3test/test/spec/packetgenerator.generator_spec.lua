@@ -27,6 +27,7 @@ POSSIBILITY OF SUCH DAMAGE.
 require("busted")
 
 local bitstream = require "bitstream"
+local packetgenerator = require "packetgenerator"
 local generator = require "packetgenerator.generator"
 
 describe("packetgenerator.generator (Lua module) test", function()
@@ -211,6 +212,49 @@ describe("packetgenerator.generator (Lua module) test", function()
 		assert.equals(0x01, t[3])
 		assert.equals(0x02, t[4])
 		assert.equals(0x03, t[5])
+	end)
+	
+	it("should support groups with multiple entries", function()
+		local definition = {
+			name = "Load Register",
+			structure = {
+				{ name="n", type="editable", length=16, group={
+					{ name="address", type="editable", length=32 },
+					{ name="data", type="deduced" },
+					}
+				}
+			}
+		}
+		
+		local p = generator.new(definition)
+		p:set {
+			n = {
+				{ address=7,  data=bitstream.new('\x12\x45\xAB\x1E') },
+                { address=10, data=bitstream.new('\xFE') },
+            },
+		}
+		
+		local b = p:render()
+		local t = b:bytes()
+		
+		assert.equals(15, #t)
+		assert.equals(0x00, t[1])
+		assert.equals(0x02, t[2])
+		
+		assert.equals(0x00, t[3])
+		assert.equals(0x00, t[4])
+		assert.equals(0x00, t[5])
+		assert.equals(0x07, t[6])
+		assert.equals(0x12, t[7])
+		assert.equals(0x45, t[8])
+		assert.equals(0xAB, t[9])
+		assert.equals(0x1E, t[10])
+		
+		assert.equals(0x00, t[11])
+		assert.equals(0x00, t[12])
+		assert.equals(0x00, t[13])
+		assert.equals(0x0A, t[14])
+		assert.equals(0xFE, t[15])
 	end)
 end)
 
