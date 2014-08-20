@@ -211,6 +211,34 @@ TEST(DeserialzeTest, getPosition)
     EXPECT_EQ(25, payload.getPosition());
 }
 
+TEST(DeserialzeTest, skipPositions)
+{
+    uint8_t data[32] = {};
+
+    Deserialize payload(data);
+
+    payload.skip(1);
+    EXPECT_EQ(1, payload.getPosition());
+
+    payload.skip(2);
+    EXPECT_EQ(3, payload.getPosition());
+
+    payload.skip<uint8_t>();
+    EXPECT_EQ(4, payload.getPosition());
+
+    payload.skip<uint32_t>();
+    EXPECT_EQ(8, payload.getPosition());
+
+    payload.skip(1);
+    EXPECT_EQ(9, payload.getPosition());
+
+    payload.skip(4);
+    EXPECT_EQ(13, payload.getPosition());
+
+    payload.skip(12);
+    EXPECT_EQ(25, payload.getPosition());
+}
+
 TEST(DeserialzeTest, peek)
 {
     uint8_t data[18] = {

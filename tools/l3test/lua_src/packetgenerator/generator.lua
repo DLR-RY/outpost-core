@@ -67,6 +67,7 @@ Example::
 ]]--
 
 local bitstream = require "bitstream"
+local inspect = require "inspect"
 
 local Packet = {}
 Packet.__index = Packet
@@ -106,6 +107,7 @@ local _get_length
 --
 function _get_length_group(structure, values_group)
 	local length = 0
+	-- TODO allow for implicit groups without explicit empty table
 	for i = 1, #values_group do
 		local values = values_group[i]
 		length = length + _get_length(structure, values)
@@ -203,7 +205,10 @@ function _fill(packet, position, structure, values)
 			for i = 1, #t do
 				packet:insert(pos + (i - 1) * 8, 8, t[i])
 			end
-			pos = pos + (#t * 8)
+			
+			-- The length of deduced parameters are read directly from the
+			-- length of the value.
+			pos = pos + value:bit_length()
 		else
 			packet:insert(pos, entry.length, value)
 			pos = pos + entry.length
