@@ -329,5 +329,10 @@ describe("bitstream (C++) module test", function()
 		assert.equals(input, b:to_string())
 		assert.equals(input, tostring(b))
 	end)
+	
+	it("should be able to store a lot of data", function()
+		local b = bitstream.new(1024)
+		local t = b:bytes()
+	end)
 end)
 

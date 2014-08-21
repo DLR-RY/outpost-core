@@ -65,11 +65,13 @@ l_append(lua_State* L)
     if (lua_istable(L, 2)) {
         lua_len(L, 2);
         int length = lua_tointeger(L, -1);
+        lua_pop(L, 1);
 
         uint8_t* a = reinterpret_cast<uint8_t *>(alloca(length));
         for (int i = 0; i < length; ++i) {
             lua_rawgeti(L, 2, i+1);
             a[i] = lua_tointeger(L, -1);
+            lua_pop(L, 1);
         }
 
         c->append(a, length);
