@@ -140,12 +140,22 @@ function _get_length(structure, values)
 	return length
 end
 
--- Get length of the finished packet
+-- Get length of the finished packet in bits.
 -- 
 -- Requires the group values to be set correctly.
 -- 
 function Packet.get_length(self)
 	return _get_length(self._packet.structure, self._values)
+end
+
+-- Get length of the finished packet in bytes.
+-- 
+-- Requires the group values to be set correctly.
+-- 
+function Packet.get_byte_length(self)
+	local length = _get_length(self._packet.structure, self._values)
+	assert(length % 8 == 0, "The packet length must be divisible by 8!")
+	return length / 8
 end
 
 -- forward declaration
