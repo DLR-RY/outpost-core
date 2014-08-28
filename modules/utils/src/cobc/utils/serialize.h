@@ -52,6 +52,16 @@ public:
     {
     }
 
+    /**
+     * Reset the read pointer to the beginning of the
+     * originating buffer.
+     */
+    inline void
+    reset()
+    {
+        buffer = begin;
+    }
+
     inline void
     store8(uint8_t data)
     {
@@ -119,6 +129,10 @@ public:
     inline void
     store(T data);
 
+    template <typename T>
+    inline void
+    storeObject(const T& data);
+
     /**
      * Skip forward the given number of bytes.
      *
@@ -165,7 +179,7 @@ private:
     operator=(const Serialize& other);
 
     uint8_t* buffer;
-    const uint8_t* const begin;
+    uint8_t* begin;
 };
 // LCOV_EXCL_STOP
 // LCOV_EXCL_END

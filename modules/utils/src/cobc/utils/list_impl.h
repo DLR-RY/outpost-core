@@ -228,6 +228,7 @@ cobc::List<T>::removeAll(Condition condition, PostCondition postCondition)
             T* node = current;
             if (condition(*node))
             {
+                postCondition(*node);
                 previous->next = current->next;
             }
             else
@@ -235,13 +236,12 @@ cobc::List<T>::removeAll(Condition condition, PostCondition postCondition)
                 previous = current;
             }
             current = current->next;
-
-            postCondition(*node);
         }
 
         // Check first entry in the list
         if (condition(*head))
         {
+            postCondition(*head);
             head = head->next;
         }
     }
