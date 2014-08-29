@@ -33,10 +33,12 @@ class ErrorCode
     // instead.
     typedef void (ErrorCode::*bool_type)() const;
 
+    // LCOV_EXCL_START
     void
     this_type_does_no_support_comparisons() const
     {
     }
+    // LCOV_EXCL_STOP
 
 public:
     /**

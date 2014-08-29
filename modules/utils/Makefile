@@ -11,10 +11,11 @@ test:
 
 coverage:
 	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
+	find ../../build/$(MODULE)/test/coverage -name "*.gcda" -delete; \
+	../../build/$(MODULE)/test/coverage/runner || return 1; \
 	cd ../../build/$(MODULE)/test/coverage; \
-	find . -name '*.gcda' | xargs -r rm; \
-	./runner; \
-	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory ../../../../modules/$(MODULE)/src --directory src --no-external --gcov-tool `which gcov-4.7` || return 1; \
+	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory ../../../../modules/$(MODULE)/test --directory . --gcov-tool `which gcov-4.7` || return 1; \
+	lcov -r coverage.info "/usr*" "test/*" "time/*" "ext/*" "tools/*" "rtos/*" "default/*" -o coverage.info; \
 	rm -rf report; \
 	genhtml -o report coverage.info
 

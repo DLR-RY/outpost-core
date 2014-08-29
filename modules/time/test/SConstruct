@@ -35,6 +35,7 @@ else:
 modulepath  = rootpath + '/modules'
 envGlobal.SConscript([
         os.path.join(modulepath, 'utils/src/SConscript'),
+        os.path.join(modulepath, 'utils/test/SConscript'),
         os.path.join(modulepath, 'utils/ext/SConscript'),
         os.path.join(modulepath, 'time/src/SConscript'),
     ],
