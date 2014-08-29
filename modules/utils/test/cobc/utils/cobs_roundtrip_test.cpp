@@ -5,6 +5,7 @@
 #include <unittest/harness.h>
 
 using cobc::utils::Cobs;
+using ::testing::ElementsAreArray;
 
 class CobsRoundtriptTest : public ::testing::Test
 {
@@ -40,7 +41,7 @@ TEST_F(CobsRoundtriptTest, singleZeroByte)
     size_t decodedLength = roundtrip(input, sizeof(input));
 
     EXPECT_EQ(sizeof(input), decodedLength);
-    EXPECT_THAT(expected, ::testing::ElementsAreArray(actual, 3));
+    EXPECT_THAT(expected, ElementsAreArray(actual, 3));
 }
 
 TEST_F(CobsRoundtriptTest, zeroPrefixAndSuffix)
@@ -52,7 +53,7 @@ TEST_F(CobsRoundtriptTest, zeroPrefixAndSuffix)
     size_t decodedLength = roundtrip(input, sizeof(input));
 
     EXPECT_EQ(sizeof(input), decodedLength);
-    EXPECT_THAT(expected, ::testing::ElementsAreArray(actual, 5));
+    EXPECT_THAT(expected, ElementsAreArray(actual, 5));
 }
 
 TEST_F(CobsRoundtriptTest, blockOfDataWithoutZero)
@@ -66,7 +67,7 @@ TEST_F(CobsRoundtriptTest, blockOfDataWithoutZero)
     size_t decodedLength = roundtrip(input, sizeof(input));
 
     EXPECT_EQ(sizeof(input), decodedLength);
-    EXPECT_THAT(input, ::testing::ElementsAreArray(actual, sizeof(input)));
+    EXPECT_THAT(input, ElementsAreArray(actual, sizeof(input)));
 }
 
 // ----------------------------------------------------------------------------
@@ -86,7 +87,7 @@ TEST_F(CobsRoundtriptTest, inPlaceDecodingOfBlockOfDataWithoutZero)
     size_t decodedLength = Cobs::decode(encoded, encodedLength, encoded);
 
     EXPECT_EQ(sizeof(input), decodedLength);
-    EXPECT_THAT(input, ::testing::ElementsAreArray(encoded, sizeof(input)));
+    EXPECT_THAT(input, ElementsAreArray(encoded, sizeof(input)));
 }
 
 TEST_F(CobsRoundtriptTest, inPlaceDecodingOfZeroPrefixAndSuffix)
@@ -97,6 +98,6 @@ TEST_F(CobsRoundtriptTest, inPlaceDecodingOfZeroPrefixAndSuffix)
     size_t decodedLength = Cobs::decode(encoded, encodedLength, encoded);
 
     EXPECT_EQ(sizeof(input), decodedLength);
-    EXPECT_THAT(input, ::testing::ElementsAreArray(encoded, sizeof(input)));
+    EXPECT_THAT(input, ElementsAreArray(encoded, sizeof(input)));
 }
 
