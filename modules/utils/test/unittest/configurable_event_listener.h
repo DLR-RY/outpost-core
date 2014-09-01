@@ -12,6 +12,23 @@
 #include <gtest/gtest.h>
 #include <stdio.h>
 
+// exported from gtest.cc to provide colored output
+namespace testing
+{
+namespace internal
+{
+enum GTestColor
+{
+  COLOR_DEFAULT,
+  COLOR_RED,
+  COLOR_GREEN,
+  COLOR_YELLOW
+};
+
+void ColoredPrintf(GTestColor color, const char* fmt, ...);
+}
+}
+
 namespace unittest
 {
 class ConfigurableEventListener : public testing::TestEventListener
@@ -93,10 +110,8 @@ public:
     {
         if (showInlineFailures && test_info.result()->Failed())
         {
-            // TODO remove colors when the terminal does not support it
-            printf("\033[;0;31m[  FAILED  ]\033[;0;0m %s.%s\n\n",
-                   test_info.test_case_name(),
-                   test_info.name());
+            testing::internal::ColoredPrintf(testing::internal::COLOR_RED, "[  FAILED  ]");
+            printf(" %s.%s\n\n", test_info.test_case_name(), test_info.name());
         }
         else if (showSuccesses && !test_info.result()->Failed())
         {
