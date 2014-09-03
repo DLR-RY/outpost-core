@@ -180,7 +180,9 @@ Cobs::decode(const uint8_t* input,
     {
         uint8_t blockLength = *input++ - 1;
 
-        memcpy(&output[outputPosition], input, blockLength);
+        // memmove instead of memcpy is needed here because input and output
+        // array may overlap.
+        memmove(&output[outputPosition], input, blockLength);
         outputPosition += blockLength;
         input += blockLength;
 
