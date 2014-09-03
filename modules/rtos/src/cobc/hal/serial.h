@@ -47,7 +47,15 @@ namespace cobc
 			 * \retval false  No data available.
 			 */
 			virtual bool
-			isAvailable(void) = 0;
+			isAvailable() = 0;
+
+			/**
+             * Check how many bytes are available in the input buffers.
+             * \return  Number of bytes in the buffer
+             */
+
+            virtual size_t
+            getNumberOfBytesAvailable() = 0;
 
 			/**
 			 * Read a block of bytes.
