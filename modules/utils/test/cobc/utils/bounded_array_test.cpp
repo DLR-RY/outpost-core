@@ -13,7 +13,6 @@ using cobc::BoundedArray;
 
 class BoundedArrayTest : public testing::Test
 {
-
 };
 
 TEST_F(BoundedArrayTest, createFromCStyleArray)
@@ -22,7 +21,7 @@ TEST_F(BoundedArrayTest, createFromCStyleArray)
 
     BoundedArray<uint8_t> array(data);
 
-    EXPECT_EQ(7U, array.getSize());
+    EXPECT_EQ(7U, array.getNumberOfElements());
 }
 
 TEST_F(BoundedArrayTest, dataAccessWithCStyleArray)
@@ -31,7 +30,7 @@ TEST_F(BoundedArrayTest, dataAccessWithCStyleArray)
 
     BoundedArray<uint8_t> array(data);
 
-    EXPECT_EQ(6U, array.getSize());
+    EXPECT_EQ(6U, array.getNumberOfElements());
     EXPECT_EQ(6, array[0]);
     EXPECT_EQ(5, array[1]);
     EXPECT_EQ(2, array[4]);
@@ -43,7 +42,7 @@ TEST_F(BoundedArrayTest, createWithExplicitSize)
 
     BoundedArray<uint8_t> array(data, 4);
 
-    EXPECT_EQ(4U, array.getSize());
+    EXPECT_EQ(4U, array.getNumberOfElements());
 }
 
 TEST_F(BoundedArrayTest, createArrayOfPointers)
@@ -64,7 +63,7 @@ TEST_F(BoundedArrayTest, createArrayOfPointers)
 
     BoundedArray<TestClass*> array(data);
 
-    EXPECT_EQ(3U, array.getSize());
+    EXPECT_EQ(3U, array.getNumberOfElements());
 
     EXPECT_EQ(&testClass1, array[0]);
     EXPECT_EQ(&testClass2, array[1]);
