@@ -28,6 +28,9 @@ public:
     static TimePoint
     endOfEpoch();
 
+    static TimePoint
+    startOfEpoch();
+
 private:
     // disable unneeded implicitly member functions
     TimeModel();

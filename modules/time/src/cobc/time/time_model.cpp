@@ -13,3 +13,9 @@ cobc::time::TimeModel::endOfEpoch()
 {
     return TimePoint(-1);
 }
+
+cobc::time::TimePoint
+cobc::time::TimeModel::startOfEpoch()
+{
+    return TimePoint(0);
+}
