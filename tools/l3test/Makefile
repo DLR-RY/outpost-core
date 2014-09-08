@@ -13,7 +13,7 @@ test-cpp:
 	@scons -Q -C test/unit -j3
 	@../../build/l3test/test/unit/unittest
 
-test: test-cpp build-lua test-lua
+test: build-lua test-lua test-cpp
 
 coverage:
 	@scons -Q -C test/unit coverage=1 -j3
