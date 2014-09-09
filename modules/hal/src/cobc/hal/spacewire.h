@@ -19,8 +19,6 @@ namespace hal
 /**
  * SpaceWire Interface
  *
- *
- *
  * \author    Fabian Greif
  */
 class SpaceWire
@@ -36,7 +34,7 @@ public:
     {
         partial = 0,    ///< Leave packet open to add additional data later
         eop = 1,        ///< End of packet
-        eep = 2            ///< Error end of packet
+        eep = 2         ///< Error end of packet
     };
 
     enum Result
@@ -52,13 +50,15 @@ public:
     struct TransmitBuffer
     {
         TransmitBuffer(uint8_t* d) :
-            data(d), length(), end(eop)
+            data(d),
+            length(),
+            end(eop)
         {
         }
 
         /**
-         * Points to preallocated memory section. Max. size is
-         * implementation specific.
+         * Points to preallocated memory section.
+         * Maximum size is implementation specific.
          */
         uint8_t* const data;
         size_t length;
@@ -87,7 +87,8 @@ public:
         EndMarker end;
     };
 
-    virtual ~SpaceWire();
+    virtual
+    ~SpaceWire();
 
     /**
      * Open a configured SpaceWire device.

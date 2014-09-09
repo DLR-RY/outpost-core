@@ -29,13 +29,6 @@ public:
     ~I2c() = 0;
 
     /**
-     * Init I2C interface
-     */
-    virtual void
-    init() = 0;
-
-    /**
-     *
      * I2C master transaction.
      *
      * I2C master device send a block of data and read a block of data.
@@ -67,15 +60,9 @@ public:
      *  \retval false   read failed
      */
     virtual bool
-    getInputBuffer(uint8_t* buffer, size_t length, time::Duration timeout =
-                           time::Duration::max()) = 0;
-
-    /**
-     *
-     * \return handle number
-     */
-    virtual inline uint8_t
-    getHandle() = 0;
+    getInputBuffer(uint8_t* buffer,
+                   size_t length,
+                   time::Duration timeout = time::Duration::max()) = 0;
 
 };
 }
