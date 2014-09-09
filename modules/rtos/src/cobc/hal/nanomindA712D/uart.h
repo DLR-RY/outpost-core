@@ -22,9 +22,9 @@ public:
      * author Norbert Toth
      */
 
-    /** @param handle usart handle
+    /** \param handle usart handle
      * \param fcpu CPU speed in Hz
-     * @param usart_baud Baud rate in bps
+     * \param usart_baud Baud rate in bps
      */
     UART(uint8_t handle, uint32_t FCpu, uint32_t baud);
 
@@ -70,7 +70,7 @@ public:
      *
      * Report number of messages waiting on the RX queue of a handle
      *
-     * @return Number of char's in rx buffer
+     * \return Number of char's in rx buffer
      */
 
     virtual size_t

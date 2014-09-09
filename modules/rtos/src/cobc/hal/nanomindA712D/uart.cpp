@@ -42,6 +42,7 @@ cobc::nanomind::UART::read(uint8_t* data,
                            std::size_t length,
                            time::Duration timeout)
 {
+    (void) timeout;
     char* src = reinterpret_cast<char*>(data);
 
     for (uint16_t i = 0; i < length; i++)
@@ -57,6 +58,7 @@ cobc::nanomind::UART::write(const uint8_t* data,
                             std::size_t length,
                             time::Duration timeout)
 {
+    (void) timeout;
     uint8_t *temp = const_cast<uint8_t*>(data);
     char* src = reinterpret_cast<char*>(temp);
 
