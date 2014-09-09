@@ -11,7 +11,8 @@
 cobc::time::TimePoint
 cobc::time::TimeModel::endOfEpoch()
 {
-    return TimePoint(-1);
+    //FIXME: do something more sophisticated to determine the upper limit
+    return TimePoint(4611686018427387903);
 }
 
 cobc::time::TimePoint
