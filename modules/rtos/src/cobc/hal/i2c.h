@@ -11,6 +11,8 @@
 #include <cstddef>
 #include <stdint.h>
 
+#include <cobc/time/duration.h>
+
 namespace cobc
 {
 namespace hal
@@ -53,7 +55,7 @@ public:
                       size_t outLength,
                       uint8_t* inBuffer,
                       size_t inLength,
-                      uint16_t timeout) = 0;
+                      time::Duration timeout = time::Duration::max()) = 0;
 
     /**
      *  Read data from input buffer
@@ -65,7 +67,8 @@ public:
      *  \retval false   read failed
      */
     virtual bool
-    getInputBuffer(uint8_t* buffer, size_t length, uint16_t timeout) = 0;
+    getInputBuffer(uint8_t* buffer, size_t length, time::Duration timeout =
+                           time::Duration::max()) = 0;
 
     /**
      *

@@ -6,6 +6,7 @@
  */
 // ----------------------------------------------------------------------------
 #include "i2c_nanomind.h"
+#include <freertos/FreeRTOS.h>
 
 extern "C"
 {
@@ -44,10 +45,14 @@ cobc::nanomind::I2c::masterTransaction(uint8_t address,
                                        size_t outLength,
                                        uint8_t* inBuffer,
                                        size_t inLength,
-                                       uint16_t timeout)
+                                       time::Duration timeout)
 {
+
+    const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ)
+            / 1000;
+
     if (i2c_master_transaction(devHandle, address, outBuffer, outLength,
-            inBuffer, inLength, timeout) != E_NO_ERR)
+            inBuffer, inLength, ticks) != E_NO_ERR)
     {
         return false;
     }
@@ -62,9 +67,13 @@ cobc::nanomind::I2c::masterTransaction(uint8_t address,
 bool
 cobc::nanomind::I2c::getInputBuffer(uint8_t* buffer,
                                     size_t length,
-                                    uint16_t timeout)
+                                    time::Duration timeout)
 {
-    if (i2c_master_ret(devHandle, buffer, length, timeout) == true)
+
+    const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ)
+            / 1000;
+
+    if (i2c_master_ret(devHandle, buffer, length, ticks) == true)
     {
         return true;
     }

@@ -9,6 +9,7 @@
 #define I2C_NANOMIND_H_
 
 #include "../i2c.h"
+#include <cobc/time/duration.h>
 
 namespace cobc
 {
@@ -64,7 +65,7 @@ public:
                       size_t outLength,
                       uint8_t* inBuffer,
                       size_t inLength,
-                      uint16_t timeout);
+                      time::Duration timeout);
 
     /**
      *  Read data from input buffer
@@ -76,7 +77,7 @@ public:
      *  \retval false   read failed
      */
     virtual bool
-    getInputBuffer(uint8_t* buffer, size_t length, uint16_t timeout);
+    getInputBuffer(uint8_t* buffer, size_t length, time::Duration timeout);
 
     /**
      *
