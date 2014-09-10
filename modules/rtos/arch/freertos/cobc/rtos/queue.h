@@ -15,65 +15,66 @@
 
 namespace cobc
 {
-    namespace rtos
-    {
-        /**
-         * Queues.
-         *
-         * \author    Norbert Toth
-         * \ingroup    rtos
-         */
-        class Queue
-        {
-            /**
-             * Create a Queue.
-             *
-             * \param queueLength The maximum number of items that the queue can contain.
-             * \param itemSize The number of bytes each item in the queue will require.
-             */
+namespace rtos
+{
+/**
+ * Queues.
+ *
+ * \author    Norbert Toth
+ * \ingroup    rtos
+ */
+class Queue
+{
+public:
+    /**
+     * Create a Queue.
+     *
+     * \param queueLength The maximum number of items that the queue can contain.
+     * \param itemSize The number of bytes each item in the queue will require.
+     */
 
-            explicit
-            Queue(size_t queueLength, size_t itemSize);
+    explicit
+    Queue(size_t queueLength, size_t itemSize);
 
-            /**
-             * Destroy the queue.
-             */
-            ~Queue();
+    /**
+     * Destroy the queue.
+     */
+    ~Queue();
 
-            /**
-             *
-             * Receive data from the queue.
-             *
-             * \param data Pointer to the buffer into which the received item will be copied.
-             * \param timeout Timeout in milliseconds resolution.
-             * \return
-             */
-            bool
-            receive(void* data, time::Duration timeout);
+    /**
+     *
+     * Receive data from the queue.
+     *
+     * \param data Pointer to the buffer into which the received item will be copied.
+     * \param timeout Timeout in milliseconds resolution.
+     * \return
+     */
+    bool
+    receive(void* data, time::Duration timeout);
 
-            /**
-             *
-             * Send data to the queue.
-             *
-             * \param data A pointer to the item that is to be placed on the queue.
-             * \param timeout Timeout in milliseconds resolution.
-             * \return
-             */
-            bool
-            send(const void* data, time::Duration timeout);
+    /**
+     *
+     * Send data to the queue.
+     *
+     * \param data A pointer to the item that is to be placed on the queue.
+     * \param timeout Timeout in milliseconds resolution.
+     * \return
+     */
+    bool
+    send(void* data, time::Duration timeout);
 
-        private:
+private:
 
-            // disable copy constructor
-            Queue(const Queue& other);
+    // disable copy constructor
+    Queue(const Queue& other);
 
-            // disable assignment operator
-            Queue&
-            operator=(const Queue& other);
+    // disable assignment operator
+    Queue&
+    operator=(const Queue& other);
 
-            void* handle;
-        };
-    }
+    void* handle;
+};
+}
 }
 
 #endif // QUEUE_H_
