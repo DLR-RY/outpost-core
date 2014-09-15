@@ -50,7 +50,7 @@ public:
      * \return
      */
     bool
-    receive(void* data, time::Duration timeout);
+    receive(void* data, cobc::time::Duration timeout);
 
     /**
      *
@@ -61,7 +61,7 @@ public:
      * \return
      */
     bool
-    send(void* data, time::Duration timeout);
+    send(void* data, cobc::time::Duration timeout);
 
 private:
 
