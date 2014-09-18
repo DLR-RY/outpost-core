@@ -61,7 +61,7 @@ public:
      * \return
      */
     bool
-    send(void* data, cobc::time::Duration timeout);
+    send(const void* data, cobc::time::Duration timeout);
 
 private:
 

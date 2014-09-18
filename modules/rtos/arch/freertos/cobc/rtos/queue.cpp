@@ -44,7 +44,7 @@ cobc::rtos::Queue::receive(void* data, cobc::time::Duration timeout)
 // ----------------------------------------------------------------------------
 
 bool
-cobc::rtos::Queue::send(void* data, cobc::time::Duration timeout)
+cobc::rtos::Queue::send(const void* data, cobc::time::Duration timeout)
 {
     const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ)
             / 1000;
