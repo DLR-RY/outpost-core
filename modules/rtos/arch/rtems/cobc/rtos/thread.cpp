@@ -35,7 +35,8 @@ Thread::wrapper(rtems_task_argument object)
 static uint8_t
 toRtemsPriority(uint8_t priority)
 {
-    if (priority == 0) {
+    if (priority == 0)
+    {
         return 255;
     }
 
@@ -51,8 +52,8 @@ fromRtemsPriority(uint8_t rtemsPriority)
 
 // ----------------------------------------------------------------------------
 Thread::Thread(uint8_t priority,
-                           size_t stack,
-                           const char* name)
+               size_t stack,
+               const char* name)
 {
     rtems_name taskName = 0;
     if (name == 0)
@@ -60,12 +61,15 @@ Thread::Thread(uint8_t priority,
         // taskName = 0 is not allowed.
         taskName = rtems_build_name('T', 'H', 'D', '-');
     }
-    else {
-        for (uint_fast8_t i = 0; i < 4; ++i) {
-            if (name != 0) {
+    else
+    {
+        for (uint_fast8_t i = 0; i < 4; ++i)
+        {
+            taskName <<= 8;
+            if (name != 0)
+            {
                 taskName |= *name++;
             }
-            taskName <<= 8;
         }
     }
 
@@ -73,7 +77,8 @@ Thread::Thread(uint8_t priority,
     rtems_status_code status = rtems_task_create(taskName, rtemsPriority, stack,
             RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &tid);
 
-    if (status != RTEMS_SUCCESSFUL) {
+    if (status != RTEMS_SUCCESSFUL)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }
@@ -94,7 +99,8 @@ Thread::Identifier
 Thread::getCurrentThreadIdentifier()
 {
     rtems_id current;
-    if (rtems_task_ident(RTEMS_SELF, OBJECTS_SEARCH_LOCAL_NODE, &current) != RTEMS_SUCCESSFUL) {
+    if (rtems_task_ident(RTEMS_SELF, OBJECTS_SEARCH_LOCAL_NODE, &current) != RTEMS_SUCCESSFUL)
+    {
         return 0;
     }
 
