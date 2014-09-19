@@ -109,7 +109,7 @@ metric:
 		printf "$(CINFO)Generating code metrics for module \"$$m\" (sources):$(CEND)\n" ; \
 		sloccount --duplicates --wide modules/$$m/src ; \
 		printf "$(CINFO)Generating code metrics for module \"$$m\" (unittests):$(CEND)\n" ; \
-		sloccount --duplicates --wide modules/$$m/test/unit ; \
+		sloccount --duplicates --wide modules/$$m/test ; \
 	done
 
 clean :
