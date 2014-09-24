@@ -44,11 +44,14 @@ addTime(timespec* time, cobc::time::Duration duration)
 static bool
 isBigger(timespec* time, timespec* other)
 {
-    if (time->tv_sec > other->tv_sec) {
+    if (time->tv_sec > other->tv_sec)
+    {
         return true;
     }
-    else if (time->tv_sec == other->tv_sec) {
-        if (time->tv_nsec >= other->tv_nsec) {
+    else if (time->tv_sec == other->tv_sec)
+    {
+        if (time->tv_nsec >= other->tv_nsec)
+        {
             return true;
         }
     }
@@ -60,7 +63,8 @@ static inline void
 getTime(timespec* time)
 {
     int result = clock_gettime(CLOCK_MONOTONIC, time);
-    if (result != 0) {
+    if (result != 0)
+    {
         FailureHandler::fatal(FailureCode::genericRuntimeError());
     }
 }
@@ -88,25 +92,31 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
         getTime(&currentTime);
 
         // Check if the time is in the current period
-        if (isBigger(&currentTime, &nextWakeTime)) {
+        if (isBigger(&currentTime, &nextWakeTime))
+        {
             status = Status::timeout;
         }
 
         int result;
-        do {
-            result = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &nextWakeTime, NULL);
+        do
+        {
+            result = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
+                    &nextWakeTime, NULL);
 
             // EINTR is returned when the sleep is interrupted by a signal
             // handler. In this case the sleep can be restarted.
             //
             // Any other result unequal zero is an failure which can not be
             // resolved here and therefore triggers the fatal error handler.
-            if (result != 0 && result != EINTR) {
+            if (result != 0 && result != EINTR)
+            {
                 FailureHandler::fatal(FailureCode::genericRuntimeError());
             }
-        } while (result != 0);
+        }
+        while (result != 0);
     }
-    else {
+    else
+    {
         // period is started now, no need to wait
         clock_gettime(CLOCK_MONOTONIC, &nextWakeTime);
         timerRunning = true;
@@ -123,18 +133,22 @@ PeriodicTaskManager::status()
 {
     MutexGuard lock(mutex);
 
-    if (!timerRunning) {
+    if (!timerRunning)
+    {
         return Status::idle;
     }
-    else {
+    else
+    {
         struct timespec currentTime;
         getTime(&currentTime);
 
         // Check if the time is in the current period
-        if (isBigger(&currentTime, &nextWakeTime)) {
+        if (isBigger(&currentTime, &nextWakeTime))
+        {
             return Status::timeout;
         }
-        else {
+        else
+        {
             return Status::running;
         }
     }

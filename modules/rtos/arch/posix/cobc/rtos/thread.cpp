@@ -16,8 +16,10 @@
 
 #include <cobc/rtos/failure_handler.h>
 
+#include "internal/time.h"
+
 // ----------------------------------------------------------------------------
-void* 
+void*
 cobc::rtos::Thread::wrapper(void* object)
 {
     Thread* thread = reinterpret_cast<Thread *>(object);
@@ -106,12 +108,7 @@ cobc::rtos::Thread::yield()
 void
 cobc::rtos::Thread::sleep(::cobc::time::Duration timeout)
 {
-    uint64_t nanoseconds = timeout.microseconds() * 1000;
-
-    timespec req = {
-        static_cast<time_t>(nanoseconds / 1000000000),    // seconds
-        static_cast<long int>(nanoseconds % 1000000000)    // nanoseconds
-    };
+    timespec req = toRelativeTime(timeout);
     timespec rem;
 
     nanosleep(&req, &rem);

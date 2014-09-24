@@ -9,19 +9,13 @@
 
 #include <time.h>
 
+#include "internal/time.h"
+
 using namespace cobc::rtos;
 
 bool
 Mutex::acquire(cobc::time::Duration timeout)
 {
-    struct timespec time;
-    uint64_t nanoseconds = timeout.microseconds() * 1000;
-
-    // seconds
-    time.tv_sec = static_cast<time_t>(nanoseconds / 1000000000);
-
-    // nanoseconds
-    time.tv_nsec = static_cast<long int>(nanoseconds % 1000000000);
-
+    timespec time = toRelativeTime(timeout);
     return (pthread_mutex_timedlock(&mutex, &time) == 0);
 }

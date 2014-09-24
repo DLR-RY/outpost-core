@@ -10,6 +10,8 @@
 #include <time.h>
 #include <cobc/rtos/failure_handler.h>
 
+#include "internal/time.h"
+
 // ----------------------------------------------------------------------------
 cobc::rtos::Semaphore::Semaphore(uint32_t count) : sid()
 {
@@ -27,13 +29,7 @@ cobc::rtos::Semaphore::~Semaphore()
 bool
 cobc::rtos::Semaphore::acquire(time::Duration timeout)
 {
-    uint64_t nanoseconds = timeout.microseconds() * 1000;
-
-    const timespec t = {
-        static_cast<time_t>(nanoseconds / 1000000000),    // seconds
-        static_cast<long int>(nanoseconds % 1000000000)    // nanoseconds
-    };
-
+    timespec t = toRelativeTime(timeout);
     return (sem_timedwait(&sid, &t) == 0);
 }
 
@@ -47,14 +43,16 @@ cobc::rtos::BinarySemaphore::BinarySemaphore(State::Type initial) :
 
 cobc::rtos::BinarySemaphore::~BinarySemaphore()
 {
-
+    pthread_cond_destroy(&signal);
+    pthread_mutex_destroy(&mutex);
 }
 
 bool
 cobc::rtos::BinarySemaphore::acquire()
 {
     pthread_mutex_lock(&mutex);
-    while (value == State::acquired) {
+    while (value == State::acquired)
+    {
         pthread_cond_wait(&signal, &mutex);
     }
     value = State::acquired;
@@ -66,22 +64,13 @@ cobc::rtos::BinarySemaphore::acquire()
 bool
 cobc::rtos::BinarySemaphore::acquire(time::Duration timeout)
 {
-    uint64_t nanoseconds = timeout.microseconds() * 1000;
-
-    // convert to absolute time for pthread_cond_timedwait()
-    timespec time;
-    clock_gettime(CLOCK_REALTIME, &time);
-
-    time.tv_nsec += static_cast<time_t>(nanoseconds % 1000000000);
-    if (time.tv_nsec >= 1000000000) {
-        time.tv_sec += 1;
-        time.tv_nsec = time.tv_nsec - 1000000000;
-    }
-    time.tv_sec += static_cast<long int>(nanoseconds / 1000000000);
+    timespec time = toAbsoluteTime(timeout);
 
     pthread_mutex_lock(&mutex);
-    while (value == State::acquired) {
-        if (pthread_cond_timedwait(&signal, &mutex, &time) != 0) {
+    while (value == State::acquired)
+    {
+        if (pthread_cond_timedwait(&signal, &mutex, &time) != 0)
+        {
             // Timeout or other error has occurred
             // => semaphore can't be acquired
             pthread_mutex_unlock(&mutex);
