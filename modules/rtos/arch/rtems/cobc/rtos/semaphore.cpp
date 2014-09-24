@@ -17,7 +17,8 @@ cobc::rtos::Semaphore::Semaphore(uint32_t count)
 
     if (rtems_semaphore_create(name, count,
             RTEMS_PRIORITY |
-            RTEMS_COUNTING_SEMAPHORE, 1, &id) != RTEMS_SUCCESSFUL) {
+            RTEMS_COUNTING_SEMAPHORE, 1, &id) != RTEMS_SUCCESSFUL)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }
@@ -50,7 +51,8 @@ cobc::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
 
     if (rtems_semaphore_create(name, (initial == State::acquired) ? 0 : 1,
             RTEMS_PRIORITY |
-            RTEMS_BINARY_SEMAPHORE, 1, &id) != RTEMS_SUCCESSFUL) {
+            RTEMS_BINARY_SEMAPHORE, 1, &id) != RTEMS_SUCCESSFUL)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }

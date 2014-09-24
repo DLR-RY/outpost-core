@@ -6,11 +6,13 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_FREERTOS_QUEUE_H
-#define COBC_RTOS_FREERTOS_QUEUE_H
+#ifndef COBC_RTOS_RTEMS_QUEUE_H
+#define COBC_RTOS_RTEMS_QUEUE_H
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <rtems.h>
 
 #include <cobc/time/duration.h>
 
@@ -24,7 +26,6 @@ namespace rtos
  *
  * Can be used to exchange data between different threads.
  *
- * \author  Norbert Toth
  * \author  Fabian Greif
  * \ingroup rtos
  */
@@ -47,6 +48,9 @@ public:
 
     /**
      * Send data to the queue.
+     *
+     * May trigger a thread rescheduling. The calling thread will be preempted
+     * if a higher priority thread is unblocked as the result of this operation.
      *
      * \param data
      *      Reference to the item that is to be placed on the queue.
@@ -79,7 +83,7 @@ private:
     Queue&
     operator=(const Queue& other);
 
-    void* handle;
+    rtems_id id;
 };
 
 }
@@ -87,4 +91,4 @@ private:
 
 #include "queue_impl.h"
 
-#endif // COBC_RTOS_FREERTOS_QUEUE_H
+#endif // COBC_RTOS_RTEMS_QUEUE_H

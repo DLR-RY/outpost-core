@@ -6,11 +6,13 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_FREERTOS_QUEUE_H
-#define COBC_RTOS_FREERTOS_QUEUE_H
+#ifndef COBC_RTOS_RTEMS_QUEUE_H
+#define COBC_RTOS_RTEMS_QUEUE_H
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <rtems.h>
 
 #include <cobc/time/duration.h>
 
@@ -24,7 +26,6 @@ namespace rtos
  *
  * Can be used to exchange data between different threads.
  *
- * \author  Norbert Toth
  * \author  Fabian Greif
  * \ingroup rtos
  */
@@ -34,6 +35,8 @@ class Queue
 public:
     /**
      * Create a Queue.
+     *
+     * Uses \p new to allocate the storage space for the queue.
      *
      * \param numberOfItems
      *      The maximum number of items that the queue can contain.
@@ -52,7 +55,7 @@ public:
      *      Reference to the item that is to be placed on the queue.
      *
      * \retval true     Value was successfully stored in the queue.
-     * \retval false    Queue is full, data could not be appended.
+     * \retval false    Queue is full and data could not be appended.
      */
     bool
     send(const T& data);
@@ -63,10 +66,10 @@ public:
      * \param data
      *      Reference to the buffer into which the received item will be copied.
      * \param timeout
-     *      Timeout in milliseconds resolution.
+     *      Ignored. Function always returns immediately.
      *
      * \retval true     Value was received correctly and put in \p data.
-     * \retval false    Timeout occurred, \p data was not changed.
+     * \retval false    Queue empty, no data was retrieved.
      */
     bool
     receive(T& data, cobc::time::Duration timeout = cobc::time::Duration::infinity());
@@ -79,7 +82,14 @@ private:
     Queue&
     operator=(const Queue& other);
 
-    void* handle;
+    size_t
+    increment(size_t index);
+
+    T* buffer;
+    const size_t maximumSize;
+    size_t itemsInBuffer;
+    size_t head;
+    size_t tail;
 };
 
 }
@@ -87,4 +97,4 @@ private:
 
 #include "queue_impl.h"
 
-#endif // COBC_RTOS_FREERTOS_QUEUE_H
+#endif // COBC_RTOS_RTEMS_QUEUE_H
