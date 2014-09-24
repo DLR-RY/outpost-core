@@ -136,6 +136,12 @@ public:
     }
 
     static inline Duration
+    infinity()
+    {
+        return Duration(maximumValue);
+    }
+
+    static inline Duration
     zero()
     {
         return Duration(0);

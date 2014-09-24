@@ -1,62 +1,49 @@
 
-all: test
+# Check if the terminal supports colors
+COLORS := $(shell tput colors 2> /dev/null)
 
-TERMINAL ?= /dev/cobc_console_3
-
-PORT     ?= /dev/cobc_dsu_3
-GRMON    ?= "/opt/grmon-eval/bin/grmon"
-BAUD     ?= 460800
-
-VERBOSE  ?= 0
-
-ifeq ($(VERBOSE),1)
-VERBOSE_ARG="verbose=1"
+ifeq ($(COLORS),)
+# The terminal doesn't support colors, don't output anything
+CINFO  = 
+COK    = 
+CERROR = 
+CEND   = 
 else
-VERBOSE_ARG=""
+# Color definitions (e.g. for bash 'tput colors' returns '8')
+CINFO  = \033[;0;33m
+COK    = \033[32m
+CERROR = \033[31;01m
+CEND   = \033[0m
 endif
+
+all: test
 
 MODULE=rtos
 
 include ../../conf/module.default.mk
 
-build-freertos_periodic_task:
-build-hosted_float_endianness:
-build-posix_periodic_task:
-build-posix_timer:
-build-posix_timestamp:
-build-rtems:
-build-rtems_float_endianness:
-build-rtems_periodic_task:
-build-%:
-	@scons $(MAKEJOBS) -Q -C test/integration/$*
-
-program-freertos_periodic_task:
-program-rtems_float_endianness:
-program-rtems_periodic_task:
-program-%: test-%
-	@../../tools/grmon_program.sh ./build/test/integration/$*/$* $(PORT) $(GRMON)
-
-terminal:
-	@../../tools/terminal.sh $(TERMINAL)
-
-grmon:
-	@$(GRMON) -uart $(PORT) -stack 0x40ffffff -baud $(BAUD)
-
 test:
-	@scons build $(MAKEJOBS) $(VERBOSE_ARG) -Q -C test || return 1; \
-	../../build/$(MODULE)/test/unittest/runner --gtest_filter=$(FILTER)
+	@printf "$(CINFO) Running RTOS abstraction layer compilation tests$(CEND)\n"
+	
+	@printf "$(CINFO) FreeRTOS (STM32F4 Discovery):$(CEND)\n"
+	@scons $(MAKEJOBS) -Q -C test/freertos || return 1
+	
+	@printf "$(CINFO) None (OpenRisc 32):$(CEND)\n"
+	@scons $(MAKEJOBS) -Q -C test/none_or32 || return 1
+	
+	@printf "$(CINFO) POSIX (Linux):$(CEND)\n"
+	@scons $(MAKEJOBS) -Q -C test/posix || return 1
+
+	@printf "$(CINFO) RTEMS (LEON3):$(CEND)\n"
+	@scons $(MAKEJOBS) -Q -C test/rtems || return 1
+	
+	@printf "$(COK) RTOS abstraction layer compilation tests passed!$(CEND)\n"
 
 coverage:
-	@-scons build coverage=1 $(MAKEJOBS) $(VERBOSE_ARG) -Q -C test || return 1; \
-	cd ../../build/$(MODULE)/test/coverage; \
-	find . -name '*.gcda' | xargs -r rm; \
-	./runner; \
-	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory ../../../../modules/$(MODULE)/src --directory src --no-external --gcov-tool `which gcov-4.7` || return 1; \
-	rm -rf report; \
-	genhtml -o report coverage.info
+	@printf "$(CERROR)Not supported for this module!$(CEND)\n"
 
 coverage-view:
-	xdg-open ../../build/$(MODULE)/test/coverage/report/index.html &
+	@printf "$(CERROR)Not supported for this module!$(CEND)\n"
 
 clean: clean_default
 	@$(RM) -r ../../build/$(MODULE)/*
