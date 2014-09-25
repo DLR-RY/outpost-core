@@ -75,6 +75,8 @@ cobc::rtos::Queue<T>::increment(size_t index)
     {
         index++;
     }
+
+    return index;
 }
 
 #endif // COBC_RTOS_NONE_QUEUE_IMPL_H

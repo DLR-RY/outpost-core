@@ -66,8 +66,12 @@ env = Environment(tools= ['xpcc'],
                   BUILDPATH = envGlobal['BUILDPATH'],
                   XPCC_BUILDPATH = envGlobal['BUILDPATH'])
 
+env.Append(CPPPATH=['../reference'])
+
 # find all source files
-files = env.FindFiles('.')
+files  = env.FindFiles('.')
+files += env.Glob('../reference/*.cpp')
+
 program = env.Program(target=env['XPCC_CONFIG']['general']['name'], source=files.sources + library)
 
 env.Append(LIBS=['libcobc'])

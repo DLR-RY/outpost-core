@@ -25,7 +25,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-MODULES = utils time rtos smpc spp pus
+MODULES = utils time rtos hal smpc spp pus
 
 # Check if the terminal supports colors
 COLORS := $(shell tput colors 2> /dev/null)

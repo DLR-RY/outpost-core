@@ -29,12 +29,13 @@ envGlobal.SConscript([
 env = envGlobal.Clone()
 
 env.Append(CPPPATH=[
-    '.'
+    '.',
+    '../reference'
 ])
 env.Append(LIBS=['cobc_rtos', 'cobc_time'])
 env.Append(LIBPATH=['$BUILDPATH/lib'])
 
-files  = env.Object(env.FilteredGlob('*.cpp', ['main.cpp']))
+files  = env.Object(env.FilteredGlob(['*.cpp', '../reference/*.cpp'], ['main.cpp']))
 
 env = env.Clone()
 env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')

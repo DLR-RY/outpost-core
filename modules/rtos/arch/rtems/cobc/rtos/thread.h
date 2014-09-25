@@ -45,6 +45,13 @@ public:
     typedef uint32_t Identifier;
 
     /**
+     * Use the default value for the stack size.
+     *
+     * The default value is depending on the project settings.
+     */
+    static const size_t defaultStackSize = 0;
+
+    /**
      * Create a new thread.
      *
      * Make sure to set CONFIGURE_MAXIMUM_TASKS to the maximum number
@@ -64,7 +71,7 @@ public:
      * \see    rtos::FailureHandler::fatal()
      */
     Thread(uint8_t priority,
-            size_t stack = 0,
+            size_t stack = defaultStackSize,
             const char* name = 0);
 
     /**

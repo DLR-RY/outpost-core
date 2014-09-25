@@ -12,8 +12,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <rtems.h>
-
 #include <cobc/time/duration.h>
 
 namespace cobc

@@ -13,6 +13,8 @@
 
 #include <cobc/rtos/failure_handler.h>
 
+#include "internal/time.h"
+
 template <typename T>
 cobc::rtos::Queue<T>::Queue(size_t numberOfItems) :
     buffer(new T[numberOfItems]),
@@ -106,6 +108,8 @@ cobc::rtos::Queue<T>::increment(size_t index)
     {
         index++;
     }
+
+    return index;
 }
 
 #endif // COBC_RTOS_POSIX_QUEUE_IMPL_H

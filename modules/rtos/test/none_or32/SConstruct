@@ -26,7 +26,8 @@ env.Append(CPPPATH=[
 env.Append(LIBS=['cobc_rtos', 'cobc_time'])
 env.Append(LIBPATH=['$BUILDPATH/lib'])
 
-files = env.Glob('*.cpp')
+files  = env.Glob('*.cpp')
+files += env.Glob('../reference/*.cpp')
 
 program = env.Program('none_urtu', files)
 

@@ -44,6 +44,13 @@ public:
     static const Identifier invalidIdentifier = 0xFFFFFFFF;
 
     /**
+     * Use the default value for the stack size.
+     *
+     * The default value is depending on the project settings.
+     */
+    static const size_t defaultStackSize = 0;
+
+    /**
      * Create a new thread.
      *
      * \param priority
@@ -57,7 +64,7 @@ public:
      */
     explicit
     Thread(uint8_t priority,
-           size_t stack = 0,
+           size_t stack = defaultStackSize,
            const char* name = 0);
 
     /**
