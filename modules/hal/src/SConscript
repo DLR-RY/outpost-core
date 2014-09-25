@@ -31,6 +31,7 @@ elif env['OS'] == 'rtems':
         envGlobal.Append(CPPPATH=path)
         
         files += env.Glob('../ext/rtems/gr712rc/grspw/*.c')
+        files += env.Glob('../ext/rtems/nexys3/apbuart/*.c')
         
         files += env.Glob('../arch/leon3/cobc/gr712rc/*.cpp')
     elif env['BOARD'] == 'nexys3':
