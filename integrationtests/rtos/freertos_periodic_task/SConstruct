@@ -3,9 +3,9 @@
 import os
 
 # root folder of the cobc library
-rootpath    = '../../../../..'
+rootpath    = '../../..'
 modulepath  = os.path.join(rootpath, 'modules')
-buildfolder = os.path.join(modulepath, '../build')
+buildfolder = os.path.join(rootpath, 'build')
 
 # path to the xpcc root directory, TODO don't use a absolute path here!
 xpccpath = '/home/user/development/xpcc'
@@ -75,11 +75,11 @@ env.Append(CPPPATH=[
     modulepath + '/utils/src',
     modulepath + '/time/src',
     modulepath + '/rtos/src',
+    modulepath + '/rtos/arch/freertos',
     modulepath + '/smpc/src',
-    modulepath + '/ccsds/src',
+    modulepath + '/spp/src',
     modulepath + '/pus/src',
 ])
-env.Append(CPPDEFINES={'COBC_RTOS':'COBC_RTOS_FREERTOS'})
 
 # build the xpcc library
 env.XpccLibrary()

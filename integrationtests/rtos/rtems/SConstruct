@@ -2,11 +2,11 @@
 
 import os
 
-rootpath    = '../../../../..'
+rootpath    = '../../..'
 modulepath  = os.path.join(rootpath, 'modules')
-buildfolder = os.path.join(modulepath, '../build')
+buildfolder = os.path.join(rootpath, 'build')
 
-envGlobal = Environment(toolpath=['../../../../../conf/scons/site_tools'],
+envGlobal = Environment(toolpath=[rootpath + '/conf/scons/site_tools'],
                         tools=['rtems-leon3', 'cobc', 'buildpath', 'buildformat', 'buildsize'],
                         DEVICE_SIZE={
                             'name' : 'Nexys 3 - LEON3',
@@ -20,12 +20,10 @@ envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/in
 
 envGlobal.SConscript([modulepath + '/utils/src/SConscript',
                       modulepath + '/time/src/SConscript',
-                      '../../../src/SConscript'],
+                      modulepath + '/rtos/src/SConscript'],
                      exports='envGlobal')
 
 env = envGlobal.Clone()
-
-env['CFLAGS_language'] = ['-std=gnu99']
 
 env.Append(CPPPATH=[
     '.'
@@ -33,14 +31,19 @@ env.Append(CPPPATH=[
 env.Append(LIBS=['cobc_rtos', 'cobc_time'])
 env.Append(LIBPATH=['$BUILDPATH/lib'])
 
-files  = env.Glob('*.c')
-files += env.Glob('*.cpp')
+files  = env.Object(env.FilteredGlob('*.cpp', ['main.cpp']))
+
+env = env.Clone()
+env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+
+files.append(env.Object('main.cpp'))
+
 
 program = env.Program('rtems', files)
 
 envGlobal.Alias('build', program)
-envGlobal.Alias('install', env.Install('bin', program))
+envGlobal.Alias('install', env.Install(program))
 envGlobal.Alias('size', env.Size(program))
 
-envGlobal.Default(['build', 'install', 'size'])
+envGlobal.Default(['build', 'size'])
 
