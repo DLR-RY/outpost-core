@@ -19,6 +19,7 @@
 #include "rtos/clock.h"
 #include "rtos/mutex.h"
 #include "rtos/periodic_task_manager.h"
+#include "rtos/queue.h"
 #include "rtos/semaphore.h"
 #include "rtos/thread.h"
 #include "rtos/timer.h"
