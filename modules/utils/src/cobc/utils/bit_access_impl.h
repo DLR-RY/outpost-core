@@ -45,7 +45,7 @@ template <typename T, int offset>
 bool
 cobc::BitAccess::get(const T& data)
 {
-    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
+//    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
 
     bool value = data & (1 << offset);
     return value;
@@ -55,9 +55,9 @@ template <typename T, int start, int end>
 T
 cobc::BitAccess::get(const T& data)
 {
-    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
-    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
-    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
+//    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
+//    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
+//    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
     const int width = end - start + 1;
     T mask = createMask<T>(width);
@@ -70,7 +70,7 @@ template <typename T, int offset>
 void
 cobc::BitAccess::set(T& data, bool value)
 {
-    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
+//    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
 
     T reg = data;
     T mask = 1 << offset;
@@ -85,9 +85,9 @@ template <typename T, int start, int end>
 void
 cobc::BitAccess::set(T& data, T value)
 {
-    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
-    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
-    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
+//    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
+//    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
+//    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
     T reg = data;
     const int width = end - start + 1;
