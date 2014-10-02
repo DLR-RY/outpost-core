@@ -5,8 +5,8 @@
  * See the file "LICENSE" for the full license governing this code.
  */
 // ----------------------------------------------------------------------------
-#ifndef I2C_H_
-#define I2C_H_
+#ifndef I2C_HAL_H_
+#define I2C_HAL_H_
 
 #include <cstddef>
 #include <stdint.h>
@@ -48,7 +48,7 @@ public:
                       size_t outLength,
                       uint8_t* inBuffer,
                       size_t inLength,
-                      time::Duration timeout = time::Duration::max()) = 0;
+                      cobc::time::Duration timeout = time::Duration::max()) = 0;
 
     /**
      *  Read data from input buffer
@@ -62,10 +62,10 @@ public:
     virtual bool
     getInputBuffer(uint8_t* buffer,
                    size_t length,
-                   time::Duration timeout = time::Duration::max()) = 0;
+                   cobc::time::Duration timeout = time::Duration::max()) = 0;
 
 };
 }
 }
 
-#endif // I2C_H_
+#endif // I2C_HAL_H_
