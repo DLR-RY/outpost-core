@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
+
 #include <cobc/utils/bit_access.h>
 
 using cobc::BitAccess;

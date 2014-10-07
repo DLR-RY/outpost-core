@@ -9,6 +9,7 @@
 #ifndef COBC_UTILS_BIT_ACCESS_H
 #define COBC_UTILS_BIT_ACCESS_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 namespace cobc
@@ -18,6 +19,8 @@ namespace cobc
  * Bit field access.
  *
  * Provides access to single or multiple bits in a larger variable.
+ *
+ * Uses LSB 0 bit numbering (bit 0 is the LSB).
  *
  * \author  Fabian Greif
  */
@@ -98,10 +101,9 @@ public:
     static void
     set(T& data, T value);
 
-private:
     template <typename T>
     static T
-    createMask(int width);
+    getMask(size_t width);
 };
 
 }

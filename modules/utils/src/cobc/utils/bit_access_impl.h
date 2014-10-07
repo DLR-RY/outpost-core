@@ -60,7 +60,7 @@ cobc::BitAccess::get(const T& data)
 //    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
     const int width = end - start + 1;
-    T mask = createMask<T>(width);
+    T mask = getMask<T>(width);
     T value = (data >> start) & mask;
 
     return value;
@@ -91,7 +91,7 @@ cobc::BitAccess::set(T& data, T value)
 
     T reg = data;
     const int width = end - start + 1;
-    T mask = createMask<T>(width) << start;
+    T mask = getMask<T>(width) << start;
 
     reg &= ~mask;
     reg |= (value << start) & mask;
@@ -101,19 +101,52 @@ cobc::BitAccess::set(T& data, T value)
 
 template <typename T>
 T
-cobc::BitAccess::createMask(int length)
+cobc::BitAccess::getMask(size_t length)
 {
-    T mask = 0;
-
-    int position = 0;
-    while (position < length)
-    {
-        mask <<= 1;
-        mask |= 1;
-        position++;
-    }
-
+    T mask = (static_cast<T>(1) << length) - 1;
     return mask;
+}
+
+namespace cobc
+{
+// ----------------------------------------------------------------------------
+// Template specialization for common cases
+
+template <>
+inline uint32_t
+BitAccess::get<uint32_t, 0, 31>(const uint32_t& data)
+{
+    return data;
+}
+
+template <>
+inline uint32_t
+BitAccess::get<uint32_t, 24, 31>(const uint32_t& data)
+{
+    const uint32_t mask = 0xFF000000;
+    uint32_t value = (data & mask) >> 24;
+    return value;
+}
+
+template <>
+inline void
+BitAccess::set<uint32_t, 0, 31>(uint32_t& data, uint32_t value)
+{
+    data = value;
+}
+
+template <>
+inline void
+BitAccess::set<uint32_t, 24, 31>(uint32_t& data, uint32_t value)
+{
+    const uint32_t mask = 0xFF000000;
+    uint32_t reg = data;
+
+    reg &= ~mask;
+    reg |= (value << 24) & mask;
+
+    data = reg;
+}
 }
 
 #endif // COBC_UTILS_BIT_ACCESS_IMPL_H
