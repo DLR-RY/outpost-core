@@ -4,9 +4,17 @@
  *
  */</template><template autoinsert="false" context="org.eclipse.cdt.ui.text.codetemplates.filecomment_context" deleted="false" description="Comment for created C/C++ files" enabled="true" id="org.eclipse.cdt.ui.text.codetemplates.filecomment" name="filecomment">/*
  * Copyright (c) ${year}, German Aerospace Center (DLR)
- * All Rights Reserved.
  *
- * See the file "LICENSE" for the full license governing this code.
+ * This file is part of the libCOBC library..
+ *
+ * It is distributed under the terms of the GNU General Public License with
+ * a linking exception. See the file "LICENSE" for the full license governing
+ * this code.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 // ----------------------------------------------------------------------------
 </template><template autoinsert="true" context="org.eclipse.cdt.ui.text.codetemplates.typecomment_context" deleted="false" description="Comment for created classes" enabled="true" id="org.eclipse.cdt.ui.text.codetemplates.typecomment" name="typecomment">/*
