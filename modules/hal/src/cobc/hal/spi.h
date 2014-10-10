@@ -10,7 +10,6 @@
 
 #include <cobc/hal/spi.h>
 #include <stdint.h>
-#include "../../../../../../src/GOSSAMER/mission_parameter.h"
 
 namespace cobc
 {

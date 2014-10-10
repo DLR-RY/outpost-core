@@ -23,30 +23,35 @@ class Gpio
 {
 public:
 
+    enum Direction
+    {
+        input = 0, output = 1
+    };
+
     virtual
     ~Gpio() = 0;
 
     /**
      * Initialise IO gpio
      * \param gpio number
-     * \param output 1 = set as output, 0 = set as input
+     * \param direction set as output or set as input
      */
     virtual void
-    initGpio(uint8_t gpio, uint8_t output) = 0;
+    initialize(uint8_t gpio, Direction direction) = 0;
 
     /**
      * Set IO gpio high
      * \param gpio number
      */
     virtual void
-    setGpio(uint8_t gpio) = 0;
+    set(uint8_t gpio) = 0;
 
     /**
      * Set IO gpio low
      * \param gpio number
      */
     virtual void
-    clearGpio(uint8_t gpio) = 0;
+    clear(uint8_t gpio) = 0;
 
     /**
      * Read value of IO gpio
@@ -54,7 +59,7 @@ public:
      * \return value of IO gpio
      */
     virtual bool
-    getGpio(uint8_t gpio) = 0;
+    get(uint8_t gpio) = 0;
 };
 }
 }

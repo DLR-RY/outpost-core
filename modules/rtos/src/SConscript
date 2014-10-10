@@ -49,8 +49,6 @@ elif env['OS'] == 'freertos':
 	env.Append(CPPPATH=[os.path.abspath('../arch/freertos')])
 	
 	files += env.Glob('../arch/freertos/cobc/rtos/*.cpp')
-
-	files += env.Glob('cobc/hal/nanomindA712D/*.cpp')
 	
 	# FreeRTOS uses C-Style casts. Therefore this warning has to
 	# disabled for the FreeRTOS wrapper files.
