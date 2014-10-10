@@ -18,13 +18,11 @@
 #define COBC_UTILS_HELPER_H
 
 #if __cplusplus > 199711L
-
+// Nothing to do here, C++11 has support for static_assert
 #else
-// Provide an empty implementation when compiling without C++11 support.
-static inline void
-static_asssert(bool, const char*)
-{
-}
+// HACK: Provide an empty implementation when compiling without C++11 support.
+#define static_assert(test,msg)
+
 #endif
 
 #endif // COBC_UTILS_HELPER_H
