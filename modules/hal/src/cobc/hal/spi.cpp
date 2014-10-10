@@ -13,6 +13,7 @@
  * GNU General Public License for more details.
  */
 // ----------------------------------------------------------------------------
+
 #include "spi.h"
 
 cobc::hal::Spi::~Spi()

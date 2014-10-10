@@ -16,23 +16,23 @@
 #ifndef COBC_HAL_SPI_H_
 #define COBC_HAL_SPI_H_
 
-#include <cobc/hal/spi.h>
 #include <stdint.h>
 
 namespace cobc
 {
 namespace hal
 {
+
+/**
+ * SPI driver interface.
+ *
+ * \author Norbert Toth
+ */
 class Spi
 {
 public:
-    /** NanoMind712D spi driver interface
-     *
-     * author Norbert Toth
-     */
-
     /**
-     * \brief Virtual I2C interface destructor
+     *
      *
      * Destroys the object and free resources.
      */
@@ -50,8 +50,8 @@ public:
 
     virtual uint8_t
     setupChip(void* spiChip) = 0;
-
 };
+
 }
 }
 
