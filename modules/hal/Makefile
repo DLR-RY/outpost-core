@@ -5,22 +5,9 @@ MODULE=hal
 
 include ../../conf/module.default.mk
 
-build-lua:
-	make -C ../../tools/l3test build-lua
-
-test: build-lua
-	@scons build $(MAKEJOBS) -Q -C test || return 1; \
-	../../build/$(MODULE)/test/unittest/runner --gtest_filter=$(FILTER)
-
+test:
+	
 coverage:
-	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
-	find ../../build/$(MODULE)/test/coverage -name "*.gcda" -delete; \
-	../../build/$(MODULE)/test/coverage/runner || return 1; \
-	cd ../../build/$(MODULE)/test/coverage; \
-	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory ../../../../modules/$(MODULE)/test --directory . --gcov-tool `which gcov-4.7` || return 1; \
-	lcov -r coverage.info "/usr*" "test/*" "time/*" "tools/*" "smpc/*" "rtos/*" "spp/*" "utils/*" "default/*" -o coverage.info; \
-	rm -rf report; \
-	genhtml --demangle-cpp -o report coverage.info
 
 coverage-view:
 	xdg-open ../../build/$(MODULE)/test/coverage/report/index.html &

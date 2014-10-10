@@ -18,6 +18,7 @@
 #define COBC_UTILS_BIT_ACCESS_IMPL_H
 
 #include "bit_access.h"
+#include "helper.h"
 
 namespace cobc
 {
@@ -53,19 +54,19 @@ template <typename T, int offset>
 bool
 cobc::BitAccess::get(const T& data)
 {
-//    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
+    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
 
     bool value = data & (1 << offset);
     return value;
 }
 
-template <typename T, int start, int end>
+template <typename T, int end, int start>
 T
 cobc::BitAccess::get(const T& data)
 {
-//    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
-//    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
-//    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
+    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
+    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
+    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
     const int width = end - start + 1;
     T mask = getMask<T>(width);
@@ -78,7 +79,7 @@ template <typename T, int offset>
 void
 cobc::BitAccess::set(T& data, bool value)
 {
-//    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
+    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
 
     T reg = data;
     T mask = 1 << offset;
@@ -89,13 +90,13 @@ cobc::BitAccess::set(T& data, bool value)
     data = reg;
 }
 
-template <typename T, int start, int end>
+template <typename T, int end, int start>
 void
 cobc::BitAccess::set(T& data, T value)
 {
-//    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
-//    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
-//    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
+    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
+    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
+    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
     T reg = data;
     const int width = end - start + 1;
@@ -122,14 +123,14 @@ namespace cobc
 
 template <>
 inline uint32_t
-BitAccess::get<uint32_t, 0, 31>(const uint32_t& data)
+BitAccess::get<uint32_t, 31, 0>(const uint32_t& data)
 {
     return data;
 }
 
 template <>
 inline uint32_t
-BitAccess::get<uint32_t, 24, 31>(const uint32_t& data)
+BitAccess::get<uint32_t, 31, 24>(const uint32_t& data)
 {
     const uint32_t mask = 0xFF000000;
     uint32_t value = (data & mask) >> 24;
@@ -138,14 +139,14 @@ BitAccess::get<uint32_t, 24, 31>(const uint32_t& data)
 
 template <>
 inline void
-BitAccess::set<uint32_t, 0, 31>(uint32_t& data, uint32_t value)
+BitAccess::set<uint32_t, 31, 0>(uint32_t& data, uint32_t value)
 {
     data = value;
 }
 
 template <>
 inline void
-BitAccess::set<uint32_t, 24, 31>(uint32_t& data, uint32_t value)
+BitAccess::set<uint32_t, 31, 24>(uint32_t& data, uint32_t value)
 {
     const uint32_t mask = 0xFF000000;
     uint32_t reg = data;

@@ -56,28 +56,28 @@ TEST_F(BitAccessTest, accessMultipleBits)
     uint32_t reference = 0x12345678;
     uint32_t value;
 
-    value = BitAccess::get<uint32_t, 0, 31>(reference);
+    value = BitAccess::get<uint32_t, 31, 0>(reference);
     EXPECT_EQ(0x12345678U, value);
 
-    value = BitAccess::get<uint32_t, 0, 2>(reference);
+    value = BitAccess::get<uint32_t, 2, 0>(reference);
     EXPECT_EQ(0x0U, value);
 
-    value = BitAccess::get<uint32_t, 0, 3>(reference);
+    value = BitAccess::get<uint32_t, 3, 0>(reference);
     EXPECT_EQ(0x8U, value);
 
-    value = BitAccess::get<uint32_t, 4, 7>(reference);
+    value = BitAccess::get<uint32_t, 7, 4>(reference);
     EXPECT_EQ(0x7U, value);
 
-    value = BitAccess::get<uint32_t, 16, 23>(reference);
+    value = BitAccess::get<uint32_t, 23, 16>(reference);
     EXPECT_EQ(0x34U, value);
 
-    value = BitAccess::get<uint32_t, 18, 19>(reference);
+    value = BitAccess::get<uint32_t, 19, 18>(reference);
     EXPECT_EQ(0x1U, value);
 
-    value = BitAccess::get<uint32_t, 28, 31>(reference);
+    value = BitAccess::get<uint32_t, 31, 28>(reference);
     EXPECT_EQ(0x1U, value);
 
-    value = BitAccess::get<uint32_t, 24, 31>(reference);
+    value = BitAccess::get<uint32_t, 31, 24>(reference);
     EXPECT_EQ(0x12U, value);
 }
 
@@ -112,28 +112,28 @@ TEST_F(BitAccessTest, writeSingleBit4)
 TEST_F(BitAccessTest, writeMultipleBitsFullAccess)
 {
     uint32_t value = 0;
-    BitAccess::set<uint32_t, 0, 31>(value, 0x12345678);
+    BitAccess::set<uint32_t, 31, 0>(value, 0x12345678);
     EXPECT_EQ(0x12345678U, value);
 }
 
 TEST_F(BitAccessTest, writeMultipleBits2)
 {
     uint32_t value = 0;
-    BitAccess::set<uint32_t, 0, 2>(value, 2);
+    BitAccess::set<uint32_t, 2, 0>(value, 2);
     EXPECT_EQ(0x2U, value);
 }
 
 TEST_F(BitAccessTest, writeMultipleBitsFull16bitAccess)
 {
     uint32_t value = 0x12345678;
-    BitAccess::set<uint32_t, 16, 31>(value, 0xABCD);
+    BitAccess::set<uint32_t, 31, 16>(value, 0xABCD);
     EXPECT_EQ(0xABCD5678U, value);
 }
 
 TEST_F(BitAccessTest, writeMultipleBits4)
 {
     uint32_t value = 0x12345678;
-    BitAccess::set<uint32_t, 19, 25>(value, 0x13);
+    BitAccess::set<uint32_t, 25, 19>(value, 0x13);
     EXPECT_EQ(0x109C5678U, value);
 }
 
@@ -141,6 +141,6 @@ TEST_F(BitAccessTest, writeMultipleBitsWithAOverlongPattern)
 {
     uint32_t value = 0x12345678;
     // Pattern is truncated to length specified through start and end of bitfield
-    BitAccess::set<uint32_t, 19, 25>(value, 0x12313);
+    BitAccess::set<uint32_t, 25, 19>(value, 0x12313);
     EXPECT_EQ(0x109C5678U, value);
 }

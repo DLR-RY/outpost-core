@@ -22,6 +22,8 @@
 #include "bit_access.h"
 #include "serialize.h"
 
+#include "helper.h"
+
 template <int offset>
 bool
 cobc::Bitfield::read(const uint8_t* byteArray)
@@ -37,6 +39,8 @@ template <int start, int end>
 uint16_t
 cobc::Bitfield::read(const uint8_t* byteArray)
 {
+    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
+
     // Get the byte index
     const size_t index = start / 8;
 
@@ -48,7 +52,7 @@ cobc::Bitfield::read(const uint8_t* byteArray)
     const int bitCount = end - start;
     const int startWord = 15 - bitCount - wordOffset;
     const int endWord = 15 - wordOffset;
-    uint16_t value = BitAccess::get<uint16_t, startWord, endWord>(word);
+    uint16_t value = BitAccess::get<uint16_t, endWord, startWord>(word);
 
     return value;
 }
@@ -69,6 +73,8 @@ template <int start, int end>
 void
 cobc::Bitfield::write(uint8_t* byteArray, uint16_t value)
 {
+    static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
+
     // get the byte index, if odd, round it down, then get position in 16-bit word
     unsigned int index = start / 8;
     uint16_t pos = start & 0x7;

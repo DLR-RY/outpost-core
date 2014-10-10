@@ -58,10 +58,10 @@ public:
      *
      * \tparam T
      *      Register type. Valid types are uint8_t, uint16_t and uint32_t.
-     * \tparam start
-     *      Start of the bitfield to read.
      * \tparam end
      *      End of the bitfield to read.
+     * \tparam start
+     *      Start of the bitfield to read.
      *
      * \param data
      *      Value from which to extract the bitfield value.
@@ -69,7 +69,7 @@ public:
      * \return
      *      Value of the bits in the field defined through \c offset and \c width.
      */
-    template <typename T, int start, int end>
+    template <typename T, int end, int start>
     static T
     get(const T& data);
 
@@ -95,17 +95,17 @@ public:
      *
      * \tparam T
      *      Register type. Valid types are uint8_t, uint16_t and uint32_t.
-     * \tparam start
-     *      Start of the bitfield to write.
      * \tparam end
      *      End of the bitfield to write.
+     * \tparam start
+     *      Start of the bitfield to write.
      *
      * \param address
      *      Address of the register.
      * \param value
      *      Value to set in the field defined through \c offset and \c width.
      */
-    template <typename T, int start, int end>
+    template <typename T, int end, int start>
     static void
     set(T& data, T value);
 
