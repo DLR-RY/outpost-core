@@ -3,9 +3,9 @@
  */</template><template autoinsert="true" context="org.eclipse.cdt.ui.text.codetemplates.destructorcomment_context" deleted="false" description="Comment for created destructors" enabled="true" id="org.eclipse.cdt.ui.text.codetemplates.destructorcomment" name="destructorcomment">/*
  *
  */</template><template autoinsert="false" context="org.eclipse.cdt.ui.text.codetemplates.filecomment_context" deleted="false" description="Comment for created C/C++ files" enabled="true" id="org.eclipse.cdt.ui.text.codetemplates.filecomment" name="filecomment">/*
- * Copyright (c) ${year}, German Aerospace Center (DLR)
+ * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of the libCOBC library..
+ * This file is part of libCOBC.
  *
  * It is distributed under the terms of the GNU General Public License with
  * a linking exception. See the file "LICENSE" for the full license governing
