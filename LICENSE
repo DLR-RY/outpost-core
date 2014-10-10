@@ -1,6 +1,7 @@
 
 Unless otherwise noted: All files are
-copyright (c) German Aerospace Center (DLR), all rights reserved.
+
+Copyright (c) German Aerospace Center (DLR), all rights reserved.
 
 The source code is licensed under the following terms:
 
@@ -23,7 +24,7 @@ The source code is licensed under the following terms:
 
 Files with a different license:
 
-src/libcs/hal/leon3-rtems/spwl/spacewirelight.*:
+modules/hal/ext/rtems/nexys3/spwl/spacewirelight.*:
 
     Copyright 2010 Joris van Rantwijk.
     
