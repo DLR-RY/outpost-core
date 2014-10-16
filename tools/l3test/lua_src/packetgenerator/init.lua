@@ -59,9 +59,30 @@ local function tostring(packet, linebreak)
 	return table.concat(t)
 end
 
+local function tostring_pattern(pattern, packet, linebreak)
+	local t = {}
+	local b = packet:bytes()
+	local linebreak = linebreak or 8
+	
+	for i = 1, #b do
+		t[#t + 1] = string.format(pattern, b[i])
+		
+		if i ~= #b then
+			t[#t + 1] = ', '
+		end
+		if linebreak ~= 0 then
+			if (i - 1) % linebreak == (linebreak - 1) then
+				t[#t + 1] = '\n'
+			end
+		end
+	end
+	return table.concat(t)
+end
+
 return {
 	-- functions	
 	tostring = tostring,
+	tostring_pattern = tostring_pattern,
 
 	-- modules
 	generator = generator,
