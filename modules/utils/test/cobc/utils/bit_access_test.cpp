@@ -116,6 +116,13 @@ TEST_F(BitAccessTest, writeMultipleBitsFullAccess)
     EXPECT_EQ(0x12345678U, value);
 }
 
+TEST_F(BitAccessTest, writeSingleBitByMultipleBitAccess)
+{
+    uint32_t value = 0;
+    BitAccess::set<uint32_t, 0, 0>(value, 1);
+    EXPECT_EQ(0x1U, value);
+}
+
 TEST_F(BitAccessTest, writeMultipleBits2)
 {
     uint32_t value = 0;
