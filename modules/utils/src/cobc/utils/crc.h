@@ -33,7 +33,6 @@ namespace cobc
 class Crc16Ccitt
 {
 public:
-    // LCOV_EXCL_START
     inline
     Crc16Ccitt() :
         mCrc(initialValue)
@@ -44,7 +43,6 @@ public:
     ~Crc16Ccitt()
     {
     }
-    // LCOV_EXCL_STOP
 
     /**
      * Calculate CRC from a block of data.
@@ -79,7 +77,6 @@ public:
     void
     update(uint8_t data);
 
-    // LCOV_EXCL_START
     /**
      * Get result of CRC calculation.
      */
@@ -88,13 +85,12 @@ public:
     {
         return mCrc;
     }
-    // LCOV_EXCL_STOP
 
 private:
     // disable copy constructor
     Crc16Ccitt(const Crc16Ccitt&);
 
-    // disable assignment operator
+    // disable copy-assignment operator
     Crc16Ccitt&
     operator=(const Crc16Ccitt&);
 
