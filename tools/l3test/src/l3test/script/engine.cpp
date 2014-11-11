@@ -83,8 +83,6 @@ appendPath(lua_State* L, const char* field, const std::string path)
 }
 
 // ----------------------------------------------------------------------------
-#include <iostream>
-
 Engine::Engine() :
         L(luaL_newstate())
 {
