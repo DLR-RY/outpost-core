@@ -16,6 +16,7 @@
 #include "periodic_task_manager.h"
 
 #include <errno.h>
+#include <cobc/rtos/mutex_guard.h>
 
 static const uint32_t nanosecondsPerSecond = 1000000000;
 static const uint32_t nanosecondsPerMicrosecond = 1000;
