@@ -97,6 +97,4 @@ private:
 }
 }
 
-#include <cobc/rtos/mutex_guard.h>
-
 #endif // COBC_RTOS_POSIX_MUTEX_HPP
