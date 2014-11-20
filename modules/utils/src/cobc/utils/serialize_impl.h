@@ -47,6 +47,13 @@ Serialize::store<uint32_t>(uint32_t data)
 
 template <>
 inline void
+Serialize::store<int32_t>(int32_t data)
+{
+    store32(static_cast<uint32_t>(data));
+}
+
+template <>
+inline void
 Serialize::store<uint64_t>(uint64_t data)
 {
     store64(data);
@@ -139,6 +146,14 @@ inline uint32_t
 Deserialize::read<uint32_t>()
 {
     uint32_t value = read32();
+    return value;
+}
+
+template <>
+inline int32_t
+Deserialize::read<int32_t>()
+{
+    int32_t value = static_cast<int32_t>(read32());
     return value;
 }
 
