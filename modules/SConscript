@@ -3,13 +3,26 @@
 Import('envGlobal')
 
 envGlobal.SConscript(
-	[
-		'utils/src/SConscript',
-		'utils/ext/SConscript',
-		'time/src/SConscript',
-		'rtos/src/SConscript',
-		'smpc/src/SConscript',
-		'spp/src/SConscript',
-		'pus/src/SConscript',
-	],
-	exports='envGlobal')
+    [
+        'utils/src/SConscript',
+        'utils/ext/SConscript',
+        'time/src/SConscript',
+        'rtos/src/SConscript',
+        'smpc/src/SConscript',
+        'spp/src/SConscript',
+        'pus/src/SConscript',
+        'log/src/SConscript',
+    ],
+    exports='envGlobal')
+
+if 'CPPDEFINES' in envGlobal and 'UNITTEST' in envGlobal['CPPDEFINES'] and envGlobal['CPPDEFINES']['UNITTEST']: 
+    envGlobal.SConscript(
+        [
+            'utils/test/SConscript',
+            'time/test/SConscript',
+            'smpc/test/SConscript',
+            'spp/test/SConscript',
+            'pus/test/SConscript',
+            'log/test/SConscript',
+        ],
+        exports='envGlobal')
