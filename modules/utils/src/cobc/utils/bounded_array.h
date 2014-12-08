@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.3-pre.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -59,7 +59,7 @@ public:
      *
      * Example:
      * \code
-     * uint8_t data[7];
+     * uint8_t array[7];
      * BoundedArray<uint8_t> wrappedArray(&array[0], 7);
      * \endcode
      *
