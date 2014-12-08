@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.3-pre.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -21,6 +21,7 @@
 
 #include "bit_access.h"
 #include "serialize.h"
+#include "bitorder.h"
 
 #include "helper.h"
 
@@ -41,18 +42,13 @@ cobc::Bitfield::read(const uint8_t* byteArray)
 {
     static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
-    // Get the byte index
-    const size_t index = start / 8;
-
     // Load the bytes in big endian order
-    Deserialize stream(&byteArray[index]);
+    Deserialize stream(&byteArray[BitorderConverter<uint16_t, start, end>::index]);
     uint16_t word = stream.read<uint16_t>();
 
-    const int wordOffset = start & 7;
-    const int bitCount = end - start;
-    const int startWord = 15 - bitCount - wordOffset;
-    const int endWord = 15 - wordOffset;
-    uint16_t value = BitAccess::get<uint16_t, endWord, startWord>(word);
+    uint16_t value = BitAccess::get<uint16_t,
+                                    BitorderConverter<uint16_t, start, end>::start,
+                                    BitorderConverter<uint16_t, start, end>::end>(word);
 
     return value;
 }
