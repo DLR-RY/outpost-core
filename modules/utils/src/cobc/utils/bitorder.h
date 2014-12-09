@@ -38,7 +38,8 @@ template <typename T, int startIn, int endIn>
 class BitorderMsb0ToLsb0
 {
 protected:
-    static_assert(startIn < endIn, "Invalid bitfield definition! 'startIn' must be smaller than 'endIn'");
+    // static assert only possible in C++11 :(
+    //static_assert(startIn < endIn, "Invalid bitfield definition! 'startIn' must be smaller than 'endIn'");
 
     static const int offsetByte = startIn & 7;
 
