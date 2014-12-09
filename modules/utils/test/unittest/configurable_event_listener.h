@@ -192,21 +192,7 @@ protected:
 };
 
 ConfigurableEventListener*
-registerConfigurableEventListener()
-{
-    // Remove the default listener
-    testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
-    auto defaultPrinter = listeners.Release(listeners.default_result_printer());
-
-    // Add our listener, by default everything is off, like:
-    // [==========] Running 149 tests from 53 test cases.
-    // [==========] 149 tests from 53 test cases ran. (1 ms total)
-    // [ PASSED ] 149 tests.
-    ConfigurableEventListener* listener = new ConfigurableEventListener(defaultPrinter);
-    listeners.Append(listener);
-
-    return listener;
-}
+registerConfigurableEventListener();
 
 }
 

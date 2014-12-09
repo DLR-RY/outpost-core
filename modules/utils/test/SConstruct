@@ -5,80 +5,53 @@ import os
 vars = Variables('custom.py')
 vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 
+module = 'utils'
+
 rootpath = '../../../'
 envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
                         tools=['cobc', 'buildformat'],
                         variables=vars,
+                        BASEPATH=os.path.abspath('.'),
                         ENV=os.environ)
-
 Help(vars.GenerateHelpText(envGlobal))
 
-envGlobal.Append(CPPDEFINES={'UNITTEST': 1})
-
-buildfolder = os.path.join(rootpath, 'build/')
-
-envGlobal['BASEPATH'] = os.path.abspath('.')
+buildfolder = os.path.join(rootpath, 'build')
 if envGlobal['coverage']:
-    envGlobal.Tool('hosted-gcc')
+    envGlobal.Tool('hosted-gcc-coverage')
     envGlobal.Tool('buildpath')
-    
-    envGlobal['CCFLAGS_optimize'] = [
-    	'-O0',
-    	'-fno-default-inline',
-    	'-fno-inline-functions',
-    	'-fno-inline',
-    	# The C++ standard allows an implementation to omit creating a temporary
-    	# which is only used to initialize another object of the same type.
-    	# Specifying this option disables that optimization, and forces G++ to
-    	# call the copy constructor in all cases. 
-    	'-fno-elide-constructors'
-    ]
-    
-    envGlobal.Append(CCFLAGS='--coverage')
-    envGlobal.Append(LINKFLAGS='--coverage')
-
-    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'utils/test/coverage'))
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/coverage'))
 else:
     envGlobal.Tool('hosted-llvm')
     envGlobal.Tool('buildpath')
-    
-    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'utils/test/unittest'))
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
 
-modulepath  = rootpath + 'modules/'
-envGlobal.SConscript([
-        os.path.join(modulepath, 'utils/src/SConscript'),
-        os.path.join(modulepath, 'utils/ext/SConscript'),
-    ],
-    exports='envGlobal')
+envGlobal.Append(CPPPATH=[
+    os.path.join(rootpath, 'modules/spp/default'),
+    os.path.join(rootpath, 'modules/pus/default'),
+    os.path.join(rootpath, 'modules/log/default'),
+])
+
+envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
+
+# The tests use C++11
+envGlobal['CXXFLAGS_language'] = ['-std=c++0x']
+envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports='envGlobal')
 
 env = envGlobal.Clone()
 
-# googletest uses some C++0x features.
-env['CXXFLAGS_language'] = ['-std=c++0x']
-
-env.RemoveFromList('CCFLAGS_warning', [
-    '-Wunused-parameter',
-    '-Wshadow',
-    '-Wconversion',
-    '-Wold-style-cast',
-    '-Wundef',
-    '-Wmissing-declarations',
+env.AppendUnique(LIBS=[
+    'cobc_utils',
 ])
 
-env.Append(CPPPATH=['.'])
-env.Append(LIBS=['pthread', 'gmock-1.6.0'])
-env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
-
 files  = env.Glob('*.cpp')
-files += env.Glob('*/*.cpp')
-files += env.Glob('*/*/*.cpp')
+files += env.Glob('cobc/*.cpp')
+files += env.Glob('cobc/*/*.cpp')
+files += env.Glob('cobc/*/*/*.cpp')
 
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong
 # results for the coverage analysis.
-files += env['objects']['utils']
-
-files += env.get('objects_unittest', [])
+files += env['objects'][module]
 
 envGlobal.Alias('build', env.Program('runner', files))
-
+envGlobal.Default('build')

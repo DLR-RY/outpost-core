@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+
+Import('envGlobal')
+
+envGlobal.RemoveFromList('CCFLAGS_warning', [
+    # GoogleTest uses undefined symbols which would otherwise generate a lot of warnings
+    '-Wundef',
+])
+
+envGlobal.SConscript([
+        'utils/ext/SConscript',
+        'utils/test/SConscript',
+        'time/test/SConscript',
+        'smpc/test/SConscript',
+        '../tools/l3test/src/SConscript',
+        '../tools/l3test/ext/SConscript',
+        'spp/test/SConscript',
+        'pus/test/SConscript',
+        'log/test/SConscript',
+    ],
+    exports='envGlobal')
+
+envGlobal.PrependUnique(LIBS=['cobc_unittest'])
+envGlobal.AppendUnique(LIBS=['gmock-1.6.0', 'pthread'])
+
+files = envGlobal.get('objects_unittest', [])
+library = envGlobal.StaticLibrary('cobc_unittest', files)
+envGlobal.Install('$BUILDPATH/lib', library)
+
+envGlobal.AppendUnique(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
+
+# Export the symbols into the dynamic symbol table. This is needed when
+# using dynamically loaded lua modules.
+envGlobal.Append(LINKFLAGS=['-Wl,--export-dynamic'])

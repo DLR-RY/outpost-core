@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+Import('envGlobal')
+
+envGlobal.SConscript([
+        'utils/src/SConscript',
+        'time/src/SConscript',
+        'rtos/src/SConscript',
+        'smpc/src/SConscript',
+        'spp/src/SConscript',
+        'pus/src/SConscript',
+        'log/src/SConscript',
+    ],
+    exports='envGlobal')
+
+envGlobal.AppendUnique(LIBPATH=['$BUILDPATH/lib'])
