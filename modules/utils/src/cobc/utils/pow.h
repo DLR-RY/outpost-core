@@ -28,25 +28,37 @@ struct PowerOfTwo
 {
     static const int base = 2;
 
-    enum { value = base * PowerOfTwo<N-1>::value };
+    enum
+    {
+        value = base * PowerOfTwo<N - 1>::value
+    };
 };
 
 template <>
 struct PowerOfTwo<1>
 {
-    enum { value = 2 };
+    enum
+    {
+        value = 2
+    };
 };
 
 template <>
 struct PowerOfTwo<0>
 {
-    enum { value = 1 };
+    enum
+    {
+        value = 1
+    };
 };
 
 template <>
 struct PowerOfTwo<-1>
 {
-    enum { value = 0 };
+    enum
+    {
+        value = 0
+    };
 };
 
 /**
@@ -55,25 +67,37 @@ struct PowerOfTwo<-1>
 template <int Base, int Exponent>
 struct Pow
 {
-    enum { value = Base * Pow<Base, Exponent-1>::value };
+    enum
+    {
+        value = Base * Pow<Base, Exponent - 1>::value
+    };
 };
 
 template <int Base>
 struct Pow<Base, 1>
 {
-    enum { value = Base };
+    enum
+    {
+        value = Base
+    };
 };
 
 template <int Base>
 struct Pow<Base, 0>
 {
-    enum { value = 1 };
+    enum
+    {
+        value = 1
+    };
 };
 
 template <int Base>
 struct Pow<Base, -1>
 {
-    enum { value = 0 };
+    enum
+    {
+        value = 0
+    };
 };
 
 }

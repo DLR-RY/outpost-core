@@ -17,25 +17,52 @@
 #ifndef COBC_UTILS_BITORDER_H
 #define COBC_UTILS_BITORDER_H
 
+#include "helper.h"
+
 namespace cobc
 {
 
+/**
+ * Conversion from MSB0 to LSB0 bit-ordering
+ *
+ * \tparam  T
+ *      Target value type. Can be uint8|16|32_t.
+ * \tparam startIn
+ *      First bit of bitfield inside a byte array.
+ * \tparam endIn
+ *      Last bit of bitfield inside a byte array.
+ *
+ * \author  Fabian Greif
+ */
 template <typename T, int startIn, int endIn>
-class BitorderConverter
+class BitorderMsb0ToLsb0
 {
 protected:
+    static_assert(startIn < endIn, "Invalid bitfield definition! 'startIn' must be smaller than 'endIn'");
+
     static const int offsetByte = startIn & 7;
 
     static const int numberOfBitsPerByte = 8;
     static const int msb = sizeof(T) * numberOfBitsPerByte - 1;
 
 public:
-    /// Byte index of the first value in the byte array
-    static const size_t index = startIn / 8;
+    /**
+     * Byte index of the first byte of the target value in the byte array.
+     */
+    static const size_t byteIndex = startIn / 8;
     static const int width = endIn - startIn + 1;
 
+    /**
+     * First bit of the target value inside the field given by T.
+     *
+     * As this is in LSB0 ordering it is always 'start > end'.
+     */
     static const int start = msb - offsetByte;
-    static const int end = msb - (endIn - index * numberOfBitsPerByte);
+
+    /**
+     * Last bit of the target value inside the field given by T.
+     */
+    static const int end = msb - (endIn - byteIndex * numberOfBitsPerByte);
 };
 
 }

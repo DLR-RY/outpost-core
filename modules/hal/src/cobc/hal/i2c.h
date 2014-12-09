@@ -57,7 +57,7 @@ public:
                       size_t outLength,
                       uint8_t* inBuffer,
                       size_t inLength,
-                      cobc::time::Duration timeout = time::Duration::max()) = 0;
+                      cobc::time::Duration timeout = time::Duration::maximum()) = 0;
 
     /**
      *  Read data from input buffer
@@ -71,7 +71,7 @@ public:
     virtual bool
     getInputBuffer(uint8_t* buffer,
                    size_t length,
-                   cobc::time::Duration timeout = time::Duration::max()) = 0;
+                   cobc::time::Duration timeout = time::Duration::maximum()) = 0;
 
 };
 }

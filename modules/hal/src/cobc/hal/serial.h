@@ -77,7 +77,7 @@ public:
      */
     virtual size_t
     read(uint8_t* data, size_t length, time::Duration timeout =
-                 time::Duration::max()) = 0;
+                 time::Duration::maximum()) = 0;
 
     /**
      * Write a block of bytes with timeout.
@@ -92,7 +92,7 @@ public:
      */
     virtual size_t
     write(const uint8_t* data, size_t length, time::Duration timeout =
-                  time::Duration::max()) = 0;
+                  time::Duration::maximum()) = 0;
 
     /**
      * Flush send/receive buffers.

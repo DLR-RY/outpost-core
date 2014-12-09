@@ -18,22 +18,44 @@
 
 #include <cobc/utils/bitorder.h>
 
-using cobc::BitorderConverter;
+using cobc::BitorderMsb0ToLsb0;
 
 TEST(BitorderTest, convert16Bit)
 {
-    size_t start = BitorderConverter<uint16_t, 0, 15>::start;
-    size_t end   = BitorderConverter<uint16_t, 0, 15>::end;
-    EXPECT_EQ(15U, start);
-    EXPECT_EQ(0U, end);
+    typedef BitorderMsb0ToLsb0<uint16_t, 0, 15> Converter;
 
-    // 0..15, offset 0 -> 15..0
-    // 8..23, offset 8 -> 15..0
-    // 2..4,  offset 0 -> 13..11
+    EXPECT_EQ(0U,  static_cast<size_t>(Converter::byteIndex));
+    EXPECT_EQ(16U, static_cast<size_t>(Converter::width));
+    EXPECT_EQ(15U, static_cast<size_t>(Converter::start));
+    EXPECT_EQ(0U,  static_cast<size_t>(Converter::end));
+}
 
-    //      MSB
-    // MSB0   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15
-    // LSB0  15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+TEST(BitorderTest, convertWithOffset)
+{
+    typedef BitorderMsb0ToLsb0<uint16_t, 13, 21> Converter;
 
+    EXPECT_EQ(1U,  static_cast<size_t>(Converter::byteIndex));
+    EXPECT_EQ(9U,  static_cast<size_t>(Converter::width));
+    EXPECT_EQ(10U, static_cast<size_t>(Converter::start));
+    EXPECT_EQ(2U,  static_cast<size_t>(Converter::end));
+}
 
+TEST(BitorderTest, convertWithBigOffset)
+{
+    typedef BitorderMsb0ToLsb0<uint16_t, 150, 154> Converter;
+
+    EXPECT_EQ(18U,  static_cast<size_t>(Converter::byteIndex));
+    EXPECT_EQ(5U,  static_cast<size_t>(Converter::width));
+    EXPECT_EQ(9U, static_cast<size_t>(Converter::start));
+    EXPECT_EQ(5U,  static_cast<size_t>(Converter::end));
+}
+
+TEST(BitorderTest, convertWithOffset32Bit)
+{
+    typedef BitorderMsb0ToLsb0<uint32_t, 13, 21> Converter;
+
+    EXPECT_EQ(1U,  static_cast<size_t>(Converter::byteIndex));
+    EXPECT_EQ(9U,  static_cast<size_t>(Converter::width));
+    EXPECT_EQ(26U, static_cast<size_t>(Converter::start));
+    EXPECT_EQ(18U,  static_cast<size_t>(Converter::end));
 }

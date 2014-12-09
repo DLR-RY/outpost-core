@@ -138,7 +138,7 @@ public:
     }
 
     static inline Duration
-    max()
+    maximum()
     {
         return Duration(maximumValue);
     }

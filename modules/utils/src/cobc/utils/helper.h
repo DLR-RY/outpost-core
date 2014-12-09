@@ -21,7 +21,7 @@
 // Nothing to do here, C++11 has support for static_assert
 #else
 // HACK: Provide an empty implementation when compiling without C++11 support.
-#define static_assert(test,msg)
+#define static_assert(test, msg)
 
 #endif
 

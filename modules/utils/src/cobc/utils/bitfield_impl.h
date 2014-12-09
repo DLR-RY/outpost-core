@@ -43,12 +43,12 @@ cobc::Bitfield::read(const uint8_t* byteArray)
     static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
     // Load the bytes in big endian order
-    Deserialize stream(&byteArray[BitorderConverter<uint16_t, start, end>::index]);
+    Deserialize stream(&byteArray[BitorderMsb0ToLsb0<uint16_t, start, end>::byteIndex]);
     uint16_t word = stream.read<uint16_t>();
 
     uint16_t value = BitAccess::get<uint16_t,
-                                    BitorderConverter<uint16_t, start, end>::start,
-                                    BitorderConverter<uint16_t, start, end>::end>(word);
+                                    BitorderMsb0ToLsb0<uint16_t, start, end>::start,
+                                    BitorderMsb0ToLsb0<uint16_t, start, end>::end>(word);
 
     return value;
 }
