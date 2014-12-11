@@ -47,6 +47,27 @@ Serialize::store<uint32_t>(uint32_t data)
 
 template <>
 inline void
+Serialize::store<uint64_t>(uint64_t data)
+{
+    store64(data);
+}
+
+template <>
+inline void
+Serialize::store<int8_t>(int8_t data)
+{
+    store8(static_cast<uint8_t>(data));
+}
+
+template <>
+inline void
+Serialize::store<int16_t>(int16_t data)
+{
+    store16(static_cast<uint16_t>(data));
+}
+
+template <>
+inline void
 Serialize::store<int32_t>(int32_t data)
 {
     store32(static_cast<uint32_t>(data));
@@ -54,9 +75,9 @@ Serialize::store<int32_t>(int32_t data)
 
 template <>
 inline void
-Serialize::store<uint64_t>(uint64_t data)
+Serialize::store<int64_t>(int64_t data)
 {
-    store64(data);
+    store64(static_cast<uint64_t>(data));
 }
 
 template <>
@@ -108,6 +129,38 @@ Deserialize::peek<uint64_t>(size_t n) const
 }
 
 template <>
+inline int8_t
+Deserialize::peek<int8_t>(size_t n) const
+{
+    int8_t value = static_cast<int8_t>(peek8(n));
+    return value;
+}
+
+template <>
+inline int16_t
+Deserialize::peek<int16_t>(size_t n) const
+{
+    int16_t value = static_cast<int16_t>(peek16(n));
+    return value;
+}
+
+template <>
+inline int32_t
+Deserialize::peek<int32_t>(size_t n) const
+{
+    int32_t value = static_cast<int32_t>(peek32(n));
+    return value;
+}
+
+template <>
+inline int64_t
+Deserialize::peek<int64_t>(size_t n) const
+{
+    int64_t value = static_cast<int64_t>(peek64(n));
+    return value;
+}
+
+template <>
 inline float
 Deserialize::peek<float>(size_t n) const
 {
@@ -122,6 +175,8 @@ Deserialize::peek<double>(size_t n) const
     double value = peekDouble(n);
     return value;
 }
+
+
 
 // ----------------------------------------------------------------------------
 // Read
@@ -150,6 +205,30 @@ Deserialize::read<uint32_t>()
 }
 
 template <>
+inline uint64_t
+Deserialize::read<uint64_t>()
+{
+    uint64_t value = read64();
+    return value;
+}
+
+template <>
+inline int8_t
+Deserialize::read<int8_t>()
+{
+    int8_t value = static_cast<int8_t>(read8());
+    return value;
+}
+
+template <>
+inline int16_t
+Deserialize::read<int16_t>()
+{
+    int16_t value = static_cast<int16_t>(read16());
+    return value;
+}
+
+template <>
 inline int32_t
 Deserialize::read<int32_t>()
 {
@@ -158,10 +237,10 @@ Deserialize::read<int32_t>()
 }
 
 template <>
-inline uint64_t
-Deserialize::read<uint64_t>()
+inline int64_t
+Deserialize::read<int64_t>()
 {
-    uint64_t value = read64();
+    int64_t value = static_cast<int64_t>(read64());
     return value;
 }
 
