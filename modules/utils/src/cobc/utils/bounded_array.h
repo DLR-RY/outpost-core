@@ -87,6 +87,15 @@ public:
     /**
      * Access elements of the array.
      *
+     * \code
+     * BoundedArray<uint8_t> array(...);
+     *
+     * for (size_t i = 0; i < array.getNumberOfElements(); ++i)
+     * {
+     *     array[i] = i;
+     * }
+     * \endcode
+     *
      * \warning
      *      No out-of-bound error checking is performed.
      */

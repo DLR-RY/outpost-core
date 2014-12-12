@@ -43,8 +43,8 @@ class Serialize
 public:
     explicit inline
     Serialize(uint8_t* outputBuffer) :
-            buffer(outputBuffer),
-            begin(outputBuffer)
+        buffer(outputBuffer),
+        begin(outputBuffer)
     {
     }
 
