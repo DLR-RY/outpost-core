@@ -19,12 +19,13 @@ envGlobal = Environment(toolpath=[rootpath + '/conf/scons/site_tools'],
 envGlobal['BASEPATH']  = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/rtems'))
 
-envGlobal.SConscript([
-    os.path.join(modulepath, 'utils/src/SConscript'),
-    os.path.join(modulepath, 'time/src/SConscript'),
-    os.path.join(modulepath,'rtos/src/SConscript'),
-    ],
-    exports='envGlobal')
+envGlobal.Append(CPPPATH=[
+    os.path.abspath(os.path.join(rootpath, 'modules/spp/default')),
+    os.path.abspath(os.path.join(rootpath, 'modules/pus/default')),
+    os.path.abspath(os.path.join(rootpath, 'modules/log/default')),
+])
+
+envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
 env = envGlobal.Clone()
 
@@ -32,7 +33,16 @@ env.Append(CPPPATH=[
     '.',
     '../reference'
 ])
-env.Append(LIBS=['cobc_rtos', 'cobc_time'])
+
+env.AppendUnique(LIBS=[
+    'cobc_log',
+    'cobc_pus',
+    'cobc_spp',
+    'cobc_rtos',
+    'cobc_smpc',
+    'cobc_time',
+    'cobc_utils',
+])
 env.Append(LIBPATH=['$BUILDPATH/lib'])
 
 files  = env.Object(env.FilteredGlob(['*.cpp', '../reference/*.cpp'], ['main.cpp']))

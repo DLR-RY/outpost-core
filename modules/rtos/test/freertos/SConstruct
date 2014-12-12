@@ -41,14 +41,12 @@ envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/fr
 envGlobal.Append(CPPPATH=[
     '.',
     os.path.abspath(xpccpath + '/ext'),    # for FreeRTOS
+    os.path.abspath(os.path.join(rootpath, 'modules/spp/default')),
+    os.path.abspath(os.path.join(rootpath, 'modules/pus/default')),
+    os.path.abspath(os.path.join(rootpath, 'modules/log/default')),
 ])
 
-envGlobal.SConscript([
-    os.path.join(modulepath, 'utils/src/SConscript'),
-    os.path.join(modulepath, 'time/src/SConscript'),
-    os.path.join(modulepath,'rtos/src/SConscript'),
-    ],
-    exports='envGlobal')
+envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
 env = envGlobal.Clone()
 
