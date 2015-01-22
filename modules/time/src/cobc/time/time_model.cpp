@@ -16,15 +16,18 @@
 
 #include "time_model.h"
 
+#include <cobc/utils/limits.h>
+
+using cobc::time::TimeModel;
+
 cobc::time::TimePoint
-cobc::time::TimeModel::endOfEpoch()
+TimeModel::endOfEpoch()
 {
-    //FIXME: do something more sophisticated to determine the upper limit
-    return TimePoint(4611686018427387903);
+    return TimePoint(cobc::Limits<TimePoint::Type>::max / 2 - 1);
 }
 
 cobc::time::TimePoint
-cobc::time::TimeModel::startOfEpoch()
+TimeModel::startOfEpoch()
 {
     return TimePoint(0);
 }
