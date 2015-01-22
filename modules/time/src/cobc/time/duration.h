@@ -282,9 +282,9 @@ class Seconds : public Duration
 {
 public:
     explicit inline
-    Seconds(int32_t value) :
-        Duration(static_cast<int64_t>(value) * numberOfMillisecondsPerSecond *
-                                               numberOfMicrosecondsPerMillisecond)
+    Seconds(int64_t value) :
+        Duration(value * numberOfMillisecondsPerSecond *
+                         numberOfMicrosecondsPerMillisecond)
     {
     }
 };
@@ -298,8 +298,8 @@ class Milliseconds : public Duration
 {
 public:
     explicit inline
-    Milliseconds(int32_t value) :
-        Duration(static_cast<int64_t>(value) * numberOfMicrosecondsPerMillisecond)
+    Milliseconds(int64_t value) :
+        Duration(value * numberOfMicrosecondsPerMillisecond)
     {
     }
 };
@@ -313,8 +313,8 @@ class Microseconds : public Duration
 {
 public:
     explicit inline
-    Microseconds(int32_t value) :
-        Duration(static_cast<int64_t>(value))
+    Microseconds(int64_t value) :
+        Duration(value)
     {
     }
 };
