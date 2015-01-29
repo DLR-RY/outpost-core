@@ -6,6 +6,7 @@ envGlobal.SConscript([
         'utils/src/SConscript',
         'time/src/SConscript',
         'rtos/src/SConscript',
+        'hal/src/SConscript',
         'smpc/src/SConscript',
         'spp/src/SConscript',
         'pus/src/SConscript',

@@ -56,7 +56,6 @@ public:
      * Check how many bytes are available in the input buffers.
      * \return  Number of bytes in the buffer
      */
-
     virtual size_t
     getNumberOfBytesAvailable() = 0;
 
@@ -76,8 +75,9 @@ public:
      * \return    Number of bytes which could be read, maximal \p length
      */
     virtual size_t
-    read(uint8_t* data, size_t length, time::Duration timeout =
-                 time::Duration::maximum()) = 0;
+    read(uint8_t* data,
+         size_t length,
+         time::Duration timeout = time::Duration::maximum()) = 0;
 
     /**
      * Write a block of bytes with timeout.
@@ -91,8 +91,9 @@ public:
      * \return  Number of bytes written.
      */
     virtual size_t
-    write(const uint8_t* data, size_t length, time::Duration timeout =
-                  time::Duration::maximum()) = 0;
+    write(const uint8_t* data,
+          size_t length,
+          time::Duration timeout = time::Duration::maximum()) = 0;
 
     /**
      * Flush send/receive buffers.

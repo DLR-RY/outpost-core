@@ -14,6 +14,7 @@ xpccpath = '/home/user/development/xpcc'
 envGlobal = Environment(toolpath=[rootpath + '/conf/scons/site_tools'],
                         tools=['cobc', 'arm-none-eabi', 'buildpath', 'buildformat', 'buildsize'],
                         OS='freertos',
+                        BOARD='stm32f4discovery',
                         CCFLAGS_target=['-mcpu=cortex-m4',
                                         '-mthumb',
                                         '-mthumb-interwork',

@@ -14,6 +14,8 @@ envGlobal = Environment(toolpath=[rootpath + '/conf/scons/site_tools'],
                             'flash': 16777216,
                             'ram'  : 16777216
                         },
+                        OS='rtems',
+                        BOARD='nexys3',
                         ENV=os.environ)
 
 envGlobal['BASEPATH']  = os.path.abspath('.')

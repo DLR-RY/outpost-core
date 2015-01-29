@@ -52,7 +52,7 @@ elif env['OS'] == 'freertos':
     # FreeRTOS uses C-Style casts. Therefore this warning has to
     # disabled for the FreeRTOS wrapper files.
     env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
-        
+    
     if env['BOARD'] == 'nanomind':
         envGlobal.Append(CPPPATH=[os.path.abspath('../arch/nanomind')])
         env.Append(CPPPATH=[os.path.abspath('../arch/nanomind')])
