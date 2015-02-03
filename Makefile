@@ -118,5 +118,5 @@ clean :
 		make -C modules/$$m clean --no-print-directory ; \
 	done
 
-.PHONY: doc clean
+.PHONY: doc test clean
 
