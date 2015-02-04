@@ -13,14 +13,10 @@
  * more details.
  */
 // ----------------------------------------------------------------------------
-
 #ifndef COBC_RTOS_FREERTOS_QUEUE_H
 #define COBC_RTOS_FREERTOS_QUEUE_H
 
 #include <stddef.h>
-#include <stdint.h>
-
-#include <cobc/time/duration.h>
 
 namespace cobc
 {
@@ -36,7 +32,7 @@ namespace rtos
  * \author  Fabian Greif
  * \ingroup rtos
  */
-template <typename T>
+template<typename T>
 class Queue
 {
 public:
@@ -77,7 +73,8 @@ public:
      * \retval false    Timeout occurred, \p data was not changed.
      */
     bool
-    receive(T& data, cobc::time::Duration timeout = cobc::time::Duration::infinity());
+    receive(T& data,
+            cobc::time::Duration timeout = cobc::time::Duration::infinity());
 
 private:
     // disable copy constructor
