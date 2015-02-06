@@ -26,6 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 MODULES = utils time rtos hal smpc spp pus log
+MODULES_TEST = log-decode l3test
 
 # Check if the terminal supports colors
 COLORS := $(shell tput colors 2> /dev/null)
@@ -70,7 +71,7 @@ doxygen:
 	done
 
 test:
-	@for m in $(MODULES); do \
+	@for m in $(MODULES) $(MODULES_TEST); do \
 		printf "$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m test --no-print-directory || return 1 ; \
 	done
@@ -91,7 +92,7 @@ analyze-clang:
 	@printf "\n$(COK)[PASS] Static analysis with clang done!$(CEND)\n"
 
 codingstyle-simple:
-	@for m in $(MODULES); do \
+	@for m in $(MODULES) $(MODULES_TEST); do \
 		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m codingstyle-simple --no-print-directory ; \
 	done
@@ -113,7 +114,7 @@ metric:
 	done
 
 clean :
-	@for m in $(MODULES); do \
+	@for m in $(MODULES) $(MODULES_TEST); do \
 		printf "$(CINFO)Clean module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m clean --no-print-directory ; \
 	done

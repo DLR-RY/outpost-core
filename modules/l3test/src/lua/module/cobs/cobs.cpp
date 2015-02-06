@@ -76,4 +76,3 @@ luaopen_cobs(lua_State* L)
 	luaL_newlib(L, lib_functions);
 	return 1;
 }
-

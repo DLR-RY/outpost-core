@@ -50,10 +50,12 @@ numberOfBytesForCompleteObject(size_t n)
 static int
 numberOfWords(size_t n)
 {
-	if (n == 0) {
+	if (n == 0)
+	{
 		return 0;
 	}
-	else {
+	else
+	{
 		return (n - 1) / bitsPerWord + 1;
 	}
 }
@@ -78,7 +80,8 @@ l_bitstream_new(lua_State* L)
 
         // Initialize content to zero
         (*b)->size = n;
-        for (int i = 0; i < numberOfWords(n); ++i) {
+        for (int i = 0; i < numberOfWords(n); ++i)
+        {
             (*b)->values[i] = 0;
         }
     }
@@ -94,7 +97,8 @@ l_bitstream_new(lua_State* L)
 
         // Initialize content to zero
         (*b)->size = string_length * 8;
-        for (int i = 0; i < string_length; ++i) {
+        for (int i = 0; i < string_length; ++i)
+        {
             (*b)->values[i] = s[i];
         }
     }
@@ -164,17 +168,21 @@ l_bitstream_set(lua_State* L)
 
 	luaL_checkany(L, 3);
 	bool value;
-	if (lua_type(L, 3) == LUA_TNUMBER) {
+	if (lua_type(L, 3) == LUA_TNUMBER)
+	{
 		value = (lua_tointeger(L, 3) > 0);
 	}
-	else {
+	else
+	{
 		value = lua_toboolean(L, 3);
 	}
 
-	if (value) {
+	if (value)
+	{
 		*entry |= mask;
 	}
-	else {
+	else
+	{
 		*entry &= ~mask;
 	}
 
@@ -219,10 +227,12 @@ set_bit(uint8_t* field, size_t index, bool bit)
 	div_t d = div(index, 8);
 	uint8_t mask = (1 << (7 - d.rem));
 
-	if (bit) {
+	if (bit)
+	{
 		field[d.quot] |= mask;
 	}
-	else {
+	else
+	{
 		field[d.quot] &= ~mask;
 	}
 }
@@ -247,7 +257,8 @@ l_bitstream_insert(lua_State* L)
 	uint32_t value = luaL_checkint(L, 4);
 	uint32_t mask = 1 << (width - 1);
 
-	for (uint_fast8_t i = 0; i < width; ++i) {
+	for (uint_fast8_t i = 0; i < width; ++i)
+	{
 		set_bit(a->values, startPos + i, (mask & value));
 		mask >>= 1;
 	}
@@ -280,14 +291,16 @@ concat(lua_State* L, Bitstream** own)
         // add second bitfield
         // FIXME provide a optimized version of this
         int offset = (*own)->size;
-        for (int i = 0; i < (*other)->size; ++i) {
+        for (int i = 0; i < (*other)->size; ++i)
+        {
             set_bit(field->values, i + offset, get_bit((*other)->values, i));
         }
     }
     else if (type == LUA_TSTRING)
     {
         div_t d = div((*own)->size, 8);
-        if (d.rem != 0) {
+        if (d.rem != 0)
+        {
             luaL_error(L, "bitstream size (here: %d) must be divisible by 8", (*own)->size);
         }
 
@@ -308,7 +321,8 @@ concat(lua_State* L, Bitstream** own)
         // add string
         memcpy(&field->values[d.quot], s, string_length);
     }
-    else {
+    else
+    {
         luaL_argcheck(L, false, 2, "Invalid type");
     }
 
@@ -368,9 +382,11 @@ l_bitstream_extract(lua_State* L)
 	Bitstream* a = check_and_get_field_arguments(L, startPos, width);
 
 	int32_t value = 0;
-	for (uint_fast8_t i = 0; i < width; ++i) {
+	for (uint_fast8_t i = 0; i < width; ++i)
+	{
 		value <<= 1;
-		if (get_bit(a->values, startPos + i)) {
+		if (get_bit(a->values, startPos + i))
+		{
 			value |= 1;
 		}
 	}
@@ -404,7 +420,8 @@ l_bitstream_length(lua_State* L)
     Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
     div_t d = div((*b)->size, 8);
-    if (d.rem != 0) {
+    if (d.rem != 0)
+    {
         luaL_error(L, "bitstream size (here: %d) must be divisible by 8", (*b)->size);
     }
 
@@ -453,10 +470,12 @@ l_bitstream_to_binary(lua_State* L)
 	char* s = new char[length];
 
 	uint32_t index = 0;
-	for (int i = 0; i < (*b)->size; ++i) {
+	for (int i = 0; i < (*b)->size; ++i)
+	{
 		s[index++] = get_bit((*b)->values, i) ? '1' : '0';
 
-		if (i % 8 == 7) {
+		if (i % 8 == 7)
+		{
 			s[index++] = ' ';
 		}
 	}
@@ -506,7 +525,8 @@ l_bitstream_to_hex(lua_State* L)
     char* s = new char[length];
 
     uint32_t index = 0;
-    for (size_t i = 0; i < numberOfBytes; ++i) {
+    for (size_t i = 0; i < numberOfBytes; ++i)
+    {
         s[index++] = nibbleToHex((*b)->values[i] >> 4);
         s[index++] = nibbleToHex((*b)->values[i] & 0x0F);
         s[index++] = ' ';
@@ -533,14 +553,16 @@ l_bitstream_bytes(lua_State* L)
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
 	div_t d = div((*b)->size, 8);
-	if (d.rem != 0) {
+	if (d.rem != 0)
+	{
 		luaL_error(L, "bitstream size (here: %d) must be divisible by 8", (*b)->size);
 	}
 
 	// create a new table with the matching number of entries.
 	lua_createtable(L, d.quot, 0);
 
-	for (int i = 0; i < d.quot; ++i) {
+	for (int i = 0; i < d.quot; ++i)
+	{
 		lua_pushinteger(L, (*b)->values[i]);
 		lua_rawseti(L, -2, i+1);
 	}
@@ -621,4 +643,3 @@ luaopen_bitstream(lua_State* L)
 	luaL_newlib(L, arraylib_f);
 	return 1;
 }
-

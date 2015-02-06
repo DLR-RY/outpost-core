@@ -167,7 +167,8 @@ Engine::registerChannel(Channel::Ptr channel, const char* name)
 {
 	for (auto c : channels)
 	{
-		if (c.first.compare(name) == 0) {
+		if (c.first.compare(name) == 0)
+		{
 			// Name already registered
 			return false;
 		}
@@ -178,14 +179,17 @@ Engine::registerChannel(Channel::Ptr channel, const char* name)
 
 	channels.push_back(std::make_pair(strName, channel));
 
-	if (nameElements.size() == 1) {
+	if (nameElements.size() == 1)
+	{
 	    l3test_channel_register(L, channel);
 	    lua_setglobal(L, name);
 	}
-	else {
+	else
+	{
 	    const char* globalTableName = nameElements[0].c_str();
 	    lua_getglobal(L, globalTableName);
-	    if (lua_isnil(L, -1)) {
+	    if (lua_isnil(L, -1))
+	    {
 	        lua_pop(L, 1);
 
 	        // no global table exists, create one
@@ -194,9 +198,11 @@ Engine::registerChannel(Channel::Ptr channel, const char* name)
             lua_setglobal(L, globalTableName);
 	    }
 
-	    for (size_t i = 1; i < nameElements.size() - 1; ++i) {
+	    for (size_t i = 1; i < nameElements.size() - 1; ++i)
+	    {
 	        lua_getfield(L, -1, nameElements[i].c_str());
-	        if (lua_isnil(L, -1)) {
+	        if (lua_isnil(L, -1))
+	        {
 	            lua_pop(L, 1);
 
                 // entry does not exists, create it
@@ -220,7 +226,8 @@ bool
 Engine::execute(std::string code)
 {
 	int error = luaL_dostring(L, code.c_str());
-    if (error) {
+    if (error)
+    {
         lua_error(L);
     }
 	return false;

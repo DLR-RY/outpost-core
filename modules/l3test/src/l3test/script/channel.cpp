@@ -33,7 +33,8 @@ Channel::append(const uint8_t* data,
 {
 	currentPacket.reserve(currentPacket.size() + numberOfBytes);
 
-	for (size_t i = 0; i < numberOfBytes; ++i) {
+	for (size_t i = 0; i < numberOfBytes; ++i)
+	{
 		currentPacket.push_back(data[i]);
 	}
 }
@@ -75,8 +76,8 @@ Channel::getPacket(uint8_t* data,
                    size_t numberOfBytes) const
 {
 	auto length = std::min(numberOfBytes, getPacketLength());
-
-	for (size_t i = 0; i < length; ++i) {
+	for (size_t i = 0; i < length; ++i)
+	{
 		data[i] = packets.front()[i];
 	}
 

@@ -88,7 +88,8 @@ l_crc16_update(lua_State* L)
     Crc16Ccitt* d = checkudata(L);
 
     int value = luaL_checkint(L, 2);
-    if (value > 0xff || value < 0) {
+    if (value > 0xff || value < 0)
+    {
         luaL_argcheck(L, false, 2, "Invalid value");
     }
 

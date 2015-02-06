@@ -14,12 +14,16 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <gtest/gtest.h>
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+#include <lauxlib.h>
 
 int
-main(int argc, char **argv)
-{
-	::testing::InitGoogleTest(&argc, argv);
-	
-	return RUN_ALL_TESTS();
+luaopen_cobs(lua_State* L);
+
+#ifdef __cplusplus
 }
+#endif

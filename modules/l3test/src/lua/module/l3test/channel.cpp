@@ -77,13 +77,15 @@ l_append(lua_State* L)
 {
     Channel* c = getChannel(L);
 
-    if (lua_istable(L, 2)) {
+    if (lua_istable(L, 2))
+    {
         lua_len(L, 2);
         int length = lua_tointeger(L, -1);
         lua_pop(L, 1);
 
         uint8_t* a = reinterpret_cast<uint8_t *>(alloca(length));
-        for (int i = 0; i < length; ++i) {
+        for (int i = 0; i < length; ++i)
+        {
             lua_rawgeti(L, 2, i+1);
             a[i] = lua_tointeger(L, -1);
             lua_pop(L, 1);
@@ -91,12 +93,14 @@ l_append(lua_State* L)
 
         c->append(a, length);
     }
-    else if (lua_isnumber(L, 2)) {
+    else if (lua_isnumber(L, 2))
+    {
         // anything bigger than a byte is cropped
         uint8_t number = static_cast<uint8_t>(lua_tointeger(L, 2));
         c->append(&number, 1);
     }
-    else {
+    else
+    {
         return luaL_argerror(L, 2, "Argument type must be a table or an integer");
     }
 
@@ -148,7 +152,8 @@ l_get_packet(lua_State* L)
 {
     Channel* c = getChannel(L);
 
-    if (!c->hasPacket()) {
+    if (!c->hasPacket())
+    {
         luaL_error(L, "No packet available");
     }
 
@@ -158,7 +163,8 @@ l_get_packet(lua_State* L)
 
     // convert vector into a lua table with one entry per byte
     std::vector<uint8_t> packet = c->getPacket();
-    for (int i = 0; i < length; ++i) {
+    for (int i = 0; i < length; ++i)
+    {
         lua_pushinteger(L, packet[i]);
         lua_rawseti(L, -2, i+1);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, German Aerospace Center (DLR)
+ * Copyright (c) 2013, German Aerospace Center (DLR)
  *
  * This file is part of libCOBC 0.3-pre.
  *
@@ -14,17 +14,14 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#include <lauxlib.h>
+#include <gtest/gtest.h>
+#include <unittest/configurable_event_listener.h>
 
 int
-luaopen_crc16(lua_State* L);
+main(int argc, char **argv)
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    unittest::registerConfigurableEventListener();
 
-#ifdef __cplusplus
+    return RUN_ALL_TESTS();
 }
-#endif
-
