@@ -19,7 +19,7 @@
 #include <sstream>
 #include <array>
 
-#include <lua/module/l3test/channel.h>
+#include <modules/l3test/channel.h>
 #include <lua/exception.h>
 
 using namespace l3test::script;
@@ -28,8 +28,8 @@ const std::string Engine::defaultPath[] =
 {
     // all strings here except for the last have to end with the Lua path
     // separator (semicolon).
-    std::string("lua_src/?.lua;"),
-    std::string("lua_src/?/init.lua;"),
+    std::string("lua/src/?.lua;"),
+    std::string("lua/src/?/init.lua;"),
     std::string("ext/?/init.lua;"),
     std::string("ext/?.lua"),
 };

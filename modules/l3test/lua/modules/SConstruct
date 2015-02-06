@@ -3,7 +3,7 @@
 
 import os
 
-rootpath = '../../../'
+rootpath = '../../'
 cobcpath = rootpath + '../../'
 modulepath = cobcpath + 'modules/'
 
@@ -65,7 +65,7 @@ env = envGlobal.Clone()
 
 env['CXXFLAGS_language'] = ['-std=c++0x']
 env.Append(CPPPATH=[rootpath + 'src'])
-env.Append(CPPPATH=['.'])
+env.Append(CPPPATH=['.', '..'])
 
 l3test_files   = env.Glob('l3test/*.cpp')
 l3test_files  += env.Glob(rootpath + 'src/l3test/*/*.cpp')

@@ -5,6 +5,7 @@ import os
 Import('envGlobal')
 
 envGlobal.Append(CPPPATH=[os.path.abspath('.')])
+envGlobal.Append(CPPPATH=[os.path.abspath('../lua')])
 envGlobal.Append(CPPPATH=[os.path.abspath('../ext/lua-5.2.3/src')])
 env = envGlobal.Clone()
 
@@ -14,6 +15,7 @@ env.RemoveFromList('CXXFLAGS_warning', ['-Wold-style-cast'])
 files  = env.Glob('*/*.cpp')
 files += env.Glob('*/*/*.cpp')
 files += env.Glob('*/*/*/*.cpp')
+files += env.Glob('../lua/modules/l3test/*.cpp')
 
 env.Append(CPPPATH=['.'])
 
