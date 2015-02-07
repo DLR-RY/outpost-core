@@ -1,0 +1,16 @@
+
+def configure(target):
+	return {
+		'name': 'cobc.utils',
+		'depends': [],
+	}
+
+def build(config):
+	copytree(modulepath('src'), outpath('src'))
+	copytree(modulepath('test'), outpath('test'))
+	
+	copytree(modulepath('ext/gmock-1.6.0/fused-src/gtest'), outpath('ext/gtest'))
+	copytree(modulepath('ext/gmock-1.6.0/fused-src/gmock'), outpath('ext/gmock'))
+	copyfile(modulepath('ext/gmock-1.6.0/fused-src/gmock-gtest-all.cc'),
+	         outpath('ext/gmock-gtest-all.cc'))
+

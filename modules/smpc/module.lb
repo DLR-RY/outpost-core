@@ -1,0 +1,13 @@
+
+def configure(target):
+	return {
+		'name': 'cobc.smpc',
+		'depends': [
+			'cobc.utils',
+		],
+	}
+
+def build(config):
+	copytree(modulepath('src'), outpath('src'))
+	copytree(modulepath('test'), outpath('test'))
+

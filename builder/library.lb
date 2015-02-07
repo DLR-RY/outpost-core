@@ -1,0 +1,6 @@
+
+<library>
+	<target>hosted</target>
+	<module>cobc.pus</module>
+	<module>cobc.log</module>
+</library>

@@ -1,0 +1,25 @@
+
+import os
+import shutil
+
+def configure(target):
+	config = {
+		'name': 'cobc.l3test',
+		'depends': [
+			'cobc.utils',
+		],
+	}
+	
+	return config
+
+def build(config):
+	copytree(modulepath('src'), outpath('src'))
+	copytree(modulepath('test'), outpath('test'))
+	copytree(modulepath('lua/modules/l3test'), outpath('src/modules/l3test'))
+	copytree(modulepath('ext/lua-5.2.3/src'), outpath('ext/lua'), ignore=shutil.ignore_patterns('lua.c', 'luac.c'))
+	
+	copytree(modulepath('lua/src'), outpath('lua/src'))
+	copytree(modulepath('ext/luassert'), outpath('lua/src/luassert'))
+	copytree(modulepath('ext/say'), outpath('lua/src/say'))
+	
+	copytree(modulepath('bin'), outpath('bin'))

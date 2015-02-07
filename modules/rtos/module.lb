@@ -1,0 +1,13 @@
+
+def configure(target):
+	return {
+		'name': 'cobc.rtos',
+		'depends': [],
+	}
+
+def build(config):
+	if config['target'] == 'hosted':
+		copytree(modulepath('arch/posix'), outpath('src'))
+		copytree(modulepath('src'), outpath('src'))
+		#copytree(modulepath('test'), outpath('test'))
+

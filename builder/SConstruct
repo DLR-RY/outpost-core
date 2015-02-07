@@ -1,0 +1,27 @@
+
+env = Environment()
+
+files  = env.Glob('src/*.cpp')
+files += env.Glob('src/*/*.cpp')
+files += env.Glob('src/*/*/*.cpp')
+files += env.Glob('src/*/*/*/*.cpp')
+
+files += env.Glob('test/*.cpp')
+files += env.Glob('test/*/*.cpp')
+files += env.Glob('test/*/*/*.cpp')
+files += env.Glob('test/*/*/*/*.cpp')
+
+files += env.Glob('ext/*.cc')
+files += env.Glob('ext/*/*.c')
+
+env.Append(CPPPATH=['src', 'test', 'ext'])
+env.Append(CPPDEFINES={'LUA_USE_POSIX':None, 'LUA_USE_DLOPEN':None})
+
+env.Append(LIBS=['pthread', 'rt', 'dl'])
+env.Append(CXXFLAGS=['-std=c++0x'])
+env.Append(LINKFLAGS=['-Wl,--export-dynamic'])
+
+program = env.Program('runner', files)
+
+env.Default([program])
+
