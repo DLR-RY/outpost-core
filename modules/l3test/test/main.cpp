@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, German Aerospace Center (DLR)
+ * Copyright (c) 2014, German Aerospace Center (DLR)
  *
  * This file is part of libCOBC 0.3-pre.
  *
@@ -15,13 +15,22 @@
 // ----------------------------------------------------------------------------
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
 #include <unittest/configurable_event_listener.h>
 
+#include <unittest/l3test/lua_path.h>
+
 int
-main(int argc, char **argv)
+main(int argc, char** argv)
 {
-    ::testing::InitGoogleTest(&argc, argv);
+    // InitGoogleMock initializes Google test, too.
+    ::testing::InitGoogleMock(&argc, argv);
+
+    // Using the default listener from cobc/utils/unittest for customized gtest output
     unittest::registerConfigurableEventListener();
+
+    cobc::l3test::LuaPath::setDefaultPathPrefix("./");
 
     return RUN_ALL_TESTS();
 }

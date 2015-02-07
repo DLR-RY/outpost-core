@@ -15,6 +15,7 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
+#include <unittest/l3test/lua_path.h>
 
 #include <l3test/script/engine.h>
 
@@ -27,7 +28,7 @@ TEST(EnginePacketTest, sendDataFromLua)
 {
 	Engine engine;
 
-	engine.appendDefaultLuaPath("./");
+	engine.appendDefaultLuaPath(cobc::l3test::LuaPath::getDefaultPathPrefix());
 
 	Channel::Ptr channel(new Channel);
 	engine.registerChannel(channel, "tm");
@@ -73,7 +74,7 @@ TEST(EnginePacketTest, sendDataToLua)
 {
     Engine engine;
 
-    engine.appendDefaultLuaPath("./");
+    engine.appendDefaultLuaPath(cobc::l3test::LuaPath::getDefaultPathPrefix());
 
     Channel::Ptr channel(new Channel);
     engine.registerChannel(channel, "tc");

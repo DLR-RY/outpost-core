@@ -30,8 +30,6 @@ struct Data
     uint16_t bar;
 };
 
-static cobc::smpc::Topic<const Data> topic;
-
 class Component : public cobc::smpc::Subscriber
 {
 public:
@@ -42,33 +40,34 @@ public:
     }
 
     void
-    onReceiveData0(const Data* data) {
-        (void) data;
+    onReceiveData0(const Data*)
+    {
         received[0] = true;
     }
 
     void
-    onReceiveData1(const Data* data) {
-        (void) data;
+    onReceiveData1(const Data*)
+    {
         received[1] = true;
     }
 
     void
-    onReceiveData2(const Data* data) {
-        (void) data;
+    onReceiveData2(const Data*)
+    {
         received[2] = true;
     }
 
     void
-    onReceiveData3(const Data* data) {
-        (void) data;
+    onReceiveData3(const Data*)
+    {
         received[3] = true;
     }
 
     void
     reset()
     {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i)
+        {
             received[i] = false;
         }
     }
@@ -96,19 +95,22 @@ public:
 
     Component component;
     Data data;
+    cobc::smpc::Topic<const Data> topic;
 };
 
 TEST_F(SubscriptionTest, receiveNone)
 {
     topic.publish(data);
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         EXPECT_FALSE(component.received[i]);
     }
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
     topic.publish(data);
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         EXPECT_FALSE(component.received[i]);
     }
 }

@@ -37,12 +37,10 @@ operator==(Data const& lhs, Data const& rhs)
             (lhs.bar == rhs.bar));
 }
 
-static cobc::smpc::Topic<const Data> topic;
-
 class Component : public cobc::smpc::Subscriber
 {
 public:
-    Component() :
+    Component(cobc::smpc::Topic<const Data>& topic) :
         received(false),
         data({0, 0}),
         subscription(topic, this, &Component::onReceiveData)
@@ -65,7 +63,8 @@ private:
 
 TEST(CommunicationTest, receiveSingle)
 {
-    Component component;
+    cobc::smpc::Topic<const Data> topic;
+    Component component(topic);
 
     cobc::smpc::Subscription::connectSubscriptionsToTopics();
 

@@ -32,41 +32,44 @@ struct Data
     uint16_t bar;
 };
 
-static TopicRaw topic;
-
 class Component : public Subscriber
 {
 public:
     Component() :
-        received()
+        received{ false, false, false, false }
     {
         reset();
     }
 
     void
-    onReceiveData0(const void *, size_t) {
+    onReceiveData0(const void *, size_t)
+    {
         received[0] = true;
     }
 
     void
-    onReceiveData1(const void *, size_t) {
+    onReceiveData1(const void *, size_t)
+    {
         received[1] = true;
     }
 
     void
-    onReceiveData2(const void *, size_t) {
+    onReceiveData2(const void *, size_t)
+    {
         received[2] = true;
     }
 
     void
-    onReceiveData3(const void *, size_t) {
+    onReceiveData3(const void *, size_t)
+    {
         received[3] = true;
     }
 
     void
     reset()
     {
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i)
+        {
             received[i] = false;
         }
     }
@@ -82,18 +85,21 @@ public:
     {
     }
 
-    virtual void SetUp()
+    virtual void
+    SetUp()
     {
         component.reset();
     }
 
-    virtual void TearDown()
+    virtual void
+    TearDown()
     {
         unittest::smpc::TestingSubscriptionRaw::releaseAllSubscriptions();
     }
 
     Component component;
     Data data;
+    TopicRaw topic;
 };
 
 TEST_F(SubscriptionRawTest, receiveNone)
