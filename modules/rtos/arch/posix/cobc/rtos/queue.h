@@ -20,6 +20,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <pthread.h>
+
 #include <cobc/time/duration.h>
 
 namespace cobc
