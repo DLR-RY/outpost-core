@@ -29,6 +29,10 @@ envGlobal.Append(CPPPATH=[
     os.path.join(rootpath, 'modules/spp/default'),
     os.path.join(rootpath, 'modules/pus/default'),
     os.path.join(rootpath, 'modules/log/default'),
+    os.path.join(rootpath, 'modules/utils/ext/'),
+    os.path.join(rootpath, 'modules/utils/ext/gmock-1.6.0/fused-src'),
+    os.path.join(rootpath, 'modules/spp/default/'),
+    os.path.join(rootpath, 'modules/pus/default/'),
 ])
 
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')

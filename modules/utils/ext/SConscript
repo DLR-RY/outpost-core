@@ -7,7 +7,9 @@ Import('envGlobal')
 if envGlobal['OS'] == 'posix':
 	# googletest should only be used when compiling for an hosted environment
 	envGlobal.Append(CPPPATH=[
-		os.path.abspath('gmock-1.6.0/fused-src')
+		os.path.abspath('gmock-1.6.0/fused-src'),
+	    os.path.join( '../../pus/default'),
+        os.path.join('../../spp/default'),
 	])
 	
 	env = envGlobal.Clone()

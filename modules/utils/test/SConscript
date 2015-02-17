@@ -4,7 +4,7 @@ import os
 
 Import('envGlobal')
 
-envGlobal.Append(CPPPATH=[os.path.abspath('.')])
+envGlobal.Append(CPPPATH=[os.path.abspath('.') ])
 
 env = envGlobal.Clone()
 
