@@ -105,6 +105,19 @@ public:
     template <int start, int end>
     static void
     write(uint8_t* byteArray, uint16_t value);
+
+private:
+    // Disable compiler generated functions
+    Bitfield();
+
+    ~Bitfield();
+
+    Bitfield(const Bitfield& other);
+
+    Bitfield&
+    operator=(const Bitfield& other);
+
+    static const int numberOfBitsPerByte = 8;
 };
 
 }

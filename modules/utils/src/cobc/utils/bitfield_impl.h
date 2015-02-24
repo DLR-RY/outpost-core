@@ -57,11 +57,12 @@ template <int offset>
 void
 cobc::Bitfield::write(uint8_t* byteArray, bool value)
 {
-    const int index = offset / 8;
+    const int index = offset / numberOfBitsPerByte;
     const int bitpos = offset & 7;
 
     // clear and set bitfield
-    byteArray[index] &= static_cast<uint8_t>(~(1 << (7 - bitpos)));
+    uint8_t mask = static_cast<uint8_t>(1 << (7 - bitpos));
+    byteArray[index] &= static_cast<uint8_t>(~mask);
     byteArray[index] |= static_cast<uint8_t>(value << (7 - bitpos));
 }
 
@@ -72,7 +73,7 @@ cobc::Bitfield::write(uint8_t* byteArray, uint16_t value)
     static_assert(start < end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
     // get the byte index, if odd, round it down, then get position in 16-bit word
-    unsigned int index = start / 8;
+    unsigned int index = start / numberOfBitsPerByte;
     uint16_t pos = start & 0x7;
 
     const uint16_t numberOfBits = end - start + 1;
@@ -87,7 +88,7 @@ cobc::Bitfield::write(uint8_t* byteArray, uint16_t value)
     value         = static_cast<uint16_t>(value << bitpos);
 
     // make sure to load the bytes in big endian order
-    uint16_t word = (static_cast<uint16_t>(byteArray[index]) << 8) |
+    uint16_t word = (static_cast<uint16_t>(byteArray[index]) << numberOfBitsPerByte) |
                      static_cast<uint16_t>(byteArray[index + 1]);
 
     // clear bit field
@@ -98,7 +99,7 @@ cobc::Bitfield::write(uint8_t* byteArray, uint16_t value)
 
     // make sure to store the bytes in big-endian order
     // most significant first
-    byteArray[index]     = static_cast<uint8_t>(word >> 8);
+    byteArray[index]     = static_cast<uint8_t>(word >> numberOfBitsPerByte);
     byteArray[index + 1] = static_cast<uint8_t>(word);
 }
 

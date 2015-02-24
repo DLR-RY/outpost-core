@@ -41,16 +41,16 @@ protected:
     // static assert only possible in C++11 :(
     //static_assert(startIn < endIn, "Invalid bitfield definition! 'startIn' must be smaller than 'endIn'");
 
-    static const int offsetByte = startIn & 7;
-
     static const int numberOfBitsPerByte = 8;
     static const int msb = sizeof(T) * numberOfBitsPerByte - 1;
+
+    static const int offsetByte = startIn & (numberOfBitsPerByte - 1);
 
 public:
     /**
      * Byte index of the first byte of the target value in the byte array.
      */
-    static const size_t byteIndex = startIn / 8;
+    static const size_t byteIndex = startIn / numberOfBitsPerByte;
     static const int width = endIn - startIn + 1;
 
     /**

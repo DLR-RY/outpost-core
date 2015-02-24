@@ -68,9 +68,9 @@ cobc::BitAccess::get(const T& data)
     static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
     static_assert(start <= end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
-    const int width = end - start + 1;
+    const int width = (end - start) + 1;
     T mask = getMask<T>(width);
-    T value = (data >> start) & mask;
+    T value = static_cast<T>((data >> start) & mask);
 
     return value;
 }
@@ -99,7 +99,7 @@ cobc::BitAccess::set(T& data, T value)
     static_assert(start <= end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
 
     T reg = data;
-    const int width = end - start + 1;
+    const int width = (end - start) + 1;
     T mask = getMask<T>(width) << start;
 
     reg &= ~mask;

@@ -112,6 +112,19 @@ public:
     template <typename T>
     static T
     getMask(size_t width);
+
+private:
+    // Disable compiler generated functions
+    BitAccess();
+
+    ~BitAccess();
+
+    BitAccess(const BitAccess& other);
+
+    BitAccess&
+    operator=(const BitAccess& other);
+
+    static const int numberOfBitsPerByte = 8;
 };
 
 }
