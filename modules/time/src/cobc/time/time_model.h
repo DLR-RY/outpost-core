@@ -13,7 +13,6 @@
  * more details.
  */
 // ----------------------------------------------------------------------------
-
 #ifndef COBC_TIME_TIME_MODEL_H
 #define COBC_TIME_TIME_MODEL_H
 
@@ -38,6 +37,37 @@ public:
 
     static TimePoint
     startOfEpoch();
+
+    struct UTCdata
+    {
+        uint16_t years;
+        uint8_t months;
+        uint8_t weekDay;
+        uint8_t days;
+        uint8_t hours;
+        uint8_t minutes;
+        uint8_t seconds;
+    };
+
+    static uint32_t
+    convertUTCdataToGPSSeconds(uint16_t year,
+                               uint8_t month,
+                               uint8_t day,
+                               uint8_t hour,
+                               uint8_t minute,
+                               uint8_t second);
+
+    static UTCdata
+    convertGPSsecondsToUTCdata(uint32_t seconds);
+
+    static bool
+    isLeapYear(uint16_t year);
+
+    static uint8_t
+    calculateTheLeapSecsForGPSafter(uint32_t seconds);
+
+    static uint8_t
+    calculateTheLeapSecsForGPSbefore(uint32_t seconds);
 
 private:
     // disable unneeded implicitly member functions
