@@ -27,10 +27,10 @@
 using namespace cobc::rtos;
 
 PeriodicTaskManager::PeriodicTaskManager() :
-    mutex(),
-    timerRunning(false),
-    lastWakeTime(),
-    currentPeriod()
+    mMutex(),
+    mTimerRunning(false),
+    mLastWakeTime(),
+    mCurrentPeriod()
 {
 }
 
@@ -41,38 +41,38 @@ PeriodicTaskManager::~PeriodicTaskManager()
 PeriodicTaskManager::Status::Type
 PeriodicTaskManager::nextPeriod(time::Duration period)
 {
-    MutexGuard lock(mutex);
-    Status::Type status = Status::running;
+    MutexGuard lock(mMutex);
+    Status::Type currentStatus = Status::running;
 
-    const portTickType nextPeriod = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
-    if (timerRunning) {
-        if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - lastWakeTime) >
-                static_cast<Traits<portTickType>::SignedType>(currentPeriod)) {
-            status = Status::timeout;
+    const portTickType nextPeriodTicks = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
+    if (mTimerRunning) {
+        if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - mLastWakeTime) >
+                static_cast<Traits<portTickType>::SignedType>(mCurrentPeriod)) {
+            currentStatus = Status::timeout;
         }
 
-        vTaskDelayUntil(&lastWakeTime, currentPeriod);
+        vTaskDelayUntil(&mLastWakeTime, mCurrentPeriod);
     }
     else {
         // period is started now, no need to wait
-        lastWakeTime = xTaskGetTickCount();
-        timerRunning = true;
+        mLastWakeTime = xTaskGetTickCount();
+        mTimerRunning = true;
     }
 
-    currentPeriod = nextPeriod;
-    return status;
+    mCurrentPeriod = nextPeriodTicks;
+    return currentStatus;
 }
 
 PeriodicTaskManager::Status::Type
 PeriodicTaskManager::status()
 {
-    MutexGuard lock(mutex);
+    MutexGuard lock(mMutex);
 
-    if (!timerRunning) {
+    if (!mTimerRunning) {
         return Status::idle;
     }
-    else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - lastWakeTime) >
-                static_cast<Traits<portTickType>::SignedType>(currentPeriod)) {
+    else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - mLastWakeTime) >
+                static_cast<Traits<portTickType>::SignedType>(mCurrentPeriod)) {
         return Status::timeout;
     }
     else {
@@ -83,6 +83,6 @@ PeriodicTaskManager::status()
 void
 PeriodicTaskManager::cancel()
 {
-    MutexGuard lock(mutex);
-    timerRunning = false;
+    MutexGuard lock(mMutex);
+    mTimerRunning = false;
 }

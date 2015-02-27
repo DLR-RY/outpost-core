@@ -33,7 +33,7 @@ cobc::rtos::Thread::wrapper(void* object)
 {
     Thread* thread = reinterpret_cast<Thread *>(object);
 
-    thread->tid = Thread::getCurrentThreadIdentifier();
+    thread->mTid = Thread::getCurrentThreadIdentifier();
     thread->run();
 
     // Returning from a thread is a fatal error, nothing more to
@@ -48,7 +48,7 @@ cobc::rtos::Thread::wrapper(void* object)
 cobc::rtos::Thread::Thread(uint8_t, size_t, const char *) :
     isRunning(false),
     pthreadId(),
-    tid()
+    mTid()
 {
 }
 

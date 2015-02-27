@@ -23,12 +23,12 @@ using cobc::utils::Cobs;
 
 // ----------------------------------------------------------------------------
 CobsEncodingGenerator::CobsEncodingGenerator(const uint8_t* data,
-                                      size_t length) :
-        mData(data),
-        mLength(length),
-        mCurrentPosition(0),
-        mNextBlock(0),
-        mZeroElementSkip(false)
+                                             size_t length) :
+    mData(data),
+    mLength(length),
+    mCurrentPosition(0),
+    mNextBlock(0),
+    mZeroElementSkip(false)
 {
 }
 
@@ -47,7 +47,7 @@ CobsEncodingGenerator::CobsEncodingGenerator(const CobsEncodingGenerator& other)
 }
 
 CobsEncodingGenerator&
-CobsEncodingGenerator::operator =(const CobsEncodingGenerator& other)
+CobsEncodingGenerator::operator=(const CobsEncodingGenerator& other)
 {
     // this handles self assignment gracefully
     mData = other.mData;

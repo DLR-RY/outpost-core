@@ -43,8 +43,8 @@ class Serialize
 public:
     explicit inline
     Serialize(uint8_t* outputBuffer) :
-        buffer(outputBuffer),
-        begin(outputBuffer)
+        mBuffer(outputBuffer),
+        mBegin(outputBuffer)
     {
     }
 
@@ -55,8 +55,8 @@ public:
 
     inline
     Serialize(const Serialize& other) :
-        buffer(other.buffer),
-        begin(other.begin)
+        mBuffer(other.mBuffer),
+        mBegin(other.mBegin)
     {
     }
 
@@ -67,55 +67,55 @@ public:
     inline void
     reset()
     {
-        buffer = begin;
+        mBuffer = mBegin;
     }
 
     inline void
     store8(uint8_t data)
     {
-        buffer[0] = data;
-        buffer += 1;
+        mBuffer[0] = data;
+        mBuffer += 1;
     }
 
     inline void
     store16(uint16_t data)
     {
-        buffer[0] = static_cast<uint8_t>(data >> 8);
-        buffer[1] = static_cast<uint8_t>(data >> 0);
-        buffer += 2;
+        mBuffer[0] = static_cast<uint8_t>(data >> 8);
+        mBuffer[1] = static_cast<uint8_t>(data >> 0);
+        mBuffer += 2;
     }
 
     inline void
     store24(uint32_t data)
     {
-        buffer[0] = static_cast<uint8_t>(data >> 16);
-        buffer[1] = static_cast<uint8_t>(data >> 8);
-        buffer[2] = static_cast<uint8_t>(data >> 0);
-        buffer += 3;
+        mBuffer[0] = static_cast<uint8_t>(data >> 16);
+        mBuffer[1] = static_cast<uint8_t>(data >> 8);
+        mBuffer[2] = static_cast<uint8_t>(data >> 0);
+        mBuffer += 3;
     }
 
     inline void
     store32(uint32_t data)
     {
-        buffer[0] = static_cast<uint8_t>(data >> 24);
-        buffer[1] = static_cast<uint8_t>(data >> 16);
-        buffer[2] = static_cast<uint8_t>(data >> 8);
-        buffer[3] = static_cast<uint8_t>(data >> 0);
-        buffer += 4;
+        mBuffer[0] = static_cast<uint8_t>(data >> 24);
+        mBuffer[1] = static_cast<uint8_t>(data >> 16);
+        mBuffer[2] = static_cast<uint8_t>(data >> 8);
+        mBuffer[3] = static_cast<uint8_t>(data >> 0);
+        mBuffer += 4;
     }
 
     inline void
     store64(uint64_t data)
     {
-        buffer[0] = static_cast<uint8_t>(data >> 56);
-        buffer[1] = static_cast<uint8_t>(data >> 48);
-        buffer[2] = static_cast<uint8_t>(data >> 40);
-        buffer[3] = static_cast<uint8_t>(data >> 32);
-        buffer[4] = static_cast<uint8_t>(data >> 24);
-        buffer[5] = static_cast<uint8_t>(data >> 16);
-        buffer[6] = static_cast<uint8_t>(data >> 8);
-        buffer[7] = static_cast<uint8_t>(data >> 0);
-        buffer += 8;
+        mBuffer[0] = static_cast<uint8_t>(data >> 56);
+        mBuffer[1] = static_cast<uint8_t>(data >> 48);
+        mBuffer[2] = static_cast<uint8_t>(data >> 40);
+        mBuffer[3] = static_cast<uint8_t>(data >> 32);
+        mBuffer[4] = static_cast<uint8_t>(data >> 24);
+        mBuffer[5] = static_cast<uint8_t>(data >> 16);
+        mBuffer[6] = static_cast<uint8_t>(data >> 8);
+        mBuffer[7] = static_cast<uint8_t>(data >> 0);
+        mBuffer += 8;
     }
 
     inline void
@@ -150,27 +150,27 @@ public:
     inline void
     skip(size_t bytes)
     {
-        buffer += bytes;
+        mBuffer += bytes;
     }
 
     template <typename T>
     inline void
     skip()
     {
-        buffer += sizeof(T);
+        mBuffer += sizeof(T);
     }
 
     // get position of the buffer
     inline ptrdiff_t
     getPosition() const
     {
-        return (buffer - begin);
+        return (mBuffer - mBegin);
     }
 
     inline uint8_t*
     getPointerToCurrentPosition()
     {
-        return buffer;
+        return mBuffer;
     }
 
     template <typename T>
@@ -186,8 +186,8 @@ private:
     Serialize&
     operator=(const Serialize& other);
 
-    uint8_t* buffer;
-    uint8_t* begin;
+    uint8_t* mBuffer;
+    uint8_t* mBegin;
 };
 // LCOV_EXCL_STOP
 // LCOV_EXCL_END
@@ -209,8 +209,8 @@ class Deserialize
 public:
     explicit inline
     Deserialize(const uint8_t* inputBuffer) :
-            buffer(inputBuffer),
-            begin(inputBuffer)
+            mBuffer(inputBuffer),
+            mBegin(inputBuffer)
     {
     }
 
@@ -221,8 +221,8 @@ public:
 
     inline
     Deserialize(const Deserialize& other) :
-        buffer(other.buffer),
-        begin(other.begin)
+        mBuffer(other.mBuffer),
+        mBegin(other.mBegin)
     {
     }
 
@@ -233,15 +233,15 @@ public:
     inline void
     reset()
     {
-        buffer = begin;
+        mBuffer = mBegin;
     }
 
     inline uint8_t
     read8()
     {
         uint8_t value;
-        value = buffer[0];
-        buffer += 1;
+        value = mBuffer[0];
+        mBuffer += 1;
 
         return value;
     }
@@ -249,16 +249,16 @@ public:
     inline uint8_t
     peek8(size_t n) const
     {
-        return buffer[n];
+        return mBuffer[n];
     }
 
     inline uint16_t
     read16()
     {
         uint16_t value = 0;
-        value |= static_cast<uint16_t>(buffer[0]) << 8;
-        value |= static_cast<uint16_t>(buffer[1]) << 0;
-        buffer += 2;
+        value |= static_cast<uint16_t>(mBuffer[0]) << 8;
+        value |= static_cast<uint16_t>(mBuffer[1]) << 0;
+        mBuffer += 2;
 
         return value;
     }
@@ -267,8 +267,8 @@ public:
     peek16(size_t n) const
     {
         uint16_t value = 0;
-        value |= static_cast<uint16_t>(buffer[n + 0]) << 8;
-        value |= static_cast<uint16_t>(buffer[n + 1]) << 0;
+        value |= static_cast<uint16_t>(mBuffer[n + 0]) << 8;
+        value |= static_cast<uint16_t>(mBuffer[n + 1]) << 0;
 
         return value;
     }
@@ -277,10 +277,10 @@ public:
     read24()
     {
         uint32_t value = 0;
-        value |= static_cast<uint32_t>(buffer[0]) << 16;
-        value |= static_cast<uint32_t>(buffer[1]) << 8;
-        value |= static_cast<uint32_t>(buffer[2]) << 0;
-        buffer += 3;
+        value |= static_cast<uint32_t>(mBuffer[0]) << 16;
+        value |= static_cast<uint32_t>(mBuffer[1]) << 8;
+        value |= static_cast<uint32_t>(mBuffer[2]) << 0;
+        mBuffer += 3;
 
         return value;
     }
@@ -289,9 +289,9 @@ public:
     peek24(size_t n) const
     {
         uint32_t value = 0;
-        value |= static_cast<uint32_t>(buffer[n + 0]) << 16;
-        value |= static_cast<uint32_t>(buffer[n + 1]) << 8;
-        value |= static_cast<uint32_t>(buffer[n + 2]) << 0;
+        value |= static_cast<uint32_t>(mBuffer[n + 0]) << 16;
+        value |= static_cast<uint32_t>(mBuffer[n + 1]) << 8;
+        value |= static_cast<uint32_t>(mBuffer[n + 2]) << 0;
 
         return value;
     }
@@ -300,11 +300,11 @@ public:
     read32()
     {
         uint32_t value = 0;
-        value |= static_cast<uint32_t>(buffer[0]) << 24;
-        value |= static_cast<uint32_t>(buffer[1]) << 16;
-        value |= static_cast<uint32_t>(buffer[2]) << 8;
-        value |= static_cast<uint32_t>(buffer[3]) << 0;
-        buffer += 4;
+        value |= static_cast<uint32_t>(mBuffer[0]) << 24;
+        value |= static_cast<uint32_t>(mBuffer[1]) << 16;
+        value |= static_cast<uint32_t>(mBuffer[2]) << 8;
+        value |= static_cast<uint32_t>(mBuffer[3]) << 0;
+        mBuffer += 4;
 
         return value;
     }
@@ -313,10 +313,10 @@ public:
     peek32(size_t n) const
     {
         uint32_t value = 0;
-        value |= static_cast<uint32_t>(buffer[n + 0]) << 24;
-        value |= static_cast<uint32_t>(buffer[n + 1]) << 16;
-        value |= static_cast<uint32_t>(buffer[n + 2]) << 8;
-        value |= static_cast<uint32_t>(buffer[n + 3]) << 0;
+        value |= static_cast<uint32_t>(mBuffer[n + 0]) << 24;
+        value |= static_cast<uint32_t>(mBuffer[n + 1]) << 16;
+        value |= static_cast<uint32_t>(mBuffer[n + 2]) << 8;
+        value |= static_cast<uint32_t>(mBuffer[n + 3]) << 0;
 
         return value;
     }
@@ -325,15 +325,15 @@ public:
     read64()
     {
         uint64_t value = 0;
-        value |= static_cast<uint64_t>(buffer[0]) << 56;
-        value |= static_cast<uint64_t>(buffer[1]) << 48;
-        value |= static_cast<uint64_t>(buffer[2]) << 40;
-        value |= static_cast<uint64_t>(buffer[3]) << 32;
-        value |= static_cast<uint64_t>(buffer[4]) << 24;
-        value |= static_cast<uint64_t>(buffer[5]) << 16;
-        value |= static_cast<uint64_t>(buffer[6]) << 8;
-        value |= static_cast<uint64_t>(buffer[7]) << 0;
-        buffer += 8;
+        value |= static_cast<uint64_t>(mBuffer[0]) << 56;
+        value |= static_cast<uint64_t>(mBuffer[1]) << 48;
+        value |= static_cast<uint64_t>(mBuffer[2]) << 40;
+        value |= static_cast<uint64_t>(mBuffer[3]) << 32;
+        value |= static_cast<uint64_t>(mBuffer[4]) << 24;
+        value |= static_cast<uint64_t>(mBuffer[5]) << 16;
+        value |= static_cast<uint64_t>(mBuffer[6]) << 8;
+        value |= static_cast<uint64_t>(mBuffer[7]) << 0;
+        mBuffer += 8;
 
         return value;
     }
@@ -342,14 +342,14 @@ public:
     peek64(size_t n) const
     {
         uint64_t value = 0;
-        value |= static_cast<uint64_t>(buffer[n + 0]) << 56;
-        value |= static_cast<uint64_t>(buffer[n + 1]) << 48;
-        value |= static_cast<uint64_t>(buffer[n + 2]) << 40;
-        value |= static_cast<uint64_t>(buffer[n + 3]) << 32;
-        value |= static_cast<uint64_t>(buffer[n + 4]) << 24;
-        value |= static_cast<uint64_t>(buffer[n + 5]) << 16;
-        value |= static_cast<uint64_t>(buffer[n + 6]) << 8;
-        value |= static_cast<uint64_t>(buffer[n + 7]) << 0;
+        value |= static_cast<uint64_t>(mBuffer[n + 0]) << 56;
+        value |= static_cast<uint64_t>(mBuffer[n + 1]) << 48;
+        value |= static_cast<uint64_t>(mBuffer[n + 2]) << 40;
+        value |= static_cast<uint64_t>(mBuffer[n + 3]) << 32;
+        value |= static_cast<uint64_t>(mBuffer[n + 4]) << 24;
+        value |= static_cast<uint64_t>(mBuffer[n + 5]) << 16;
+        value |= static_cast<uint64_t>(mBuffer[n + 6]) << 8;
+        value |= static_cast<uint64_t>(mBuffer[n + 7]) << 0;
 
         return value;
     }
@@ -411,14 +411,14 @@ public:
     inline void
     skip(size_t bytes)
     {
-        buffer += bytes;
+        mBuffer += bytes;
     }
 
     template <typename T>
     inline void
     skip()
     {
-        buffer += sizeof(T);
+        mBuffer += sizeof(T);
     }
 
     template <typename T>
@@ -435,26 +435,26 @@ public:
     inline const uint8_t*
     getPointer() const
     {
-        return buffer;
+        return mBuffer;
     }
 
     inline const uint8_t*
     getPointerToCurrentPosition()
     {
-        return buffer;
+        return mBuffer;
     }
 
     inline ptrdiff_t
     getPosition() const
     {
-        return (buffer - begin);
+        return (mBuffer - mBegin);
     }
 
     template <typename T>
     inline T
     getPosition() const
     {
-        return static_cast<T>(buffer - begin);
+        return static_cast<T>(mBuffer - mBegin);
     }
 
 private:
@@ -462,8 +462,8 @@ private:
     Deserialize&
     operator=(const Deserialize& other);
 
-    const uint8_t* buffer;
-    const uint8_t* const begin;
+    const uint8_t* mBuffer;
+    const uint8_t* const mBegin;
 };
 }
 

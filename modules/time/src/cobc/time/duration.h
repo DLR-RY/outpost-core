@@ -62,7 +62,7 @@ public:
      */
     inline
     Duration(const Duration& other) :
-        ticks(other.ticks)
+        mTicks(other.mTicks)
     {
     }
 
@@ -70,7 +70,7 @@ public:
     operator=(const Duration& other)
     {
         // This gracefully handles self assignment
-        ticks = other.ticks;
+        mTicks = other.mTicks;
         return *this;
     }
 
@@ -82,7 +82,7 @@ public:
     inline int64_t
     hours() const
     {
-        return ticks / (numberOfMicrosecondsPerMillisecond *
+        return mTicks / (numberOfMicrosecondsPerMillisecond *
                         numberOfMillisecondsPerSecond *
                         numberOfSecondsPerMinute *
                         numberOfMinutesPerHour);
@@ -96,7 +96,7 @@ public:
     inline int64_t
     minutes() const
     {
-        return ticks / (numberOfMicrosecondsPerMillisecond *
+        return mTicks / (numberOfMicrosecondsPerMillisecond *
                         numberOfMillisecondsPerSecond *
                         numberOfSecondsPerMinute);
     }
@@ -109,7 +109,7 @@ public:
     inline int64_t
     seconds() const
     {
-        return ticks / (numberOfMicrosecondsPerMillisecond *
+        return mTicks / (numberOfMicrosecondsPerMillisecond *
                         numberOfMillisecondsPerSecond);
     }
 
@@ -122,7 +122,7 @@ public:
     inline int64_t
     milliseconds() const
     {
-        return ticks / numberOfMicrosecondsPerMillisecond;
+        return mTicks / numberOfMicrosecondsPerMillisecond;
     }
 
     /**
@@ -134,7 +134,7 @@ public:
     inline int64_t
     microseconds() const
     {
-        return ticks;
+        return mTicks;
     }
 
     static inline Duration
@@ -158,116 +158,115 @@ public:
     inline Duration
     operator-() const
     {
-        return Duration(-ticks);
+        return Duration(-mTicks);
     }
 
     inline Duration
     operator-(Duration other) const
     {
-        return Duration(ticks - other.ticks);
+        return Duration(mTicks - other.mTicks);
     }
 
     inline Duration
     operator+(Duration other) const
     {
-        return Duration(ticks + other.ticks);
+        return Duration(mTicks + other.mTicks);
     }
 
     inline Duration
     operator*(Duration other) const
     {
-        return Duration(ticks + other.ticks);
+        return Duration(mTicks + other.mTicks);
     }
 
     inline Duration
     operator/(int divisor) const
     {
-        return Duration(ticks / divisor);
+        return Duration(mTicks / divisor);
     }
 
     inline Duration
     operator-=(Duration other)
     {
-        ticks = ticks - other.ticks;
-        return Duration(ticks);
+        mTicks = mTicks - other.mTicks;
+        return Duration(mTicks);
     }
 
     inline Duration
     operator+=(Duration other)
     {
-        ticks = ticks + other.ticks;
-        return Duration(ticks);
+        mTicks = mTicks + other.mTicks;
+        return Duration(mTicks);
     }
 
     inline Duration
     operator/=(int divisor)
     {
-        ticks = ticks / divisor;
-        return Duration(ticks);
+        mTicks = mTicks / divisor;
+        return Duration(mTicks);
     }
 
     inline Duration
     operator*(int rhs) const
     {
-        return Duration(ticks * rhs);
+        return Duration(mTicks * rhs);
     }
 
     inline Duration
     operator*=(int divisor)
     {
-        ticks = ticks * divisor;
-        return Duration(ticks);
+        mTicks = mTicks * divisor;
+        return Duration(mTicks);
     }
 
     inline bool
     operator<(Duration rhs)  const
     {
-        return ticks < rhs.ticks;
+        return mTicks < rhs.mTicks;
     }
 
     inline bool
     operator>(Duration rhs)  const
     {
-        return ticks > rhs.ticks;
+        return mTicks > rhs.mTicks;
     }
 
     inline bool
     operator<=(Duration rhs)  const
     {
-        return ticks <= rhs.ticks;
+        return mTicks <= rhs.mTicks;
     }
 
     inline bool
     operator>=(Duration rhs)  const
     {
-        return ticks >= rhs.ticks;
+        return mTicks >= rhs.mTicks;
     }
 
     inline bool
     operator==(Duration rhs)  const
     {
-        return ticks == rhs.ticks;
+        return mTicks == rhs.mTicks;
     }
 
     inline bool
     operator!=(Duration rhs)  const
     {
-        return ticks != rhs.ticks;
+        return mTicks != rhs.mTicks;
     }
 
 protected:
     explicit inline
     Duration(int64_t numberOfTicks) :
-        ticks(numberOfTicks)
+        mTicks(numberOfTicks)
     {
     }
 
-// FIXME make this private again -> currently problem in cobc/pus/command_schedule/scheduled_command.h
-//private:
+private:
     // When using a microsecond resolution a 32 bit value would only
     // provide a range of ~2200 seconds which is insufficient.
     // With 64 bit a time span of 9 * 10^12 seconds is possible.
-    int64_t ticks;
+    int64_t mTicks;
 
     static const int64_t maximumValue = 9223372036854775807LL;
     static const int64_t minimalValue = -maximumValue - 1;

@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------------
 cobc::rtos::Timer::~Timer()
 {
-    if (xTimerDelete(handle, portMAX_DELAY) != pdPASS) {
+    if (xTimerDelete(mHandle, portMAX_DELAY) != pdPASS) {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }
@@ -34,10 +34,10 @@ cobc::rtos::Timer::~Timer()
 void
 cobc::rtos::Timer::start(time::Duration duration)
 {
-    if ((xTimerChangePeriod(handle,
+    if ((xTimerChangePeriod(mHandle,
                             (duration.milliseconds() * configTICK_RATE_HZ) / 1000,
                             portMAX_DELAY) != pdPASS) ||
-        (xTimerStart(handle, portMAX_DELAY) != pdPASS))
+        (xTimerStart(mHandle, portMAX_DELAY) != pdPASS))
     {
         rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
     }
@@ -46,7 +46,7 @@ cobc::rtos::Timer::start(time::Duration duration)
 void
 cobc::rtos::Timer::reset()
 {
-    if (xTimerReset(handle, portMAX_DELAY) != pdPASS) {
+    if (xTimerReset(mHandle, portMAX_DELAY) != pdPASS) {
         rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
     }
 }
@@ -54,7 +54,7 @@ cobc::rtos::Timer::reset()
 void
 cobc::rtos::Timer::cancel()
 {
-    if (xTimerStop(handle, portMAX_DELAY) != pdPASS) {
+    if (xTimerStop(mHandle, portMAX_DELAY) != pdPASS) {
         rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
     }
 }
@@ -71,13 +71,13 @@ cobc::rtos::Timer::startTimerDaemonThread(uint8_t priority, size_t stack)
 void
 cobc::rtos::Timer::createTimer(const char* name)
 {
-    handle = xTimerCreate(reinterpret_cast<const signed char *>(name),
+    mHandle = xTimerCreate(reinterpret_cast<const signed char *>(name),
                           1,        // dummy value (must be >= 0 but will be changed when starting the timer)
                           pdFALSE,    // no auto-reload
                           (void *) this,
                           &Timer::invokeTimer);
 
-    if (handle == 0) {
+    if (mHandle == 0) {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }
@@ -87,5 +87,5 @@ void
 cobc::rtos::Timer::invokeTimer(void* handle)
 {
     Timer* timer = reinterpret_cast<Timer *>(pvTimerGetTimerID(handle));
-    (timer->object->*(timer->function))(timer);
+    (timer->mObject->*(timer->mFunction))(timer);
 }

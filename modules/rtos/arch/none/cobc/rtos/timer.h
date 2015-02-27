@@ -113,8 +113,8 @@ namespace cobc
             createTimer(const char* name);
 
             /// Object and member function to call when the timer expires.
-            Callable* const object;
-            Function const function;
+            Callable* const mObject;
+            Function const mFunction;
         };
     }
 }
@@ -123,8 +123,8 @@ namespace cobc
 // Implementation of the template constructor
 template <typename T>
 cobc::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
-    object(reinterpret_cast<Callable *>(object)),
-    function(reinterpret_cast<Function>(function))
+    mObject(reinterpret_cast<Callable *>(object)),
+    mFunction(reinterpret_cast<Function>(function))
 {
     this->createTimer(name);
 }

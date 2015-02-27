@@ -148,13 +148,11 @@ template <>
 inline void
 BitAccess::set<uint32_t, 31, 24>(uint32_t& data, uint32_t value)
 {
-    const uint32_t mask = 0xFF000000;
+    static const uint32_t maskValue = 0xFF000000;
+    static const uint32_t maskClear = 0x00FFFFFF;
     uint32_t reg = data;
 
-    reg &= ~mask;
-    reg |= (value << 24) & mask;
-
-    data = reg;
+    data = (reg & maskClear) | ((value << 24) & maskValue);
 }
 }
 

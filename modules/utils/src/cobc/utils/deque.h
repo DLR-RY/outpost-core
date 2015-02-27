@@ -114,12 +114,12 @@ private:
     Deque&
     operator=(const Deque&);
 
-    T* const buffer;
-    const Size maxSize;
+    T* const mBuffer;
+    const Size mMaxSize;
 
-    Index head;
-    Index tail;
-    Size size;
+    Index mHead;
+    Index mTail;
+    Size mSize;
 };
 }
 

@@ -23,7 +23,7 @@ cobc::smpc::TopicRaw* cobc::smpc::TopicRaw::listOfAllTopics = 0;
 
 cobc::smpc::TopicRaw::TopicRaw() :
     ImplicitList<TopicRaw>(listOfAllTopics, this),
-    subscriptions(0)
+    mSubscriptions(0)
 {
 }
 
@@ -35,11 +35,11 @@ cobc::smpc::TopicRaw::~TopicRaw()
 void
 cobc::smpc::TopicRaw::publish(const void* message, size_t length)
 {
-    rtos::MutexGuard lock(mutex);
+    rtos::MutexGuard lock(mMutex);
 
-    for (SubscriptionRaw* topic = subscriptions;
+    for (SubscriptionRaw* topic = mSubscriptions;
             topic != 0;
-            topic = topic->nextTopicSubscription)
+            topic = topic->mNextTopicSubscription)
     {
         topic->notify(message, length);
     }
@@ -52,6 +52,6 @@ cobc::smpc::TopicRaw::clearSubscriptions()
             it != 0;
             it = it->getNext())
     {
-        it->subscriptions = 0;
+        it->mSubscriptions = 0;
     }
 }

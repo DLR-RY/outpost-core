@@ -38,9 +38,9 @@ TestingTopicBase::dumpConnectedSubscriptions(cobc::smpc::TopicBase& base)
 {
     printf("topic %p\n", reinterpret_cast<void *>(this));
 
-    for (Subscription* topic = base.subscriptions;
+    for (Subscription* topic = base.mSubscriptions;
             topic != 0;
-            topic = topic->nextTopicSubscription)
+            topic = topic->mNextTopicSubscription)
     {
         printf("- %p\n", reinterpret_cast<void *>(topic));
     }

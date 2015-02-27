@@ -155,7 +155,7 @@ private:
 
     bool isRunning;
     pthread_t pthreadId;
-    Identifier tid;
+    Identifier mTid;
 };
 
 }

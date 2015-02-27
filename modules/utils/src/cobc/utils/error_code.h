@@ -95,7 +95,7 @@ public:
     }
 
     ErrorCode(const ErrorCode& other) :
-        errorCode(other.errorCode)
+        mErrorCode(other.mErrorCode)
     {
     }
 
@@ -126,13 +126,13 @@ public:
     inline bool
     isSuccess() const
     {
-        return (errorCode >= 0);
+        return (mErrorCode >= 0);
     }
 
     inline bool
     isError() const
     {
-        return (errorCode < 0);
+        return (mErrorCode < 0);
     }
 
     /**
@@ -146,19 +146,19 @@ public:
     inline int16_t
     getCode() const
     {
-        return errorCode;
+        return mErrorCode;
     }
 
     inline bool
     operator==(const ErrorCode& other) const
     {
-        return (errorCode == other.errorCode);
+        return (mErrorCode == other.mErrorCode);
     }
 
     inline bool
     operator!=(const ErrorCode& other) const
     {
-        return (errorCode != other.errorCode);
+        return (mErrorCode != other.mErrorCode);
     }
 
     inline bool
@@ -169,7 +169,7 @@ public:
 
 protected:
     explicit ErrorCode(int16_t code) :
-        errorCode(code)
+        mErrorCode(code)
     {
     }
 
@@ -179,7 +179,7 @@ protected:
     operator=(const ErrorCode& other);
 
 private:
-    const int16_t errorCode;
+    const int16_t mErrorCode;
 };
 }
 

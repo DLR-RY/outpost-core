@@ -180,7 +180,7 @@ public:
         Iterator(T* node);
 
         /// Pointer to the next node. Set to NULL if end of list.
-        T* node;
+        T* mNode;
     };
 
     Iterator
@@ -190,7 +190,7 @@ public:
     end();
 
 private:
-    T* head;
+    T* mHead;
 
     // disable copy constructor
     List(const List&);

@@ -80,8 +80,8 @@ getTime(timespec* time)
 }
 
 PeriodicTaskManager::PeriodicTaskManager() :
-    mutex(),
-    timerRunning(false),
+    mMutex(),
+    mTimerRunning(false),
     nextWakeTime()
 {
 }
@@ -93,10 +93,10 @@ PeriodicTaskManager::~PeriodicTaskManager()
 PeriodicTaskManager::Status::Type
 PeriodicTaskManager::nextPeriod(time::Duration period)
 {
-    MutexGuard lock(mutex);
+    MutexGuard lock(mMutex);
     Status::Type status = Status::running;
 
-    if (timerRunning)
+    if (mTimerRunning)
     {
         struct timespec currentTime;
         getTime(&currentTime);
@@ -129,7 +129,7 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
     {
         // period is started now, no need to wait
         clock_gettime(CLOCK_MONOTONIC, &nextWakeTime);
-        timerRunning = true;
+        mTimerRunning = true;
     }
 
     // calculate the next wake-up time
@@ -141,9 +141,9 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
 PeriodicTaskManager::Status::Type
 PeriodicTaskManager::status()
 {
-    MutexGuard lock(mutex);
+    MutexGuard lock(mMutex);
 
-    if (!timerRunning)
+    if (!mTimerRunning)
     {
         return Status::idle;
     }
@@ -167,6 +167,6 @@ PeriodicTaskManager::status()
 void
 PeriodicTaskManager::cancel()
 {
-    MutexGuard lock(mutex);
-    timerRunning = false;
+    MutexGuard lock(mMutex);
+    mTimerRunning = false;
 }

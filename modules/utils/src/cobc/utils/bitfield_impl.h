@@ -76,7 +76,7 @@ cobc::Bitfield::write(uint8_t* byteArray, uint16_t value)
     unsigned int index = start / numberOfBitsPerByte;
     uint16_t pos = start & 0x7;
 
-    const uint16_t numberOfBits = end - start + 1;
+    const uint16_t numberOfBits = (end - start) + 1;
 
     // pos of bits to set (in 16-bit word)
     int bitpos    = 16 - (pos + numberOfBits);

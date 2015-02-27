@@ -19,12 +19,12 @@
 using namespace cobc::rtos;
 
 PeriodicTaskManager::PeriodicTaskManager() :
-    id()
+    mId()
 {
     rtems_name name = rtems_build_name('P', 'E', 'R', 'D');
-    rtems_status_code status = rtems_rate_monotonic_create(name, &id);
+    rtems_status_code result = rtems_rate_monotonic_create(name, &mId);
 
-    if (status != RTEMS_SUCCESSFUL)
+    if (result != RTEMS_SUCCESSFUL)
     {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
@@ -32,8 +32,8 @@ PeriodicTaskManager::PeriodicTaskManager() :
 
 PeriodicTaskManager::~PeriodicTaskManager()
 {
-    rtems_status_code status = rtems_rate_monotonic_delete(id);
-    if (status != RTEMS_SUCCESSFUL)
+    rtems_status_code result = rtems_rate_monotonic_delete(mId);
+    if (result != RTEMS_SUCCESSFUL)
     {
         // TODO create different error code?
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());

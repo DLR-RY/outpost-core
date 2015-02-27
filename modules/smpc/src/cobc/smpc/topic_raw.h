@@ -80,16 +80,6 @@ public:
     publish(const void* message, size_t length);
 
 private:
-    /// List of all raw topics currently active.
-    static TopicRaw* listOfAllTopics;
-
-    /// Mutex used to protect the publish() method.
-    rtos::Mutex mutex;
-
-    /// Pointer to the list of subscriptions
-    SubscriptionRaw* subscriptions;
-
-private:
     // disable copy constructor
     TopicRaw(const TopicRaw&);
 
@@ -99,6 +89,15 @@ private:
 
     static void
     clearSubscriptions();
+
+    /// List of all raw topics currently active.
+    static TopicRaw* listOfAllTopics;
+
+    /// Mutex used to protect the publish() method.
+    rtos::Mutex mMutex;
+
+    /// Pointer to the list of mSubscriptions
+    SubscriptionRaw* mSubscriptions;
 };
 
 }

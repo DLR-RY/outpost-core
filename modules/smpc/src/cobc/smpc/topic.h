@@ -74,6 +74,10 @@ public:
     publishTypeUnsafe(void* message);
 
 protected:
+    /// List of all topics currently active.
+    static TopicBase* listOfAllTopics;
+
+private:
     // disable copy constructor
     TopicBase(const TopicBase&);
 
@@ -81,18 +85,14 @@ protected:
     TopicBase&
     operator=(const TopicBase&);
 
-    /// List of all topics currently active.
-    static TopicBase* listOfAllTopics;
-
-    /// Used to protect the publish() method
-    rtos::Mutex mutex;
-
-    /// Pointer to the list of subscriptions
-    Subscription* subscriptions;
-
-private:
     static void
     clearSubscriptions();
+
+    /// Used to protect the publish() method
+    rtos::Mutex mMutex;
+
+    /// Pointer to the list of subscriptions
+    Subscription* mSubscriptions;
 };
 
 /**

@@ -22,10 +22,10 @@ using namespace cobc;
 
 struct ListNode
 {
-    uint8_t value;
+    uint8_t mValue;
 
     // needed for the list handling
-    ListNode* next;
+    ListNode* mNext;
 };
 
 TEST(ListTest, createAndAdd)
@@ -48,17 +48,17 @@ TEST(ListTest, get)
     {
     public:
         Condition(uint8_t value) :
-            value(value)
+            mValue(value)
         {
         }
 
         inline bool
         operator()(const ListNode& node)
         {
-            return (node.value == value);
+            return (node.mValue == mValue);
         }
 
-        uint8_t value;
+        uint8_t mValue;
     };
 
     List<ListNode> list;
@@ -121,17 +121,17 @@ TEST(ListTest, removeWithFunctor)
     {
     public:
         Condition(uint8_t value) :
-            value(value)
+            mValue(value)
         {
         }
 
         inline bool
         operator()(const ListNode& node)
         {
-            return (node.value == value);
+            return (node.mValue == mValue);
         }
 
-        uint8_t value;
+        uint8_t mValue;
     };
 
     EXPECT_EQ(&node2, list.remove(Condition(3)));
@@ -148,7 +148,7 @@ TEST(ListTest, removeWithFunctor)
 static bool
 check(const ListNode& node)
 {
-    return (node.value == 3);
+    return (node.mValue == 3);
 }
 
 TEST(ListTest, removeAll)

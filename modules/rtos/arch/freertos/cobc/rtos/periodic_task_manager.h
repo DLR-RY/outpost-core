@@ -111,10 +111,10 @@ namespace cobc
             cancel();
 
         private:
-            Mutex mutex;
-            bool timerRunning;
-            portTickType lastWakeTime;
-            portTickType currentPeriod;
+            Mutex mMutex;
+            bool mTimerRunning;
+            portTickType mLastWakeTime;
+            portTickType mCurrentPeriod;
         };
     }
 }

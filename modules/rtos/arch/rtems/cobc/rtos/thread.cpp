@@ -84,7 +84,7 @@ Thread::Thread(uint8_t priority,
 
     rtems_task_priority rtemsPriority = toRtemsPriority(priority);
     rtems_status_code status = rtems_task_create(taskName, rtemsPriority, stack,
-            RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &tid);
+            RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &mTid);
 
     if (status != RTEMS_SUCCESSFUL)
     {
@@ -94,14 +94,14 @@ Thread::Thread(uint8_t priority,
 
 Thread::~Thread()
 {
-    rtems_task_delete(tid);
+    rtems_task_delete(mTid);
 }
 
 // ----------------------------------------------------------------------------
 Thread::Identifier
 Thread::getIdentifier() const
 {
-    return tid;
+    return mTid;
 }
 
 Thread::Identifier
@@ -120,7 +120,7 @@ Thread::getCurrentThreadIdentifier()
 void
 Thread::start()
 {
-    rtems_task_start(tid, wrapper, reinterpret_cast<rtems_task_argument>(this));
+    rtems_task_start(mTid, wrapper, reinterpret_cast<rtems_task_argument>(this));
 }
 
 // ----------------------------------------------------------------------------
@@ -128,14 +128,14 @@ void
 Thread::setPriority(uint8_t priority)
 {
     rtems_task_priority old;
-    rtems_task_set_priority(tid, toRtemsPriority(priority), &old);
+    rtems_task_set_priority(mTid, toRtemsPriority(priority), &old);
 }
 
 uint8_t
 Thread::getPriority() const
 {
     rtems_task_priority priority;
-    rtems_task_set_priority(tid, RTEMS_CURRENT_PRIORITY, &priority);
+    rtems_task_set_priority(mTid, RTEMS_CURRENT_PRIORITY, &priority);
 
     return fromRtemsPriority(priority);
 }

@@ -22,7 +22,7 @@
 // ----------------------------------------------------------------------------
 cobc::rtos::Timer::~Timer()
 {
-    timer_delete(tid);
+    timer_delete(mTid);
 }
 
 // ----------------------------------------------------------------------------
@@ -42,9 +42,9 @@ cobc::rtos::Timer::start(time::Duration duration)
     // nanoseconds
     time.it_value.tv_nsec = static_cast<uint32_t>(nanoseconds % 1000000000);
 
-    memcpy(&interval, &time, sizeof(struct itimerspec));
+    memcpy(&mInterval, &time, sizeof(struct itimerspec));
 
-    if (timer_settime(tid, 0, &time, NULL) != 0) {
+    if (timer_settime(mTid, 0, &time, NULL) != 0) {
         // Could not set the timer value
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
@@ -53,7 +53,7 @@ cobc::rtos::Timer::start(time::Duration duration)
 void
 cobc::rtos::Timer::reset()
 {
-    if (timer_settime(tid, 0, &interval, NULL) != 0) {
+    if (timer_settime(mTid, 0, &mInterval, NULL) != 0) {
         // Could not set the timer value
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
@@ -67,7 +67,7 @@ cobc::rtos::Timer::cancel()
 
     memset(&time, 0, sizeof(time));
 
-    if (timer_settime(tid, 0, &time, NULL) != 0) {
+    if (timer_settime(mTid, 0, &time, NULL) != 0) {
         // Could not set the timer value
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
@@ -100,7 +100,7 @@ cobc::rtos::Timer::createTimer(const char* name)
     event.sigev_notify_attributes = NULL;
     event.sigev_value.sival_ptr = this;
 
-    if (timer_create(CLOCK_MONOTONIC, &event, &tid) != 0) {
+    if (timer_create(CLOCK_MONOTONIC, &event, &mTid) != 0) {
         // Could not allocate a new timer
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
@@ -114,5 +114,5 @@ void
 cobc::rtos::Timer::invokeTimer(union sigval parameter)
 {
     Timer* timer = reinterpret_cast<Timer *>(parameter.sival_ptr);
-    (timer->object->*(timer->function))(timer);
+    (timer->mObject->*(timer->mFunction))(timer);
 }

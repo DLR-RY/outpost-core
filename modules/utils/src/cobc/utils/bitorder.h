@@ -51,7 +51,7 @@ public:
      * Byte index of the first byte of the target value in the byte array.
      */
     static const size_t byteIndex = startIn / numberOfBitsPerByte;
-    static const int width = endIn - startIn + 1;
+    static const int width = (endIn - startIn) + 1;
 
     /**
      * First bit of the target value inside the field given by T.
@@ -63,7 +63,7 @@ public:
     /**
      * Last bit of the target value inside the field given by T.
      */
-    static const int end = msb - (endIn - byteIndex * numberOfBitsPerByte);
+    static const int end = msb - (endIn - (byteIndex * numberOfBitsPerByte));
 };
 
 }

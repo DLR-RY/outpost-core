@@ -41,8 +41,8 @@ class Component : public cobc::smpc::Subscriber
 {
 public:
     Component(cobc::smpc::Topic<const Data>& topic) :
-        received(false),
-        data({0, 0}),
+        mReceived(false),
+        mData({0, 0}),
         subscription(topic, this, &Component::onReceiveData)
     {
     }
@@ -50,12 +50,12 @@ public:
     void
     onReceiveData(const Data* data)
     {
-        received = true;
-        this->data = *data;
+        mReceived = true;
+        mData = *data;
     }
 
-    bool received;
-    Data data;
+    bool mReceived;
+    Data mData;
 
 private:
     cobc::smpc::Subscription subscription;
@@ -75,8 +75,8 @@ TEST(CommunicationTest, receiveSingle)
 
     topic.publish(data);
 
-    ASSERT_TRUE(component.received);
-    EXPECT_EQ(data, component.data);
+    ASSERT_TRUE(component.mReceived);
+    EXPECT_EQ(data, component.mData);
 
     unittest::smpc::TestingSubscription::releaseAllSubscriptions();
 }

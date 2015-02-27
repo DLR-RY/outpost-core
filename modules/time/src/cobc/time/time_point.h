@@ -62,7 +62,7 @@ public:
 
     inline
     TimePoint(const TimePoint& other) :
-        ticks(other.ticks)
+        mTicks(other.mTicks)
     {
     }
 
@@ -74,82 +74,82 @@ public:
     inline Duration
     operator-(TimePoint other) const
     {
-        return Duration(ticks - other.ticks);
+        return Duration(mTicks - other.mTicks);
     }
 
     inline TimePoint
     operator-=(Duration d)
     {
-        ticks = ticks - d.ticks;
-        return TimePoint(ticks);
+        mTicks = mTicks - d.mTicks;
+        return TimePoint(mTicks);
     }
 
     inline TimePoint
     operator+(Duration d) const
     {
-        return TimePoint(ticks + d.ticks);
+        return TimePoint(mTicks + d.mTicks);
     }
 
     inline TimePoint
     operator+=(Duration d)
     {
-        ticks = ticks + d.ticks;
-        return TimePoint(ticks);
+        mTicks = mTicks + d.mTicks;
+        return TimePoint(mTicks);
     }
 
     inline bool
     operator==(TimePoint other) const
     {
-        return (ticks == other.ticks);
+        return (mTicks == other.mTicks);
     }
 
     inline bool
     operator!=(TimePoint other) const
     {
-        return (ticks != other.ticks);
+        return (mTicks != other.mTicks);
     }
 
     inline bool
     operator<(TimePoint other) const
     {
-        return (ticks - other.ticks) < 0;
+        return (mTicks - other.mTicks) < 0;
     }
 
     inline bool
     operator>(TimePoint other) const
     {
-        return (ticks - other.ticks) > 0;
+        return (mTicks - other.mTicks) > 0;
     }
 
     inline bool
     operator<=(TimePoint other) const
     {
-        return (ticks - other.ticks) <= 0;
+        return (mTicks - other.mTicks) <= 0;
     }
 
     inline bool
     operator>=(TimePoint other) const
     {
-        return (ticks - other.ticks) >= 0;
+        return (mTicks - other.mTicks) >= 0;
     }
 
     inline TimePoint&
     operator=(TimePoint other)
     {
         // This gracefully handles self assignment
-        ticks = other.ticks;
+        mTicks = other.mTicks;
         return *this;
     }
 
 //protected:
     explicit inline
     TimePoint(const Type timePoint = 0) :
-            ticks(timePoint)
+            mTicks(timePoint)
     {
     }
 
 private:
-    Type ticks;
+    Type mTicks;
 };
 
 }

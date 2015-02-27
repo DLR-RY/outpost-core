@@ -111,7 +111,7 @@ protected:
     inline void
     notify(void* message) const
     {
-        (subscriber->*function)(message);
+        (mSubscriber->*mFunction)(message);
     }
 
     /**
@@ -125,10 +125,13 @@ protected:
     releaseAllSubscriptions();
 
 private:
-    // disable copy constructor
+    // Disable default constructor
+    Subscription();
+
+    // Disable copy constructor
     Subscription(const Subscription&);
 
-    // disable assignment operator
+    // Disable copy assignment operator
     Subscription&
     operator=(const Subscription&);
 
@@ -139,12 +142,12 @@ private:
      * Used by Subscription::connectSubscriptionsToTopics to map the
      * subscriptions to their corresponding topics.
      */
-    TopicBase* const topic;
-    Subscription* nextTopicSubscription;
+    TopicBase* const mTopic;
+    Subscription* mNextTopicSubscription;
 
     /// Object and member function to forward a received message to
-    Subscriber* const subscriber;
-    Function const function;
+    Subscriber* const mSubscriber;
+    Function const mFunction;
 };
 
 }
@@ -157,10 +160,10 @@ cobc::smpc::Subscription::Subscription(Topic<T>& topic,
                                        S* subscriber,
                                        typename SubscriberFunction<T, S>::Type function) :
     ImplicitList<Subscription>(listOfAllSubscriptions, this),
-    topic(&topic),
-    nextTopicSubscription(0),
-    subscriber(reinterpret_cast<Subscriber *>(subscriber)),
-    function(reinterpret_cast<Function>(function))
+    mTopic(&topic),
+    mNextTopicSubscription(0),
+    mSubscriber(reinterpret_cast<Subscriber*>(subscriber)),
+    mFunction(reinterpret_cast<Function>(function))
 {
 }
 

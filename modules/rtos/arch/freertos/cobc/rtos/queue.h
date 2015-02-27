@@ -87,7 +87,7 @@ private:
     Queue&
     operator=(const Queue& other);
 
-    void* handle;
+    void* mHandle;
 };
 
 }

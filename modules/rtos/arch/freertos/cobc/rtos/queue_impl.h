@@ -27,9 +27,9 @@
 template <typename T>
 cobc::rtos::Queue<T>::Queue(size_t numberOfItems)
 {
-    handle = xQueueCreate(numberOfItems, sizeof(T));
+    mHandle = xQueueCreate(numberOfItems, sizeof(T));
 
-    if (handle == 0)
+    if (mHandle == 0)
     {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
@@ -38,7 +38,7 @@ cobc::rtos::Queue<T>::Queue(size_t numberOfItems)
 template <typename T>
 cobc::rtos::Queue<T>::~Queue()
 {
-    vQueueDelete(handle);
+    vQueueDelete(mHandle);
 }
 
 template <typename T>
@@ -46,7 +46,7 @@ bool
 cobc::rtos::Queue<T>::send(const T& data)
 {
     const portTickType ticks = 0;
-    return xQueueSend(handle, &data, ticks);
+    return xQueueSend(mHandle, &data, ticks);
 }
 
 template <typename T>
@@ -54,7 +54,7 @@ bool
 cobc::rtos::Queue<T>::receive(T& data, cobc::time::Duration timeout)
 {
     const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ) / 1000;
-    return xQueueReceive(handle, &data, ticks);
+    return xQueueReceive(mHandle, &data, ticks);
 }
 
 #endif // COBC_RTOS_FREERTOS_QUEUE_IMPL_H

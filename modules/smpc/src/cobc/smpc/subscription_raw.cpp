@@ -35,8 +35,8 @@ cobc::smpc::SubscriptionRaw::connectSubscriptionsToTopics()
             it != 0;
             it = it->getNext())
     {
-        it->nextTopicSubscription = it->topic->subscriptions;
-        it->topic->subscriptions = it;
+        it->mNextTopicSubscription = it->mTopic->mSubscriptions;
+        it->mTopic->mSubscriptions = it;
     }
 }
 
@@ -47,7 +47,7 @@ cobc::smpc::SubscriptionRaw::releaseAllSubscriptions()
             it != 0;
             it = it->getNext())
     {
-        it->nextTopicSubscription = 0;
+        it->mNextTopicSubscription = 0;
     }
 
     TopicRaw::clearSubscriptions();

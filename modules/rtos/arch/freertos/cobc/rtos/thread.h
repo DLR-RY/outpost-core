@@ -201,20 +201,20 @@ protected:
 
 private:
     // disable copy constructor
-    Thread(const Thread& other);
+    Thread(const Thread&);
 
     // disable assignment operator
     Thread&
-    operator=(const Thread& other);
+    operator=(const Thread&);
 
     static void
     wrapper(void* object);
 
-    void* handle;    // FreeRTOS thread handle (xTaskHandle)
+    void* mHandle;    // FreeRTOS thread handle (xTaskHandle)
 
-    const uint8_t priority;
-    size_t stackSize;
-    const char* const name;
+    const uint8_t mPriority;
+    size_t mStackSize;
+    const char* const mName;
 };
 
 }

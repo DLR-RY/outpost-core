@@ -24,8 +24,8 @@
 // ----------------------------------------------------------------------------
 cobc::rtos::Semaphore::Semaphore(uint32_t count)
 {
-    handle = xSemaphoreCreateCounting(static_cast<unsigned portBASE_TYPE>(-1), count);
-    if (handle == 0) {
+    mHandle = xSemaphoreCreateCounting(static_cast<unsigned portBASE_TYPE>(-1), count);
+    if (mHandle == 0) {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }
@@ -34,35 +34,35 @@ cobc::rtos::Semaphore::~Semaphore()
 {
     // As semaphores are based on queues we use the queue functions to delete
     // the semaphore
-    vQueueDelete(handle);
+    vQueueDelete(mHandle);
 }
 
 bool
 cobc::rtos::Semaphore::acquire()
 {
     // wait forever
-    return (xSemaphoreTake(this->handle, portMAX_DELAY) == pdTRUE);
+    return (xSemaphoreTake(mHandle, portMAX_DELAY) == pdTRUE);
 }
 
 bool
 cobc::rtos::Semaphore::acquire(time::Duration timeout)
 {
     const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ) / 1000;
-    return (xSemaphoreTake(this->handle, ticks) == pdTRUE);
+    return (xSemaphoreTake(mHandle, ticks) == pdTRUE);
 }
 
 void
 cobc::rtos::Semaphore::release()
 {
-    xSemaphoreGive(handle);
+    xSemaphoreGive(mHandle);
 }
 
 // ----------------------------------------------------------------------------
 cobc::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
 {
-    vSemaphoreCreateBinary(handle);
+    vSemaphoreCreateBinary(mHandle);
 
-    if (handle == 0) {
+    if (mHandle == 0) {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 
@@ -75,25 +75,25 @@ cobc::rtos::BinarySemaphore::~BinarySemaphore()
 {
     // As semaphores are based on queues we use the queue functions to delete
     // the semaphore
-    vQueueDelete(handle);
+    vQueueDelete(mHandle);
 }
 
 bool
 cobc::rtos::BinarySemaphore::acquire()
 {
     // wait forever
-    return (xSemaphoreTake(this->handle, portMAX_DELAY) == pdTRUE);
+    return (xSemaphoreTake(this->mHandle, portMAX_DELAY) == pdTRUE);
 }
 
 bool
 cobc::rtos::BinarySemaphore::acquire(time::Duration timeout)
 {
     const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ) / 1000;
-    return (xSemaphoreTake(this->handle, ticks) == pdTRUE);
+    return (xSemaphoreTake(this->mHandle, ticks) == pdTRUE);
 }
 
 void
 cobc::rtos::BinarySemaphore::release()
 {
-    xSemaphoreGive(handle);
+    xSemaphoreGive(mHandle);
 }

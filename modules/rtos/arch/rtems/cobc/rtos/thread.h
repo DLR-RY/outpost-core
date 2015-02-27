@@ -192,7 +192,7 @@ private:
     static void
     wrapper(rtems_task_argument object);
 
-    rtems_id tid;
+    rtems_id mTid;
 };
 
 }

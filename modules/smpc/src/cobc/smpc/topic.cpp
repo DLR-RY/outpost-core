@@ -23,7 +23,7 @@ cobc::smpc::TopicBase* cobc::smpc::TopicBase::listOfAllTopics = 0;
 
 cobc::smpc::TopicBase::TopicBase() :
     ImplicitList<TopicBase>(listOfAllTopics, this),
-    subscriptions(0)
+    mSubscriptions(0)
 {
 }
 
@@ -35,11 +35,11 @@ cobc::smpc::TopicBase::~TopicBase()
 void
 cobc::smpc::TopicBase::publishTypeUnsafe(void* message)
 {
-    rtos::MutexGuard lock(mutex);
+    rtos::MutexGuard lock(mMutex);
 
-    for (Subscription* topic = subscriptions;
+    for (Subscription* topic = mSubscriptions;
             topic != 0;
-            topic = topic->nextTopicSubscription)
+            topic = topic->mNextTopicSubscription)
     {
         topic->notify(message);
     }
@@ -52,6 +52,6 @@ cobc::smpc::TopicBase::clearSubscriptions()
             it != 0;
             it = it->getNext())
     {
-        it->subscriptions = 0;
+        it->mSubscriptions = 0;
     }
 }

@@ -60,7 +60,7 @@ public:
     inline
     ImplicitList(T*& list,
                  T* element) :
-        next(list)
+        mNext(list)
     {
         list = element;
     }
@@ -73,7 +73,7 @@ public:
     inline T*
     getNext()
     {
-        return next;
+        return mNext;
     }
 
     /**
@@ -92,20 +92,20 @@ public:
         {
             if (*head == element)
             {
-                *head = element->next;
+                *head = element->mNext;
             }
             else
             {
                 T* previous = *head;
-                T* node = (*head)->next;
+                T* node = (*head)->mNext;
 
                 while (node != element)
                 {
                     previous = node;
-                    node = node->next;
+                    node = node->mNext;
                 }
 
-                previous->next = node->next;
+                previous->mNext = node->mNext;
             }
         }
     }
@@ -120,7 +120,7 @@ private:
     operator=(const ImplicitList&);
 
     /// Pointer to the next element
-    T* next;
+    T* mNext;
 };
 
 }

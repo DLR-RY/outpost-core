@@ -113,8 +113,8 @@ public:
     cancel();
 
 private:
-    Mutex mutex;
-    bool timerRunning;
+    Mutex mMutex;
+    bool mTimerRunning;
     struct timespec nextWakeTime;
 };
 

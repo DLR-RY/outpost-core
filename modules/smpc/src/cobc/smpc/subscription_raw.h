@@ -102,7 +102,7 @@ protected:
     inline void
     notify(const void* message, size_t length) const
     {
-        (subscriber->*function)(message, length);
+        (mSubscriber->*mFunction)(message, length);
     }
 
     /**
@@ -116,17 +116,27 @@ protected:
     releaseAllSubscriptions();
 
 private:
+    // Disable default constructor
+    SubscriptionRaw();
+
+    // Disable copy constructor
+    SubscriptionRaw(const SubscriptionRaw&);
+
+    // Disable copy assignment operator
+    SubscriptionRaw&
+    operator=(const SubscriptionRaw&);
+
     // List of all subscriptions currently in the system
     static SubscriptionRaw* listOfAllSubscriptions;
 
     // Used by Subscription::connect to map the subscriptions to
     // their corresponding topics.
-    TopicRaw* const topic;
-    SubscriptionRaw* nextTopicSubscription;
+    TopicRaw* const mTopic;
+    SubscriptionRaw* mNextTopicSubscription;
 
     // Object and member function to forward a received message to
-    Subscriber* const subscriber;
-    Function const function;
+    Subscriber* const mSubscriber;
+    Function const mFunction;
 };
 
 // ----------------------------------------------------------------------------
@@ -136,10 +146,10 @@ SubscriptionRaw::SubscriptionRaw(TopicRaw& topic,
                                  S* subscriber,
                                  typename SubscriberFunction<S>::Type function) :
     ImplicitList<SubscriptionRaw>(listOfAllSubscriptions, this),
-    topic(&topic),
-    nextTopicSubscription(0),
-    subscriber(reinterpret_cast<Subscriber *>(subscriber)),
-    function(reinterpret_cast<Function>(function))
+    mTopic(&topic),
+    mNextTopicSubscription(0),
+    mSubscriber(reinterpret_cast<Subscriber *>(subscriber)),
+    mFunction(reinterpret_cast<Function>(function))
 {
 }
 

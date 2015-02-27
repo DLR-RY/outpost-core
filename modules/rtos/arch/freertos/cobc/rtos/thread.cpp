@@ -42,20 +42,20 @@ cobc::rtos::Thread::wrapper(void* object)
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char* name) :
-    handle(0),
-    priority(priority),
-    stackSize(stack),
-    name(name)
+    mHandle(0),
+    mPriority(priority),
+    mStackSize(stack),
+    mName(name)
 {
-    if (stackSize < minimumStackSize) {
-        stackSize = minimumStackSize;
+    if (mStackSize < minimumStackSize) {
+        mStackSize = minimumStackSize;
     }
 }
 
 cobc::rtos::Thread::~Thread()
 {
-    if (handle != 0) {
-        vTaskDelete(handle);
+    if (mHandle != 0) {
+        vTaskDelete(mHandle);
     }
 }
 
@@ -63,16 +63,16 @@ cobc::rtos::Thread::~Thread()
 void
 cobc::rtos::Thread::start()
 {
-    if (handle == 0)
+    if (mHandle == 0)
     {
         int status = xTaskCreate(
                 &Thread::wrapper,
-                (const signed char*) name,
-                (stackSize / sizeof(portSTACK_TYPE)) + 1,
+                (const signed char*) mName,
+                (mStackSize / sizeof(portSTACK_TYPE)) + 1,
                 this,
-                static_cast<unsigned portBASE_TYPE>(toFreeRtosPriority(priority, configMAX_PRIORITIES)),
+                static_cast<unsigned portBASE_TYPE>(toFreeRtosPriority(mPriority, configMAX_PRIORITIES)),
                 //3,
-                &handle);
+                &mHandle);
 
         if (status != pdPASS) {
             rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
@@ -84,11 +84,11 @@ cobc::rtos::Thread::start()
 cobc::rtos::Thread::Identifier
 cobc::rtos::Thread::getIdentifier() const
 {
-    if (handle == 0) {
+    if (mHandle == 0) {
         return invalidIdentifier;
     }
     else {
-        return reinterpret_cast<Identifier>(handle);
+        return reinterpret_cast<Identifier>(mHandle);
     }
 }
 
@@ -102,13 +102,13 @@ cobc::rtos::Thread::getCurrentThreadIdentifier()
 void
 cobc::rtos::Thread::setPriority(uint8_t priority)
 {
-    vTaskPrioritySet(handle, toFreeRtosPriority(priority, configMAX_PRIORITIES));
+    vTaskPrioritySet(mHandle, toFreeRtosPriority(priority, configMAX_PRIORITIES));
 }
 
 uint8_t
 cobc::rtos::Thread::getPriority() const
 {
-    return fromFreeRtosPriority(uxTaskPriorityGet(handle), configMAX_PRIORITIES);
+    return fromFreeRtosPriority(uxTaskPriorityGet(mHandle), configMAX_PRIORITIES);
 }
 
 // ----------------------------------------------------------------------------

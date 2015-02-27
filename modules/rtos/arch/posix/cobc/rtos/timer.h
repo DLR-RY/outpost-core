@@ -135,11 +135,11 @@ private:
     invokeTimer(union sigval parameter);
 
     /// Object and member function to call when the timer expires.
-    Callable* const object;
-    Function const function;
+    Callable* const mObject;
+    Function const mFunction;
 
-    timer_t tid;
-    itimerspec interval;
+    timer_t mTid;
+    itimerspec mInterval;
 };
 
 }
@@ -151,9 +151,9 @@ template <typename T>
 cobc::rtos::Timer::Timer(T* object,
                          typename TimerFunction<T>::type function,
                          const char* name) :
-    object(reinterpret_cast<Callable *>(object)),
-    function(reinterpret_cast<Function>(function)),
-    tid()
+    mObject(reinterpret_cast<Callable *>(object)),
+    mFunction(reinterpret_cast<Function>(function)),
+    mTid()
 {
     this->createTimer(name);
 }
