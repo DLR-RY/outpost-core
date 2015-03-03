@@ -38,7 +38,7 @@ public:
     static TimePoint
     startOfEpoch();
 
-    struct UTCdata
+    struct UtcData
     {
         uint16_t years;
         uint8_t months;
@@ -50,24 +50,24 @@ public:
     };
 
     static uint32_t
-    convertUTCdataToGPSSeconds(uint16_t year,
+    convertUtcDataToGpsSeconds(uint16_t year,
                                uint8_t month,
                                uint8_t day,
                                uint8_t hour,
                                uint8_t minute,
                                uint8_t second);
 
-    static UTCdata
-    convertGPSsecondsToUTCdata(uint32_t seconds);
+    static UtcData
+    convertGpsSecondsToUtcData(uint32_t seconds);
 
     static bool
     isLeapYear(uint16_t year);
 
     static uint8_t
-    calculateTheLeapSecsForGPSafter(uint32_t seconds);
+    calculateTheLeapSecondsForGpsAfter(uint32_t seconds);
 
     static uint8_t
-    calculateTheLeapSecsForGPSbefore(uint32_t seconds);
+    calculateTheLeapSecondsForGpsBefore(uint32_t seconds);
 
 private:
     // disable unneeded implicitly member functions

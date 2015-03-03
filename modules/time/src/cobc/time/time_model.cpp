@@ -41,7 +41,7 @@ TimeModel::isLeapYear(uint16_t year)
 }
 
 uint32_t
-TimeModel::convertUTCdataToGPSSeconds(uint16_t year,
+TimeModel::convertUtcDataToGpsSeconds(uint16_t year,
                                       uint8_t month,
                                       uint8_t day,
                                       uint8_t hour,
@@ -65,19 +65,19 @@ TimeModel::convertUTCdataToGPSSeconds(uint16_t year,
     uint32_t seconds = static_cast<uint32_t>(second
             + 60 * (minute + 60 * (hour + 24 * daysSince1980)));
 
-    seconds += static_cast<uint32_t>(calculateTheLeapSecsForGPSafter(seconds));  // leap seconds
+    seconds += static_cast<uint32_t>(calculateTheLeapSecondsForGpsAfter(seconds));  // leap seconds
 
     return seconds;
 }
 
-TimeModel::UTCdata
-TimeModel::convertGPSsecondsToUTCdata(uint32_t seconds)
+TimeModel::UtcData
+TimeModel::convertGpsSecondsToUtcData(uint32_t seconds)
 {
     // Structure for time data
-    UTCdata UTCdata;
+    UtcData UTCdata;
 
     // LEAP SECONDS
-    seconds -= calculateTheLeapSecsForGPSbefore(seconds);
+    seconds -= calculateTheLeapSecondsForGpsBefore(seconds);
 
 
     // FOR THE YEAR
@@ -155,7 +155,7 @@ TimeModel::convertGPSsecondsToUTCdata(uint32_t seconds)
 }
 
 uint8_t
-TimeModel::calculateTheLeapSecsForGPSafter(uint32_t seconds)
+TimeModel::calculateTheLeapSecondsForGpsAfter(uint32_t seconds)
 {
     if (seconds >= 1119744000)
     {
@@ -231,7 +231,7 @@ TimeModel::calculateTheLeapSecsForGPSafter(uint32_t seconds)
 
 
 uint8_t
-TimeModel::calculateTheLeapSecsForGPSbefore(uint32_t seconds)
+TimeModel::calculateTheLeapSecondsForGpsBefore(uint32_t seconds)
 {
     if (seconds >= 1119744017)
     {
@@ -253,7 +253,7 @@ TimeModel::calculateTheLeapSecsForGPSbefore(uint32_t seconds)
     {
         return 13;
     }
-    else if (seconds >= 5517504012)
+    else if (seconds >= 5517504012)     // FIXME this value is wrong!
     {
         return 12;
     }
