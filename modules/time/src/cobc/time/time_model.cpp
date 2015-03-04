@@ -79,9 +79,7 @@ TimeModel::convertGpsSecondsToUtcData(uint32_t seconds)
     // LEAP SECONDS
     seconds -= calculateTheLeapSecondsForGpsBefore(seconds);
 
-
     // FOR THE YEAR
-
     bool leapYear = false;
     uint16_t startYear = 1980;
     int32_t yearSec = -432000;  // because GPS seconds began at 06.01.1980 (5 days = 432000 sec.)
@@ -112,9 +110,7 @@ TimeModel::convertGpsSecondsToUtcData(uint32_t seconds)
 
     UTCdata.years = startYear;
 
-
     // FOR THE DAY AND MONTH
-
     uint16_t yearDay = 0;
     uint8_t dataHours = 0;
     uint8_t dataMinutes = 0;
@@ -229,7 +225,6 @@ TimeModel::calculateTheLeapSecondsForGpsAfter(uint32_t seconds)
     return 0;
 }
 
-
 uint8_t
 TimeModel::calculateTheLeapSecondsForGpsBefore(uint32_t seconds)
 {
@@ -253,7 +248,7 @@ TimeModel::calculateTheLeapSecondsForGpsBefore(uint32_t seconds)
     {
         return 13;
     }
-    else if (seconds >= 5517504012)     // FIXME this value is wrong!
+    else if (seconds >= 551750412)
     {
         return 12;
     }
