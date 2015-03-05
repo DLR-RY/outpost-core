@@ -28,7 +28,14 @@
 #include <errno.h>
 #include <stdio.h>
 
+#include <fcntl.h>
+
 #include <cobc/rtos/thread.h>
+
+#include <bsp.h>
+#include <rtems.h>
+
+#include <apbuart.h>
 
 void
 fatalErrorHandler(Internal_errors_Source source, bool isInternal, uint32_t errorCode);
@@ -64,23 +71,27 @@ fatalErrorHandler(Internal_errors_Source source, bool isInternal, uint32_t error
  * Set up the environment.
  */
 rtems_task
-task_system_init(rtems_task_argument ignored)
+task_system_init(rtems_task_argument /*ignored*/)
 {
-    (void) ignored;
-
     // -- manual driver manager startup initialization
     // register our apbuart driver substitute
-    //apbuart_register_drv();
+    apbuart_register_drv();
     // manually register root bus and initialize driver manager
-    //ambapp_grlib_root_register(&grlib_bus_config);
-    //drvmgr_init();
+    ambapp_grlib_root_register(&grlib_bus_config);
+    drvmgr_init();
 
     // NOTE:
-    // apbuart0 - debug messages
+    // apbuart0 - debug messages (only accessible via printk(...))
     // apbuart1 - receive/transmit tc and tm
-    //fclose(stderr);
-    //stderr = fopen("/dev/apbuart0", "w");
-    //fprintf(stderr,"\n");
+    FILE* uart2 = fopen("/dev/apbuart1", "w");
+    fprintf(uart2, "Hello World!!\r\n");
+
+    printk("Hello World!!!\r\n");
+
+    while (1)
+    {
+
+    }
 
     rtems_task_delete(RTEMS_SELF);
 }

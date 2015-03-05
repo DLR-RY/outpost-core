@@ -16,13 +16,16 @@ CERROR = \033[31;01m
 CEND   = \033[0m
 endif
 
+# Slash at the end is important!
+LIBCOBC_HW_PATH = /home/user/development/ry-avs-cobc/lib/sw/libcobc-hw/
+
 all: test
 
 MODULE=rtos
 
 include ../../conf/module.default.mk
 
-test:
+test: update
 	@printf "$(CINFO) Running RTOS abstraction layer compilation tests$(CEND)\n"
 	
 	@printf "$(CINFO) FreeRTOS (STM32F4 Discovery):$(CEND)\n"
@@ -33,7 +36,7 @@ test:
 	
 	@printf "$(CINFO) POSIX (Linux):$(CEND)\n"
 	@scons $(MAKEJOBS) -Q -C test/posix || return 1
-
+	
 	@printf "$(CINFO) RTEMS (LEON3):$(CEND)\n"
 	@scons $(MAKEJOBS) -Q -C test/rtems || return 1
 	
@@ -48,7 +51,11 @@ coverage-view:
 clean: clean_default
 	@$(RM) -r ../../build/$(MODULE)/*
 
+update:
+	rsync -a --delete -b --backup-dir=ext/libcobc-hw-backup/ $(LIBCOBC_HW_PATH) ext/libcobc-hw/
+
 distclean: distclean_default
+	$(RM) -r ext/libcobc-hw
 
 .PHONY: test coverage coverage-view clean
 

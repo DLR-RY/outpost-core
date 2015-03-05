@@ -18,6 +18,8 @@ envGlobal = Environment(toolpath=[rootpath + '/conf/scons/site_tools'],
                         BOARD='nexys3',
                         ENV=os.environ)
 
+envGlobal['CCFLAGS_other'] = ['-qleon3std']
+
 envGlobal['BASEPATH']  = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/rtems'))
 
@@ -29,6 +31,9 @@ envGlobal.Append(CPPPATH=[
 
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
+# Build libcobc-hw
+envGlobal.SConscript(os.path.join(rootpath, 'modules/rtos/ext/libcobc-hw/src/SConscript'), exports='envGlobal')
+
 env = envGlobal.Clone()
 
 env.Append(CPPPATH=[
@@ -37,6 +42,8 @@ env.Append(CPPPATH=[
 ])
 
 env.AppendUnique(LIBS=[
+	'cobc_hw',
+	'cobc_hal',
     'cobc_log',
     'cobc_pus',
     'cobc_spp',
@@ -54,10 +61,10 @@ env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 
 files.append(env.Object('main.cpp'))
 
-program = env.Program('rtems', files)
+program = env.Program('rtems.elf', files)
 
 envGlobal.Alias('build', program)
-envGlobal.Alias('install', env.Install(program))
+envGlobal.Alias('install', env.Install('bin/', program))
 envGlobal.Alias('size', env.Size(program))
 
 envGlobal.Default('build')

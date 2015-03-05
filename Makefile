@@ -25,8 +25,11 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-MODULES = utils time rtos hal smpc spp pus log
+MODULES_GLOBAL = utils time smpc spp pus log
+MODULES_HW = rtos hal
 MODULES_TEST = log-decode l3test
+
+MODULES = $(MODULES_GLOBAL) $(MODULES_HW) $(MODULES_TEST)
 
 # Check if the terminal supports colors
 COLORS := $(shell tput colors 2> /dev/null)
@@ -47,12 +50,13 @@ endif
 
 help:
 	@echo "Please use \`make <target>\` where <target> is one of"
-	@echo "  doc      to build all documentation"
-	@echo "  design   to build the design documentation (requires xelatex)"
-	@echo "  doxygen  to build the doxygen documentation"
-	@echo "  test     to run all unit tests"
-	@echo "  style    to check the coding style with vera++"
-	@echo "  clean    to remove temporary data (\`build\` folder)"
+	@echo "  doc       to build all documentation"
+	@echo "  design    to build the design documentation (requires xelatex)"
+	@echo "  doxygen   to build the doxygen documentation"
+	@echo "  test      to run all unit tests"
+	@echo "  test-full to run all unit and compilation tests"
+	@echo "  style     to check the coding style with vera++"
+	@echo "  clean     to remove temporary data (\`build\` folder)"
 
 doc: design doxygen
 
@@ -71,14 +75,21 @@ doxygen:
 	done
 
 test:
-	@for m in $(MODULES) $(MODULES_TEST); do \
+	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+		printf "$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
+		make -C modules/$$m test --no-print-directory || return 1 ; \
+	done
+	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
+
+test-full:
+	@for m in $(MODULES_HW) $(MODULES_GLOBAL) $(MODULES_TEST); do \
 		printf "$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m test --no-print-directory || return 1 ; \
 	done
 	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
 
 coverage:
-	@for m in $(MODULES); do \
+	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
 		printf "$(CINFO)Run coverage analysis for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m coverage --no-print-directory || return 1 ; \
 	done
@@ -92,13 +103,13 @@ analyze-clang:
 	@printf "\n$(COK)[PASS] Static analysis with clang done!$(CEND)\n"
 
 codingstyle-simple:
-	@for m in $(MODULES) $(MODULES_TEST); do \
+	@for m in $(MODULES); do \
 		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m codingstyle-simple --no-print-directory ; \
 	done
 
 codingstyle-jsf:
-	@for m in $(MODULES); do \
+	@for m in $(MODULES_GLOBAL); do \
 		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m codingstyle-jsf --no-print-directory ; \
 	done

@@ -23,7 +23,7 @@
 #include <bsp.h>
 
 // Configuration information
-#define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
+//#define CONFIGURE_APPLICATION_NEEDS_CONSOLE_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_CLOCK_DRIVER
 #define CONFIGURE_APPLICATION_NEEDS_TIMER_DRIVER
 
@@ -63,36 +63,30 @@ extern const char* bsp_boot_cmdline;
 #define CONFIGURE_MAXIMUM_TIMERS            4
 #define CONFIGURE_MAXIMUM_PERIODS           4
 
+#define CONFIGURE_MAXIMUM_DRIVERS           4
+
 // ----------------------------------------------------------------------------
 #include <rtems/confdefs.h>
 
 // Add Timer and UART Driver
 #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
-#define CONFIGURE_DRIVER_AMBAPP_GAISLER_APBUART
 
 // ----------------------------------------------------------------------------
 // driver manager: we compile with -qleon3std and do the startup
 // initialization manually.
-//
-//#include <drvmgr/drvmgr_confdefs.h>
-//#include <drvmgr/ambapp_bus_grlib.h>
-//
-//static struct drvmgr_bus_res grlib_drv_resources = {
-//    NULL,
-//    {}
-//};
-//
-//// GRLIB AMBA bus configuration (the LEON3 root bus configuration)
-//static struct grlib_config grlib_bus_config = {
-//    &ambapp_plb,              // AMBAPP bus setup
-//    &grlib_drv_resources,     // Driver configuration
-//};
-//
-//// prototype of the driver registration function
-//extern "C" void apbuart_register_drv();
 
 #include <drvmgr/drvmgr_confdefs.h>
+#include <drvmgr/ambapp_bus_grlib.h>
+
+static struct drvmgr_bus_res grlib_drv_resources = {
+    NULL,
+    {}
+};
+
+// GRLIB AMBA bus configuration (the LEON3 root bus configuration)
+static struct grlib_config grlib_bus_config = {
+    &ambapp_plb,              // AMBAPP bus setup
+    &grlib_drv_resources,     // Driver configuration
+};
 
 #endif // SYSTEM_H
-
-
