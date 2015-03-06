@@ -12,6 +12,7 @@ using namespace cobc::time;
 
 TEST(TimeModelTest, convertUTCdataToGPSseconds)
 {
+    // Calculated reference values from "http://www.andrews.edu/~tzs/timeconv/timeconvert.php"
 
     // random test
     uint32_t gpsSeconds = TimeModel::convertUtcDataToGpsSeconds(1992, 1, 1, 12, 12, 12);
@@ -62,6 +63,7 @@ TEST(TimeModelTest, convertUTCdataToGPSseconds)
 
 TEST(TimeModelTest, convertGpsSecondsToUtcData)
 {
+    // Calculated reference values from "http://www.andrews.edu/~tzs/timeconv/timeconvert.php"
 
     TimeModel::UtcData utcData;
 
