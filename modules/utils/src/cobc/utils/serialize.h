@@ -160,6 +160,12 @@ public:
         mBuffer += sizeof(T);
     }
 
+    inline uint8_t*
+    getPointer()
+    {
+        return mBegin;
+    }
+
     // get position of the buffer
     inline ptrdiff_t
     getPosition() const
