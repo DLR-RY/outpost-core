@@ -25,7 +25,7 @@ coverage:
 	@../../build/$(MODULE)/test/coverage/runner
 
 clean:
-	@scons -Q -C test -c
-	@scons -Q -C lua/modules -c
+	@scons -s -C test -c
+	@scons -s -C lua/modules -c
 
 .PHONY: build-lua test-lua test-cpp test clean

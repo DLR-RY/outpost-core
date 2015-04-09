@@ -125,7 +125,7 @@ metric:
 	done
 
 clean :
-	@for m in $(MODULES) $(MODULES_TEST); do \
+	@for m in $(MODULES); do \
 		printf "$(CINFO)Clean module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m clean --no-print-directory ; \
 	done
