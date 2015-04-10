@@ -94,7 +94,7 @@ PeriodicTaskManager::Status::Type
 PeriodicTaskManager::nextPeriod(time::Duration period)
 {
     MutexGuard lock(mMutex);
-    Status::Type status = Status::running;
+    Status::Type currentStatus = Status::running;
 
     if (mTimerRunning)
     {
@@ -104,7 +104,7 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
         // Check if the time is in the current period
         if (isBigger(&currentTime, &nextWakeTime))
         {
-            status = Status::timeout;
+            currentStatus = Status::timeout;
         }
 
         int result;
@@ -135,7 +135,7 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
     // calculate the next wake-up time
     addTime(&nextWakeTime, period);
 
-    return status;
+    return currentStatus;
 }
 
 PeriodicTaskManager::Status::Type
