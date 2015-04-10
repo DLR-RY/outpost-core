@@ -17,7 +17,9 @@
 #ifndef COBC_BOUNDED_ARRAY_H
 #define COBC_BOUNDED_ARRAY_H
 
-#include "stddef.h"
+#include <stddef.h>
+
+#include "../utils.h"
 
 namespace cobc
 {
@@ -31,6 +33,10 @@ template <typename T>
 class BoundedArray
 {
 public:
+    typedef typename cobc::remove_const<T>::type NonConstType;
+
+    friend class BoundedArray<const T>;
+
     /**
      * Initialize directly from a C style array.
      *
@@ -51,6 +57,13 @@ public:
     BoundedArray(T (&array)[N]) :
         mData(array),
         mNumberOfElements(N)
+    {
+    }
+
+    inline
+    BoundedArray(const BoundedArray<NonConstType>& rhs) :
+        mData(rhs.mData),
+        mNumberOfElements(rhs.mNumberOfElements)
     {
     }
 
