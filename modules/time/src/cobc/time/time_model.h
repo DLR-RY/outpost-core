@@ -13,6 +13,7 @@
  * more details.
  */
 // ----------------------------------------------------------------------------
+
 #ifndef COBC_TIME_TIME_MODEL_H
 #define COBC_TIME_TIME_MODEL_H
 
