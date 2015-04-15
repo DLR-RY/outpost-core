@@ -6,7 +6,7 @@ MODULE=utils
 include ../../conf/module.default.mk
 
 test:
-	@scons build $(MAKEJOBS) -Q -C test || return 1; \
+	@scons build $(MAKEJOBS) -s -Q -C test || return 1; \
 	../../build/$(MODULE)/test/unittest/runner --gtest_filter=$(FILTER)
 
 coverage:

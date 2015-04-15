@@ -66,53 +66,53 @@ documents: design
 
 design:
 	@for m in $(MODULES); do \
-		printf "$(CINFO)Build design description for module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Build design description for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m design --no-print-directory || return 1 ; \
 	done
 
 doxygen:
 	@for m in $(MODULES); do \
-		printf "$(CINFO)Build doxygen documentation for module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Build doxygen documentation for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m doxygen --no-print-directory || return 1 ; \
 	done
 
 test:
 	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
-		printf "$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m test --no-print-directory || return 1 ; \
 	done
 	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
 
 test-full:
 	@for m in $(MODULES_HW) $(MODULES_GLOBAL) $(MODULES_TEST); do \
-		printf "$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m test --no-print-directory || return 1 ; \
 	done
 	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
 
 coverage:
 	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
-		printf "$(CINFO)Run coverage analysis for module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Run coverage analysis for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m coverage --no-print-directory || return 1 ; \
 	done
 	@printf "\n$(COK)[PASS] Coverage analysis done!$(CEND)\n"
 
 analyze-clang:
 	@for m in $(MODULES); do \
-		printf "$(CINFO)Run static analysis with clang for module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Run static analysis with clang for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m analyze-clang --no-print-directory || return 1 ; \
 	done
 	@printf "\n$(COK)[PASS] Static analysis with clang done!$(CEND)\n"
 
 codingstyle-simple:
 	@for m in $(MODULES); do \
-		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m codingstyle-simple --no-print-directory ; \
 	done
 
 codingstyle-jsf:
 	@for m in $(MODULES_JSF); do \
-		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m codingstyle-jsf --no-print-directory ; \
 	done
 
@@ -120,15 +120,15 @@ codingstyle: codingstyle-simple codingstyle-jsf
 
 metric:
 	@for m in $(MODULES); do \
-		printf "$(CINFO)Generating code metrics for module \"$$m\" (sources):$(CEND)\n" ; \
+		printf "\n$(CINFO)Generating code metrics for module \"$$m\" (sources):$(CEND)\n" ; \
 		sloccount --duplicates --wide modules/$$m/src ; \
-		printf "$(CINFO)Generating code metrics for module \"$$m\" (unittests):$(CEND)\n" ; \
+		printf "\n$(CINFO)Generating code metrics for module \"$$m\" (unittests):$(CEND)\n" ; \
 		sloccount --duplicates --wide modules/$$m/test ; \
 	done
 
 clean :
 	@for m in $(MODULES); do \
-		printf "$(CINFO)Clean module \"$$m\":$(CEND)\n" ; \
+		printf "\n$(CINFO)Clean module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m clean --no-print-directory ; \
 	done
 
