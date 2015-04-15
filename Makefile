@@ -29,6 +29,8 @@ MODULES_GLOBAL = utils time smpc spp pus log
 MODULES_HW = rtos hal
 MODULES_TEST = log-decode l3test
 
+MODULES_JSF = $(MODULES_GLOBAL) rtos
+
 MODULES = $(MODULES_GLOBAL) $(MODULES_HW) $(MODULES_TEST)
 
 # Check if the terminal supports colors
@@ -109,7 +111,7 @@ codingstyle-simple:
 	done
 
 codingstyle-jsf:
-	@for m in $(MODULES_GLOBAL); do \
+	@for m in $(MODULES_JSF); do \
 		printf "$(CINFO)Check style for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m codingstyle-jsf --no-print-directory ; \
 	done

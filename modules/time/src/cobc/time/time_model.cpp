@@ -34,10 +34,8 @@ TimeModel::startOfEpoch()
 bool
 TimeModel::isLeapYear(uint16_t year)
 {
-    if (!(year % 4) && (year % 100 || !(year % 400)))
-        return true;
-
-    return false;
+    bool leapYear = ((!(year % 4U)) && ((year % 100U) || (!(year % 400U))));
+    return leapYear;
 }
 
 uint32_t
@@ -48,18 +46,23 @@ TimeModel::convertUtcDataToGpsSeconds(uint16_t year,
                                       uint8_t minute,
                                       uint8_t second)
 {
-    const uint16_t daysSinceTheBeginningOfYear[12] = /* days since the beginning of the year without the leap day */
-    { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+    // days since the beginning of the year without the leap day
+    static const uint16_t daysSinceTheBeginningOfYear[12] = {
+        0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334
+    };
 
-    uint8_t leapYear = ((year - 1) - 1976) / 4 - ((year - 1) - 1900) / 100
-            + ((year - 1) - 1600) / 400;
+    uint8_t leapYear = (((year - 1) - 1976) / 4)
+            - (((year - 1) - 1900) / 100)
+            + (((year - 1) - 1600) / 400);
 
+    // -6, because the GPS time began at 06.01.1980
     uint32_t daysSince1980 = static_cast<uint32_t>((year - 1980) * 365
-            + leapYear + daysSinceTheBeginningOfYear[month - 1] + day - 6);  // -6, because the GPS time began at 06.01.1980
+            + leapYear + daysSinceTheBeginningOfYear[month - 1] + day - 6);
 
-    if ((month > 2) && isLeapYear(year))
+    if ((month > 2U) && isLeapYear(year))
     {
-        daysSince1980 += 1; /* + leap day, if the year is a leap year */
+        // + leap day, if the year is a leap year
+        daysSince1980 += 1;
     }
 
     uint32_t seconds = static_cast<uint32_t>(second
@@ -73,229 +76,233 @@ TimeModel::convertUtcDataToGpsSeconds(uint16_t year,
 TimeModel::UtcData
 TimeModel::convertGpsSecondsToUtcData(uint32_t seconds)
 {
-    // Structure for time data
-    UtcData UTCdata;
-
     // LEAP SECONDS
     seconds -= calculateTheLeapSecondsForGpsBefore(seconds);
 
     // FOR THE YEAR
-    bool leapYear = false;
     uint16_t startYear = 1980;
-    int32_t yearSec = -432000;  // because GPS seconds began at 06.01.1980 (5 days = 432000 sec.)
 
-    static const uint32_t daysSinceJan1st[2][13] = { { 0, 31, 59, 90, 120, 151,
-        181, 212, 243, 273, 304, 334, 365 },  // 365 days, non-leap
-        { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }  // 366 days, leap
+    // because GPS seconds began at 06.01.1980 (5 days = 432000 sec.)
+    int32_t yearSec = -5 * secondsPerDay;
+
+    static const uint32_t daysSinceTheBeginningOfYear[2][13] = {
+        // 365 days, non-leap
+        { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 },
+        // 366 days, leap
+        { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }
     };
 
-    while (seconds - yearSec >= 31536000)
+    while (seconds - yearSec >= secondsPerYear)
     {
         if (isLeapYear(startYear))
         {
-            if (seconds - yearSec < 31622400)
+            if (seconds - yearSec < secondsPerLeapYear)
+            {
                 break;
+            }
 
-            yearSec += 31622400;  // leap year (366 days)
+            yearSec += secondsPerLeapYear;  // leap year (366 days)
         }
         else
         {
-            yearSec += 31536000;  // normal year (365 days)
+            yearSec += secondsPerYear;  // normal year (365 days)
         }
 
         startYear++;
     }
 
-    leapYear = isLeapYear(startYear);
-
-    UTCdata.years = startYear;
+    bool leapYear = isLeapYear(startYear);
 
     // FOR THE DAY AND MONTH
     uint16_t yearDay = 0;
-    uint8_t dataHours = 0;
-    uint8_t dataMinutes = 0;
-
-    uint32_t secondsVal = ((seconds - yearSec));
+    uint32_t secondsVal = seconds - yearSec;
 
     // Calculate the day of the year and the time
     yearDay = secondsVal / 86400;
 
-    uint8_t monthDay = 0;
-    uint8_t counterMonth = 0;
     // Calculate the month
-    for (monthDay = counterMonth = 1; counterMonth < 13; counterMonth++)
+    uint8_t month;
+    for (month = 1; (month < 13) &&
+                    (yearDay >= daysSinceTheBeginningOfYear[leapYear][month]); ++month)
     {
-        if (yearDay < daysSinceJan1st[leapYear][counterMonth])
-        {
-            monthDay += yearDay - daysSinceJan1st[leapYear][counterMonth - 1];
-            break;
-        }
     }
-
-    UTCdata.months = counterMonth;
+    uint8_t monthDay = 1 + yearDay - daysSinceTheBeginningOfYear[leapYear][month - 1];
 
     // FOR THE HOURS, MINUTES AND SECONDS
     secondsVal %= 86400;
-    dataHours = secondsVal / 3600;
+    uint8_t dataHours = secondsVal / 3600;
     secondsVal %= 3600;
-    dataMinutes = secondsVal / 60;
+    uint8_t dataMinutes = secondsVal / 60;
     secondsVal %= 60;
 
     // Fill the UTCdata structure ...
-    UTCdata.days = monthDay;
-    UTCdata.hours = dataHours;
-    UTCdata.minutes = dataMinutes;
-    UTCdata.seconds = secondsVal;
+    UtcData utcData;
+    utcData.years = startYear;
+    utcData.months = month;
+    utcData.days = monthDay;
+    utcData.hours = dataHours;
+    utcData.minutes = dataMinutes;
+    utcData.seconds = secondsVal;
 
-    return UTCdata;
+    return utcData;
 }
 
 uint8_t
 TimeModel::calculateTheLeapSecondsForGpsAfter(uint32_t seconds)
 {
+    uint8_t leapSeconds = 0;
     if (seconds >= 1119744000)
     {
-        return 17;
+        leapSeconds = 17;
     }
     else if (seconds >= 1025136000)
     {
-        return 16;
+        leapSeconds = 16;
     }
     else if (seconds >= 914803200)
     {
-        return 15;
+        leapSeconds = 15;
     }
     else if (seconds >= 820108800)
     {
-        return 14;
+        leapSeconds = 14;
     }
     else if (seconds >= 599184000)
     {
-        return 13;
+        leapSeconds = 13;
     }
     else if (seconds >= 551750400)
     {
-        return 12;
+        leapSeconds = 12;
     }
     else if (seconds >= 504489600)
     {
-        return 11;
+        leapSeconds = 11;
     }
     else if (seconds >= 457056000)
     {
-        return 10;
+        leapSeconds = 10;
     }
     else if (seconds >= 425520000)
     {
-        return 9;
+        leapSeconds = 9;
     }
     else if (seconds >= 393984000)
     {
-        return 8;
+        leapSeconds = 8;
     }
     else if (seconds >= 346723200)
     {
-        return 7;
+        leapSeconds = 7;
     }
     else if (seconds >= 315187200)
     {
-        return 6;
+        leapSeconds = 6;
     }
     else if (seconds >= 252028800)
     {
-        return 5;
+        leapSeconds = 5;
     }
     else if (seconds >= 173059200)
     {
-        return 4;
+        leapSeconds = 4;
     }
     else if (seconds >= 109900800)
     {
-        return 3;
+        leapSeconds = 3;
     }
     else if (seconds >= 78364800)
     {
-        return 2;
+        leapSeconds = 2;
     }
     else if (seconds >= 46828800)
     {
-        return 1;
+        leapSeconds = 1;
+    }
+    else
+    {
+        leapSeconds = 0;
     }
 
-    return 0;
+    return leapSeconds;
 }
 
 uint8_t
 TimeModel::calculateTheLeapSecondsForGpsBefore(uint32_t seconds)
 {
+    uint8_t leapSeconds = 0;
     if (seconds >= 1119744017)
     {
-        return 17;
+        leapSeconds = 17;
     }
     else if (seconds >= 1025136016)
     {
-        return 16;
+        leapSeconds = 16;
     }
     else if (seconds >= 914803215)
     {
-        return 15;
+        leapSeconds = 15;
     }
     else if (seconds >= 820108814)
     {
-        return 14;
+        leapSeconds = 14;
     }
     else if (seconds >= 599184013)
     {
-        return 13;
+        leapSeconds = 13;
     }
     else if (seconds >= 551750412)
     {
-        return 12;
+        leapSeconds = 12;
     }
     else if (seconds >= 504489611)
     {
-        return 11;
+        leapSeconds = 11;
     }
     else if (seconds >= 457056010)
     {
-        return 10;
+        leapSeconds = 10;
     }
     else if (seconds >= 425520009)
     {
-        return 9;
+        leapSeconds = 9;
     }
     else if (seconds >= 393984008)
     {
-        return 8;
+        leapSeconds = 8;
     }
     else if (seconds >= 346723207)
     {
-        return 7;
+        leapSeconds = 7;
     }
     else if (seconds >= 315187206)
     {
-        return 6;
+        leapSeconds = 6;
     }
     else if (seconds >= 252028805)
     {
-        return 5;
+        leapSeconds = 5;
     }
     else if (seconds >= 173059204)
     {
-        return 4;
+        leapSeconds = 4;
     }
     else if (seconds >= 109900803)
     {
-        return 3;
+        leapSeconds = 3;
     }
     else if (seconds >= 78364802)
     {
-        return 2;
+        leapSeconds = 2;
     }
     else if (seconds >= 46828801)
     {
-        return 1;
+        leapSeconds = 1;
+    }
+    else
+    {
+        leapSeconds = 0;
     }
 
-    return 0;
+    return leapSeconds;
 }

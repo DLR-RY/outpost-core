@@ -71,6 +71,14 @@ public:
     calculateTheLeapSecondsForGpsBefore(uint32_t seconds);
 
 private:
+    static const int secondsPerDay = 24 * 60 * 60;  // 86400
+
+    static const int daysPerYear = 365;
+    static const int daysPerLeapYear = 366;
+
+    static const int secondsPerYear = secondsPerDay * daysPerYear;
+    static const int secondsPerLeapYear = secondsPerDay * daysPerLeapYear;
+
     // disable unneeded implicitly member functions
     TimeModel();
 
