@@ -92,11 +92,11 @@ TimeModel::convertGpsSecondsToUtcData(uint32_t seconds)
         { 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 }
     };
 
-    while (seconds - yearSec >= secondsPerYear)
+    while (seconds - yearSec >= static_cast<uint32_t>(secondsPerYear))
     {
         if (isLeapYear(startYear))
         {
-            if (seconds - yearSec < secondsPerLeapYear)
+            if (seconds - yearSec < static_cast<uint32_t>(secondsPerLeapYear))
             {
                 break;
             }
