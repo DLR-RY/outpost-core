@@ -36,7 +36,7 @@ TEST(ListTest, createAndAdd)
 
     ListNode node;
 
-    list.add(&node);
+    list.prepend(&node);
 
     EXPECT_FALSE(list.isEmpty());
     EXPECT_EQ(&node, list.first());
@@ -69,9 +69,9 @@ TEST(ListTest, get)
     ListNode node2 = { 3, 0 };
     ListNode node3 = { 5, 0 };
 
-    list.add(&node1);
-    list.add(&node2);
-    list.add(&node3);
+    list.prepend(&node1);
+    list.prepend(&node2);
+    list.prepend(&node3);
 
     EXPECT_EQ(&node1, list.get(Condition(1)));
     EXPECT_EQ(&node2, list.get(Condition(3)));
@@ -90,9 +90,9 @@ TEST(ListTest, remove)
     ListNode node2;
     ListNode node3;
 
-    list.add(&node);
-    list.add(&node2);
-    list.add(&node3);
+    list.prepend(&node);
+    list.prepend(&node2);
+    list.prepend(&node3);
 
     EXPECT_TRUE(list.removeNode(&node2));
 
@@ -113,9 +113,9 @@ TEST(ListTest, removeWithFunctor)
     ListNode node2 = { 3, 0 };
     ListNode node3 = { 5, 0 };
 
-    list.add(&node1);
-    list.add(&node2);
-    list.add(&node3);
+    list.prepend(&node1);
+    list.prepend(&node2);
+    list.prepend(&node3);
 
     class Condition
     {
@@ -160,10 +160,10 @@ TEST(ListTest, removeAll)
     ListNode node3 = { 5, 0 };
     ListNode node4 = { 3, 0 };
 
-    list.add(&node1);
-    list.add(&node2);
-    list.add(&node3);
-    list.add(&node4);
+    list.prepend(&node1);
+    list.prepend(&node2);
+    list.prepend(&node3);
+    list.prepend(&node4);
 
     list.removeAll(check);
 
@@ -173,4 +173,31 @@ TEST(ListTest, removeAll)
 
     EXPECT_TRUE(list.removeNode(&node1));
     EXPECT_TRUE(list.removeNode(&node3));
+}
+
+TEST(ListTest, shouldIterateOverElements)
+{
+	List<ListNode> list;
+
+	ListNode node1 = { 1, 0 };
+	ListNode node2 = { 3, 0 };
+	ListNode node3 = { 5, 0 };
+
+	list.prepend(&node3);
+	list.prepend(&node2);
+	list.prepend(&node1);
+
+	List<ListNode>::Iterator it = list.begin();
+
+	ASSERT_TRUE(it != list.end());
+	EXPECT_EQ(it->mValue, 1);
+	++it;
+	ASSERT_TRUE(it != list.end());
+	EXPECT_EQ(it->mValue, 3);
+	++it;
+	ASSERT_TRUE(it != list.end());
+	EXPECT_EQ(it->mValue, 5);
+	++it;
+
+	ASSERT_FALSE(it != list.end());
 }

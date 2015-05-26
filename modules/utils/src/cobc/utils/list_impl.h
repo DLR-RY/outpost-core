@@ -75,7 +75,7 @@ cobc::List<T>::reset()
 // ----------------------------------------------------------------------------
 template <typename T>
 void
-cobc::List<T>::add(T* node)
+cobc::List<T>::prepend(T* node)
 {
     node->mNext = mHead;
     mHead = node;
@@ -323,14 +323,14 @@ template <typename T>
 T&
 cobc::List<T>::Iterator::operator*()
 {
-    return this->mNode;
+    return *this->mNode;
 }
 
 template <typename T>
 T*
 cobc::List<T>::Iterator::operator->()
 {
-    return &this->mNode;
+    return this->mNode;
 }
 
 // ----------------------------------------------------------------------------

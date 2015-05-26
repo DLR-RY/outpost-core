@@ -83,7 +83,7 @@ public:
      * O(1)
      */
     void
-    add(T* node);
+    prepend(T* node);
 
     /**
      * Insert a node sorted into the list.
