@@ -43,7 +43,11 @@
 ** uses mkstemp.
 */
 #if defined(LUA_USE_MKSTEMP)
+
 #include <unistd.h>
+
+int mkstemp(char *template);
+
 #define LUA_TMPNAMBUFSIZE	32
 #define lua_tmpnam(b,e) { \
         strcpy(b, "/tmp/lua_XXXXXX"); \
@@ -64,6 +68,11 @@
 ** where it uses gmtime_r/localtime_r
 */
 #if defined(LUA_USE_GMTIME_R)
+
+#include <time.h>
+
+struct tm *gmtime_r(const time_t *timep, struct tm *result);
+struct tm *localtime_r(const time_t *timep, struct tm *result);
 
 #define l_gmtime(t,r)		gmtime_r(t,r)
 #define l_localtime(t,r)	localtime_r(t,r)

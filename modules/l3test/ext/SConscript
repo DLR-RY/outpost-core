@@ -20,10 +20,13 @@ for file in toRemove:
     files.remove(file)
 
 # Remove warnings triggered by Lua 5.2.3
-env.RemoveFromList('CCFLAGS_warning', ['-Wcast-align', '-Wcast-qual'])
+env.RemoveFromList('CCFLAGS_warning', [
+	'-Wcast-align',
+	'-Wcast-qual',
+])
 env.RemoveFromList('CFLAGS_language', '-pedantic')
 
-env.Append(CPPDEFINES=['LUA_USE_DLOPEN'])
+env.Append(CPPDEFINES=['LUA_USE_DLOPEN', 'LUA_USE_POSIX'])
 
 objects = []
 for file in files:

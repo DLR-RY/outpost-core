@@ -55,6 +55,9 @@
 
 #if defined(LUA_USE_POPEN)	/* { */
 
+FILE *popen(const char *command, const char *type);
+int pclose(FILE *stream);
+
 #define lua_popen(L,c,m)	((void)L, fflush(NULL), popen(c,m))
 #define lua_pclose(L,file)	((void)L, pclose(file))
 
