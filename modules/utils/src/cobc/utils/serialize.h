@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -13,7 +13,6 @@
  * more details.
  */
 // ----------------------------------------------------------------------------
-
 #ifndef COBC_UTILS_SERIALIZE_H
 #define COBC_UTILS_SERIALIZE_H
 
@@ -43,8 +42,7 @@ class Serialize
 public:
     explicit inline
     Serialize(uint8_t* outputBuffer) :
-        mBuffer(outputBuffer),
-        mBegin(outputBuffer)
+            mBuffer(outputBuffer), mBegin(outputBuffer)
     {
     }
 
@@ -55,8 +53,7 @@ public:
 
     inline
     Serialize(const Serialize& other) :
-        mBuffer(other.mBuffer),
-        mBegin(other.mBegin)
+            mBuffer(other.mBuffer), mBegin(other.mBegin)
     {
     }
 
@@ -132,14 +129,21 @@ public:
         store64(*ptr);
     }
 
-    // explicit template instantiations are provided in serialize_impl.h
-    template <typename T>
     inline void
-    store(T data);
+    storeBuffer(uint8_t* buffer, size_t length)
+    {
+        memcpy(mBuffer, buffer, length);
+        mBuffer += length;
+    }
 
-    template <typename T>
-    inline void
-    storeObject(const T& data);
+    // explicit template instantiations are provided in serialize_impl.h
+    template<typename T>
+        inline void
+        store(T data);
+
+    template<typename T>
+        inline void
+        storeObject(const T& data);
 
     /**
      * Skip forward the given number of bytes.
@@ -153,12 +157,12 @@ public:
         mBuffer += bytes;
     }
 
-    template <typename T>
-    inline void
-    skip()
-    {
-        mBuffer += sizeof(T);
-    }
+    template<typename T>
+        inline void
+        skip()
+        {
+            mBuffer += sizeof(T);
+        }
 
     inline uint8_t*
     getPointer()
@@ -179,13 +183,13 @@ public:
         return mBuffer;
     }
 
-    template <typename T>
-    inline Serialize&
-    operator<<(const T& data)
-    {
-        store<T>(data);
-        return *this;
-    }
+    template<typename T>
+        inline Serialize&
+        operator<<(const T& data)
+        {
+            store<T>(data);
+            return *this;
+        }
 
 private:
     // disable assignment operator
@@ -215,8 +219,7 @@ class Deserialize
 public:
     explicit inline
     Deserialize(const uint8_t* inputBuffer) :
-            mBuffer(inputBuffer),
-            mBegin(inputBuffer)
+            mBuffer(inputBuffer), mBegin(inputBuffer)
     {
     }
 
@@ -227,8 +230,7 @@ public:
 
     inline
     Deserialize(const Deserialize& other) :
-        mBuffer(other.mBuffer),
-        mBegin(other.mBegin)
+            mBuffer(other.mBuffer), mBegin(other.mBegin)
     {
     }
 
@@ -400,13 +402,26 @@ public:
         return d;
     }
 
-    template <typename T>
-    inline T
-    peek(size_t n) const;
+    inline void
+    readBuffer(uint8_t* buffer, size_t length)
+    {
+        memcpy(buffer, mBuffer, length);
+        mBuffer += length;
+    }
 
-    template <typename T>
-    inline T
-    read();
+    inline void
+    peekBuffer(uint8_t* buffer, size_t length)
+    {
+        memcpy(buffer, mBuffer, length);
+    }
+
+    template<typename T>
+        inline T
+        peek(size_t n) const;
+
+    template<typename T>
+        inline T
+        read();
 
     /**
      * Skip forward the given number of bytes.
@@ -420,20 +435,20 @@ public:
         mBuffer += bytes;
     }
 
-    template <typename T>
-    inline void
-    skip()
-    {
-        mBuffer += sizeof(T);
-    }
+    template<typename T>
+        inline void
+        skip()
+        {
+            mBuffer += sizeof(T);
+        }
 
-    template <typename T>
-    inline Deserialize&
-    operator>>(T& data)
-    {
-        data = read<T>();
-        return *this;
-    }
+    template<typename T>
+        inline Deserialize&
+        operator>>(T& data)
+        {
+            data = read<T>();
+            return *this;
+        }
 
     /**
      * Get Pointer to the current location in the buffer.
@@ -456,12 +471,12 @@ public:
         return (mBuffer - mBegin);
     }
 
-    template <typename T>
-    inline T
-    getPosition() const
-    {
-        return static_cast<T>(mBuffer - mBegin);
-    }
+    template<typename T>
+        inline T
+        getPosition() const
+        {
+            return static_cast<T>(mBuffer - mBegin);
+        }
 
 private:
     // disable assignment operator

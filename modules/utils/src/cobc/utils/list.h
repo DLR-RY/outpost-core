@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -16,6 +16,8 @@
 
 #ifndef COBC_LIST_H
 #define COBC_LIST_H
+
+#include <stddef.h>
 
 namespace cobc
 {
@@ -76,6 +78,14 @@ public:
     template <typename Condition>
     T*
     get(Condition condition);
+
+    /**
+     * Get the nth element of the list.
+     *
+     * O(N)
+     */
+    T*
+    getN(size_t n);
 
     /**
      * Add a node to the front of the list.
@@ -139,6 +149,12 @@ public:
     template <typename Condition, typename PostCondition>
     void
     removeAll(Condition condition, PostCondition postCondition);
+
+    /**
+     * O(N)
+     */
+    size_t
+    size();
 
     /**
      * Remove the first node from the list.

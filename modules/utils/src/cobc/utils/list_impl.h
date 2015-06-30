@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -62,6 +62,30 @@ cobc::List<T>::get(Condition condition)
     {
         current = current->mNext;
     }
+    return current;
+}
+
+template <typename T>
+T*
+cobc::List<T>::getN(size_t n)
+{
+    T* current = mHead;
+    while ((current != 0) && n > 0)
+    {
+        current = current->mNext;
+        n--;
+    }
+
+    if (n > 0)
+    {
+        // n is greater than the size
+        current = 0;
+    }
+    else
+    {
+        // current points to the n-th element.
+    }
+
     return current;
 }
 
@@ -266,6 +290,21 @@ cobc::List<T>::removeFirst()
         mHead->mNext = 0;
         mHead = next;
     }
+}
+
+// ----------------------------------------------------------------------------
+template<typename T>
+size_t
+cobc::List<T>::size()
+{
+    size_t numberOfElements = 0;
+    T* current = mHead;
+    while (current != 0)
+    {
+        current = current->mNext;
+        numberOfElements++;
+    }
+    return numberOfElements;
 }
 
 // ----------------------------------------------------------------------------

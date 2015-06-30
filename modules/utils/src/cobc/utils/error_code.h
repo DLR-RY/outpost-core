@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -173,13 +173,8 @@ protected:
     {
     }
 
-    // Disable assignment operator as errorCode is \c const and can not be
-    // overwritten.
-    ErrorCode&
-    operator=(const ErrorCode& other);
-
 private:
-    const int16_t mErrorCode;
+    int16_t mErrorCode;
 };
 }
 
