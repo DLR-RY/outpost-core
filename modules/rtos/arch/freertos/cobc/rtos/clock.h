@@ -32,7 +32,7 @@ namespace rtos
 class SystemClock : public time::Clock
 {
 public:
-    virtual time::TimePoint
+    virtual time::SpacecraftElapsedTimePoint
     now() const;
 };
 

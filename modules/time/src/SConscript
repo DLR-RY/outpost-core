@@ -8,7 +8,7 @@ envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 
 env = envGlobal.Clone()
 
-files = env.Glob('cobc/time/*.cpp')
+files = env.Glob('cobc/*/*.cpp')
 
 objects = []
 for file in files:

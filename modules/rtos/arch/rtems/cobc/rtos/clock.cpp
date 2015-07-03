@@ -18,7 +18,7 @@
 
 #include <rtems.h>
 
-cobc::time::TimePoint
+cobc::time::SpacecraftElapsedTimePoint
 cobc::rtos::SystemClock::now() const
 {
     rtems_interval ticks_since_boot;
@@ -30,5 +30,5 @@ cobc::rtos::SystemClock::now() const
     uint64_t us = static_cast<uint64_t>(ticks_since_boot) *
                   static_cast<uint64_t>(us_per_tick);
 
-    return cobc::time::TimePoint(us);
+    return cobc::time::SpacecraftElapsedTimePoint::afterEpoch(cobc::time::Microseconds(us));
 }

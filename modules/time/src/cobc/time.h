@@ -37,7 +37,7 @@
 
 #include "time/duration.h"
 #include "time/time_point.h"
-#include "time/time_model.h"
+#include "time/time_epoch.h"
 
 namespace cobc
 {

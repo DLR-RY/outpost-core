@@ -14,23 +14,14 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "time_model.h"
+#include "time_epoch.h"
 
-#include <cobc/utils/limits.h>
+using namespace cobc::time;
+
+Duration epoch::SpacecraftElapsedTime<epoch::GpsTime>::offsetToGpsTime = Duration::zero();
+
 
 using cobc::time::TimeModel;
-
-cobc::time::TimePoint
-TimeModel::endOfEpoch()
-{
-    return TimePoint(cobc::Limits<TimePoint::Type>::max / 2 - 1);
-}
-
-cobc::time::TimePoint
-TimeModel::startOfEpoch()
-{
-    return TimePoint(0);
-}
 
 bool
 TimeModel::isLeapYear(uint16_t year)

@@ -15,7 +15,7 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
-#include <cobc/time/time_model.h>
+#include <cobc/time/time_epoch.h>
 
 using namespace cobc::time;
 
@@ -73,7 +73,6 @@ TEST(TimeModelTest, convertUTCdataToGPSseconds)
 TEST(TimeModelTest, convertGpsSecondsToUtcData)
 {
     // Calculated reference values from "http://www.andrews.edu/~tzs/timeconv/timeconvert.php"
-
     TimeModel::UtcData utcData;
 
     // random test
@@ -127,6 +126,5 @@ TEST(TimeModelTest, convertGpsSecondsToUtcData)
     EXPECT_EQ(0, static_cast<int>(utcData.hours));
     EXPECT_EQ(0, static_cast<int>(utcData.minutes));
     EXPECT_EQ(0, static_cast<int>(utcData.seconds));
-
 }
 

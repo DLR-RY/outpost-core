@@ -14,8 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_TIME_MODEL_H
-#define COBC_TIME_TIME_MODEL_H
+#ifndef COBC_TIME_TIME_EPOCH_H
+#define COBC_TIME_TIME_EPOCH_H
 
 #include "time_point.h"
 
@@ -23,6 +23,75 @@ namespace cobc
 {
 namespace time
 {
+/**
+ * Predefined time reference points.
+ */
+namespace epoch
+{
+
+/**
+ * Time since 1980-01-06T00:00:00Z, no leap seconds
+ */
+class GpsTime
+{
+};
+
+/**
+ * Time since 1970-01-01T00:00:00Z, no leap seconds
+ */
+class UnixTime
+{
+};
+
+/**
+ * Time since 1999-08-22T00:00:00Z with leap seconds
+ */
+class GalileoSystemTime
+{
+};
+
+/**
+ * Time since 2000-01-01T11:58:55Z
+ */
+class J2000
+{
+};
+
+/**
+ * Time since start of OBC.
+ *
+ * \tparam	Ref
+ * 		Reference time epoch.
+ */
+template <typename Ref>
+class SpacecraftElapsedTime
+{
+};
+
+template <>
+class SpacecraftElapsedTime<GpsTime>
+{
+public:
+	static Duration offsetToGpsTime;
+};
+}
+
+
+
+typedef TimePoint<epoch::SpacecraftElapsedTime<epoch::GpsTime> > SpacecraftElapsedTimePoint;
+typedef TimePoint<epoch::GpsTime> GpsTimePoint;
+
+// forward declaration
+template <typename Epoch>
+class TimePoint;
+
+template <typename From, typename To>
+class TimeEpochConverter
+{
+public:
+	static TimePoint<To>
+	convert(TimePoint<From> from);
+};
 
 /**
  * Time model used to convert between different time representations.
@@ -33,12 +102,6 @@ namespace time
 class TimeModel
 {
 public:
-    static TimePoint
-    endOfEpoch();
-
-    static TimePoint
-    startOfEpoch();
-
     struct UtcData
     {
         uint16_t years;
@@ -70,6 +133,10 @@ public:
     static uint8_t
     calculateTheLeapSecondsForGpsBefore(uint32_t seconds);
 
+    template <typename To, typename From>
+    static TimePoint<To>
+    convertTo(TimePoint<From> from);
+
 private:
     static const int secondsPerDay = 24 * 60 * 60;  // 86400
 
@@ -93,4 +160,6 @@ private:
 }
 }
 
-#endif // COBC_TIME_TIME_MODEL_H
+#include "time_epoch_impl.h"
+
+#endif // COBC_TIME_TIME_EPOCH_H

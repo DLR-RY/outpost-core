@@ -44,7 +44,7 @@ namespace time
 class Duration
 {
 public:
-    friend class TimeModel;
+    template <typename Epoch>
     friend class TimePoint;
 
     static const int64_t numberOfMicrosecondsPerMillisecond = 1000;
