@@ -58,6 +58,9 @@ void longjmp (jmp_buf env, int val);
 #define luai_jmpbuf		int  /* dummy variable */
 
 #elif defined(LUA_USE_ULONGJMP)
+
+void _longjmp (jmp_buf env, int val) __attribute__((noreturn));
+
 /* in Unix, try _longjmp/_setjmp (more efficient) */
 #define LUAI_THROW(L,c)		_longjmp((c)->b, 1)
 #define LUAI_TRY(L,c,a)		if (_setjmp((c)->b) == 0) { a }
