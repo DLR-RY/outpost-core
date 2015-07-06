@@ -62,6 +62,7 @@ class SpacecraftElapsedTimeEpoch
 typedef TimePoint<SpacecraftElapsedTimeEpoch> SpacecraftElapsedTime;
 typedef TimePoint<GpsEpoch> GpsTime;
 
+
 // forward declaration
 template <typename Epoch>
 class TimePoint;
@@ -72,70 +73,6 @@ class TimeEpochConverter
 public:
 	static TimePoint<To>
 	convert(TimePoint<From> from);
-};
-
-/**
- * Time model used to convert between different time representations.
- *
- * \ingroup time
- * \author  Fabian Greif
- */
-class TimeModel
-{
-public:
-    struct UtcData
-    {
-        uint16_t years;
-        uint8_t months;
-        uint8_t weekDay;
-        uint8_t days;
-        uint8_t hours;
-        uint8_t minutes;
-        uint8_t seconds;
-    };
-
-    static uint32_t
-    convertUtcDataToGpsSeconds(uint16_t year,
-                               uint8_t month,
-                               uint8_t day,
-                               uint8_t hour,
-                               uint8_t minute,
-                               uint8_t second);
-
-    static UtcData
-    convertGpsSecondsToUtcData(uint32_t seconds);
-
-    static bool
-    isLeapYear(uint16_t year);
-
-    static uint8_t
-    calculateTheLeapSecondsForGpsAfter(uint32_t seconds);
-
-    static uint8_t
-    calculateTheLeapSecondsForGpsBefore(uint32_t seconds);
-
-    template <typename To, typename From>
-    static TimePoint<To>
-    convertTo(TimePoint<From> from);
-
-private:
-    static const int secondsPerDay = 24 * 60 * 60;  // 86400
-
-    static const int daysPerYear = 365;
-    static const int daysPerLeapYear = 366;
-
-    static const int secondsPerYear = secondsPerDay * daysPerYear;
-    static const int secondsPerLeapYear = secondsPerDay * daysPerLeapYear;
-
-    // disable unneeded implicitly member functions
-    TimeModel();
-
-    ~TimeModel();
-
-    TimeModel(const TimeModel&);
-
-    TimeModel&
-    operator=(const TimeModel&);
 };
 
 }
