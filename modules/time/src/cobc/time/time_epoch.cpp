@@ -18,7 +18,7 @@
 
 using namespace cobc::time;
 
-Duration epoch::SpacecraftElapsedTime<epoch::GpsTime>::offsetToGpsTime = Duration::zero();
+Duration TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::offsetToGpsTime = Duration::zero();
 
 
 using cobc::time::TimeModel;

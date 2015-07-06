@@ -18,7 +18,7 @@
 
 #include <time.h>
 
-cobc::time::SpacecraftElapsedTimePoint
+cobc::time::SpacecraftElapsedTime
 cobc::rtos::SystemClock::now() const
 {
     struct timespec time;
@@ -27,5 +27,5 @@ cobc::rtos::SystemClock::now() const
     // convert to microseconds
     uint64_t microseconds = (time.tv_nsec / 1000) + (time.tv_sec * 1000000);
 
-    return cobc::time::SpacecraftElapsedTimePoint::afterEpoch(cobc::time::Microseconds(microseconds));
+    return cobc::time::SpacecraftElapsedTime::afterEpoch(cobc::time::Microseconds(microseconds));
 }

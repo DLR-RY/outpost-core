@@ -180,10 +180,10 @@ public:
     }
 
     template <typename To>
-	inline TimePoint<To>
+	inline To
 	convertTo() const
 	{
-    	return TimeEpochConverter<Epoch_, To>::convert(*this);
+    	return TimeEpochConverter<Epoch_, typename To::Epoch>::convert(*this);
 	}
 
 protected:

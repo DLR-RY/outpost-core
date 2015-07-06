@@ -19,7 +19,7 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-cobc::time::SpacecraftElapsedTimePoint
+cobc::time::SpacecraftElapsedTime
 cobc::rtos::SystemClock::now() const
 {
     // TODO Check when this will overflow
@@ -28,5 +28,5 @@ cobc::rtos::SystemClock::now() const
     // convert to microseconds
     uint64_t us = (static_cast<uint64_t>(ticks_since_boot) * 1000000) / configTICK_RATE_HZ;
 
-    return cobc::time::SpacecraftElapsedTimePoint::afterEpoch(cobc::time::Microseconds(us));
+    return cobc::time::SpacecraftElapsedTime::afterEpoch(cobc::time::Microseconds(us));
 }

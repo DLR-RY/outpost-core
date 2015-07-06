@@ -24,62 +24,43 @@ namespace cobc
 namespace time
 {
 /**
- * Predefined time reference points.
- */
-namespace epoch
-{
-
-/**
  * Time since 1980-01-06T00:00:00Z, no leap seconds
  */
-class GpsTime
+class GpsEpoch
 {
 };
 
 /**
  * Time since 1970-01-01T00:00:00Z, no leap seconds
  */
-class UnixTime
+class UnixEpoch
 {
 };
 
 /**
  * Time since 1999-08-22T00:00:00Z with leap seconds
  */
-class GalileoSystemTime
+class GalileoSystemTimeEpoch
 {
 };
 
 /**
  * Time since 2000-01-01T11:58:55Z
  */
-class J2000
+class J2000Epoch
 {
 };
 
 /**
  * Time since start of OBC.
- *
- * \tparam	Ref
- * 		Reference time epoch.
  */
-template <typename Ref>
-class SpacecraftElapsedTime
+class SpacecraftElapsedTimeEpoch
 {
 };
 
-template <>
-class SpacecraftElapsedTime<GpsTime>
-{
-public:
-	static Duration offsetToGpsTime;
-};
-}
 
-
-
-typedef TimePoint<epoch::SpacecraftElapsedTime<epoch::GpsTime> > SpacecraftElapsedTimePoint;
-typedef TimePoint<epoch::GpsTime> GpsTimePoint;
+typedef TimePoint<SpacecraftElapsedTimeEpoch> SpacecraftElapsedTime;
+typedef TimePoint<GpsEpoch> GpsTime;
 
 // forward declaration
 template <typename Epoch>

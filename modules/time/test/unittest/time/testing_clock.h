@@ -37,14 +37,14 @@ public:
     virtual
     ~TestingClock();
 
-    virtual cobc::time::SpacecraftElapsedTimePoint
+    virtual cobc::time::SpacecraftElapsedTime
     now() const;
 
     void
-    setTime(cobc::time::SpacecraftElapsedTimePoint);
+    setTime(cobc::time::SpacecraftElapsedTime);
 
 private:
-    cobc::time::SpacecraftElapsedTimePoint currentTime;
+    cobc::time::SpacecraftElapsedTime currentTime;
 };
 
 }

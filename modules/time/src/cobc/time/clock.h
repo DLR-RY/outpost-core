@@ -37,7 +37,7 @@ public:
     virtual
     ~Clock();
 
-    virtual SpacecraftElapsedTimePoint
+    virtual SpacecraftElapsedTime
     now() const = 0;
 
 private:

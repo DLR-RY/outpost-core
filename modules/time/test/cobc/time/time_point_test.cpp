@@ -29,8 +29,8 @@ public:
 
 TEST_F(TimePointTest, subtractionShouldGiveADuration)
 {
-	SpacecraftElapsedTimePoint time1 = SpacecraftElapsedTimePoint::afterEpoch(Milliseconds(0));
-	SpacecraftElapsedTimePoint time2 = SpacecraftElapsedTimePoint::afterEpoch(Milliseconds(100));
+	SpacecraftElapsedTime time1 = SpacecraftElapsedTime::afterEpoch(Milliseconds(0));
+	SpacecraftElapsedTime time2 = SpacecraftElapsedTime::afterEpoch(Milliseconds(100));
 
 	Duration d = time2 - time1;
 
@@ -39,10 +39,10 @@ TEST_F(TimePointTest, subtractionShouldGiveADuration)
 
 TEST_F(TimePointTest, shouldConvertEpoch)
 {
-	SpacecraftElapsedTimePoint::Epoch::offsetToGpsTime = Microseconds(200);
+	TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(Microseconds(200));
 
-	SpacecraftElapsedTimePoint timeScet = SpacecraftElapsedTimePoint::afterEpoch(Milliseconds(0));
-	GpsTimePoint timeGps = timeScet.convertTo<epoch::GpsTime>();
+	SpacecraftElapsedTime timeScet = SpacecraftElapsedTime::afterEpoch(Milliseconds(0));
+	GpsTime timeGps = timeScet.convertTo<GpsTime>();
 
 	EXPECT_EQ(200, timeGps.timeSinceEpoch().microseconds());
 }

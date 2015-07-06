@@ -19,7 +19,7 @@
 using namespace unittest::time;
 
 TestingClock::TestingClock() :
-	currentTime(cobc::time::SpacecraftElapsedTimePoint::startOfEpoch())
+	currentTime(cobc::time::SpacecraftElapsedTime::startOfEpoch())
 {
 }
 
@@ -27,14 +27,14 @@ TestingClock::~TestingClock()
 {
 }
 
-cobc::time::SpacecraftElapsedTimePoint
+cobc::time::SpacecraftElapsedTime
 TestingClock::now() const
 {
     return currentTime;
 }
 
 void
-TestingClock::setTime(cobc::time::SpacecraftElapsedTimePoint timePoint)
+TestingClock::setTime(cobc::time::SpacecraftElapsedTime timePoint)
 {
     currentTime = timePoint;
 }

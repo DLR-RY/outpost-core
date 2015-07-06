@@ -16,11 +16,11 @@
 
 #include "clock.h"
 
-cobc::time::SpacecraftElapsedTimePoint
+cobc::time::SpacecraftElapsedTime
 cobc::rtos::SystemClock::now() const
 {
     // convert to microseconds
     uint64_t us = 0;
 
-    return cobc::time::SpacecraftElapsedTimePoint::afterEpoch(cobc::time::Microseconds(us));
+    return cobc::time::SpacecraftElapsedTime::afterEpoch(cobc::time::Microseconds(us));
 }

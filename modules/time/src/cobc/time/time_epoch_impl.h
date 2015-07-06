@@ -26,53 +26,61 @@ namespace time
 
 // ----------------------------------------------------------------------------
 template <>
-class TimeEpochConverter<epoch::SpacecraftElapsedTime<epoch::GpsTime>, epoch::GpsTime>
+class TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>
 {
 public:
-	static TimePoint<epoch::GpsTime>
-	convert(TimePoint<epoch::SpacecraftElapsedTime<epoch::GpsTime> > from)
+	static Duration offsetToGpsTime;
+
+	static TimePoint<GpsEpoch>
+	convert(TimePoint<SpacecraftElapsedTimeEpoch> from)
 	{
-		return TimePoint<epoch::GpsTime>::afterEpoch(from.timeSinceEpoch()
-				+ epoch::SpacecraftElapsedTime<epoch::GpsTime>::offsetToGpsTime);
+		return TimePoint<GpsEpoch>::afterEpoch(from.timeSinceEpoch()
+				+ offsetToGpsTime);
+	}
+
+	static inline void
+	setOffset(Duration duration)
+	{
+		offsetToGpsTime = duration;
 	}
 };
 
 template <>
-class TimeEpochConverter<epoch::GpsTime, epoch::SpacecraftElapsedTime<epoch::GpsTime> >
+class TimeEpochConverter<GpsEpoch, SpacecraftElapsedTimeEpoch>
 {
 public:
-	static TimePoint<epoch::SpacecraftElapsedTime<epoch::GpsTime> >
-	convert(TimePoint<epoch::GpsTime> from)
+	static TimePoint<SpacecraftElapsedTimeEpoch>
+	convert(TimePoint<GpsEpoch> from)
 	{
-		return TimePoint<epoch::SpacecraftElapsedTime<epoch::GpsTime> >::afterEpoch(from.timeSinceEpoch()
-				- epoch::SpacecraftElapsedTime<epoch::GpsTime>::offsetToGpsTime);
+		return TimePoint<SpacecraftElapsedTimeEpoch>::afterEpoch(from.timeSinceEpoch()
+				- TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::offsetToGpsTime);
 	}
 };
 
 // ----------------------------------------------------------------------------
 template <>
-class TimeEpochConverter<epoch::GpsTime, epoch::UnixTime>
+class TimeEpochConverter<GpsEpoch, UnixEpoch>
 {
 public:
 	static const uint64_t offsetInSeconds = 315964800;
 
-	static TimePoint<epoch::UnixTime>
-	convert(TimePoint<epoch::GpsTime> from)
+	static TimePoint<UnixEpoch>
+	convert(TimePoint<GpsEpoch> from)
 	{
-		return TimePoint<epoch::UnixTime>::afterEpoch(from.timeSinceEpoch()
+		return TimePoint<UnixEpoch>::afterEpoch(from.timeSinceEpoch()
 				+ Seconds(offsetInSeconds));
 	}
 };
 
 template <>
-class TimeEpochConverter<epoch::UnixTime, epoch::GpsTime>
+class TimeEpochConverter<UnixEpoch, GpsEpoch>
 {
 public:
-	static TimePoint<epoch::GpsTime>
-	convert(TimePoint<epoch::UnixTime> from)
+	static TimePoint<GpsEpoch>
+	convert(TimePoint<UnixEpoch> from)
 	{
-		return TimePoint<epoch::GpsTime>::afterEpoch(from.timeSinceEpoch()
-				- Seconds(TimeEpochConverter<epoch::GpsTime, epoch::UnixTime>::offsetInSeconds));
+		return TimePoint<GpsEpoch>::afterEpoch(from.timeSinceEpoch()
+				- Seconds(TimeEpochConverter<GpsEpoch, UnixEpoch>::offsetInSeconds));
 	}
 };
 
