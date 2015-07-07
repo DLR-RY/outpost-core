@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2015, German Aerospace Center (DLR)
+ * 
+ * This file is part of libCOBC 0.4.
+ *
+ * It is distributed under the terms of the GNU General Public License with a
+ * linking exception. See the file "LICENSE" for the full license governing
+ * this code.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ */
+// ----------------------------------------------------------------------------
+
+#include <unittest/harness.h>
+#include <cobc/time/time_epoch.h>
+
+using namespace cobc::time;
+
+TEST(TimeEpochTest, convertGpsTimeToUnixTime)
+{
+	// Calculated reference values from http://www.andrews.edu/~tzs/timeconv/timeconvert.php
+	std::vector<std::vector<int64_t>> referencePoints {
+		// Start of epoch
+		{ 0, 315964800 },
+
+		// Test random dates
+		{ 4665599, 320630399 },
+		{ 378303139, 694267932 },
+		{ 630720013, 946684800 },
+		{ 643939211, 959903998 },
+
+		// Test leap years
+		{ 4665599, 320630399 },
+		{ 4665600, 320630400 },
+		{ 4752000, 320716800 },
+
+		// Test leap seconds
+		{ 315187204, 631151999 },
+		{ 315187205, 631151999 },
+		{ 315187206, 631152000 },
+
+		{ 820108812, 1136073599 },
+		{ 820108813, 1136073599 },
+		{ 820108814, 1136073600 },
+
+		{ 1119744015, 1435708799 },
+		{ 1119744016, 1435708799 },
+		{ 1119744017, 1435708800 },
+	};
+
+	for (auto&& reference : referencePoints)
+	{
+		GpsTime gpsTime = GpsTime::afterEpoch(Seconds(reference[0]));
+		UnixTime unixTime = gpsTime.convertTo<UnixTime>();
+
+		EXPECT_EQ(Seconds(reference[1]), unixTime.timeSinceEpoch());
+	}
+}
+
+TEST(TimeEpochTest, convertUnixTimeToGpsTime)
+{
+	// Calculated reference values from http://www.andrews.edu/~tzs/timeconv/timeconvert.php
+	std::vector<std::vector<int64_t>> referencePoints {
+		// Start of epoch
+		{ 0, 315964800 },
+
+		// Test random dates
+		{ 4665599, 320630399 },
+		{ 378303139, 694267932 },
+		{ 630720013, 946684800 },
+		{ 643939211, 959903998 },
+
+		// Test leap years
+		{ 4665599, 320630399 },
+		{ 4665600, 320630400 },
+		{ 4752000, 320716800 },
+
+		// Test leap seconds
+		{ 315187204, 631151999 },
+		{ 315187206, 631152000 },
+
+		{ 820108812, 1136073599 },
+		{ 820108814, 1136073600 },
+
+		{ 1119744015, 1435708799 },
+		{ 1119744017, 1435708800 },
+	};
+
+	for (auto&& reference : referencePoints)
+	{
+		UnixTime unixTime = UnixTime::afterEpoch(Seconds(reference[1]));
+		GpsTime gpsTime = unixTime.convertTo<GpsTime>();
+
+		EXPECT_EQ(Seconds(reference[0]), gpsTime.timeSinceEpoch());
+	}
+}

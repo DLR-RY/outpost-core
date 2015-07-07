@@ -14,7 +14,7 @@ coverage:
 	find ../../build/$(MODULE)/test/coverage -name "*.gcda" -delete; \
 	../../build/$(MODULE)/test/coverage/runner || return 1; \
 	cd ../../build/$(MODULE)/test/coverage; \
-	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory ../../../../modules/$(MODULE)/test --directory . --gcov-tool `which gcov-4.7` || return 1; \
+	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory ../../../../modules/$(MODULE)/test --directory . --gcov-tool `which gcov` || return 1; \
 	lcov -r coverage.info "/usr*" "test/*" "tools/*" "rtos/*" "utils/*" "default/*" -o coverage.info; \
 	rm -rf report; \
 	genhtml -o report coverage.info

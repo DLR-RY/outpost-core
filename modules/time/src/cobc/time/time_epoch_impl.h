@@ -57,18 +57,36 @@ public:
 	}
 };
 
+struct LeapSecondCorrection
+{
+	enum Type
+	{
+		remove,
+		add
+	};
+};
+
+Duration
+getCorrectionFactorForLeapSeconds(int64_t seconds,
+								  LeapSecondCorrection::Type correction);
+
 // ----------------------------------------------------------------------------
 template <>
 class TimeEpochConverter<GpsEpoch, UnixEpoch>
 {
 public:
-	static const uint64_t offsetInSeconds = 315964800;
+	static const int64_t initialOffsetInSeconds = 315964800;
 
 	static TimePoint<UnixEpoch>
 	convert(TimePoint<GpsEpoch> from)
 	{
-		return TimePoint<UnixEpoch>::afterEpoch(from.timeSinceEpoch()
-				+ Seconds(offsetInSeconds));
+		// leap second correction
+		Duration correction = getCorrectionFactorForLeapSeconds(from.timeSinceEpoch().seconds(),
+																LeapSecondCorrection::remove);
+		return TimePoint<UnixEpoch>::afterEpoch(
+				from.timeSinceEpoch()
+				+ Seconds(initialOffsetInSeconds)
+				- correction);
 	}
 };
 
@@ -79,8 +97,15 @@ public:
 	static TimePoint<GpsEpoch>
 	convert(TimePoint<UnixEpoch> from)
 	{
-		return TimePoint<GpsEpoch>::afterEpoch(from.timeSinceEpoch()
-				- Seconds(TimeEpochConverter<GpsEpoch, UnixEpoch>::offsetInSeconds));
+		// leap second correction
+		int64_t seconds = from.timeSinceEpoch().seconds()
+				- TimeEpochConverter<GpsEpoch, UnixEpoch>::initialOffsetInSeconds;
+
+		Duration correction = getCorrectionFactorForLeapSeconds(seconds, LeapSecondCorrection::add);
+		return TimePoint<GpsEpoch>::afterEpoch(
+				from.timeSinceEpoch()
+				- Seconds(TimeEpochConverter<GpsEpoch, UnixEpoch>::initialOffsetInSeconds)
+				+ correction);
 	}
 };
 

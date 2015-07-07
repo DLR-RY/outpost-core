@@ -20,24 +20,47 @@
 
 using namespace cobc::time;
 
-class TimePointTest : public testing::Test
+TEST(TimePointTest, shouldCreateFromDuration)
 {
-public:
+	SpacecraftElapsedTime time = SpacecraftElapsedTime::afterEpoch(Milliseconds(1456));
 
-};
+	EXPECT_EQ(Milliseconds(1456), time.timeSinceEpoch());
+}
 
-
-TEST_F(TimePointTest, subtractionShouldGiveADuration)
+//  TimePoint - TimePoint --> Duration
+TEST(TimePointTest, subtractionShouldGiveADuration)
 {
-	SpacecraftElapsedTime time1 = SpacecraftElapsedTime::afterEpoch(Milliseconds(0));
-	SpacecraftElapsedTime time2 = SpacecraftElapsedTime::afterEpoch(Milliseconds(100));
+	SpacecraftElapsedTime time1 = SpacecraftElapsedTime::afterEpoch(Milliseconds(100));
+	SpacecraftElapsedTime time2 = SpacecraftElapsedTime::afterEpoch(Milliseconds(200));
 
 	Duration d = time2 - time1;
 
-	EXPECT_EQ(100, d.milliseconds());
+	EXPECT_EQ(Milliseconds(100), d);
 }
 
-TEST_F(TimePointTest, shouldConvertEpoch)
+// TimePoint + Duration  --> TimePoint
+TEST(TimePointTest, shouldAddDurationToTimePoint)
+{
+	SpacecraftElapsedTime time1 = SpacecraftElapsedTime::afterEpoch(Milliseconds(200));
+	Duration d = Microseconds(12345);
+
+	SpacecraftElapsedTime time2 = time1 + d;
+
+	EXPECT_EQ(Microseconds(212345), time2.timeSinceEpoch());
+}
+
+// TimePoint - Duration  --> TimePoint
+TEST(TimePointTest, shouldSubtractDurationFromTimePoint)
+{
+	SpacecraftElapsedTime time1 = SpacecraftElapsedTime::afterEpoch(Milliseconds(200));
+	Duration d = Microseconds(12345);
+
+	SpacecraftElapsedTime time2 = time1 - d;
+
+	EXPECT_EQ(Microseconds(187655), time2.timeSinceEpoch());
+}
+
+TEST(TimePointTest, shouldConvertEpoch)
 {
 	TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(Microseconds(200));
 

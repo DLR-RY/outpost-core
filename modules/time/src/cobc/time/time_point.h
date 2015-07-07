@@ -85,6 +85,12 @@ public:
         return Duration(mDuration - other.mDuration);
     }
 
+    inline TimePoint
+	operator-(Duration duration) const
+	{
+		return TimePoint(mDuration - duration);
+	}
+
     inline TimePoint&
     operator-=(Duration d)
     {

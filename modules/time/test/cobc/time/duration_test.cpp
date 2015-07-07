@@ -19,6 +19,19 @@
 
 using namespace cobc::time;
 
+TEST(DurationTest, shouldAddTwoDurations)
+{
+	Duration d1 = Milliseconds(100);
+	Duration d2 = Microseconds(23456);
+
+	Duration d3 = d1 + d2;
+
+	EXPECT_EQ(Microseconds(123456), d3);
+
+	EXPECT_EQ(Milliseconds(100), d1);
+	EXPECT_EQ(Microseconds(23456), d2);
+}
+
 TEST(DurationTest, derivedTypes)
 {
     ASSERT_EQ(Seconds(5), Milliseconds(5000));

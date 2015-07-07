@@ -61,6 +61,7 @@ class SpacecraftElapsedTimeEpoch
 
 typedef TimePoint<SpacecraftElapsedTimeEpoch> SpacecraftElapsedTime;
 typedef TimePoint<GpsEpoch> GpsTime;
+typedef TimePoint<UnixEpoch> UnixTime;
 
 
 // forward declaration
