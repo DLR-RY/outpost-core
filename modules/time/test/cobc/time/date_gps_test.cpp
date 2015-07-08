@@ -14,6 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
+#include <iomanip>
+
 #include <unittest/harness.h>
 #include <cobc/time/date.h>
 
@@ -23,13 +25,41 @@ namespace cobc
 {
 namespace time
 {
-::std::ostream& operator<<(::std::ostream& os, const Duration& duration) {
-  return os << duration.microseconds();
+::std::ostream&
+operator<<(::std::ostream& os, const Duration& duration);
+
+::std::ostream&
+operator<<(::std::ostream& os, const Seconds& duration);
+
+::std::ostream&
+operator<<(::std::ostream& os, const Date& date);
+
+
+::std::ostream&
+operator<<(::std::ostream& os, const Duration& duration)
+{
+	return os << duration.microseconds() << " us";
 }
 
-::std::ostream& operator<<(::std::ostream& os, const Seconds& duration) {
-  return os << duration.microseconds();
+::std::ostream&
+operator<<(::std::ostream& os, const Seconds& duration)
+{
+	return os << duration.microseconds() << " us";
 }
+
+::std::ostream&
+operator<<(::std::ostream& os, const Date& date)
+{
+	os << static_cast<int>(date.year) << "-";
+	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.month) << "-";
+	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.day) << "T";
+	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.hour) << "-";
+	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.minute) << "-";
+	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.second);
+
+	return os;
+}
+
 }
 }
 
@@ -168,4 +198,21 @@ TEST(DateGpsTest, convertGpsTimeToGpsDate)
 	// 17 leap seconds
 	EXPECT_EQ(1852U, date.weekNumber);
 	EXPECT_EQ(232883U + 17U, date.timeOfWeek);
+}
+
+TEST(DateGpsTest, shouldDoAGpsDateRoundtrip)
+{
+	GpsTime in;
+	GpsTime out;
+	GpsDate date;
+
+	in = Date::toGpsTime(Date { 2011, 7, 7, 8, 51, 44 });
+	date = GpsDate::fromGpsTime(in);
+	out = GpsDate::toGpsTime(date);
+	EXPECT_EQ(in, out);
+
+	in = Date::toGpsTime(Date { 2015, 7, 7, 16, 41, 23 });
+	date = GpsDate::fromGpsTime(in);
+	out = GpsDate::toGpsTime(date);
+	EXPECT_EQ(in, out);
 }

@@ -24,6 +24,24 @@ namespace cobc
 namespace time
 {
 
+// forward declaration
+struct Date;
+
+/**
+ * Helper class to simplify the calculation of dates.
+ *
+ * Based on the following algorithm:
+ * https://alcor.concordia.ca/~gpkatch/gdate-method.html
+ */
+struct DateUtils
+{
+	static int64_t
+	getDay(Date date);
+
+	static Date
+	getDate(int64_t day);
+};
+
 /**
  * Represents a specific instant in time.
  *
@@ -32,7 +50,6 @@ namespace time
  * which is incorporated is from June 2015).
  *
  * \author	Fabian Greif
- * \author	Annika Ofenloch
  */
 struct Date
 {
@@ -75,8 +92,6 @@ struct Date
  */
 struct GpsDate
 {
-	static const int64_t secondsPerWeek = 60 * 60 * 24 * 7;
-
 	static GpsDate
 	fromGpsTime(GpsTime time);
 
