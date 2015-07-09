@@ -31,7 +31,7 @@ class GpsEpoch
 };
 
 /**
- * Time since 1970-01-01T00:00:00Z, no leap seconds
+ * Time since 1970-01-01T00:00:00Z, ignores leap seconds
  */
 class UnixEpoch
 {
@@ -53,6 +53,8 @@ class J2000Epoch
 
 /**
  * Time since start of OBC.
+ *
+ * Strictly monotonous counter.
  */
 class SpacecraftElapsedTimeEpoch
 {
