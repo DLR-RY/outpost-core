@@ -111,3 +111,23 @@ TEST(DateUnixTest, convertUnixTimeToDateForLeapSeconds)
 	expect = Date { 2015, 7, 1, 0, 0, 0 };
 	EXPECT_EQ(expect, date);
 }
+
+TEST(DateUnixTest, shouldDoDateRoundtripForAllValidDates)
+{
+	Date expect { 100, 1, 1, 0, 0, 0 };
+	for (int year = 100; year < 3000; ++year)
+	{
+		for (int month = 1; month <= 12; ++month)
+		{
+			expect.day = 1;
+			while (expect.isValid())
+			{
+				UnixTime time = Date::toUnixTime(expect);
+				Date actual = Date::fromUnixTime(time);
+
+				EXPECT_EQ(expect, actual);
+				++expect.day;
+			}
+		}
+	}
+}

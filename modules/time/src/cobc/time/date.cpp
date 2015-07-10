@@ -217,6 +217,45 @@ Date::fromUnixTime(UnixTime time)
     return date;
 }
 
+static bool
+isLeapYear(int year)
+{
+	bool leap = ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
+	return leap;
+}
+
+static const int daysPerMonth[12] = {
+	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+};
+
+bool
+Date::isValid() const
+{
+	bool valid = true;
+
+	if ((year < 1) || (month == 0) || (month > 12))
+	{
+		valid = false;
+	}
+	else if ((day == 0)
+		|| (isLeapYear(year) && (month == 2) && day > 29)
+		|| (!isLeapYear(year) && (month != 2) && day > daysPerMonth[month - 1]))
+	{
+		valid = false;
+	}
+	// Allow for leap second representation by setting seconds to 60
+	else if ((hour > 23) || (minute > 59) || (second > 60))
+	{
+		valid = false;
+	}
+	else
+	{
+		valid = true;
+	}
+
+	return valid;
+}
+
 bool
 Date::operator==(const Date& other) const
 {

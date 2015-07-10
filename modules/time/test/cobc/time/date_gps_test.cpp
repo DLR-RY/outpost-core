@@ -216,3 +216,23 @@ TEST(DateGpsTest, shouldDoAGpsDateRoundtrip)
 	out = GpsDate::toGpsTime(date);
 	EXPECT_EQ(in, out);
 }
+
+TEST(DateGpsTest, shouldDoDateRoundtripForAllValidDates)
+{
+	Date expect { 100, 1, 1, 0, 0, 0 };
+	for (int year = 100; year < 3000; ++year)
+	{
+		for (int month = 1; month <= 12; ++month)
+		{
+			expect.day = 1;
+			while (expect.isValid())
+			{
+				GpsTime time = Date::toGpsTime(expect);
+				Date actual = Date::fromGpsTime(time);
+
+				EXPECT_EQ(expect, actual);
+				++expect.day;
+			}
+		}
+	}
+}

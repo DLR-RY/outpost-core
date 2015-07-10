@@ -71,6 +71,11 @@ struct Date
 	static UnixTime
 	toUnixTime(const Date& date);
 
+	/**
+	 * Check that given value represent a valid date.
+	 */
+	bool
+	isValid() const;
 
 	bool
 	operator==(const Date& other) const;
