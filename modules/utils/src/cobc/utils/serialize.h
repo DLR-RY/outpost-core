@@ -130,7 +130,7 @@ public:
     }
 
     inline void
-    storeBuffer(uint8_t* buffer, size_t length)
+    storeBuffer(const uint8_t* buffer, size_t length)
     {
         memcpy(mBuffer, buffer, length);
         mBuffer += length;
