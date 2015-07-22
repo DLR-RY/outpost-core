@@ -18,6 +18,7 @@
 #define COBC_FIXED_SIZE_ARRAY_H
 
 #include <stddef.h>
+#include <string.h>     // for memcpy
 
 #include "../utils.h"
 
@@ -38,6 +39,10 @@ public:
     typedef typename cobc::remove_const<T>::type NonConstType;
 
     friend class FixedSizeArray<const T, N>;
+
+    FixedSizeArray()
+    {
+    }
 
     /**
      * Initialize directly from a C style array.
@@ -81,10 +86,18 @@ public:
      *      Number of elements in the array.
      */
     static inline FixedSizeArray<T, N>
-    fromArray(T* array)
+    fromArray(NonConstType* array)
     {
         FixedSizeArray a;
-        memcpy(a.mData, array, sizeof(mData));
+        memcpy(a.mData, array, sizeof(a.mData));
+        return a;
+    }
+
+    static inline FixedSizeArray<T, N>
+    fromArray(const NonConstType* array)
+    {
+        FixedSizeArray a;
+        memcpy(a.mData, array, sizeof(a.mData));
         return a;
     }
 
@@ -131,10 +144,6 @@ public:
     }
 
 private:
-    FixedSizeArray()
-    {
-    }
-
     T mData[N];
 };
 
