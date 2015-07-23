@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -21,6 +21,7 @@
 #include <stdint.h>
 
 #include <cobc/time/duration.h>
+#include <cobc/utils/bounded_array.h>
 
 namespace cobc
 {
@@ -75,8 +76,7 @@ public:
      * \return    Number of bytes which could be read, maximal \p length
      */
     virtual size_t
-    read(uint8_t* data,
-         size_t length,
+    read(cobc::BoundedArray<uint8_t>& data,
          time::Duration timeout = time::Duration::maximum()) = 0;
 
     /**
@@ -91,8 +91,7 @@ public:
      * \return  Number of bytes written.
      */
     virtual size_t
-    write(const uint8_t* data,
-          size_t length,
+    write(const cobc::BoundedArray<uint8_t>& data,
           time::Duration timeout = time::Duration::maximum()) = 0;
 
     /**
