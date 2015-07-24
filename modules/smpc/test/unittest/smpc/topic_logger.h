@@ -35,6 +35,9 @@ class TopicLogger
 public:
     TopicLogger(cobc::smpc::Topic<T>& topic);
 
+    void
+    clear();
+
     const T&
     getNext() const;
 

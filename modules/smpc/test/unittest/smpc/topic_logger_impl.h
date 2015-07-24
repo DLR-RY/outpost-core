@@ -26,6 +26,13 @@ unittest::smpc::TopicLogger<T>::TopicLogger(cobc::smpc::Topic<T>& topic) :
 }
 
 template<typename T>
+void
+unittest::smpc::TopicLogger<T>::clear()
+{
+    mItems.clear();
+}
+
+template<typename T>
 const T&
 unittest::smpc::TopicLogger<T>::getNext() const
 {
