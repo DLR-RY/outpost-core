@@ -40,8 +40,6 @@
 ** =======================================================
 */
 
-void longjmp (jmp_buf env, int val);
-
 /*
 ** LUAI_THROW/LUAI_TRY define how Lua does exception handling. By
 ** default, Lua handles errors with exceptions when compiling as
