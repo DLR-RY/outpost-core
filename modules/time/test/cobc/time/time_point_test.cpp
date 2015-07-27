@@ -68,4 +68,7 @@ TEST(TimePointTest, shouldConvertEpoch)
 	GpsTime timeGps = timeScet.convertTo<GpsTime>();
 
 	EXPECT_EQ(200, timeGps.timeSinceEpoch().microseconds());
+	
+	// Reset offset
+	TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(Microseconds(0));
 }
