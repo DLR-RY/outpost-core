@@ -1,13 +1,15 @@
 
-def configure(target):
-	return {
-		'name': 'cobc.smpc',
-		'depends': [
-			'cobc.utils',
-		],
-	}
+def init(module):
+	module.set_name("smpc")
+	module.set_description("Simple message passing channel.")
 
-def build(config):
-	copytree(modulepath('src'), outpath('src'))
-	copytree(modulepath('test'), outpath('test'))
+def prepare(module, options):
+	module.depends([":utils"])
+	return True
+
+def build(env):
+	env.copy('src', 'src')
+	
+	if env[':test']:
+		env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))
 

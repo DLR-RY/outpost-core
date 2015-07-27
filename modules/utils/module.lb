@@ -1,16 +1,17 @@
 
-def configure(target):
-	return {
-		'name': 'cobc.utils',
-		'depends': [],
-	}
+def init(module):
+	module.set_name("utils")
+	module.set_description("Useful utilities.")
 
-def build(config):
-	copytree(modulepath('src'), outpath('src'))
-	copytree(modulepath('test'), outpath('test'))
+def prepare(module, options):
+	return True
+
+def build(env):
+	env.copy('src', 'src')
 	
-	copytree(modulepath('ext/gmock-1.6.0/fused-src/gtest'), outpath('ext/gtest'))
-	copytree(modulepath('ext/gmock-1.6.0/fused-src/gmock'), outpath('ext/gmock'))
-	copyfile(modulepath('ext/gmock-1.6.0/fused-src/gmock-gtest-all.cc'),
-	         outpath('ext/gmock-gtest-all.cc'))
-
+	if env[':test']:
+		env.copy('test', 'test')
+		
+		env.copy('ext/gmock-1.6.0/fused-src/gtest', 'ext/gtest')
+		env.copy('ext/gmock-1.6.0/fused-src/gmock', 'ext/gmock')
+		env.copy('ext/gmock-1.6.0/fused-src/gmock-gtest-all.cc', 'ext/gmock-gtest-all.cc')

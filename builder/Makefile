@@ -1,10 +1,10 @@
 
-BUILDER = ~/development/library-builder/src/library-builder.py
+BUILDER = ~/development/library-builder/scripts/lbuild
 
 all: generate build run
 
 generate:
-	@$(BUILDER) -r ../modules -p library.lb
+	@$(BUILDER) -r ../modules/cobc.lb -c library.lb
 
 build:
 	@scons -j4

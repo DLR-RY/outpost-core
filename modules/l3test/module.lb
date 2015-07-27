@@ -1,25 +1,23 @@
 
-import os
-import shutil
+def init(module):
+	module.set_name("l3test")
+	module.set_description("Low Level Lua tests.")
 
-def configure(target):
-	config = {
-		'name': 'cobc.l3test',
-		'depends': [
-			'cobc.utils',
-		],
-	}
-	
-	return config
+def prepare(module, options):
+	module.depends([":utils"])
+	return True
 
-def build(config):
-	copytree(modulepath('src'), outpath('src'))
-	copytree(modulepath('test'), outpath('test'))
-	copytree(modulepath('lua/modules/l3test'), outpath('src/modules/l3test'))
-	copytree(modulepath('ext/lua-5.2.3/src'), outpath('ext/lua'), ignore=shutil.ignore_patterns('lua.c', 'luac.c'))
+def build(env):
+	env.copy('src', 'test')
 	
-	copytree(modulepath('lua/src'), outpath('lua/src'))
-	copytree(modulepath('ext/luassert'), outpath('lua/src/luassert'))
-	copytree(modulepath('ext/say'), outpath('lua/src/say'))
+	if env[':test']:
+		env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))
+
+	env.copy('lua/modules/l3test', 'test/modules/l3test')
+	env.copy('ext/lua-5.2.3/src', 'ext/lua', ignore=env.ignore_files('lua.c', 'luac.c'))
 	
-	copytree(modulepath('bin'), outpath('bin'))
+	env.copy('lua/src', 'lua/src')
+	env.copy('ext/luassert', 'lua/src/luassert')
+	env.copy('ext/say', 'lua/src/say')
+	
+	env.copy('bin', 'bin')

@@ -1,13 +1,14 @@
 
-def configure(target):
-	return {
-		'name': 'cobc.time',
-		'depends': [
-			'cobc.utils',
-		],
-	}
+def init(module):
+	module.set_name("time")
+	module.set_description("Time management.")
 
-def build(config):
-	copytree(modulepath('src'), outpath('src'))
-	copytree(modulepath('test'), outpath('test'))
+def prepare(module, options):
+	module.depends(":utils")
+	return True
 
+def build(env):
+	env.copy('src', 'src')
+	
+	if env[':test']:
+		env.copy('test', 'test')

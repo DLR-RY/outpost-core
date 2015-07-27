@@ -1,27 +1,35 @@
 
 env = Environment()
 
-files  = env.Glob('src/*.cpp')
-files += env.Glob('src/*/*.cpp')
-files += env.Glob('src/*/*/*.cpp')
-files += env.Glob('src/*/*/*/*.cpp')
+env.Append(CPPPATH=['src', 'test', 'ext', 'ext/lua'])
+env.Append(CCFLAGS=['-O2'])
 
-files += env.Glob('test/*.cpp')
-files += env.Glob('test/*/*.cpp')
-files += env.Glob('test/*/*/*.cpp')
-files += env.Glob('test/*/*/*/*.cpp')
+envTest = env.Clone()
+env.Append(CXXFLAGS=['-std=c++03'])
 
-files += env.Glob('ext/*.cc')
-files += env.Glob('ext/*/*.c')
+filesLib  = env.Glob('src/*.cpp')
+filesLib += env.Glob('src/*/*.cpp')
+filesLib += env.Glob('src/*/*/*.cpp')
+filesLib += env.Glob('src/*/*/*/*.cpp')
 
-env.Append(CPPPATH=['src', 'test', 'ext'])
-env.Append(CPPDEFINES={'LUA_USE_POSIX':None, 'LUA_USE_DLOPEN':None})
+objectsLib = env.Object(filesLib)
+
+env = envTest
+env.Append(CPPDEFINES={'LUA_USE_LINUX':None})
+env.Append(CXXFLAGS=['-std=c++11'])
+
+filesTest  = env.Glob('test/*.cpp')
+filesTest += env.Glob('test/*/*.cpp')
+filesTest += env.Glob('test/*/*/*.cpp')
+filesTest += env.Glob('test/*/*/*/*.cpp')
+
+filesTest += env.Glob('ext/*.cc')
+filesTest += env.Glob('ext/*/*.c')
 
 env.Append(LIBS=['pthread', 'rt', 'dl'])
-env.Append(CXXFLAGS=['-std=c++0x'])
 env.Append(LINKFLAGS=['-Wl,--export-dynamic'])
 
-program = env.Program('runner', files)
+program = env.Program('runner', filesTest + objectsLib)
 
 env.Default([program])
 
