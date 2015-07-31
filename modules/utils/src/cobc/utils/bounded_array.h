@@ -68,6 +68,17 @@ public:
     }
 
     /**
+     * Generate an empty array.
+     */
+    static inline BoundedArray
+    empty()
+    {
+        BoundedArray array(0, 0);
+        return array;
+    }
+
+
+    /**
      * Initialize from a pointer to an array.
      *
      * Example:

@@ -22,8 +22,6 @@ namespace cobc
 
 /**
  * Empty Base class for classes with member function callbacks.
- *
- * \see    rtos::Timer
  */
 class Callable
 {
