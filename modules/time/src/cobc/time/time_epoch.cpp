@@ -26,50 +26,69 @@ Duration TimeEpochConverter<SpacecraftElapsedTimeEpoch,
 /**
  * Leap second correction table.
  *
- * When new leap seconds are added they have to be added here.
+ * When new leap seconds are added they have to be added here. The values are
+ * calculated as followed:
  *
- * see also http://www.andrews.edu/~tzs/timeconv/timedisplay.php
+ *     (DateUtils::getDay(Date { 1981, 6, 30, 0, 0, 0 })
+ *    - DateUtils::getDay(Date { 1958, 1,  1, 0, 0, 0 }) + 1) * 86400
+ *    + number of leap seconds
+ *
+ * see also http://hpiers.obspm.fr/eop-pc/earthor/utc/TAI-UTC_tab.html
  */
 static const int64_t leapSecondArray[] =
 {
-	1119744016,		// 2015-06-30T23:59:60Z
-	1025136015,		// 2012-06-30T23:50:60Z
-	 914803214,		// 2008-12-31T23:50:60Z
-	 820108813,		// 2005-12-31T23:50:60Z
-	 599184012,		// 1998-12-31T23:50:60Z
-	 551750411,		// 1997-06-30T23:59:60Z
-	 504489610,		// 1995-12-31T23:50:60Z
-	 457056009,		// 1994-06-30T23:59:60Z
-	 425520008,		// 1993-06-30T23:59:60Z
-	 393984007,		// 1992-06-30T23:59:60Z
-	 346723206,		// 1990-12-31T23:50:60Z
-	 315187205,		// 1989-12-31T23:50:60Z
-	 252028804,		// 1987-12-31T23:50:60Z
-	 173059203,		// 1985-06-30T23:59:60Z
-	 109900802,		// 1983-06-30T23:59:60Z
-	  78364801,		// 1982-06-30T23:59:60Z
-	  46828800,		// 1981-06-30T23:59:60Z
+	1814400035,	// 35: 2015-06-30T23:59:60Z
+	1719792034,	// 34: 2012-06-30T23:59:60Z
+	1609459233,	// 33: 2008-12-31T23:59:60Z
+	1514764832,	// 32: 2005-12-31T23:59:60Z
+	1293840031,	// 31: 1998-12-31T23:59:60Z
+	1246406430,	// 30: 1997-06-30T23:59:60Z
+	1199145629,	// 29: 1995-12-31T23:59:60Z
+	1151712028,	// 28: 1994-06-30T23:59:60Z
+	1120176027,	// 27: 1993-06-30T23:59:60Z
+	1088640026,	// 26: 1992-06-30T23:59:60Z
+	1041379225,	// 25: 1990-12-31T23:59:60Z
+	1009843224,	// 24: 1989-12-31T23:59:60Z
+	 946684823,	// 23: 1987-12-31T23:59:60Z
+	 867715222,	// 22: 1985-06-30T23:59:60Z
+	 804556821,	// 21: 1983-06-30T23:59:60Z
+	 773020820,	// 20: 1982-06-30T23:59:60Z
+	 741484819,	// 19: 1981-06-30T23:59:60Z
+	 694224018, // 18: 1979-12-31T23:59:60Z
+	 662688017, // 17: 1978-12-31T23:59:60Z
+	 631152016, // 16: 1977-12-31T23:59:60Z
+	 599616015, // 15: 1976-12-31T23:59:60Z
+	 567993614, // 14: 1975-12-31T23:59:60Z
+	 536457613, // 13: 1974-12-31T23:59:60Z
+	 504921612, // 12: 1973-12-31T23:59:60Z
+	 473385611, // 11: 1972-12-31T23:59:60Z
+	 457488010, // 10: 1972-06-30T23:59:60Z
+	 // Start of leap second correction
 };
 
-Duration
+int64_t
 cobc::time::getCorrectionFactorForLeapSeconds(int64_t seconds,
 											  LeapSecondCorrection::Type correction)
 {
 	cobc::BoundedArray<const int64_t> leapSeconds(leapSecondArray);
 	int64_t correctionFactor = 0;
-	for (int i = 0; (i < static_cast<int>(leapSeconds.getNumberOfElements()))
-					 && (correctionFactor == 0); ++i)
+	for (size_t i = 0; (i < leapSeconds.getNumberOfElements())
+					&& (correctionFactor == 0); ++i)
 	{
 		if (seconds >= leapSeconds[i])
 		{
 			correctionFactor = leapSeconds.getNumberOfElements() - i;
-			if ((correction == LeapSecondCorrection::add) && (i != 0))
+
+			// As leap seconds are accumulated, it can happen that adding
+			// leap seconds causes the resulting time to overflow into the
+			// next leap second.
+			//
+			// This is not possible for the latest leap seconds (i = 0),
+			// therefore it is excluded here.
+			if ((correction == LeapSecondCorrection::add) && (i != 0U))
 			{
-				// As leap seconds are accumulated, it can happen that adding
-				// leap seconds causes the resulting time to overflow into the
-				// next leap second.
 				seconds = seconds + correctionFactor;
-				if (seconds >= leapSeconds[i - 1])
+				if (seconds >= leapSeconds[i - 1U])
 				{
 					correctionFactor += 1;
 				}
@@ -77,5 +96,5 @@ cobc::time::getCorrectionFactorForLeapSeconds(int64_t seconds,
 		}
 	}
 
-	return Seconds(correctionFactor);
+	return correctionFactor;
 }

@@ -163,22 +163,6 @@ DateUtils::getDate(int64_t day)
 }
 
 // ----------------------------------------------------------------------------
-GpsTime
-Date::toGpsTime(const Date& date)
-{
-    UnixTime unixTime = Date::toUnixTime(date);
-    GpsTime gpsTime = unixTime.convertTo<GpsTime>();
-    return gpsTime;
-}
-
-Date
-Date::fromGpsTime(GpsTime time)
-{
-    UnixTime unixTime = time.convertTo<UnixTime>();
-    return Date::fromUnixTime(unixTime);
-}
-
-// ----------------------------------------------------------------------------
 /*
  * The Unix Time starts at 1970-01-01T00:00:00Z
  */

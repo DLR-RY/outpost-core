@@ -53,18 +53,6 @@ struct DateUtils
  */
 struct Date
 {
-	/**
-	 * Convert a GPS time point to a UTC date.
-	 */
-	static Date
-	fromGpsTime(GpsTime time);
-
-	/**
-	 * Convert a date to GPS time point.
-	 */
-	static GpsTime
-	toGpsTime(const Date& date);
-
 	static Date
 	fromUnixTime(UnixTime time);
 

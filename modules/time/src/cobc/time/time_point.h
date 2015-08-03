@@ -56,11 +56,11 @@ class TimeEpochConverter;
  * \ingroup time
  * \author  Fabian Greif
  */
-template<typename Epoch_>
+template<typename ReferenceEpoch>
 class TimePoint
 {
 public:
-	typedef Epoch_ Epoch;
+	typedef ReferenceEpoch Epoch;
 
 	inline
 	TimePoint() :
@@ -167,19 +167,19 @@ public:
     /**
      * Construct a time point a given time after the start of the epoch.
      */
-    static inline TimePoint<Epoch_>
+    static inline TimePoint<ReferenceEpoch>
     afterEpoch(Duration duration)
 	{
     	return TimePoint(duration);
 	}
 
-    static inline TimePoint<Epoch_>
+    static inline TimePoint<ReferenceEpoch>
 	startOfEpoch()
 	{
 		return TimePoint(Seconds(0));
 	}
 
-    static inline TimePoint<Epoch_>
+    static inline TimePoint<ReferenceEpoch>
     endOfEpoch()
     {
         return TimePoint(Duration::maximum());
@@ -189,7 +189,7 @@ public:
 	inline To
 	convertTo() const
 	{
-    	return TimeEpochConverter<Epoch_, typename To::Epoch>::convert(*this);
+    	return TimeEpochConverter<ReferenceEpoch, typename To::Epoch>::convert(*this);
 	}
 
 protected:

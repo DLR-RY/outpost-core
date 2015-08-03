@@ -15,7 +15,9 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
+
 #include <cobc/time/time_epoch.h>
+#include <cobc/time/date.h>
 
 using namespace cobc::time;
 
@@ -96,4 +98,13 @@ TEST(TimeEpochTest, convertUnixTimeToGpsTime)
 
 		EXPECT_EQ(Seconds(reference[0]), gpsTime.timeSinceEpoch());
 	}
+}
+
+TEST(TimeEpochTest, shouldConvertBetweenDatesAndTai)
+{
+	Date date = Date { 2002, 02, 02, 12, 0, 0 };
+	UnixTime unixTime = date.toUnixTime(date);
+	AtomicTime taiTime = unixTime.convertTo<AtomicTime>();
+
+	EXPECT_EQ(1391342432, taiTime.timeSinceEpoch().seconds());
 }

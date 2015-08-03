@@ -24,6 +24,15 @@ namespace cobc
 namespace time
 {
 /**
+ * International Atomic Time (TAI).
+ * 
+ * Time since 1958-01-01T00:00:00Z, no leap seconds
+ */
+class TaiEpoch
+{
+};
+
+/**
  * Time since 1980-01-06T00:00:00Z, no leap seconds
  */
 class GpsEpoch
@@ -31,7 +40,7 @@ class GpsEpoch
 };
 
 /**
- * Time since 1970-01-01T00:00:00Z, ignores leap seconds
+ * Time since 1970-01-01T00:00:00Z, ignores leap seconds.
  */
 class UnixEpoch
 {
@@ -63,6 +72,7 @@ class SpacecraftElapsedTimeEpoch
 
 typedef TimePoint<SpacecraftElapsedTimeEpoch> SpacecraftElapsedTime;
 typedef TimePoint<GpsEpoch> GpsTime;
+typedef TimePoint<TaiEpoch> AtomicTime;
 typedef TimePoint<UnixEpoch> UnixTime;
 
 

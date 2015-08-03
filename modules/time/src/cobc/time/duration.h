@@ -44,13 +44,15 @@ namespace time
 class Duration
 {
 public:
-    template <typename Epoch>
+    template <typename ReferenceEpoch>
     friend class TimePoint;
 
-    static const int64_t numberOfMicrosecondsPerMillisecond = 1000;
-    static const int64_t numberOfMillisecondsPerSecond = 1000;
-    static const int64_t numberOfSecondsPerMinute = 1000;
-    static const int64_t numberOfMinutesPerHour = 1000;
+    static const int64_t microsecondsPerMillisecond = 1000;
+    static const int64_t millisecondsPerSecond = 1000;
+    static const int64_t secondsPerMinute = 1000;
+    static const int64_t minutesPerHour = 1000;
+
+    static const int64_t secondsPerDay = 86400;
 
     inline
     ~Duration()
@@ -82,10 +84,10 @@ public:
     inline int64_t
     hours() const
     {
-        return mTicks / (numberOfMicrosecondsPerMillisecond *
-                        numberOfMillisecondsPerSecond *
-                        numberOfSecondsPerMinute *
-                        numberOfMinutesPerHour);
+        return mTicks / (microsecondsPerMillisecond *
+                        millisecondsPerSecond *
+                        secondsPerMinute *
+                        minutesPerHour);
     }
 
     /**
@@ -96,9 +98,9 @@ public:
     inline int64_t
     minutes() const
     {
-        return mTicks / (numberOfMicrosecondsPerMillisecond *
-                        numberOfMillisecondsPerSecond *
-                        numberOfSecondsPerMinute);
+        return mTicks / (microsecondsPerMillisecond *
+                        millisecondsPerSecond *
+                        secondsPerMinute);
     }
 
     /**
@@ -109,8 +111,8 @@ public:
     inline int64_t
     seconds() const
     {
-        return mTicks / (numberOfMicrosecondsPerMillisecond *
-                        numberOfMillisecondsPerSecond);
+        return mTicks / (microsecondsPerMillisecond *
+                        millisecondsPerSecond);
     }
 
     /**
@@ -122,7 +124,7 @@ public:
     inline int64_t
     milliseconds() const
     {
-        return mTicks / numberOfMicrosecondsPerMillisecond;
+        return mTicks / microsecondsPerMillisecond;
     }
 
     /**
@@ -282,8 +284,8 @@ class Seconds : public Duration
 public:
     explicit inline
     Seconds(int64_t value) :
-        Duration(value * numberOfMillisecondsPerSecond *
-                         numberOfMicrosecondsPerMillisecond)
+        Duration(value * millisecondsPerSecond *
+                         microsecondsPerMillisecond)
     {
     }
 };
@@ -298,7 +300,7 @@ class Milliseconds : public Duration
 public:
     explicit inline
     Milliseconds(int64_t value) :
-        Duration(value * numberOfMicrosecondsPerMillisecond)
+        Duration(value * microsecondsPerMillisecond)
     {
     }
 };
