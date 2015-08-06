@@ -26,11 +26,15 @@ Mutex::Mutex()
 {
     pthread_mutexattr_t attr;
     if (pthread_mutexattr_init(&attr) != 0)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    }
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&mutex, &attr);
     if(pthread_mutexattr_destroy(&attr) != 0)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    }
 }
 
 bool
