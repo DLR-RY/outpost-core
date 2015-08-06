@@ -5,9 +5,11 @@ import os
 Import('envGlobal')
 
 if envGlobal['OS'] == 'posix':
+	gmock = 'gmock-1.6.0'
+	#gmock = 'gmock-1.7.0'
 	# googletest should only be used when compiling for an hosted environment
 	envGlobal.Append(CPPPATH=[
-		os.path.abspath('gmock-1.6.0/fused-src'),
+		os.path.abspath('%s/fused-src' % gmock),
 	    os.path.join( '../../pus/default'),
         os.path.join('../../spp/default'),
 	])
@@ -22,7 +24,7 @@ if envGlobal['OS'] == 'posix':
 		'-Wmissing-declarations'])
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 	
-	files = env.Glob('gmock-1.6.0/fused-src/*.cc')
+	files = env.Glob('%s/fused-src/*.cc' % gmock)
 	objects = []
 	for file in files:
 		objects.append(env.Object(file))
