@@ -138,12 +138,12 @@ public:
 
     // explicit template instantiations are provided in serialize_impl.h
     template<typename T>
-        inline void
-        store(T data);
+    inline void
+    store(T data);
 
     template<typename T>
-        inline void
-        storeObject(const T& data);
+    inline void
+    storeObject(const T& data);
 
     /**
      * Skip forward the given number of bytes.
@@ -158,11 +158,11 @@ public:
     }
 
     template<typename T>
-        inline void
-        skip()
-        {
-            mBuffer += sizeof(T);
-        }
+    inline void
+    skip()
+    {
+        mBuffer += sizeof(T);
+    }
 
     inline uint8_t*
     getPointer()
@@ -184,12 +184,12 @@ public:
     }
 
     template<typename T>
-        inline Serialize&
-        operator<<(const T& data)
-        {
-            store<T>(data);
-            return *this;
-        }
+    inline Serialize&
+    operator<<(const T& data)
+    {
+        store<T>(data);
+        return *this;
+    }
 
 private:
     // disable assignment operator
@@ -416,12 +416,12 @@ public:
     }
 
     template<typename T>
-        inline T
-        peek(size_t n) const;
+    inline T
+    peek(size_t n) const;
 
     template<typename T>
-        inline T
-        read();
+    inline T
+    read();
 
     /**
      * Skip forward the given number of bytes.
@@ -436,29 +436,29 @@ public:
     }
 
     template<typename T>
-        inline void
-        skip()
-        {
-            mBuffer += sizeof(T);
-        }
+    inline void
+    skip()
+    {
+        mBuffer += sizeof(T);
+    }
 
     template<typename T>
-        inline Deserialize&
-        operator>>(T& data)
-        {
-            data = read<T>();
-            return *this;
-        }
+    inline Deserialize&
+    operator>>(T& data)
+    {
+        data = read<T>();
+        return *this;
+    }
+
+    inline const uint8_t*
+    getPointer() const
+    {
+        return mBegin;
+    }
 
     /**
      * Get Pointer to the current location in the buffer.
      */
-    inline const uint8_t*
-    getPointer() const
-    {
-        return mBuffer;
-    }
-
     inline const uint8_t*
     getPointerToCurrentPosition()
     {
@@ -472,11 +472,11 @@ public:
     }
 
     template<typename T>
-        inline T
-        getPosition() const
-        {
-            return static_cast<T>(mBuffer - mBegin);
-        }
+    inline T
+    getPosition() const
+    {
+        return static_cast<T>(mBuffer - mBegin);
+    }
 
 private:
     // disable assignment operator
