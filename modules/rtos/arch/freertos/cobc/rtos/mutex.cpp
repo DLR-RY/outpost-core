@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -21,7 +21,7 @@
 // ----------------------------------------------------------------------------
 cobc::rtos::Mutex::Mutex()
 {
-    mHandle = xSemaphoreCreateMutex();
+    mHandle = xSemaphoreCreateRecursiveMutex();
 
     if (mHandle == 0) {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
@@ -38,17 +38,17 @@ bool
 cobc::rtos::Mutex::acquire()
 {
     // wait indefinitely
-    return (xSemaphoreTake(mHandle, portMAX_DELAY) == pdTRUE);
+    return (xSemaphoreTakeRecursive(mHandle, portMAX_DELAY) == pdTRUE);
 }
 
 bool
 cobc::rtos::Mutex::acquire(time::Duration timeout)
 {
-    return (xSemaphoreTake(mHandle, timeout.milliseconds() * configTICK_RATE_HZ / 1000) == pdTRUE);
+    return (xSemaphoreTakeRecursive(mHandle, timeout.milliseconds() * configTICK_RATE_HZ / 1000) == pdTRUE);
 }
 
 void
 cobc::rtos::Mutex::release()
 {
-    xSemaphoreGive(mHandle);
+    xSemaphoreGiveRecursive(mHandle);
 }

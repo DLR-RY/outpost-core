@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -19,8 +19,19 @@
 #include <time.h>
 
 #include "internal/time.h"
-
+#include <cobc/rtos/failure_handler.h>
 using namespace cobc::rtos;
+
+Mutex::Mutex()
+{
+    pthread_mutexattr_t attr;
+    if (pthread_mutexattr_init(&attr) != 0)
+        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    pthread_mutex_init(&mutex, &attr);
+    if(pthread_mutexattr_destroy(&attr) != 0)
+        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+}
 
 bool
 Mutex::acquire(cobc::time::Duration timeout)
