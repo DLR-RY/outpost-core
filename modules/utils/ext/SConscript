@@ -5,8 +5,8 @@ import os
 Import('envGlobal')
 
 if envGlobal['OS'] == 'posix':
-	gmock = 'gmock-1.6.0'
-	#gmock = 'gmock-1.7.0'
+	#gmock = 'gmock-1.6.0'
+	gmock = 'gmock-1.7.0'
 	# googletest should only be used when compiling for an hosted environment
 	envGlobal.Append(CPPPATH=[
 		os.path.abspath('%s/fused-src' % gmock),
@@ -30,8 +30,8 @@ if envGlobal['OS'] == 'posix':
 		objects.append(env.Object(file))
 	envGlobal.Append(objects={'gmock': objects})
 	
-	library = env.StaticLibrary('gmock-1.6.0', objects)
+	library = env.StaticLibrary('gmock-local', objects)
 	
 	envGlobal.Install('$BUILDPATH/lib', library)
-	envGlobal.Append(LIBS=['gmock-1.6.0', 'pthread'])
+	envGlobal.Append(LIBS=['gmock-local', 'pthread'])
 	

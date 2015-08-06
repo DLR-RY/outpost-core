@@ -12,6 +12,6 @@ def build(env):
 	if env[':test']:
 		env.copy('test', 'test')
 		
-		env.copy('ext/gmock-1.6.0/fused-src/gtest', 'ext/gtest')
-		env.copy('ext/gmock-1.6.0/fused-src/gmock', 'ext/gmock')
-		env.copy('ext/gmock-1.6.0/fused-src/gmock-gtest-all.cc', 'ext/gmock-gtest-all.cc')
+		env.copy('ext/gmock-1.7.0/fused-src/gtest', 'ext/gtest')
+		env.copy('ext/gmock-1.7.0/fused-src/gmock', 'ext/gmock')
+		env.copy('ext/gmock-1.7.0/fused-src/gmock-gtest-all.cc', 'ext/gmock-gtest-all.cc')
