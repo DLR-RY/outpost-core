@@ -60,13 +60,13 @@ template<typename ReferenceEpoch>
 class TimePoint
 {
 public:
-	typedef ReferenceEpoch Epoch;
+    typedef ReferenceEpoch Epoch;
 
-	inline
-	TimePoint() :
-		mDuration(Seconds(0))
-	{
-	}
+    inline
+    TimePoint() :
+        mDuration(Seconds(0))
+    {
+    }
 
     inline
     TimePoint(const TimePoint& other) :
@@ -86,10 +86,10 @@ public:
     }
 
     inline TimePoint
-	operator-(Duration duration) const
-	{
-		return TimePoint(mDuration - duration);
-	}
+    operator-(Duration duration) const
+    {
+        return TimePoint(mDuration - duration);
+    }
 
     inline TimePoint&
     operator-=(Duration d)
@@ -159,9 +159,9 @@ public:
      * Get the duration since the start of the epoch.
      */
     inline Duration
-	timeSinceEpoch() const
+    timeSinceEpoch() const
     {
-    	return mDuration;
+        return mDuration;
     }
 
     /**
@@ -169,15 +169,15 @@ public:
      */
     static inline TimePoint<ReferenceEpoch>
     afterEpoch(Duration duration)
-	{
-    	return TimePoint(duration);
-	}
+    {
+        return TimePoint(duration);
+    }
 
     static inline TimePoint<ReferenceEpoch>
-	startOfEpoch()
-	{
-		return TimePoint(Seconds(0));
-	}
+    startOfEpoch()
+    {
+        return TimePoint(Seconds(0));
+    }
 
     static inline TimePoint<ReferenceEpoch>
     endOfEpoch()
@@ -186,11 +186,11 @@ public:
     }
 
     template <typename To>
-	inline To
-	convertTo() const
-	{
-    	return TimeEpochConverter<ReferenceEpoch, typename To::Epoch>::convert(*this);
-	}
+    inline To
+    convertTo() const
+    {
+        return TimeEpochConverter<ReferenceEpoch, typename To::Epoch>::convert(*this);
+    }
 
 protected:
     explicit inline

@@ -84,8 +84,8 @@ template <typename From, typename To>
 class TimeEpochConverter
 {
 public:
-	static TimePoint<To>
-	convert(TimePoint<From> from);
+    static TimePoint<To>
+    convert(TimePoint<From> from);
 };
 
 }

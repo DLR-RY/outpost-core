@@ -34,6 +34,7 @@ class BoundedArray
 {
 public:
     typedef typename cobc::remove_const<T>::type NonConstType;
+    typedef const NonConstType ConstType;
 
     friend class BoundedArray<const T>;
 
@@ -60,11 +61,36 @@ public:
     {
     }
 
+    // This constructor is non-explicit to allow for a conversion from
+    // const to non-const
     inline
     BoundedArray(const BoundedArray<NonConstType>& rhs) :
         mData(rhs.mData),
         mNumberOfElements(rhs.mNumberOfElements)
     {
+    }
+
+    inline
+    BoundedArray(const BoundedArray<ConstType>& rhs) :
+        mData(rhs.mData),
+        mNumberOfElements(rhs.mNumberOfElements)
+    {
+    }
+
+    inline BoundedArray&
+    operator=(const BoundedArray<NonConstType>& rhs)
+    {
+        mData = rhs.mData;
+        mNumberOfElements = rhs.mNumberOfElements;
+        return *this;
+    }
+
+    inline BoundedArray&
+    operator=(const BoundedArray<ConstType>& rhs)
+    {
+        mData = rhs.mData;
+        mNumberOfElements = rhs.mNumberOfElements;
+        return *this;
     }
 
     /**

@@ -19,8 +19,8 @@
 using namespace cobc::time;
 
 static const int secondsPerMinute = 60;
-static const int secondsPerHour = 60 * secondsPerMinute;	//  3600
-static const int secondsPerDay = 24 * secondsPerHour;		// 86400
+static const int secondsPerHour = 60 * secondsPerMinute;    //  3600
+static const int secondsPerDay = 24 * secondsPerHour;        // 86400
 
 static const int64_t secondsPerWeek = 7 * secondsPerDay;
 
@@ -35,12 +35,12 @@ static const int unixEpochStartDayCount = 719468;
 static inline int64_t
 getDaysBeforeYear(int year)
 {
-	int64_t days = 365L * year;
+    int64_t days = 365L * year;
 
-	// accommodate for leap years
-	days += (year / 4) - (year / 100) + (year / 400);
+    // accommodate for leap years
+    days += (year / 4) - (year / 100) + (year / 400);
 
-	return days;
+    return days;
 }
 
 /**
@@ -75,14 +75,14 @@ getDaysBeforeYear(int year)
 static inline int
 getDaysBeforeMonth(int month)
 {
-	int days = (month * 306 + 5) / 10;
-	return days;
+    int days = (month * 306 + 5) / 10;
+    return days;
 }
 
 /**
  * Get the month from the number of days in the current year.
  *
- * Uses the inverse function of `getDaysBeforeMonth()`.
+ * Uses the inverse function of 'getDaysBeforeMonth()'.
  *
  *   m = f(d) = (100*d + 52)/3060
  *
@@ -104,8 +104,8 @@ getDaysBeforeMonth(int month)
 static inline int
 getMonthFromDayOfYear(int day)
 {
-	int mi = (100 * day + 52) / 3060;
-	return mi;
+    int mi = (100 * day + 52) / 3060;
+    return mi;
 }
 
 /**
@@ -120,14 +120,14 @@ getMonthFromDayOfYear(int day)
 int64_t
 DateUtils::getDay(Date date)
 {
-	// March = 0, February = 11
-	int m = (date.month + 9) % 12;
+    // March = 0, February = 11
+    int m = (date.month + 9) % 12;
 
-	// If Jan or Feb subtract one
-	int y = date.year - (m / 10);
+    // If Jan or Feb subtract one
+    int y = date.year - (m / 10);
 
-	int64_t days = getDaysBeforeYear(y) + getDaysBeforeMonth(m) + (date.day - 1);
-	return days;
+    int64_t days = getDaysBeforeYear(y) + getDaysBeforeMonth(m) + (date.day - 1);
+    return days;
 }
 
 /**
@@ -139,27 +139,27 @@ DateUtils::getDay(Date date)
 Date
 DateUtils::getDate(int64_t day)
 {
-	// Guess the year from the day count
-	int y = (10000 * day + 14780) / 3652425;
+    // Guess the year from the day count
+    int y = (10000 * day + 14780) / 3652425;
 
-	int daysInYear = day - getDaysBeforeYear(y);
-	if (daysInYear < 0)
-	{
-		// Correct the year if the guess was not correct
-		y = y - 1;
-		daysInYear = day - getDaysBeforeYear(y);
-	}
+    int daysInYear = day - getDaysBeforeYear(y);
+    if (daysInYear < 0)
+    {
+        // Correct the year if the guess was not correct
+        y = y - 1;
+        daysInYear = day - getDaysBeforeYear(y);
+    }
 
-	int mi = getMonthFromDayOfYear(daysInYear);
+    int mi = getMonthFromDayOfYear(daysInYear);
 
-	Date date;
+    Date date;
 
-	// Correct date from month=0 -> March to month=0 -> January
-	date.year = y + (mi + 2) / 12;
-	date.month = (mi + 2) % 12 + 1;
-	date.day = daysInYear - getDaysBeforeMonth(mi) + 1;
+    // Correct date from month=0 -> March to month=0 -> January
+    date.year = y + (mi + 2) / 12;
+    date.month = (mi + 2) % 12 + 1;
+    date.day = daysInYear - getDaysBeforeMonth(mi) + 1;
 
-	return date;
+    return date;
 }
 
 // ----------------------------------------------------------------------------
@@ -169,14 +169,14 @@ DateUtils::getDate(int64_t day)
 UnixTime
 Date::toUnixTime(const Date& date)
 {
-	// Calculate the number of days from the beginning of the Unix epoch
+    // Calculate the number of days from the beginning of the Unix epoch
     int64_t days = DateUtils::getDay(date) - unixEpochStartDayCount;
 
     int64_t seconds =
-    		date.second
+            date.second
             + 60 * (date.minute
-            		+ 60 * (date.hour
-            				+ 24 * days));
+                    + 60 * (date.hour
+                            + 24 * days));
 
     return UnixTime::afterEpoch(Seconds(seconds));
 }
@@ -204,40 +204,40 @@ Date::fromUnixTime(UnixTime time)
 static bool
 isLeapYear(int year)
 {
-	bool leap = ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
-	return leap;
+    bool leap = (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));
+    return leap;
 }
 
 static const int daysPerMonth[12] = {
-	31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
+    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
 bool
 Date::isValid() const
 {
-	bool valid = true;
+    bool valid = true;
 
-	if ((year < 1) || (month == 0) || (month > 12))
-	{
-		valid = false;
-	}
-	else if ((day == 0)
-		|| (isLeapYear(year) && (month == 2) && day > 29)
-		|| (!isLeapYear(year) && (month != 2) && day > daysPerMonth[month - 1]))
-	{
-		valid = false;
-	}
-	// Allow for leap second representation by setting seconds to 60
-	else if ((hour > 23) || (minute > 59) || (second > 60))
-	{
-		valid = false;
-	}
-	else
-	{
-		valid = true;
-	}
+    if ((year < 1) || (month == 0) || (month > 12))
+    {
+        valid = false;
+    }
+    else if ((day == 0)
+        || (isLeapYear(year) && (month == 2) && (day > 29))
+        || (!isLeapYear(year) && (month != 2) && (day > daysPerMonth[month - 1])))
+    {
+        valid = false;
+    }
+    // Allow for leap second representation by setting seconds to 60
+    else if ((hour > 23) || (minute > 59) || (second > 60))
+    {
+        valid = false;
+    }
+    else
+    {
+        valid = true;
+    }
 
-	return valid;
+    return valid;
 }
 
 bool

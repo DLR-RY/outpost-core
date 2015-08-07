@@ -70,7 +70,7 @@ T*
 cobc::List<T>::getN(size_t n)
 {
     T* current = mHead;
-    while ((current != 0) && n > 0)
+    while ((current != 0) && (n > 0))
     {
         current = current->mNext;
         n--;
@@ -377,14 +377,16 @@ template <typename T>
 typename cobc::List<T>::Iterator
 cobc::List<T>::begin()
 {
-    return Iterator(this->mHead);
+    Iterator it(this->mHead);
+    return it;
 }
 
 template <typename T>
 typename cobc::List<T>::Iterator
 cobc::List<T>::end()
 {
-    return Iterator(0);
+    Iterator it(0);
+    return it;
 }
 
 #endif // COBC_LIST_IMPL_H

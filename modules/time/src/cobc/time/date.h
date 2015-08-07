@@ -35,11 +35,11 @@ struct Date;
  */
 struct DateUtils
 {
-	static int64_t
-	getDay(Date date);
+    static int64_t
+    getDay(Date date);
 
-	static Date
-	getDate(int64_t day);
+    static Date
+    getDate(int64_t day);
 };
 
 /**
@@ -49,35 +49,35 @@ struct DateUtils
  * seconds in the time between January 1980 and ~2016 (last leap second
  * which is incorporated is from June 2015).
  *
- * \author	Fabian Greif
+ * \author Fabian Greif
  */
 struct Date
 {
-	static Date
-	fromUnixTime(UnixTime time);
+    static Date
+    fromUnixTime(UnixTime time);
 
-	static UnixTime
-	toUnixTime(const Date& date);
+    static UnixTime
+    toUnixTime(const Date& date);
 
-	/**
-	 * Check that given value represent a valid date.
-	 */
-	bool
-	isValid() const;
+    /**
+     * Check that given value represent a valid date.
+     */
+    bool
+    isValid() const;
 
-	bool
-	operator==(const Date& other) const;
+    bool
+    operator==(const Date& other) const;
 
-	bool
-	operator!=(const Date& other) const;
+    bool
+    operator!=(const Date& other) const;
 
 
-	uint16_t year;
-	uint8_t month;
-	uint8_t day;
-	uint8_t hour;
-	uint8_t minute;
-	uint8_t second;
+    uint16_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t hour;
+    uint8_t minute;
+    uint8_t second;
 };
 
 /**
@@ -85,22 +85,22 @@ struct Date
  */
 struct GpsDate
 {
-	static GpsDate
-	fromGpsTime(GpsTime time);
+    static GpsDate
+    fromGpsTime(GpsTime time);
 
-	static GpsTime
-	toGpsTime(GpsDate date);
+    static GpsTime
+    toGpsTime(GpsDate date);
 
 
-	// Week number (WN)
-	uint16_t weekNumber;
+    // Week number (WN)
+    uint16_t weekNumber;
 
-	/**
-	 * Time Of Week (TOW)
-	 *
-	 * Number of seconds within the week. Range 0..604800.
-	 */
-	uint32_t timeOfWeek;
+    /**
+     * Time Of Week (TOW)
+     *
+     * Number of seconds within the week. Range 0..604800.
+     */
+    uint32_t timeOfWeek;
 };
 
 }

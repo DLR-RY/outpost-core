@@ -37,6 +37,7 @@ class FixedSizeArray
 {
 public:
     typedef typename cobc::remove_const<T>::type NonConstType;
+    typedef const NonConstType ConstType;
 
     friend class FixedSizeArray<const T, N>;
 
@@ -65,6 +66,8 @@ public:
         memcpy(mData, array, sizeof(mData));
     }
 
+    // This constructor is non-explicit to allow for a conversion from
+    // const to non-const
     inline
     FixedSizeArray(const FixedSizeArray<NonConstType, N>& rhs)
     {
@@ -94,7 +97,7 @@ public:
     }
 
     static inline FixedSizeArray<T, N>
-    fromArray(const NonConstType* array)
+    fromArray(ConstType* array)
     {
         FixedSizeArray a;
         memcpy(a.mData, array, sizeof(a.mData));
