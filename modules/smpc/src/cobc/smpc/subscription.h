@@ -95,6 +95,19 @@ public:
     static void
     connectSubscriptionsToTopics();
 
+    /**
+     * Release all subscriptions.
+     *
+     * Counterpart to connectSubscriptionsToTopics().
+     *
+     * \warning
+     *      Should only be called during tear down of a program. Use of this
+     *      function is not thread-safe. To use halt all threads that
+     *      might create or destroy subscriptions or topics.
+     */
+    static void
+    releaseAllSubscriptions();
+
 protected:
     /**
      * Base-type to cast all member function pointers to. The correct type
@@ -113,16 +126,6 @@ protected:
     {
         (mSubscriber->*mFunction)(message);
     }
-
-    /**
-     * Release all subscriptions.
-     *
-     * Counterpart to connectSubscriptionsToTopics(). Use of this
-     * function is not thread-safe. To use halt all threads that
-     * might create or destroy subscriptions or topics.
-     */
-    static void
-    releaseAllSubscriptions();
 
 private:
     // Disable default constructor
