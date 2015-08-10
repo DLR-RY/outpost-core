@@ -20,13 +20,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "bounded_array.h"
+
 namespace cobc
 {
 
 /**
- *
-// Performs a binary search over the ID of all stored functions.
-// Functions have to be stored in an ascending order!
+ * Performs a binary search over the ID of all stored functions.
  *
  * \author  Fabian Greif
  */
@@ -43,8 +43,8 @@ public:
     template <size_t N>
     explicit inline
     FixedOrderedMap(Entry (&entries)[N]) :
-        mNumberOfEntries(N),
-        mEntries(entries)
+        mEntries(entries),
+        mNumberOfEntries(N)
     {
     }
 
@@ -59,15 +59,23 @@ public:
      *      greater than zero!
      */
     FixedOrderedMap(Entry* entries,
-                    int numberOfEntries);
+                    size_t numberOfEntries);
+
+
+    explicit inline
+    FixedOrderedMap(BoundedArray<Entry> array) :
+        mEntries(&array[0]),
+        mNumberOfEntries(array.getNumberOfElements())
+    {
+    }
 
     /**
      * Get the number of entries.
      *
      * \return  Number of entries.
      */
-    inline int
-    getNumberOfEntries() const
+    inline size_t
+    getNumberOfElements() const
     {
         return mNumberOfEntries;
     }
@@ -87,8 +95,8 @@ public:
     getEntry(Key key);
 
 private:
-    const int mNumberOfEntries;
     Entry* const mEntries;
+    const size_t mNumberOfEntries;
 };
 
 }

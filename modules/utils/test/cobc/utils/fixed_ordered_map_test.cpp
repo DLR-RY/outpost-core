@@ -35,7 +35,7 @@ TEST(FixedOrderedMapTest, createList)
 
     FixedOrderedMap<Entry, uint16_t> list(entries, 2);
 
-    EXPECT_EQ(2, list.getNumberOfEntries());
+    EXPECT_EQ(2U, list.getNumberOfElements());
 }
 
 TEST(FixedOrderedMapTest, createMapFromArrayWithoutExplicitSize)
@@ -49,7 +49,7 @@ TEST(FixedOrderedMapTest, createMapFromArrayWithoutExplicitSize)
 
     FixedOrderedMap<Entry, uint16_t> list(entries);
 
-    EXPECT_EQ(4, list.getNumberOfEntries());
+    EXPECT_EQ(4U, list.getNumberOfElements());
 }
 
 

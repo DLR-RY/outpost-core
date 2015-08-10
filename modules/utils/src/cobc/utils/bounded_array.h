@@ -36,7 +36,8 @@ public:
     typedef typename cobc::remove_const<T>::type NonConstType;
     typedef const NonConstType ConstType;
 
-    friend class BoundedArray<const T>;
+    friend class BoundedArray<NonConstType>;
+    friend class BoundedArray<ConstType>;
 
     /**
      * Initialize directly from a C style array.

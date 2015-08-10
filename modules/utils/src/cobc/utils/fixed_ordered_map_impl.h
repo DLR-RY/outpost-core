@@ -21,9 +21,9 @@
 
 template <typename Entry, typename Key>
 cobc::FixedOrderedMap<Entry, Key>::FixedOrderedMap(Entry* entries,
-                                                   int numberOfEntries) :
-    mNumberOfEntries(numberOfEntries),
-    mEntries(entries)
+                                                   size_t numberOfEntries) :
+    mEntries(entries),
+    mNumberOfEntries(numberOfEntries)
 {
 }
 
@@ -32,7 +32,7 @@ template <typename Entry, typename Key>
 Entry*
 cobc::FixedOrderedMap<Entry, Key>::getEntry(Key key)
 {
-    int imax = mNumberOfEntries - 1;
+    int imax = static_cast<int>(mNumberOfEntries) - 1;
     int imin = 0;
 
     Entry* entry = 0;
