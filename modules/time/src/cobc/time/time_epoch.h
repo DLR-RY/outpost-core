@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -25,7 +25,7 @@ namespace time
 {
 /**
  * International Atomic Time (TAI).
- * 
+ *
  * Time since 1958-01-01T00:00:00Z, no leap seconds
  */
 class TaiEpoch

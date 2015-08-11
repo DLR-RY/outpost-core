@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -20,4 +20,3 @@ cobc::hal::Cpu::~Cpu()
 {
 
 }
-

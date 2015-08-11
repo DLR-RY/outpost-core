@@ -52,6 +52,8 @@ clean: clean_default
 	@$(RM) -r ../../build/$(MODULE)/*
 
 update:
+	mkdir -p ext/libcobc-hw-backup/src
+	mkdir -p ext/libcobc-hw/
 	rsync -a --delete -b --backup-dir=ext/libcobc-hw-backup/ $(LIBCOBC_HW_PATH) ext/libcobc-hw/
 
 distclean: distclean_default

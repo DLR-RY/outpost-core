@@ -13,6 +13,7 @@
  * more details.
  */
 // ----------------------------------------------------------------------------
+
 #ifndef COBC_UTILS_SERIALIZE_H
 #define COBC_UTILS_SERIALIZE_H
 

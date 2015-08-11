@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
- * 
+ *
  * This file is part of libCOBC 0.4.
  *
  * It is distributed under the terms of the GNU General Public License with a
@@ -208,7 +208,8 @@ isLeapYear(int year)
     return leap;
 }
 
-static const int daysPerMonth[12] = {
+static const int daysPerMonth[12] =
+{
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
 
