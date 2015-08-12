@@ -168,6 +168,30 @@ public:
         return mData[index];
     }
 
+    inline const T*
+    begin() const
+    {
+        return &mData[0];
+    }
+
+    inline T*
+    begin()
+    {
+        return &mData[0];
+    }
+
+    inline const T*
+    end() const
+    {
+        return &mData[mNumberOfElements];
+    }
+
+    inline T*
+    end()
+    {
+        return &mData[mNumberOfElements];
+    }
+
 private:
     /// Pointer to the array
     T* mData;
