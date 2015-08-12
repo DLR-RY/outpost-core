@@ -76,7 +76,7 @@ public:
      * \return    Number of bytes which could be read, maximal \p length
      */
     virtual size_t
-    read(cobc::BoundedArray<uint8_t>& data,
+    read(cobc::BoundedArray<uint8_t> data,
          time::Duration timeout = time::Duration::maximum()) = 0;
 
     /**
@@ -91,7 +91,7 @@ public:
      * \return  Number of bytes written.
      */
     virtual size_t
-    write(const cobc::BoundedArray<uint8_t>& data,
+    write(cobc::BoundedArray<const uint8_t> data,
           time::Duration timeout = time::Duration::maximum()) = 0;
 
     /**
