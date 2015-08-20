@@ -77,7 +77,7 @@ public:
      */
     virtual size_t
     read(cobc::BoundedArray<uint8_t> data,
-         time::Duration timeout = time::Duration::maximum()) = 0;
+         cobc::time::Duration timeout = cobc::time::Duration::maximum()) = 0;
 
     /**
      * Write a block of bytes with timeout.
@@ -92,7 +92,7 @@ public:
      */
     virtual size_t
     write(cobc::BoundedArray<const uint8_t> data,
-          time::Duration timeout = time::Duration::maximum()) = 0;
+          cobc::time::Duration timeout = cobc::time::Duration::maximum()) = 0;
 
     /**
      * Flush send/receive buffers.

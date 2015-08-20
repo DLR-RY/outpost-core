@@ -24,7 +24,7 @@ namespace cobc
 /**
  * Singly-linked list with external storage.
  *
- * The nodes must provide a next-member.
+ * The nodes must provide a "mNext"-member.
  *
  * \author    Fabian Greif
  */
