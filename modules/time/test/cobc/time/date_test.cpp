@@ -19,48 +19,6 @@
 
 using namespace cobc::time;
 
-namespace cobc
-{
-namespace time
-{
-::std::ostream&
-operator<<(::std::ostream& os, const Duration& duration);
-
-::std::ostream&
-operator<<(::std::ostream& os, const Seconds& duration);
-
-::std::ostream&
-operator<<(::std::ostream& os, const Date& date);
-
-
-::std::ostream&
-operator<<(::std::ostream& os, const Duration& duration)
-{
-	return os << duration.microseconds() << " us";
-}
-
-::std::ostream&
-operator<<(::std::ostream& os, const Seconds& duration)
-{
-	return os << duration.microseconds() << " us";
-}
-
-::std::ostream&
-operator<<(::std::ostream& os, const Date& date)
-{
-	os << static_cast<int>(date.year) << "-";
-	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.month) << "-";
-	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.day) << "T";
-	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.hour) << "-";
-	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.minute) << "-";
-	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.second);
-
-	return os;
-}
-
-}
-}
-
 TEST(DateTest, shouldDetectValidDates)
 {
 	Date date;
