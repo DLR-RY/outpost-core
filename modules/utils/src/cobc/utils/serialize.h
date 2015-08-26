@@ -69,14 +69,14 @@ public:
     }
 
     inline void
-    store8(uint8_t data)
+    store8(const uint8_t data)
     {
         mBuffer[0] = data;
         mBuffer += 1;
     }
 
     inline void
-    store16(uint16_t data)
+    store16(const uint16_t data)
     {
         mBuffer[0] = static_cast<uint8_t>(data >> 8);
         mBuffer[1] = static_cast<uint8_t>(data >> 0);
@@ -84,7 +84,7 @@ public:
     }
 
     inline void
-    store24(uint32_t data)
+    store24(const uint32_t data)
     {
         mBuffer[0] = static_cast<uint8_t>(data >> 16);
         mBuffer[1] = static_cast<uint8_t>(data >> 8);
@@ -93,7 +93,7 @@ public:
     }
 
     inline void
-    store32(uint32_t data)
+    store32(const uint32_t data)
     {
         mBuffer[0] = static_cast<uint8_t>(data >> 24);
         mBuffer[1] = static_cast<uint8_t>(data >> 16);
@@ -103,7 +103,7 @@ public:
     }
 
     inline void
-    store64(uint64_t data)
+    store64(const uint64_t data)
     {
         mBuffer[0] = static_cast<uint8_t>(data >> 56);
         mBuffer[1] = static_cast<uint8_t>(data >> 48);
@@ -123,7 +123,7 @@ public:
      * two 16 bit parameters.
      */
     inline void
-    storePacked12(uint16_t first, uint16_t second)
+    storePacked12(const uint16_t first, const uint16_t second)
     {
         mBuffer[0] = static_cast<uint8_t>(first >> 4);
         mBuffer[1] = static_cast<uint8_t>(((first << 4) & 0xF0) | ((second >> 8) & 0x0F));
@@ -132,21 +132,21 @@ public:
     }
 
     inline void
-    storeFloat(float data)
+    storeFloat(const float data)
     {
         const uint32_t* ptr = reinterpret_cast<const uint32_t *>(&data);
         store32(*ptr);
     }
 
     inline void
-    storeDouble(double data)
+    storeDouble(const double data)
     {
         const uint64_t* ptr = reinterpret_cast<const uint64_t *>(&data);
         store64(*ptr);
     }
 
     inline void
-    storeBuffer(const uint8_t* buffer, size_t length)
+    storeBuffer(const uint8_t* buffer, const size_t length)
     {
         memcpy(mBuffer, buffer, length);
         mBuffer += length;
@@ -168,7 +168,7 @@ public:
      *      Number of byte to skip forward.
      */
     inline void
-    skip(size_t bytes)
+    skip(const size_t bytes)
     {
         mBuffer += bytes;
     }
@@ -271,7 +271,7 @@ public:
     }
 
     inline uint8_t
-    peek8(size_t n) const
+    peek8(const size_t n) const
     {
         return mBuffer[n];
     }
@@ -288,7 +288,7 @@ public:
     }
 
     inline uint16_t
-    peek16(size_t n) const
+    peek16(const size_t n) const
     {
         uint16_t value = 0;
         value |= static_cast<uint16_t>(mBuffer[n + 0]) << 8;
@@ -310,7 +310,7 @@ public:
     }
 
     inline uint32_t
-    peek24(size_t n) const
+    peek24(const size_t n) const
     {
         uint32_t value = 0;
         value |= static_cast<uint32_t>(mBuffer[n + 0]) << 16;
@@ -334,7 +334,7 @@ public:
     }
 
     inline uint32_t
-    peek32(size_t n) const
+    peek32(const size_t n) const
     {
         uint32_t value = 0;
         value |= static_cast<uint32_t>(mBuffer[n + 0]) << 24;
@@ -363,7 +363,7 @@ public:
     }
 
     inline uint64_t
-    peek64(size_t n) const
+    peek64(const size_t n) const
     {
         uint64_t value = 0;
         value |= static_cast<uint64_t>(mBuffer[n + 0]) << 56;
@@ -396,7 +396,7 @@ public:
     }
 
     inline void
-    peekPacked12(size_t n, uint16_t& first, uint16_t& second)
+    peekPacked12(const size_t n, uint16_t& first, uint16_t& second)
     {
         first  = static_cast<uint32_t>(mBuffer[n + 0]) << 4;
         first |= static_cast<uint32_t>(mBuffer[n + 1]) >> 4;
@@ -416,7 +416,7 @@ public:
     }
 
     inline float
-    peekFloat(size_t n) const
+    peekFloat(const size_t n) const
     {
         float f;
         const uint32_t value = peek32(n);
@@ -436,7 +436,7 @@ public:
     }
 
     inline double
-    peekDouble(size_t n) const
+    peekDouble(const size_t n) const
     {
         double d;
         const uint64_t value = peek64(n);
@@ -446,21 +446,21 @@ public:
     }
 
     inline void
-    readBuffer(uint8_t* buffer, size_t length)
+    readBuffer(uint8_t* buffer, const size_t length)
     {
         memcpy(buffer, mBuffer, length);
         mBuffer += length;
     }
 
     inline void
-    peekBuffer(uint8_t* buffer, size_t length)
+    peekBuffer(uint8_t* buffer, const size_t length)
     {
         memcpy(buffer, mBuffer, length);
     }
 
     template<typename T>
     inline T
-    peek(size_t n) const;
+    peek(const size_t n) const;
 
     template<typename T>
     inline T
@@ -473,7 +473,7 @@ public:
      *      Number of byte to skip forward.
      */
     inline void
-    skip(size_t bytes)
+    skip(const size_t bytes)
     {
         mBuffer += bytes;
     }
@@ -503,7 +503,7 @@ public:
      * Get Pointer to the current location in the buffer.
      */
     inline const uint8_t*
-    getPointerToCurrentPosition()
+    getPointerToCurrentPosition() const
     {
         return mBuffer;
     }
