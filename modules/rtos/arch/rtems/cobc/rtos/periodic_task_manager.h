@@ -86,7 +86,8 @@ public:
     inline Status::Type
     nextPeriod(time::Duration period)
     {
-        rtems_status_code result = rtems_rate_monotonic_period(mId, period.milliseconds());
+        rtems_status_code result = rtems_rate_monotonic_period(mId,
+                                      period.milliseconds() * rtems_clock_get_ticks_per_second() / 1000 );
         return static_cast<Status::Type>(result);
     }
 
