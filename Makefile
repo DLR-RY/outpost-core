@@ -25,7 +25,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-MODULES_GLOBAL = utils time smpc spp pus log
+MODULES_GLOBAL = utils time smpc spp pus cdh log
 MODULES_HW = rtos hal
 MODULES_TEST = log-decode l3test
 
