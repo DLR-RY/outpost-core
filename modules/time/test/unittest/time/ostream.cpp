@@ -19,19 +19,25 @@
 #include <iomanip>
 
 ::std::ostream&
-operator<<(::std::ostream& os, const cobc::time::Duration& duration)
+cobc::time::operator<<(::std::ostream& os, const cobc::time::Duration& duration)
 {
 	return os << duration.microseconds() << " us";
 }
 
 ::std::ostream&
-operator<<(::std::ostream& os, const cobc::time::Seconds& duration)
+cobc::time::operator<<(::std::ostream& os, const cobc::time::Seconds& duration)
 {
 	return os << duration.microseconds() << " us";
 }
 
 ::std::ostream&
-operator<<(::std::ostream& os, const cobc::time::Date& date)
+cobc::time::operator<<(::std::ostream& os, const cobc::time::SpacecraftElapsedTime& time)
+{
+	return os << time.timeSinceEpoch().microseconds() << " us";
+}
+
+::std::ostream&
+cobc::time::operator<<(::std::ostream& os, const cobc::time::Date& date)
 {
 	os << static_cast<int>(date.year) << "-";
 	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.month) << "-";

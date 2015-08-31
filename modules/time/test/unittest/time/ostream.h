@@ -19,6 +19,11 @@
 
 #include <ostream>
 
+namespace cobc
+{
+namespace time
+{
+
 ::std::ostream&
 operator<<(::std::ostream& os, const cobc::time::Duration& duration);
 
@@ -26,4 +31,10 @@ operator<<(::std::ostream& os, const cobc::time::Duration& duration);
 operator<<(::std::ostream& os, const cobc::time::Seconds& duration);
 
 ::std::ostream&
+operator<<(::std::ostream& os, const cobc::time::SpacecraftElapsedTime& time);
+
+::std::ostream&
 operator<<(::std::ostream& os, const cobc::time::Date& date);
+
+}
+}
