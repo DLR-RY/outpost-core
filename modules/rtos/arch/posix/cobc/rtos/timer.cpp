@@ -44,7 +44,8 @@ cobc::rtos::Timer::start(time::Duration duration)
 
     memcpy(&mInterval, &time, sizeof(struct itimerspec));
 
-    if (timer_settime(mTid, 0, &time, NULL) != 0) {
+    if (timer_settime(mTid, 0, &time, NULL) != 0)
+    {
         // Could not set the timer value
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
@@ -53,7 +54,8 @@ cobc::rtos::Timer::start(time::Duration duration)
 void
 cobc::rtos::Timer::reset()
 {
-    if (timer_settime(mTid, 0, &mInterval, NULL) != 0) {
+    if (timer_settime(mTid, 0, &mInterval, NULL) != 0)
+    {
         // Could not set the timer value
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
@@ -67,7 +69,8 @@ cobc::rtos::Timer::cancel()
 
     memset(&time, 0, sizeof(time));
 
-    if (timer_settime(mTid, 0, &time, NULL) != 0) {
+    if (timer_settime(mTid, 0, &time, NULL) != 0)
+    {
         // Could not set the timer value
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
@@ -75,20 +78,16 @@ cobc::rtos::Timer::cancel()
 
 // ----------------------------------------------------------------------------
 void
-cobc::rtos::Timer::startTimerDaemonThread(uint8_t priority,
-                                          size_t stack)
+cobc::rtos::Timer::startTimerDaemonThread(uint8_t /*priority*/,
+                                          size_t /*stack*/)
 {
-    // not used
-    (void) priority;
-    (void) stack;
+	// do nothing here for POSIX, only used for RTEMS
 }
 
 // ----------------------------------------------------------------------------
 void
-cobc::rtos::Timer::createTimer(const char* name)
+cobc::rtos::Timer::createTimer(const char* /*name*/)
 {
-    (void) name;
-
     struct sigevent event;
 
     memset(&event, 0, sizeof(event));
@@ -100,7 +99,8 @@ cobc::rtos::Timer::createTimer(const char* name)
     event.sigev_notify_attributes = NULL;
     event.sigev_value.sival_ptr = this;
 
-    if (timer_create(CLOCK_MONOTONIC, &event, &mTid) != 0) {
+    if (timer_create(CLOCK_MONOTONIC, &event, &mTid) != 0)
+    {
         // Could not allocate a new timer
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
