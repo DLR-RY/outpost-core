@@ -167,7 +167,7 @@ public:
     static inline void
     sleep(::cobc::time::Duration duration)
     {
-        rtems_task_wake_after(duration.milliseconds());
+        rtems_task_wake_after((rtems_clock_get_ticks_per_second() * duration.milliseconds()) /1000);
     }
 
 protected:
