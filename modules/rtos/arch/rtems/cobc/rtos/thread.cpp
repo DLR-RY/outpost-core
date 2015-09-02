@@ -84,7 +84,7 @@ Thread::Thread(uint8_t priority,
 
     rtems_task_priority rtemsPriority = toRtemsPriority(priority);
     rtems_status_code status = rtems_task_create(taskName, rtemsPriority, stack,
-            RTEMS_DEFAULT_MODES, RTEMS_DEFAULT_ATTRIBUTES, &mTid);
+            RTEMS_DEFAULT_MODES | RTEMS_TIMESLICE , RTEMS_DEFAULT_ATTRIBUTES, &mTid);
 
     if (status != RTEMS_SUCCESSFUL)
     {
