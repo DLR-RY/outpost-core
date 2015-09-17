@@ -50,7 +50,12 @@ cobc::rtos::Semaphore::acquire()
 bool
 cobc::rtos::Semaphore::acquire(time::Duration timeout)
 {
-    return (rtems_semaphore_obtain(mId, RTEMS_WAIT, timeout.milliseconds()) == RTEMS_SUCCESSFUL);
+    rtems_option waitOption = RTEMS_WAIT;
+    if(timeout == time::Duration::zero())
+    {
+        waitOption = RTEMS_NO_WAIT;
+    } // else use default value RTEMS_WAIT
+    return (rtems_semaphore_obtain(mId, waitOption, (rtems_clock_get_ticks_per_second() * timeout.milliseconds()) /1000) == RTEMS_SUCCESSFUL);
 }
 
 // ----------------------------------------------------------------------------
@@ -83,5 +88,10 @@ cobc::rtos::BinarySemaphore::acquire()
 bool
 cobc::rtos::BinarySemaphore::acquire(time::Duration timeout)
 {
-    return (rtems_semaphore_obtain(mId, RTEMS_WAIT, timeout.milliseconds()) == RTEMS_SUCCESSFUL);
+    rtems_option waitOption = RTEMS_WAIT;
+    if(timeout == time::Duration::zero())
+    {
+        waitOption = RTEMS_NO_WAIT;
+    } // else use default value RTEMS_WAIT
+    return (rtems_semaphore_obtain(mId, waitOption, (rtems_clock_get_ticks_per_second() * timeout.milliseconds()) /1000) == RTEMS_SUCCESSFUL);
 }
