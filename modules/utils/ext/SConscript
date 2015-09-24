@@ -4,7 +4,7 @@ import os
 
 Import('envGlobal')
 
-if envGlobal['OS'] == 'posix':
+if envGlobal['ARCHITECTURE'] == 'hosted':
 	#gmock = 'gmock-1.6.0'
 	gmock = 'gmock-1.7.0'
 	# googletest should only be used when compiling for an hosted environment
