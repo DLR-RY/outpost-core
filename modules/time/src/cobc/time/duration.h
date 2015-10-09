@@ -49,8 +49,8 @@ public:
 
     static const int64_t microsecondsPerMillisecond = 1000;
     static const int64_t millisecondsPerSecond = 1000;
-    static const int64_t secondsPerMinute = 1000;
-    static const int64_t minutesPerHour = 1000;
+    static const int64_t secondsPerMinute = 60;
+    static const int64_t minutesPerHour = 60;
 
     static const int64_t secondsPerDay = 86400;
 

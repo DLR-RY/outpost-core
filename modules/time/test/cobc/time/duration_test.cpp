@@ -44,6 +44,20 @@ TEST(DurationTest, derivedTypes)
     ASSERT_EQ(5000000, duration.microseconds());
 }
 
+TEST(DurationTest, shouldConvertToMinutes)
+{
+    Duration duration = Seconds(3600);
+
+    ASSERT_EQ(60, duration.minutes());
+}
+
+TEST(DurationTest, shouldConvertToHours)
+{
+    Duration duration = Seconds(3600);
+
+    ASSERT_EQ(1, duration.hours());
+}
+
 TEST(DurationTest, convertBigNumbersMicrosecondsToDuration)
 {
     Duration out = Microseconds(3147483643);
