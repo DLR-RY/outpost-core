@@ -61,7 +61,7 @@ class J2000Epoch
 };
 
 /**
- * Time since start of OBC.
+ * Time since start of OBC (SCET).
  *
  * Strictly monotonous counter.
  */
@@ -87,6 +87,15 @@ public:
     static TimePoint<To>
     convert(TimePoint<From> from);
 };
+
+/**
+ * Set offset between SCET and GPS time.
+ *
+ * Convenience function for
+ * TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(...)
+ */
+void
+setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gps);
 
 }
 }

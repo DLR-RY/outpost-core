@@ -43,6 +43,15 @@ public:
     {
         offsetToGpsTime = duration;
     }
+
+    /**
+     * Set the offset so that the given SCET equals the GPS time.
+     */
+    static inline void
+    setOffset(TimePoint<SpacecraftElapsedTimeEpoch> scet, TimePoint<GpsEpoch> gps)
+    {
+        offsetToGpsTime = gps.timeSinceEpoch() - scet.timeSinceEpoch();
+    }
 };
 
 template <>
@@ -57,19 +66,6 @@ public:
     }
 };
 
-struct LeapSecondCorrection
-{
-    enum Type
-    {
-        remove,
-        add
-    };
-};
-
-int64_t
-getCorrectionFactorForLeapSeconds(int64_t seconds,
-                                  LeapSecondCorrection::Type correction);
-
 // ----------------------------------------------------------------------------
 template <>
 class TimeEpochConverter<TaiEpoch, UnixEpoch>
@@ -80,6 +76,19 @@ public:
 
     static const int64_t initialOffsetInSeconds = offsetDaysFromTaiToUnix * Duration::secondsPerDay
                                                 + leapSecondsAtUnixEpoch;
+
+    struct LeapSecondCorrection
+    {
+        enum Type
+        {
+            remove,
+            add
+        };
+    };
+
+    static int64_t
+    getCorrectionFactorForLeapSeconds(int64_t seconds,
+                                      LeapSecondCorrection::Type correction);
 
     static TimePoint<UnixEpoch>
     convert(TimePoint<TaiEpoch> from);

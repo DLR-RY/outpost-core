@@ -108,3 +108,14 @@ TEST(TimeEpochTest, shouldConvertBetweenDatesAndTai)
 
 	EXPECT_EQ(1391342432, taiTime.timeSinceEpoch().seconds());
 }
+
+TEST(TestEpochTest, shouldSetOffsetBetweenScetAndGps)
+{
+    SpacecraftElapsedTime scet = SpacecraftElapsedTime::afterEpoch(Milliseconds(1234567));
+    GpsTime gps = GpsTime::afterEpoch(Seconds(4752000));
+
+    setOffsetBetweenScetAndGps(scet, gps);
+
+    EXPECT_EQ(scet, gps.convertTo<SpacecraftElapsedTime>());
+    EXPECT_EQ(gps, scet.convertTo<GpsTime>());
+}

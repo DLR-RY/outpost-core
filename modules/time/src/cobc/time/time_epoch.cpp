@@ -23,6 +23,14 @@ using namespace cobc::time;
 Duration TimeEpochConverter<SpacecraftElapsedTimeEpoch,
                             GpsEpoch>::offsetToGpsTime = Duration::zero();
 
+// ----------------------------------------------------------------------------
+void
+cobc::time::setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gps)
+{
+    TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(scet, gps);
+}
+
+// ----------------------------------------------------------------------------
 /**
  * Leap second correction table.
  *
@@ -33,7 +41,7 @@ Duration TimeEpochConverter<SpacecraftElapsedTimeEpoch,
  *    - DateUtils::getDay(Date { 1958, 1,  1, 0, 0, 0 }) + 1) * 86400
  *    + number of leap seconds
  *
- * see also http://hpiers.obspm.fr/eop-pc/earthor/utc/TAI-UTC_tab.html
+ * See also http://hpiers.obspm.fr/eop-pc/earthor/utc/TAI-UTC_tab.html
  */
 static const int64_t leapSecondArray[] =
 {
@@ -67,8 +75,8 @@ static const int64_t leapSecondArray[] =
 };
 
 int64_t
-cobc::time::getCorrectionFactorForLeapSeconds(int64_t seconds,
-                                              LeapSecondCorrection::Type correction)
+TimeEpochConverter<TaiEpoch, UnixEpoch>::getCorrectionFactorForLeapSeconds(int64_t seconds,
+                                                                           LeapSecondCorrection::Type correction)
 {
     cobc::BoundedArray<const int64_t> leapSeconds(leapSecondArray);
     int64_t correctionFactor = 0;
@@ -116,9 +124,11 @@ TimeEpochConverter<UnixEpoch, TaiEpoch>::convert(TimePoint<UnixEpoch> from)
 {
     int64_t seconds = from.timeSinceEpoch().seconds() + initialOffsetInSeconds;
 
+    typedef TimeEpochConverter<TaiEpoch, UnixEpoch> Other;
+
     // leap second correction
-    int64_t correction = getCorrectionFactorForLeapSeconds(seconds,
-                                                           LeapSecondCorrection::add);
+    int64_t correction = Other::getCorrectionFactorForLeapSeconds(seconds,
+                                                                  Other::LeapSecondCorrection::add);
     return TimePoint<TaiEpoch>::afterEpoch(
             from.timeSinceEpoch()
           + Seconds(initialOffsetInSeconds + correction));
