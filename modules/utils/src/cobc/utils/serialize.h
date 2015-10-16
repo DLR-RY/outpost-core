@@ -21,6 +21,8 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "bounded_array.h"
+
 namespace cobc
 {
 
@@ -149,6 +151,14 @@ public:
     storeBuffer(const uint8_t* buffer, const size_t length)
     {
         memcpy(mBuffer, buffer, length);
+        mBuffer += length;
+    }
+
+    inline void
+    storeBuffer(cobc::BoundedArray<const uint8_t> array)
+    {
+        size_t length = array.getNumberOfElements();
+        memcpy(mBuffer, &array[0], length);
         mBuffer += length;
     }
 

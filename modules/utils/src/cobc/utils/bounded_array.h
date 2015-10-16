@@ -200,6 +200,14 @@ private:
     size_t mNumberOfElements;
 };
 
+template <typename T, size_t N>
+static inline cobc::BoundedArray<T>
+toArray(T (&array)[N])
+{
+    cobc::BoundedArray<T> a(array);
+    return a;
+}
+
 }
 
 #endif // COBC_BOUNDED_ARRAY_H
