@@ -14,9 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "ostream.h"
-
 #include <iomanip>
+#include "printer.h"
 
 ::std::ostream&
 cobc::time::operator<<(::std::ostream& os, const cobc::time::Duration& duration)

@@ -14,6 +14,9 @@
  */
 // ----------------------------------------------------------------------------
 
+#ifndef COBC_TIME_PRINTER_H
+#define COBC_TIME_PRINTER_H
+
 #include <cobc/time/duration.h>
 #include <cobc/time/date.h>
 
@@ -38,3 +41,5 @@ operator<<(::std::ostream& os, const cobc::time::Date& date);
 
 }
 }
+
+#endif
