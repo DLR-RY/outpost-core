@@ -44,6 +44,12 @@ class Serialize
 {
 public:
     explicit inline
+    Serialize(cobc::BoundedArray<uint8_t> array) :
+            mBuffer(&array[0]), mBegin(&array[0])
+    {
+    }
+
+    explicit inline
     Serialize(uint8_t* outputBuffer) :
             mBuffer(outputBuffer), mBegin(outputBuffer)
     {
@@ -246,6 +252,12 @@ public:
     explicit inline
     Deserialize(const uint8_t* inputBuffer) :
             mBuffer(inputBuffer), mBegin(inputBuffer)
+    {
+    }
+
+    explicit inline
+    Deserialize(cobc::BoundedArray<const uint8_t> array) :
+            mBuffer(&array[0]), mBegin(&array[0])
     {
     }
 
