@@ -86,7 +86,7 @@ cobc::rtos::Timer::isRunning()
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
 
-    bool running = (value.it_value != 0);
+    bool running = (value.it_value.tv_sec != 0) || (value.it_value.tv_nsec != 0);
     return running;
 }
 
