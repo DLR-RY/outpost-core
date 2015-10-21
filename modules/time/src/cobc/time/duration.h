@@ -47,6 +47,7 @@ public:
     template <typename ReferenceEpoch>
     friend class TimePoint;
 
+    static const int64_t nanosecondsPerMicrosecond = 1000;
     static const int64_t microsecondsPerMillisecond = 1000;
     static const int64_t millisecondsPerSecond = 1000;
     static const int64_t secondsPerMinute = 60;

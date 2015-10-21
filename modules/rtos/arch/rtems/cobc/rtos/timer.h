@@ -149,6 +149,15 @@ public:
     cancel();
 
     /**
+     * Check whether the timer is currently running.
+     *
+     * \retval  true    Timer is running
+     * \retval  false   Timer has not been started or was stopped.
+     */
+    bool
+    isRunning();
+
+    /**
      * Start the timer daemon.
      *
      * This function initiates the Timer Server thread. This thread is

@@ -24,99 +24,109 @@
 
 namespace cobc
 {
-    namespace rtos
-    {
-        /**
-         * Software timer.
-         *
-         * The timer callback functions are called in the context of the
-         * timer server thread.
-         *
-         * The Timer Server thread is responsible for executing the timer
-         * service routines associated with all task-based timers.
-         *
-         * The Timer Server is designed to remain blocked until a task-based
-         * timer fires. This reduces the execution overhead of the Timer Server.
-         *
-         * \author    Fabian Greif
-         * \ingroup    rtos
-         */
-        class Timer
-        {
-        public:
-            /**
-             * Type of the timer handler function.
-             *
-             * \param timer
-             *         Timer which caused the function to be called. Can be used
-             *         to restart the timer.
-             */
-            typedef void (Callable::*Function)(Timer* timer);
+namespace rtos
+{
+/**
+ * Software timer.
+ *
+ * The timer callback functions are called in the context of the
+ * timer server thread.
+ *
+ * The Timer Server thread is responsible for executing the timer
+ * service routines associated with all task-based timers.
+ *
+ * The Timer Server is designed to remain blocked until a task-based
+ * timer fires. This reduces the execution overhead of the Timer Server.
+ *
+ * \author    Fabian Greif
+ * \ingroup    rtos
+ */
+class Timer
+{
+public:
+    /**
+     * Type of the timer handler function.
+     *
+     * \param timer
+     *         Timer which caused the function to be called. Can be used
+     *         to restart the timer.
+     */
+    typedef void (Callable::*Function)(Timer* timer);
 
-            /**
-             * Create a timer.
-             *
-             * \param object
-             *         Instance to with the function to be called belongs. Must
-             *         be sub-class of cobc::rtos::Callable.
-             * \param function
-             *         Member function of \p object to call when the timer
-             *         expires.
-             * \param name
-             *         Name of the timer. Maximum length is four characters. Longer
-             *         names will be truncated.
-             *
-             * \see    cobc::Callable
-             */
-            template <typename T>
-            Timer(T* object, void (T::*function)(Timer* timer), const char* name = "TIM-");
+    /**
+     * Create a timer.
+     *
+     * \param object
+     *         Instance to with the function to be called belongs. Must
+     *         be sub-class of cobc::rtos::Callable.
+     * \param function
+     *         Member function of \p object to call when the timer
+     *         expires.
+     * \param name
+     *         Name of the timer. Maximum length is four characters. Longer
+     *         names will be truncated.
+     *
+     * \see    cobc::Callable
+     */
+    template <typename T>
+    Timer(T* object, void (T::*function)(Timer* timer), const char* name = "TIM-");
 
-            /**
-             * Delete the timer.
-             *
-             * If the timer is running, it is automatically canceled. All it's
-             * allocated resources are reclaimed and can be used for another
-             * timer.
-             */
-            ~Timer();
+    /**
+     * Delete the timer.
+     *
+     * If the timer is running, it is automatically canceled. All it's
+     * allocated resources are reclaimed and can be used for another
+     * timer.
+     */
+    ~Timer();
 
-            /**
-             * Start the timer.
-             *
-             * If the timer is running it is automatically reset before being
-             * initiated.
-             *
-             * \param duration
-             *         Runtime duration.
-             */
-            void
-            start(time::Duration duration);
+    /**
+     * Start the timer.
+     *
+     * If the timer is running it is automatically reset before being
+     * initiated.
+     *
+     * \param duration
+     *         Runtime duration.
+     */
+    void
+    start(time::Duration duration);
 
-            /**
-             * Reset the timer interval to it's original value when it is
-             * currently running.
-             */
-            void
-            reset();
+    /**
+     * Reset the timer interval to it's original value when it is
+     * currently running.
+     */
+    void
+    reset();
 
-            /**
-             * Abort operation.
-             *
-             * The timer will not fire until the next invocation of reset() or
-             * start().
-             */
-            void
-            cancel();
+    /**
+     * Abort operation.
+     *
+     * The timer will not fire until the next invocation of reset() or
+     * start().
+     */
+    void
+    cancel();
 
-        private:
-            void
-            createTimer(const char* name);
+    /**
+     * Check whether the timer is currently running.
+     *
+     * \retval  true    Timer is running
+     * \retval  false   Timer has not been started or was stopped.
+     */
+    bool
+    isRunning();
 
-            /// Object and member function to call when the timer expires.
-            Callable* const mObject;
-            Function const mFunction;
-        };
-    }
+private:
+    void
+    createTimer(const char* name);
+
+    /// Object and member function to call when the timer expires.
+    Callable* const mObject;
+    Function const mFunction;
+};
+
+}
 }
 
 // ----------------------------------------------------------------------------

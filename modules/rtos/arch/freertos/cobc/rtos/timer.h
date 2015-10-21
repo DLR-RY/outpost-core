@@ -115,6 +115,15 @@ public:
     cancel();
 
     /**
+     * Check whether the timer is currently running.
+     *
+     * \retval  true    Timer is running
+     * \retval  false   Timer has not been started or was stopped.
+     */
+    bool
+    isRunning();
+
+    /**
      * Start timer daemon.
      *
      * Unused for FreeRTOS. The timer daemon is automatically started

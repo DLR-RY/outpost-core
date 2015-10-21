@@ -39,6 +39,12 @@ cobc::rtos::Timer::cancel()
 {
 }
 
+bool
+cobc::rtos::Timer::isRunning()
+{
+    return false;
+}
+
 // ----------------------------------------------------------------------------
 void
 cobc::rtos::Timer::createTimer(const char* name)

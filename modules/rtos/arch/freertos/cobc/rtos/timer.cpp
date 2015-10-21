@@ -25,7 +25,8 @@
 // ----------------------------------------------------------------------------
 cobc::rtos::Timer::~Timer()
 {
-    if (xTimerDelete(mHandle, portMAX_DELAY) != pdPASS) {
+    if (xTimerDelete(mHandle, portMAX_DELAY) != pdPASS)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }
@@ -46,7 +47,8 @@ cobc::rtos::Timer::start(time::Duration duration)
 void
 cobc::rtos::Timer::reset()
 {
-    if (xTimerReset(mHandle, portMAX_DELAY) != pdPASS) {
+    if (xTimerReset(mHandle, portMAX_DELAY) != pdPASS)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
     }
 }
@@ -54,9 +56,22 @@ cobc::rtos::Timer::reset()
 void
 cobc::rtos::Timer::cancel()
 {
-    if (xTimerStop(mHandle, portMAX_DELAY) != pdPASS) {
+    if (xTimerStop(mHandle, portMAX_DELAY) != pdPASS)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
     }
+}
+
+bool
+cobc::rtos::Timer::isRunning()
+{
+    bool active = false;
+    if (xTimerIsTimerActive(mHandle) != pdFALSE)
+    {
+        active = true;
+    }
+
+    return active;
 }
 
 // ----------------------------------------------------------------------------
@@ -77,7 +92,8 @@ cobc::rtos::Timer::createTimer(const char* name)
                           (void *) this,
                           &Timer::invokeTimer);
 
-    if (mHandle == 0) {
+    if (mHandle == 0)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }

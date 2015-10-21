@@ -30,7 +30,7 @@ void
 cobc::rtos::Timer::start(time::Duration duration)
 {
     struct itimerspec time;
-    uint64_t nanoseconds = duration.microseconds() * 1000;
+    uint64_t nanoseconds = duration.microseconds() * cobc::time::Duration::nanosecondsPerMicrosecond;
 
     // interval
     time.it_interval.tv_sec = 0;
@@ -46,7 +46,7 @@ cobc::rtos::Timer::start(time::Duration duration)
 
     if (timer_settime(mTid, 0, &time, NULL) != 0)
     {
-        // Could not set the timer value
+        // Could not set the timer valuell
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
 }
@@ -74,6 +74,20 @@ cobc::rtos::Timer::cancel()
         // Could not set the timer value
         FailureHandler::fatal(FailureCode::resourceAllocationFailed());
     }
+}
+
+bool
+cobc::rtos::Timer::isRunning()
+{
+    struct itimerspec value;
+
+    if (timer_gettime(mTid, &value) != 0)
+    {
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed());
+    }
+
+    bool running = (value.it_value != 0);
+    return running;
 }
 
 // ----------------------------------------------------------------------------

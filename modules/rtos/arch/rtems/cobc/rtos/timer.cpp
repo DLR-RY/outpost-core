@@ -46,12 +46,28 @@ cobc::rtos::Timer::cancel()
     rtems_timer_cancel(mTid);
 }
 
+bool
+cobc::rtos::Timer::isRunning()
+{
+    rtems_timer_information info;
+    rtems_status_code result = rtems_timer_get_information(mTid, &info);
+
+    if (result != RTEMS_SUCCESSFUL)
+    {
+        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    }
+
+    bool running = (info.the_class == TIMER_DORMANT);
+    return running;
+}
+
 // ----------------------------------------------------------------------------
 void
 cobc::rtos::Timer::startTimerDaemonThread(uint8_t priority, size_t stack)
 {
     rtems_status_code result = rtems_timer_initiate_server(priority, stack, RTEMS_DEFAULT_ATTRIBUTES);
-    if (result != RTEMS_SUCCESSFUL) {
+    if (result != RTEMS_SUCCESSFUL)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }
@@ -66,9 +82,12 @@ cobc::rtos::Timer::createTimer(const char* name)
         // taskName = 0 is not allowed.
         taskName = rtems_build_name('T', 'I', 'M', '-');;
     }
-    else {
-        for (uint_fast8_t i = 0; i < 4; ++i) {
-            if (name != 0) {
+    else
+    {
+        for (uint_fast8_t i = 0; i < 4; ++i)
+        {
+            if (name != 0)
+            {
                 taskName |= *name++;
             }
             taskName <<= 8;
@@ -76,7 +95,8 @@ cobc::rtos::Timer::createTimer(const char* name)
     }
 
     rtems_status_code result = rtems_timer_create(taskName, &mTid);
-    if (result != RTEMS_SUCCESSFUL) {
+    if (result != RTEMS_SUCCESSFUL)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }
