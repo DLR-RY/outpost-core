@@ -27,7 +27,8 @@ cobc::rtos::Mutex::Mutex()
     if (rtems_semaphore_create(name, 1,
             RTEMS_PRIORITY |
             RTEMS_BINARY_SEMAPHORE |
-            RTEMS_INHERIT_PRIORITY, 1, &mId) != RTEMS_SUCCESSFUL) {
+            RTEMS_INHERIT_PRIORITY, 1, &mId) != RTEMS_SUCCESSFUL)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 }

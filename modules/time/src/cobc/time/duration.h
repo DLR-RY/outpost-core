@@ -275,6 +275,31 @@ private:
     static const int64_t minimalValue = -maximumValue - 1;
 };
 
+class Hours : public Duration
+{
+public:
+    explicit inline
+    Hours(int64_t value) :
+        Duration(value * minutesPerHour *
+                         secondsPerMinute *
+                         millisecondsPerSecond *
+                         microsecondsPerMillisecond)
+    {
+    }
+};
+
+class Minutes : public Duration
+{
+public:
+    explicit inline
+    Minutes(int64_t value) :
+        Duration(value * secondsPerMinute *
+                         millisecondsPerSecond *
+                         microsecondsPerMillisecond)
+    {
+    }
+};
+
 /**
  * Allows expression of durations as a seconds count.
  *
