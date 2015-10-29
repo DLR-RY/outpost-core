@@ -30,6 +30,16 @@ cobc::Deque<T>::Deque(T* backendBuffer,
 {
 }
 
+template<typename T>
+cobc::Deque<T>::Deque(cobc::BoundedArray<T> backendBuffer) :
+    mBuffer(backendBuffer.begin()),
+    mMaxSize(backendBuffer.getNumberOfElements()),
+    mHead(0),
+    mTail(1),
+    mSize(0)
+{
+}
+
 // ----------------------------------------------------------------------------
 template<typename T>
 bool

@@ -14,13 +14,14 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_DEQUE_HPP
-#define COBC_DEQUE_HPP
+#ifndef COBC_DEQUE_H
+#define COBC_DEQUE_H
 
 #include <stdint.h>
 #include <stddef.h>
 
-#include <cobc/utils.h>
+#include "meta.h"
+#include "bounded_array.h"
 
 namespace cobc
 {
@@ -56,6 +57,9 @@ public:
 public:
     Deque(T* backendBuffer,
           size_t n);
+
+    explicit
+    Deque(cobc::BoundedArray<T> backendBuffer);
 
     inline bool
     isEmpty() const;
@@ -125,4 +129,4 @@ private:
 
 #include "deque_impl.h"
 
-#endif // COBC_DEQUE_HPP
+#endif
