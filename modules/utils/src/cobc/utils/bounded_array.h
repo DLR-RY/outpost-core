@@ -62,32 +62,15 @@ public:
     {
     }
 
-    // This constructor is non-explicit to allow for a conversion from
-    // const to non-const
     inline
-    BoundedArray(const BoundedArray<NonConstType>& rhs) :
-        mData(rhs.mData),
-        mNumberOfElements(rhs.mNumberOfElements)
-    {
-    }
-
-    inline
-    BoundedArray(const BoundedArray<ConstType>& rhs) :
+    BoundedArray(const BoundedArray& rhs) :
         mData(rhs.mData),
         mNumberOfElements(rhs.mNumberOfElements)
     {
     }
 
     inline BoundedArray&
-    operator=(const BoundedArray<NonConstType>& rhs)
-    {
-        mData = rhs.mData;
-        mNumberOfElements = rhs.mNumberOfElements;
-        return *this;
-    }
-
-    inline BoundedArray&
-    operator=(const BoundedArray<ConstType>& rhs)
+    operator=(const BoundedArray& rhs)
     {
         mData = rhs.mData;
         mNumberOfElements = rhs.mNumberOfElements;
@@ -151,45 +134,27 @@ public:
      *      No out-of-bound error checking is performed.
      */
     inline T&
-    operator[](size_t index)
-    {
-        return mData[index];
-    }
-
-    /**
-     * Access elements of the array.
-     *
-     * \warning
-     *      No out-of-bound error checking is performed.
-     */
-    inline const T&
     operator[](size_t index) const
     {
         return mData[index];
     }
 
-    inline const T*
+    inline T*
     begin() const
     {
         return &mData[0];
     }
 
     inline T*
-    begin()
-    {
-        return &mData[0];
-    }
-
-    inline const T*
     end() const
     {
         return &mData[mNumberOfElements];
     }
 
-    inline T*
-    end()
+    inline
+    operator BoundedArray<const T>() const
     {
-        return &mData[mNumberOfElements];
+        return BoundedArray<const T>(mData, mNumberOfElements);
     }
 
 private:
