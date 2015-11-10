@@ -57,7 +57,7 @@ cobc::rtos::Timer::isRunning()
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
 
-    bool running = (info.the_class == TIMER_DORMANT);
+    bool running = (info.the_class != TIMER_DORMANT);
     return running;
 }
 
