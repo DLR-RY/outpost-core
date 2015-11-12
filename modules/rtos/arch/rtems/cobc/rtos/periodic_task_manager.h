@@ -31,8 +31,8 @@ namespace rtos
 /**
  * Helper class for Rate-Monotonic Scheduling (RMS).
  *
- * \author    Fabian Greif
- * \ingroup    rtos
+ * \author  Fabian Greif
+ * \ingroup rtos
  */
 class PeriodicTaskManager
 {
@@ -52,6 +52,12 @@ public:
         };
     };
 
+    /**
+     * Create a new periodic task manager.
+     *
+     * The periodic task manager has to be created in the thread which will
+     * be used later to call the nextPeriod function.
+     */
     PeriodicTaskManager();
 
     ~PeriodicTaskManager();
@@ -73,15 +79,19 @@ public:
      * length of *period* and the calling task returns immediately with
      * a timeout error status.
      *
+     * \warning
+     *      The nextPeriod function must only be called by the thread
+     *      that create the PeriodicTaskManager object.
+     *
      * \param  period
-     *     Length of the next period. Can be different from the
-     *     previous one.
+     *      Length of the next period. Can be different from the
+     *      previous one.
      *
      * \retval    Status::running
-     *     Period is currently running.
+     *      Period is currently running.
      * \retval  Status::timeout
-     *     Last period was missed, this may require some different
-     *     handling from the user.
+     *      Last period was missed, this may require some different
+     *      handling from the user.
      */
     inline Status::Type
     nextPeriod(time::Duration period)
