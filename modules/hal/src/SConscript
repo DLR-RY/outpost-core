@@ -20,7 +20,7 @@ elif env['OS'] == 'rtems':
     
     # Remove warning because the spacewirelight driver uses void pointer
     # casts which ignore qualifiers like volatile.
-    env.RemoveFromList('CCFLAGS_warning', '-Wcast-qual')
+    env.RemoveFromList('CCFLAGS_warning', ['-Wcast-qual', '-Wcast-align'])
     
     # spacewirelight can not be compiled as C99 (with or without pedantic)
     env['CFLAGS_language'] = '-std=gnu99'
