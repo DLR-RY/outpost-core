@@ -154,7 +154,7 @@ public:
      * O(N)
      */
     size_t
-    size();
+    size() const;
 
     /**
      * Remove the first node from the list.
@@ -199,11 +199,52 @@ public:
         T* mNode;
     };
 
+    class ConstIterator
+	{
+	public:
+		friend class List;
+
+		ConstIterator();
+
+		ConstIterator(const ConstIterator& other);
+
+		ConstIterator&
+		operator=(const ConstIterator& other);
+
+		ConstIterator&
+		operator++();
+
+		bool
+		operator==(const ConstIterator& other) const;
+
+		bool
+		operator!=(const ConstIterator& other) const;
+
+		const T&
+		operator*() const;
+
+		const T*
+		operator->() const;
+
+	private:
+		explicit
+		ConstIterator(T* node);
+
+		/// Pointer to the next node. Set to NULL if end of list.
+		T* mNode;
+	};
+
     Iterator
     begin();
 
     Iterator
     end();
+
+    ConstIterator
+	begin() const;
+
+    ConstIterator
+	end() const;
 
 private:
     T* mHead;

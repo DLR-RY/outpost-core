@@ -295,7 +295,7 @@ cobc::List<T>::removeFirst()
 // ----------------------------------------------------------------------------
 template<typename T>
 size_t
-cobc::List<T>::size()
+cobc::List<T>::size() const
 {
     size_t numberOfElements = 0;
     T* current = mHead;
@@ -326,7 +326,6 @@ cobc::List<T>::Iterator::Iterator(const Iterator& other) :
 {
 }
 
-// ----------------------------------------------------------------------------
 template <typename T>
 typename cobc::List<T>::Iterator&
 cobc::List<T>::Iterator::operator=(const Iterator& other)
@@ -374,6 +373,70 @@ cobc::List<T>::Iterator::operator->()
 
 // ----------------------------------------------------------------------------
 template <typename T>
+cobc::List<T>::ConstIterator::ConstIterator() :
+    mNode(0)
+{
+}
+
+template <typename T>
+cobc::List<T>::ConstIterator::ConstIterator(T* node) :
+    mNode(node)
+{
+}
+
+template <typename T>
+cobc::List<T>::ConstIterator::ConstIterator(const ConstIterator& other) :
+    mNode(other.mNode)
+{
+}
+
+template <typename T>
+typename cobc::List<T>::ConstIterator&
+cobc::List<T>::ConstIterator::operator=(const ConstIterator& other)
+{
+    // Handles self assignment correctly
+    this->mNode = other.mNode;
+    return *this;
+}
+
+template <typename T>
+typename cobc::List<T>::ConstIterator&
+cobc::List<T>::ConstIterator::operator++()
+{
+    this->mNode = this->mNode->mNext;
+    return *this;
+}
+
+template <typename T>
+bool
+cobc::List<T>::ConstIterator::operator==(const ConstIterator& other) const
+{
+    return (mNode == other.mNode);
+}
+
+template <typename T>
+bool
+cobc::List<T>::ConstIterator::operator!=(const ConstIterator& other) const
+{
+    return (mNode != other.mNode);
+}
+
+template <typename T>
+const T&
+cobc::List<T>::ConstIterator::operator*() const
+{
+    return *this->mNode;
+}
+
+template <typename T>
+const T*
+cobc::List<T>::ConstIterator::operator->() const
+{
+    return this->mNode;
+}
+
+// ----------------------------------------------------------------------------
+template <typename T>
 typename cobc::List<T>::Iterator
 cobc::List<T>::begin()
 {
@@ -386,6 +449,22 @@ typename cobc::List<T>::Iterator
 cobc::List<T>::end()
 {
     Iterator it(0);
+    return it;
+}
+
+template <typename T>
+typename cobc::List<T>::ConstIterator
+cobc::List<T>::begin() const
+{
+    ConstIterator it(this->mHead);
+    return it;
+}
+
+template <typename T>
+typename cobc::List<T>::ConstIterator
+cobc::List<T>::end() const
+{
+    ConstIterator it(0);
     return it;
 }
 
