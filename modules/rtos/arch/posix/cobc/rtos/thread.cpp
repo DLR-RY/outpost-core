@@ -31,7 +31,7 @@
 void*
 cobc::rtos::Thread::wrapper(void* object)
 {
-    Thread* thread = reinterpret_cast<Thread *>(object);
+    Thread* thread = reinterpret_cast<Thread*>(object);
 
     thread->mTid = Thread::getCurrentThreadIdentifier();
     thread->run();
@@ -46,17 +46,18 @@ cobc::rtos::Thread::wrapper(void* object)
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t, size_t, const char *) :
-    isRunning(false),
-    pthreadId(),
+    mIsRunning(false),
+    mPthreadId(),
     mTid()
 {
 }
 
 cobc::rtos::Thread::~Thread()
 {
-    if (isRunning) {
-        pthread_cancel(pthreadId);
-        pthread_join(pthreadId, NULL);
+    if (mIsRunning)
+    {
+        pthread_cancel(mPthreadId);
+        pthread_join(mPthreadId, NULL);
     }
 }
 
@@ -82,14 +83,17 @@ cobc::rtos::Thread::getCurrentThreadIdentifier()
 void
 cobc::rtos::Thread::start()
 {
-    isRunning = true;
+    mIsRunning = true;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
 
-    int ret = pthread_create(&pthreadId, NULL, &Thread::wrapper, reinterpret_cast<void *>(this));
-    if (ret != 0) {
+    int ret = pthread_create(&mPthreadId, &attr, &Thread::wrapper, reinterpret_cast<void *>(this));
+    if (ret != 0)
+    {
         rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
     }
+
+    pthread_attr_destroy(&attr);
 }
 
 // ----------------------------------------------------------------------------

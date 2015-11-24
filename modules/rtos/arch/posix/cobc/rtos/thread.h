@@ -153,8 +153,8 @@ private:
     static void*
     wrapper(void* object);
 
-    bool isRunning;
-    pthread_t pthreadId;
+    bool mIsRunning;
+    pthread_t mPthreadId;
     Identifier mTid;
 };
 
