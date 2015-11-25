@@ -158,6 +158,9 @@ DateUtils::getDate(int64_t day)
     date.year = y + (mi + 2) / 12;
     date.month = (mi + 2) % 12 + 1;
     date.day = daysInYear - getDaysBeforeMonth(mi) + 1;
+    date.hour = 0;
+    date.minute = 0;
+    date.second = 0;
 
     return date;
 }
