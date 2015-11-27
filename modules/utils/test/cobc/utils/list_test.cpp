@@ -145,6 +145,31 @@ TEST(ListTest, removeWithFunctor)
     EXPECT_TRUE(list.isEmpty());
 }
 
+static inline bool
+condition(const ListNode& node)
+{
+    return (node.mValue == 5);
+}
+
+TEST(ListTest, removeWithFunction)
+{
+    List<ListNode> list;
+
+    ListNode node1 = { 1, 0 };
+    ListNode node2 = { 3, 0 };
+    ListNode node3 = { 5, 0 };
+
+    list.prepend(&node1);
+    list.prepend(&node2);
+    list.prepend(&node3);
+
+    EXPECT_EQ(3U, list.size());
+
+    EXPECT_EQ(&node3, list.remove(condition));
+
+    EXPECT_EQ(2U, list.size());
+}
+
 static bool
 check(const ListNode& node)
 {
