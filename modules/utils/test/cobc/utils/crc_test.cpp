@@ -177,7 +177,7 @@ TEST(CrcTest, testUpdate)
 }
 
 // code from http://www.nongnu.org/avr-libc/user-manual/group__util__crc.html
-uint16_t
+static uint16_t
 crc_xmodem_update(uint16_t crc, uint8_t data)
 {
     crc = crc ^ (static_cast<uint16_t>(data) << 8);

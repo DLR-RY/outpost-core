@@ -14,28 +14,28 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_LIST_H
-#define COBC_LIST_H
+#ifndef COBC_CIRCULAR_SINGLY_LINKED_LIST_H
+#define COBC_CIRCULAR_SINGLY_LINKED_LIST_H
 
 #include <stddef.h>
 
 namespace cobc
 {
 /**
- * Singly-linked list with external storage.
+ * Circular singly-linked list with external storage.
  *
  * The nodes must provide a "mNext"-member.
  *
  * \author    Fabian Greif
  */
 template <typename T>
-class List
+class CircularSinglyLinkedList
 {
 public:
     /**
      * Construct an empty list.
      */
-    List();
+    CircularSinglyLinkedList();
 
     /**
      * Destructor.
@@ -45,7 +45,7 @@ public:
      *     the list. The list does not take ownership of items added to it,
      *     therefore all items have to be destroyed by their original creator.
      */
-    ~List();
+    ~CircularSinglyLinkedList();
 
     /**
      * Remove all entries from the list.
@@ -75,6 +75,17 @@ public:
     const T*
     first() const;
 
+    /**
+     * Get last element of the list.
+     *
+     * O(1)
+     */
+    T*
+    last();
+
+    const T*
+    last() const;
+
     template <typename Condition>
     T*
     get(Condition condition);
@@ -94,6 +105,14 @@ public:
      */
     void
     prepend(T* node);
+
+    /**
+     * Add a node to the end of the list.
+     *
+     * O(1)
+     */
+    void
+    append(T* node);
 
     /**
      * Insert a node sorted into the list.
@@ -167,7 +186,7 @@ public:
     class Iterator
     {
     public:
-        friend class List;
+        friend class CircularSinglyLinkedList;
 
         Iterator();
 
@@ -193,16 +212,17 @@ public:
 
     private:
         explicit
-        Iterator(T* node);
+        Iterator(T* node, T* lastNode);
 
-        /// Pointer to the current node. Set to NULL if end of list.
+        /// Pointer to the current node.
         T* mNode;
+        T* mLastNode;
     };
 
     class ConstIterator
 	{
 	public:
-		friend class List;
+		friend class CircularSinglyLinkedList;
 
 		ConstIterator();
 
@@ -228,10 +248,11 @@ public:
 
 	private:
 		explicit
-		ConstIterator(T* node);
+		ConstIterator(T* node, T* lastNode);
 
-		/// Pointer to the current node. Set to NULL if end of list.
+		/// Pointer to the current node.
 		T* mNode;
+		T* mLastNode;
 	};
 
     Iterator
@@ -247,17 +268,18 @@ public:
 	end() const;
 
 private:
+    /// Points to the last element in the list
     T* mHead;
 
     // disable copy constructor
-    List(const List&);
+    CircularSinglyLinkedList(const CircularSinglyLinkedList&);
 
     // disable assignment operator
-    List&
-    operator=(const List&);
+    CircularSinglyLinkedList&
+    operator=(const CircularSinglyLinkedList&);
 };
 }
 
-#include "list_impl.h"
+#include "circular_singly_linked_list_impl.h"
 
-#endif // COBC_LIST_H
+#endif

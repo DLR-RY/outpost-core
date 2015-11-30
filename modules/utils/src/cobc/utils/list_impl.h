@@ -260,21 +260,25 @@ cobc::List<T>::removeAll(Condition condition, PostCondition postCondition)
             T* node = current;
             if (condition(*node))
             {
-                postCondition(*node);
                 previous->mNext = current->mNext;
+                current = current->mNext;
+
+                postCondition(*node);
             }
             else
             {
                 previous = current;
+                current = current->mNext;
             }
-            current = current->mNext;
         }
 
         // Check first entry in the list
         if (condition(*mHead))
         {
-            postCondition(*mHead);
+            T* node = mHead;
             mHead = mHead->mNext;
+
+            postCondition(*node);
         }
     }
 }

@@ -26,7 +26,7 @@ class CobsGeneratorTest : public ::testing::Test
 public:
 };
 
-size_t
+static size_t
 getEncodedArray(CobsEncodingGenerator& generator,
                 uint8_t* data,
                 size_t maximumLength)
