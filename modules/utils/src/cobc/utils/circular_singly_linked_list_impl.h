@@ -402,7 +402,6 @@ cobc::CircularSinglyLinkedList<T>::removeFirst()
             // Multiple entries
             T* next = mHead->mNext;
             mHead->mNext = next->mNext;
-            mHead = next;
         }
     }
 }

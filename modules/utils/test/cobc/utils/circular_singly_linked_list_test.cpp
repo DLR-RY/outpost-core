@@ -129,6 +129,27 @@ TEST(CircularSinglyLinkedListTest, remove)
     EXPECT_TRUE(list.isEmpty());
 }
 
+TEST(CircularSinglyLinkedListTest, shouldRemoveFirstEntry)
+{
+    CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
+
+    CircularSinglyLinkedListNode node1;
+    CircularSinglyLinkedListNode node2;
+    CircularSinglyLinkedListNode node3;
+
+    list.append(&node1);
+    list.append(&node2);
+    list.append(&node3);
+
+    EXPECT_EQ(&node1, list.first());
+    list.removeFirst();
+    EXPECT_EQ(&node2, list.first());
+    list.removeFirst();
+    EXPECT_EQ(&node3, list.first());
+    list.removeFirst();
+    EXPECT_TRUE(list.isEmpty());
+}
+
 TEST(CircularSinglyLinkedListTest, removeWithFunctor)
 {
     CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
