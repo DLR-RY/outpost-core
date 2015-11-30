@@ -515,6 +515,13 @@ cobc::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(T* node, T* last
 }
 
 template <typename T>
+cobc::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(const Iterator& other) :
+    mNode(other.mNode),
+    mLastNode(other.mLastNode)
+{
+}
+
+template <typename T>
 cobc::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(const ConstIterator& other) :
     mNode(other.mNode),
     mLastNode(other.mLastNode)

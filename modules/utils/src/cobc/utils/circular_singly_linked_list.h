@@ -226,6 +226,9 @@ public:
 
 		ConstIterator();
 
+		/// Conversion from Iterator to ConstIterator
+		ConstIterator(const Iterator& other);
+
 		ConstIterator(const ConstIterator& other);
 
 		ConstIterator&
