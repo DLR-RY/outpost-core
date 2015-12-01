@@ -45,7 +45,8 @@ namespace rtos
  * \author    Fabian Greif
  * \ingroup    rtos
  */
-class MutexGuard
+template <typename T>
+class Guard
 {
 public:
     /**
@@ -55,33 +56,38 @@ public:
      *      The mutex to acquire.
      */
     explicit inline
-    MutexGuard(Mutex& m) :
-        mutex(m)
+    Guard(T& m) :
+        mLock(m)
     {
-        mutex.acquire();
+        mLock.acquire();
     }
 
     /**
      * Release the mutex.
      */
     inline
-    ~MutexGuard()
+    ~Guard()
     {
-        mutex.release();
+        mLock.release();
     }
 
 private:
     // Disable copy constructor
-    MutexGuard(const MutexGuard&);
+    Guard(const Guard&);
 
     // Disable assignment operator
-    MutexGuard&
-    operator=(const MutexGuard& other);
+    Guard&
+    operator=(const Guard& other);
 
-    Mutex& mutex;
+    T& mLock;
 };
 
+/**
+ * Lock for Mutexes.
+ */
+typedef Guard<Mutex> MutexGuard;
+
 }
 }
 
-#endif // COBC_RTOS_MUTEX_GUARD_HPP
+#endif
