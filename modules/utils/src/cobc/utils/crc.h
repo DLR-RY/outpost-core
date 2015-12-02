@@ -29,6 +29,8 @@ namespace cobc
  * Initial value : 0xffff
  *
  * Used for SPP transfer frames.
+ *
+ * \author  Fabian Greif
  */
 class Crc16Ccitt
 {
