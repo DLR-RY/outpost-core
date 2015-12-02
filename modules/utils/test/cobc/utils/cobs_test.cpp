@@ -378,3 +378,14 @@ TEST_F(CobsTest, abortWithAToSmallOutputBuffer)
     ASSERT_EQ(8U, encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
+
+TEST_F(CobsTest, shouldAbortDecodingWhenZeroBytesAreDetected)
+{
+    uint8_t input[] = {
+        0, 0x04, 10, 11, 12, 0x03, 13, 14
+    };
+
+    size_t encodedLength = Cobs::decode(input, sizeof(input), input);
+
+    ASSERT_EQ(0U, encodedLength);
+}

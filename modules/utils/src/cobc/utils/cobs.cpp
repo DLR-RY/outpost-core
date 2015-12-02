@@ -186,21 +186,30 @@ Cobs::decode(const uint8_t* input,
 
     while (input < end)
     {
-        uint8_t blockLength = *input++ - 1;
-
-        // memmove instead of memcpy is needed here because input and output
-        // array may overlap.
-        memmove(&output[outputPosition], input, blockLength);
-        outputPosition += blockLength;
-        input += blockLength;
-
-        if (blockLength < maximumBlockLength)
+        uint8_t data = *input++;
+        if (data == 0)
         {
-            // The last (implicit) zero is suppressed and not output.
-            if (input < end)
+            outputPosition = 0;
+            input = end;
+        }
+        else
+        {
+            uint8_t blockLength = data - 1;
+
+            // memmove instead of memcpy is needed here because the input and output
+            // array may overlap.
+            memmove(&output[outputPosition], input, blockLength);
+            outputPosition += blockLength;
+            input += blockLength;
+
+            if (blockLength < maximumBlockLength)
             {
-                output[outputPosition] = 0;
-                outputPosition++;
+                // The last (implicit) zero is suppressed and not output.
+                if (input < end)
+                {
+                    output[outputPosition] = 0;
+                    outputPosition++;
+                }
             }
         }
     }
