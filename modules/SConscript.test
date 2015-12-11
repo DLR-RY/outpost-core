@@ -12,6 +12,7 @@ envGlobal.SConscript([
         'utils/test/SConscript',
         'time/test/SConscript',
         'smpc/test/SConscript',
+        'hal/test/SConscript',
         'l3test/src/SConscript',
         'l3test/ext/SConscript',
         'l3test/test/SConscript',
