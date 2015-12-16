@@ -23,8 +23,9 @@ cobc::rtos::Mutex::Mutex()
 {
     mHandle = xSemaphoreCreateRecursiveMutex();
 
-    if (mHandle == 0) {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    if (mHandle == 0)
+    {
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::mutex));
     }
 }
 

@@ -28,7 +28,7 @@ cobc::rtos::Semaphore::Semaphore(uint32_t count)
             RTEMS_PRIORITY |
             RTEMS_COUNTING_SEMAPHORE, 1, &mId) != RTEMS_SUCCESSFUL)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
     }
 }
 
@@ -67,7 +67,7 @@ cobc::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
             RTEMS_PRIORITY |
             RTEMS_SIMPLE_BINARY_SEMAPHORE, 1, &mId) != RTEMS_SUCCESSFUL)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
     }
 }
 

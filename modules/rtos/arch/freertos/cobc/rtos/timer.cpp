@@ -27,7 +27,7 @@ cobc::rtos::Timer::~Timer()
 {
     if (xTimerDelete(mHandle, portMAX_DELAY) != pdPASS)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::timer));
     }
 }
 
@@ -40,7 +40,7 @@ cobc::rtos::Timer::start(time::Duration duration)
                             portMAX_DELAY) != pdPASS) ||
         (xTimerStart(mHandle, portMAX_DELAY) != pdPASS))
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
 }
 
@@ -49,7 +49,7 @@ cobc::rtos::Timer::reset()
 {
     if (xTimerReset(mHandle, portMAX_DELAY) != pdPASS)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
 }
 
@@ -58,7 +58,7 @@ cobc::rtos::Timer::cancel()
 {
     if (xTimerStop(mHandle, portMAX_DELAY) != pdPASS)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
 }
 
@@ -94,7 +94,7 @@ cobc::rtos::Timer::createTimer(const char* name)
 
     if (mHandle == 0)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::timer));
     }
 }
 

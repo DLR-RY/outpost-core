@@ -25,8 +25,9 @@
 cobc::rtos::Semaphore::Semaphore(uint32_t count)
 {
     mHandle = xSemaphoreCreateCounting(static_cast<unsigned portBASE_TYPE>(-1), count);
-    if (mHandle == 0) {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    if (mHandle == 0)
+    {
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
     }
 }
 
@@ -62,11 +63,13 @@ cobc::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
 {
     vSemaphoreCreateBinary(mHandle);
 
-    if (mHandle == 0) {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    if (mHandle == 0)
+    {
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
     }
 
-    if (initial == State::acquired) {
+    if (initial == State::acquired)
+    {
         acquire();
     }
 }

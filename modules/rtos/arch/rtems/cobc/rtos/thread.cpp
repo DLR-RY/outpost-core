@@ -88,7 +88,7 @@ Thread::Thread(uint8_t priority,
 
     if (status != RTEMS_SUCCESSFUL)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::thread));
     }
 }
 

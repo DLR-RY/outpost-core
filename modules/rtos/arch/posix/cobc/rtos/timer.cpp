@@ -47,7 +47,7 @@ cobc::rtos::Timer::start(time::Duration duration)
     if (timer_settime(mTid, 0, &time, NULL) != 0)
     {
         // Could not set the timer valuell
-        FailureHandler::fatal(FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
 }
 
@@ -57,7 +57,7 @@ cobc::rtos::Timer::reset()
     if (timer_settime(mTid, 0, &mInterval, NULL) != 0)
     {
         // Could not set the timer value
-        FailureHandler::fatal(FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
 }
 
@@ -72,7 +72,7 @@ cobc::rtos::Timer::cancel()
     if (timer_settime(mTid, 0, &time, NULL) != 0)
     {
         // Could not set the timer value
-        FailureHandler::fatal(FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
 }
 
@@ -83,7 +83,7 @@ cobc::rtos::Timer::isRunning()
 
     if (timer_gettime(mTid, &value) != 0)
     {
-        FailureHandler::fatal(FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
 
     bool running = (value.it_value.tv_sec != 0) || (value.it_value.tv_nsec != 0);
@@ -116,7 +116,7 @@ cobc::rtos::Timer::createTimer(const char* /*name*/)
     if (timer_create(CLOCK_MONOTONIC, &event, &mTid) != 0)
     {
         // Could not allocate a new timer
-        FailureHandler::fatal(FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::timer));
     }
 
     // Disable timer for now

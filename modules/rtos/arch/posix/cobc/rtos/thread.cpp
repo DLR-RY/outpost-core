@@ -90,7 +90,7 @@ cobc::rtos::Thread::start()
     int ret = pthread_create(&mPthreadId, &attr, &Thread::wrapper, reinterpret_cast<void *>(this));
     if (ret != 0)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::thread));
     }
 
     pthread_attr_destroy(&attr);

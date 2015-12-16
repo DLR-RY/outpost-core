@@ -31,7 +31,7 @@ cobc::rtos::Queue<T>::Queue(size_t numberOfItems)
 
     if (mHandle == 0)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::messageQueue));
     }
 }
 

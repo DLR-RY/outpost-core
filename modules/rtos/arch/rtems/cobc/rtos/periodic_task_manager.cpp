@@ -26,7 +26,7 @@ PeriodicTaskManager::PeriodicTaskManager() :
 
     if (result != RTEMS_SUCCESSFUL)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::periodicTask));
     }
 }
 
@@ -36,6 +36,6 @@ PeriodicTaskManager::~PeriodicTaskManager()
     if (result != RTEMS_SUCCESSFUL)
     {
         // TODO create different error code?
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::periodicTask));
     }
 }

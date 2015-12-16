@@ -29,9 +29,9 @@ void
 cobc::rtos::Timer::start(time::Duration duration)
 {
     rtems_timer_server_fire_after(mTid,
-      duration.microseconds()/rtems_configuration_get_microseconds_per_tick(),
-      &Timer::invokeTimer,
-      (void *) this);
+                                  duration.microseconds()/rtems_configuration_get_microseconds_per_tick(),
+                                  &Timer::invokeTimer,
+                                  (void *) this);
 }
 
 void
@@ -54,7 +54,7 @@ cobc::rtos::Timer::isRunning()
 
     if (result != RTEMS_SUCCESSFUL)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
 
     bool running = (info.the_class != TIMER_DORMANT);
@@ -68,7 +68,7 @@ cobc::rtos::Timer::startTimerDaemonThread(uint8_t priority, size_t stack)
     rtems_status_code result = rtems_timer_initiate_server(priority, stack, RTEMS_DEFAULT_ATTRIBUTES);
     if (result != RTEMS_SUCCESSFUL)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::timer));
     }
 }
 
@@ -97,7 +97,7 @@ cobc::rtos::Timer::createTimer(const char* name)
     rtems_status_code result = rtems_timer_create(taskName, &mTid);
     if (result != RTEMS_SUCCESSFUL)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::timer));
     }
 }
 

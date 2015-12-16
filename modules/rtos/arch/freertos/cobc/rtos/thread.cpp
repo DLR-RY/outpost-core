@@ -47,14 +47,16 @@ cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char* name) :
     mStackSize(stack),
     mName(name)
 {
-    if (mStackSize < minimumStackSize) {
+    if (mStackSize < minimumStackSize)
+    {
         mStackSize = minimumStackSize;
     }
 }
 
 cobc::rtos::Thread::~Thread()
 {
-    if (mHandle != 0) {
+    if (mHandle != 0)
+    {
         vTaskDelete(mHandle);
     }
 }
@@ -74,8 +76,9 @@ cobc::rtos::Thread::start()
                 //3,
                 &mHandle);
 
-        if (status != pdPASS) {
-            rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        if (status != pdPASS)
+        {
+            FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::thread));
         }
     }
 }
@@ -84,10 +87,12 @@ cobc::rtos::Thread::start()
 cobc::rtos::Thread::Identifier
 cobc::rtos::Thread::getIdentifier() const
 {
-    if (mHandle == 0) {
+    if (mHandle == 0)
+    {
         return invalidIdentifier;
     }
-    else {
+    else
+    {
         return reinterpret_cast<Identifier>(mHandle);
     }
 }
@@ -131,8 +136,8 @@ cobc::rtos::Thread::startScheduler()
 {
 #if !defined(GOMSPACE)
     vTaskStartScheduler();
-    rtos::FailureHandler::fatal(rtos::FailureCode::returnFromThread());
+    FailureHandler::fatal(FailureCode::returnFromThread());
 #else
-    rtos::FailureHandler::fatal(rtos::FailureCode::genericRuntimeError());
+    FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::thread));
 #endif
 }

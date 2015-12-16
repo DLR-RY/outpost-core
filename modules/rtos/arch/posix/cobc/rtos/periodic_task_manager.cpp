@@ -75,7 +75,7 @@ getTime(timespec* time)
     int result = clock_gettime(CLOCK_MONOTONIC, time);
     if (result != 0)
     {
-        FailureHandler::fatal(FailureCode::genericRuntimeError());
+        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::clock));
     }
 }
 

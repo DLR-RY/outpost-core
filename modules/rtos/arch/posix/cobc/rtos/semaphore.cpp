@@ -25,8 +25,9 @@
 cobc::rtos::Semaphore::Semaphore(uint32_t count) : sid()
 {
     // shared semaphores are disabled
-    if (sem_init(&sid, 0, count) != 0) {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+    if (sem_init(&sid, 0, count) != 0)
+    {
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
     }
 }
 

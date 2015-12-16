@@ -31,28 +31,46 @@ namespace cobc
 namespace rtos
 {
 
+struct Resource
+{
+    enum Type
+    {
+        other = 0,
+        thread = 1,
+        timer = 2,
+        semaphore = 3,
+        mutex = 4,
+        interrupt = 5,
+        messageQueue = 6,
+        clock = 7,
+        periodicTask = 8
+    };
+};
+
 // FIXME create an overview of the values used here
 class FailureCode
 {
 public:
     inline static FailureCode
-    resourceAllocationFailed()
+    resourceAllocationFailed(Resource::Type resource = Resource::other)
     {
-        FailureCode code = FailureCode(0x0100);
+        FailureCode code = FailureCode(0x00010000 |
+                                       static_cast<uint32_t>(resource));
         return code;
     }
 
     inline static FailureCode
     returnFromThread()
     {
-        FailureCode code = FailureCode(0x01FF);
+        FailureCode code = FailureCode(0x00020000);
         return code;
     }
 
     inline static FailureCode
-    genericRuntimeError()
+    genericRuntimeError(Resource::Type resource = Resource::other)
     {
-        FailureCode code = FailureCode(0x0200);
+        FailureCode code = FailureCode(0x00030000 |
+                                       static_cast<uint32_t>(resource));
         return code;
     }
 

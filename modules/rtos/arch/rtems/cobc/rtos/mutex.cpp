@@ -29,7 +29,7 @@ cobc::rtos::Mutex::Mutex()
             RTEMS_BINARY_SEMAPHORE |
             RTEMS_INHERIT_PRIORITY, 1, &mId) != RTEMS_SUCCESSFUL)
     {
-        rtos::FailureHandler::fatal(rtos::FailureCode::resourceAllocationFailed());
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::mutex));
     }
 }
 
