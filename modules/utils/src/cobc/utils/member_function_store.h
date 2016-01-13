@@ -14,20 +14,67 @@
 namespace cobc
 {
 
-/**
- * Simple storage class for member functions without arguments.
- *
- * \author  Fabian Greif
- */
-template <size_t N>
-class MemberFunctionStore
+template <typename Signature>
+class MemberFunctionSignature;
+
+template <typename R>
+class MemberFunctionSignature<R()>
 {
 public:
     template <typename C>
     struct MemberFunction
     {
-        typedef void (C::*Type)(void);
+        typedef R (C::*Type)();
     };
+
+    typedef R (Callable::*RawFunctionType)();
+
+    typedef R ReturnType;
+};
+
+template <typename R, typename Arg1>
+class MemberFunctionSignature<R(Arg1)>
+{
+public:
+    template <typename C>
+    struct MemberFunction
+    {
+        typedef R (C::*Type)(Arg1);
+    };
+
+    typedef R (Callable::*RawFunctionType)(Arg1);
+
+    typedef R ReturnType;
+    typedef Arg1 Arg1Type;
+};
+
+template <typename R, typename Arg1, typename Arg2>
+class MemberFunctionSignature<R(Arg1, Arg2)>
+{
+public:
+    template <typename C>
+    struct MemberFunction
+    {
+        typedef R (C::*Type)(Arg1, Arg2);
+    };
+
+    typedef R (Callable::*RawFunctionType)(Arg1, Arg2);
+
+    typedef R ReturnType;
+    typedef Arg1 Arg1Type;
+    typedef Arg1 Arg2Type;
+};
+
+/**
+ * Storage class for member functions.
+ *
+ * \author  Fabian Greif
+ */
+template <size_t N, typename Signature>
+class MemberFunctionStore
+{
+public:
+    typedef typename MemberFunctionSignature<Signature>::RawFunctionType RawFunctionType;
 
     /**
      * Register a new function.
@@ -38,10 +85,10 @@ public:
     inline void
     registerFunction(size_t index,
                      C* object,
-                     typename MemberFunction<C>::Type function)
+                     typename MemberFunctionSignature<Signature>::template MemberFunction<C>::Type function)
     {
         mObjects[index] = reinterpret_cast<Callable*>(object);
-        mFunctions[index] = reinterpret_cast<Function>(function);
+        mFunctions[index] = reinterpret_cast<RawFunctionType>(function);
     }
 
     /**
@@ -50,17 +97,32 @@ public:
      * Calling a function index which has not be registered before is
      * not allowed and yields undefined behaviour.
      */
-    inline void
+    inline typename MemberFunctionSignature<Signature>::ReturnType
     callFunction(size_t index)
     {
-        (mObjects[index]->*mFunctions[index])();
+        return (mObjects[index]->*mFunctions[index])();
+    }
+
+    template <typename T = Signature>
+    inline typename MemberFunctionSignature<Signature>::ReturnType
+    callFunction(size_t index,
+                 typename MemberFunctionSignature<T>::Arg1Type arg1)
+    {
+        return (mObjects[index]->*mFunctions[index])(arg1);
+    }
+
+    template <typename T = Signature>
+    inline typename MemberFunctionSignature<Signature>::ReturnType
+    callFunction(size_t index,
+                 typename MemberFunctionSignature<T>::Arg1Type arg1,
+                 typename MemberFunctionSignature<T>::Arg2Type arg2)
+    {
+        return (mObjects[index]->*mFunctions[index])(arg1, arg2);
     }
 
 private:
-    typedef void (Callable::*Function)(void);
-
     Callable* mObjects[N];
-    Function mFunctions[N];
+    RawFunctionType mFunctions[N];
 
 };
 
