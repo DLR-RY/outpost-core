@@ -111,7 +111,7 @@ TEST(MemberFunctionStoreTest, shouldAllowFunctionsWithArguments)
     store.registerFunction(0, &test, &TestClass::function3);
 
     EXPECT_EQ(0, test.called3);
-    store.callFunction(0, 2);
+    store.callFunction<void(int)>(0, 2);
     EXPECT_EQ(1, test.called3);
 }
 
@@ -137,6 +137,6 @@ TEST(MemberFunctionStoreTest, shouldAllowMultipleArguments)
     store.registerFunction(1, &test, &TestClass::function5);
 
     EXPECT_EQ(0, test.called5);
-    EXPECT_EQ(42, store.callFunction(1, true, 100));
+    EXPECT_EQ(42, store.callFunction<int(bool, int)>(1, true, 100));
     EXPECT_EQ(1, test.called5);
 }

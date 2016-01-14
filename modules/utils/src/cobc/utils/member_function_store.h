@@ -103,7 +103,7 @@ public:
         return (mObjects[index]->*mFunctions[index])();
     }
 
-    template <typename T = Signature>
+    template <typename T>
     inline typename MemberFunctionSignature<Signature>::ReturnType
     callFunction(size_t index,
                  typename MemberFunctionSignature<T>::Arg1Type arg1)
@@ -111,7 +111,7 @@ public:
         return (mObjects[index]->*mFunctions[index])(arg1);
     }
 
-    template <typename T = Signature>
+    template <typename T>
     inline typename MemberFunctionSignature<Signature>::ReturnType
     callFunction(size_t index,
                  typename MemberFunctionSignature<T>::Arg1Type arg1,
@@ -123,7 +123,6 @@ public:
 private:
     Callable* mObjects[N];
     RawFunctionType mFunctions[N];
-
 };
 
 }
