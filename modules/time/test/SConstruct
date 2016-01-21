@@ -10,7 +10,7 @@ module = 'time'
 rootpath = '../../../'
 envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
                         buildroot=[rootpath + 'build/'],
-                        tools=['cobc', 'buildformat', 'log-preprocessor'],
+                        tools=['cobc', 'buildformat'],
                         variables=vars,
                         BASEPATH=os.path.abspath('.'),
                         ENV=os.environ)
