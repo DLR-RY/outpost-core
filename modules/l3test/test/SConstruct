@@ -9,7 +9,8 @@ module = 'l3test'
 
 rootpath = '../../../'
 envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
-                        tools=['cobc', 'buildformat'],
+                        buildroot=[rootpath + 'build/'],
+                        tools=['cobc', 'buildformat', 'log-preprocessor'],
                         variables=vars,
                         BASEPATH=os.path.abspath('.'),
                         ENV=os.environ)
