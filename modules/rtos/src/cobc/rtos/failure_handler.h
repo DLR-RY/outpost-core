@@ -54,7 +54,7 @@ public:
     inline static FailureCode
     resourceAllocationFailed(Resource::Type resource = Resource::other)
     {
-        FailureCode code = FailureCode(0x00010000 |
+        FailureCode code = FailureCode(0xF0010000 |
                                        static_cast<uint32_t>(resource));
         return code;
     }
@@ -62,14 +62,14 @@ public:
     inline static FailureCode
     returnFromThread()
     {
-        FailureCode code = FailureCode(0x00020000);
+        FailureCode code = FailureCode(0xF0020000);
         return code;
     }
 
     inline static FailureCode
     genericRuntimeError(Resource::Type resource = Resource::other)
     {
-        FailureCode code = FailureCode(0x00030000 |
+        FailureCode code = FailureCode(0xF0030000 |
                                        static_cast<uint32_t>(resource));
         return code;
     }
