@@ -62,7 +62,8 @@ fromRtemsPriority(uint8_t rtemsPriority)
 // ----------------------------------------------------------------------------
 Thread::Thread(uint8_t priority,
                size_t stack,
-               const char* name)
+               const char* name,
+               FloatingPointSupport floatingPointSupport)
 {
     rtems_name taskName = 0;
     if (name == 0)
@@ -83,8 +84,15 @@ Thread::Thread(uint8_t priority,
     }
 
     rtems_task_priority rtemsPriority = toRtemsPriority(priority);
+
+    uint32_t attributes = RTEMS_DEFAULT_ATTRIBUTES;
+    if (floatingPointSupport == floatingPoint)
+    {
+        attributes |= RTEMS_FLOATING_POINT;
+    }
+
     rtems_status_code status = rtems_task_create(taskName, rtemsPriority, stack,
-            RTEMS_DEFAULT_MODES | RTEMS_TIMESLICE , RTEMS_DEFAULT_ATTRIBUTES, &mTid);
+            RTEMS_DEFAULT_MODES | RTEMS_TIMESLICE , attributes, &mTid);
 
     if (status != RTEMS_SUCCESSFUL)
     {

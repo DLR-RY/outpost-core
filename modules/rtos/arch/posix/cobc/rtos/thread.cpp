@@ -45,7 +45,10 @@ cobc::rtos::Thread::wrapper(void* object)
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::Thread::Thread(uint8_t, size_t, const char *) :
+cobc::rtos::Thread::Thread(uint8_t,
+                           size_t,
+                           const char *,
+                           FloatingPointSupport /*floatingPointSupport*/) :
     mIsRunning(false),
     mPthreadId(),
     mTid()

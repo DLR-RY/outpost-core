@@ -51,6 +51,12 @@ public:
     /// Unique identifier to identify a thread.
     typedef uint32_t Identifier;
 
+    enum FloatingPointSupport
+    {
+        noFloatingPoint,
+        floatingPoint
+    };
+
     /**
      * Use the default value for the stack size.
      *
@@ -81,7 +87,8 @@ public:
      */
     Thread(uint8_t priority,
             size_t stack = defaultStackSize,
-            const char* name = 0);
+            const char* name = 0,
+            FloatingPointSupport floatingPointSupport = noFloatingPoint);
 
     /**
      * Destructor.

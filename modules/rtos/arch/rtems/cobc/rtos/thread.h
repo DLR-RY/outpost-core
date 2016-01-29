@@ -53,6 +53,12 @@ public:
     /// Unique identifier to identify a thread.
     typedef uint32_t Identifier;
 
+    enum FloatingPointSupport
+    {
+        noFloatingPoint,
+        floatingPoint
+    };
+
     /**
      * Use the default value for the stack size.
      *
@@ -76,12 +82,17 @@ public:
      * \param name
      *         Name of the thread. Length is limited to four characters
      *         due to RTEMS internal handling of the string.
+     * \param floatingPointSupport
+     *      Enable usage of floating point operations for this thread. If
+     *      hardware supported floating point is used, each thread which
+     *      uses floating point must enable this!
      *
      * \see    rtos::FailureHandler::fatal()
      */
     Thread(uint8_t priority,
-            size_t stack = defaultStackSize,
-            const char* name = 0);
+           size_t stack = defaultStackSize,
+           const char* name = 0,
+           FloatingPointSupport floatingPointSupport = noFloatingPoint);
 
     /**
      * Destructor.

@@ -41,7 +41,10 @@ cobc::rtos::Thread::wrapper(void* object)
 }
 
 // ----------------------------------------------------------------------------
-cobc::rtos::Thread::Thread(uint8_t priority, size_t stack, const char* name) :
+cobc::rtos::Thread::Thread(uint8_t priority,
+                           size_t stack,
+                           const char* name,
+                           FloatingPointSupport /*floatingPointSupport*/) :
     mHandle(0),
     mPriority(priority),
     mStackSize(stack),
