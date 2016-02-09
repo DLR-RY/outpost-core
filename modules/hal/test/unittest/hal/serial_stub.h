@@ -58,8 +58,13 @@ public:
     write(cobc::BoundedArray<const uint8_t> data,
           cobc::time::Duration timeout = cobc::time::Duration::maximum()) override;
 
+    /// Does nothing in this implementation
     virtual void
-    flush() override;
+    flushReceiver() override;
+
+    /// Does nothing in this implementation
+    virtual void
+    flushTransmitter() override;
 
     /// Data which should be accessible through the read function
     std::vector<uint8_t> mDataToReceive;

@@ -95,13 +95,20 @@ public:
           cobc::time::Duration timeout = cobc::time::Duration::maximum()) = 0;
 
     /**
-     * Flush send/receive buffers.
+     * Flush receive buffers.
      *
+     * Data remaining in the receive buffer is discarded. Afterwards all
+     * internal buffers are empty.
+     */
+    virtual void
+    flushReceiver() = 0;
+
+    /**
      * Sends eventually buffered data. Afterwards all internal buffers
      * are empty.
      */
     virtual void
-    flush() = 0;
+    flushTransmitter() = 0;
 };
 
 }

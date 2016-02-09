@@ -76,7 +76,13 @@ SerialStub::write(cobc::BoundedArray<const uint8_t> data,
 }
 
 void
-SerialStub::flush()
+SerialStub::flushReceiver()
 {
-    // do nothing
+    // Do nothing
+}
+
+void
+SerialStub::flushTransmitter()
+{
+    // Do nothing
 }
