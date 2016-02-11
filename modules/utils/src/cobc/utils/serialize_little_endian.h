@@ -125,14 +125,14 @@ public:
      * The 12 bit value need to be stored in the lower 12 bit of the
      * two 16 bit parameters.
      */
-//    inline void
-//    storePacked12(const uint16_t first, const uint16_t second)
-//    {
-//        mBuffer[0] = static_cast<uint8_t>(first >> 4);
-//        mBuffer[1] = static_cast<uint8_t>(((first << 4) & 0xF0) | ((second >> 8) & 0x0F));
-//        mBuffer[2] = static_cast<uint8_t>(second >> 0);
-//        mBuffer += 3;
-//    }
+    inline void
+    storePacked12(const uint16_t first, const uint16_t second)
+    {
+        mBuffer[0] = static_cast<uint8_t>(first >> 0);
+        mBuffer[1] = static_cast<uint8_t>(((first >> 4) & 0xF0) | (second & 0x0F));
+        mBuffer[2] = static_cast<uint8_t>(second >> 4);
+        mBuffer += 3;
+    }
 
     inline void
     storeFloat(const float data)
@@ -404,26 +404,26 @@ public:
      * The 12 bit value are stored in the lower 12 bit of the two 16 bit
      * parameters.
      */
-//    inline void
-//    readPacked12(uint16_t& first, uint16_t& second)
-//    {
-//        first  = static_cast<uint32_t>(mBuffer[0]) << 4;
-//        first |= static_cast<uint32_t>(mBuffer[1]) >> 4;
-//
-//        second  = static_cast<uint32_t>(mBuffer[1] & 0x0F) << 8;
-//        second |= static_cast<uint32_t>(mBuffer[2]);
-//        mBuffer += 3;
-//    }
-//
-//    inline void
-//    peekPacked12(const size_t n, uint16_t& first, uint16_t& second)
-//    {
-//        first  = static_cast<uint32_t>(mBuffer[n + 0]) << 4;
-//        first |= static_cast<uint32_t>(mBuffer[n + 1]) >> 4;
-//
-//        second  = static_cast<uint32_t>(mBuffer[n + 1] & 0x0F) << 8;
-//        second |= static_cast<uint32_t>(mBuffer[n + 2]);
-//    }
+    inline void
+    readPacked12(uint16_t& first, uint16_t& second)
+    {
+        first  = static_cast<uint16_t>(mBuffer[0]);
+        first |= static_cast<uint16_t>(mBuffer[1] & 0xF0) << 4;
+
+        second  = static_cast<uint16_t>(mBuffer[1] & 0x0F);
+        second |= static_cast<uint16_t>(mBuffer[2]) << 4;
+        mBuffer += 3;
+    }
+
+    inline void
+    peekPacked12(const size_t n, uint16_t& first, uint16_t& second)
+    {
+        first  = static_cast<uint16_t>(mBuffer[n + 0]);
+        first |= static_cast<uint16_t>(mBuffer[n + 1] & 0xF0) << 4;
+
+        second  = static_cast<uint16_t>(mBuffer[n + 1] & 0x0F);
+        second |= static_cast<uint16_t>(mBuffer[n + 2]) << 4;
+    }
 
     inline float
     readFloat(void)

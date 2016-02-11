@@ -115,7 +115,7 @@ TEST(DeserialzeLittleEndianTest, shouldReadData)
     EXPECT_EQ(18, payload.getPosition());
 }
 
-TEST(DeserializeLittleEndianTest, DISABLED_shouldReadPackedData)
+TEST(DeserializeLittleEndianTest, shouldReadPackedData)
 {
     uint8_t data[6] = { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC };
 
@@ -126,17 +126,17 @@ TEST(DeserializeLittleEndianTest, DISABLED_shouldReadPackedData)
     uint16_t p3;
     uint16_t p4;
 
-//    payload.readPacked12(p1, p2);
-//    payload.readPacked12(p3, p4);
+    payload.readPacked12(p1, p2);
+    payload.readPacked12(p3, p4);
 
-    EXPECT_EQ(0x123U, p1);
-    EXPECT_EQ(0x456U, p2);
+    EXPECT_EQ(0x312U, p1);
+    EXPECT_EQ(0x564U, p2);
 
-    EXPECT_EQ(0x789U, p3);
-    EXPECT_EQ(0xABCU, p4);
+    EXPECT_EQ(0x978U, p3);
+    EXPECT_EQ(0xBCAU, p4);
 }
 
-TEST(DeserializeLittleEndianTest, DISABLED_shouldPeekPackedData)
+TEST(DeserializeLittleEndianTest, shouldPeekPackedData)
 {
     uint8_t data[6] = { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC };
 
@@ -145,10 +145,10 @@ TEST(DeserializeLittleEndianTest, DISABLED_shouldPeekPackedData)
     uint16_t p1;
     uint16_t p2;
 
-//    payload.peekPacked12(1, p1, p2);
+    payload.peekPacked12(1, p1, p2);
 
-    EXPECT_EQ(0x345U, p1);
-    EXPECT_EQ(0x678U, p2);
+    EXPECT_EQ(0x534U, p1);
+    EXPECT_EQ(0x786U, p2);
 }
 
 TEST(DeserialzeLittleEndianTest, peekFloat)

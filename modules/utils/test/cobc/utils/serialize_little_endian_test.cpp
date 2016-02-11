@@ -52,22 +52,22 @@ TEST(SerialzeLittleEndianTest, store)
     EXPECT_EQ(0x61, data[9]);
 }
 
-TEST(SerializeLittleEndianTest, DISABLED_shouldStorePackedData)
+TEST(SerializeLittleEndianTest, shouldStorePackedData)
 {
     uint8_t data[6] = { 0, };
 
     SerializeLittleEndian payload(data);
 
-//    payload.storePacked12(0x123, 0x456);
-//    payload.storePacked12(0x789, 0xABC);
+    payload.storePacked12(0x123, 0x456);
+    payload.storePacked12(0x789, 0xABC);
 
-    EXPECT_EQ(0x12, data[0]);
-    EXPECT_EQ(0x34, data[1]);
-    EXPECT_EQ(0x56, data[2]);
+    EXPECT_EQ(0x23, data[0]);
+    EXPECT_EQ(0x16, data[1]);
+    EXPECT_EQ(0x45, data[2]);
 
-    EXPECT_EQ(0x78, data[3]);
-    EXPECT_EQ(0x9A, data[4]);
-    EXPECT_EQ(0xBC, data[5]);
+    EXPECT_EQ(0x89, data[3]);
+    EXPECT_EQ(0x7C, data[4]);
+    EXPECT_EQ(0xAB, data[5]);
 }
 
 TEST(SerialzeLittleEndianTest, storeTemplateExplicit)
