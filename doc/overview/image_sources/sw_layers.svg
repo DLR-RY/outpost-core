@@ -13,7 +13,7 @@
    height="212.59842"
    id="svg2"
    sodipodi:version="0.32"
-   inkscape:version="0.48.2 r9819"
+   inkscape:version="0.91 r13725"
    version="1.0"
    sodipodi:docname="sw_layers.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
@@ -21,7 +21,86 @@
    inkscape:export-xdpi="600.08002"
    inkscape:export-ydpi="600.08002">
   <defs
-     id="defs4" />
+     id="defs4">
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4719"
+       x="-0.018985075"
+       width="1.0379701"
+       y="-0.159"
+       height="1.318">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.65"
+         id="feGaussianBlur4721" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4723"
+       x="-0.03975"
+       width="1.0795"
+       y="-0.15899999"
+       height="1.318">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.65"
+         id="feGaussianBlur4725" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4727"
+       x="-0.055304348"
+       width="1.1106087"
+       y="-0.15899999"
+       height="1.318">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.65"
+         id="feGaussianBlur4729" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4731"
+       x="-0.029581396"
+       width="1.0591628"
+       y="-0.097846156"
+       height="1.1956923">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.65"
+         id="feGaussianBlur4733" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4735"
+       x="-0.036342862"
+       width="1.0726857"
+       y="-0.07482353"
+       height="1.1496471">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.65"
+         id="feGaussianBlur4737" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4739"
+       x="-0.018985075"
+       width="1.0379701"
+       y="-0.106"
+       height="1.212">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.65"
+         id="feGaussianBlur4741" />
+    </filter>
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -30,7 +109,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="2.2803556"
-     inkscape:cx="245.31019"
+     inkscape:cx="187.53965"
      inkscape:cy="91.06539"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -38,10 +117,10 @@
      height="70mm"
      units="mm"
      inkscape:window-width="1920"
-     inkscape:window-height="1173"
-     inkscape:window-x="1920"
-     inkscape:window-y="0"
-     showgrid="true"
+     inkscape:window-height="1178"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     showgrid="false"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true">
@@ -61,7 +140,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -70,6 +149,48 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-35.433062)">
+    <g
+       id="g4757">
+      <path
+         sodipodi:nodetypes="ccccccc"
+         inkscape:connector-curvature="0"
+         id="rect3183-7"
+         d="m 13.328991,46.908538 334.999999,-10e-7 0,35.000004 -220,-4e-6 0,25.000003 -114.999999,0 z"
+         style="fill:#000000;fill-opacity:0.58387095;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter4739)" />
+      <path
+         sodipodi:nodetypes="ccccccc"
+         inkscape:connector-curvature="0"
+         id="rect3191-1"
+         d="m 133.32899,86.908563 215,-2.2e-5 0,64.999999 -155,0 c 0,-11.66666 0,21.77397 0,-45.00001 l -60,1e-5 z"
+         style="fill:#000000;fill-opacity:0.58387095;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter4731)" />
+      <path
+         sodipodi:nodetypes="ccccccc"
+         inkscape:connector-curvature="0"
+         id="rect3185-4"
+         d="m 13.329011,111.90853 174.999979,1e-5 0,39.99999 -124.999999,0 0,45 -49.99998,0 z"
+         style="fill:#000000;fill-opacity:0.58387095;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter4735)" />
+      <rect
+         y="156.90851"
+         x="68.328987"
+         height="40.000004"
+         width="160"
+         id="rect3187-3"
+         style="fill:#000000;fill-opacity:0.58387095;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter4723)" />
+      <rect
+         y="156.90851"
+         x="233.32899"
+         height="40.000004"
+         width="115"
+         id="rect3189-3"
+         style="fill:#000000;fill-opacity:0.58387095;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899993;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter4727)" />
+      <rect
+         y="201.90854"
+         x="13.328991"
+         height="40"
+         width="335"
+         id="rect3193-2"
+         style="fill:#000000;fill-opacity:0.58387095;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899993;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;filter:url(#filter4719)" />
+    </g>
     <path
        style="fill:#ce5c00;fill-opacity:1;fill-rule:nonzero;stroke:#2e3436;stroke-width:0.70899999;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0"
        d="m 10,43.031478 335,-10e-7 0,35.000004 -220,-4e-6 0,25.000003 -115,0 z"
@@ -96,16 +217,16 @@
        sodipodi:nodetypes="ccccccc" />
     <text
        xml:space="preserve"
-       style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
-       x="245"
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8px;line-height:112.99999952%;font-family:'Frutiger 45 Light';-inkscape-font-specification:'Frutiger 45 Light';text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;display:inline;overflow:visible;visibility:visible;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;enable-background:accumulate"
+       x="237"
        y="113.03148"
        id="text3206"
        sodipodi:linespacing="113%"><tspan
          sodipodi:role="line"
          id="tspan3208"
-         x="245"
+         x="237"
          y="113.03148"
-         style="font-size:16px">libcobc</tspan></text>
+         style="font-size:16px">libCOBC</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:8px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:112.99999952%;letter-spacing:0px;word-spacing:0px;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Frutiger 45 Light;-inkscape-font-specification:Frutiger 45 Light"
