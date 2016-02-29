@@ -1,5 +1,5 @@
 =======
-libcobc
+libCOBC
 =======
 
 Library for Communication & Services
@@ -7,7 +7,7 @@ Library for Communication & Services
 
 This repository contains the following software modules:
 
-ccsds
+spp
 	CCSDS module for encoding/decoding transfer frames. Contains a backend
 	for tunneling CCSDS via UART for testing purposes.
 

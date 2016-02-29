@@ -14,35 +14,36 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_CRC_H
-#define COBC_CRC_H
+#ifndef COBC_CRC8_H
+#define COBC_CRC8_H
 
 #include <stdint.h>
 #include <stddef.h>
 
+#include "bounded_array.h"
+
 namespace cobc
 {
 /**
- * CRC-16-CCITT calculation.
+ * CRC-8 calculation for RMAP.
  *
- * Polynomial    : x^16 + x^12 + x^5 + 1 (0x8408, LSB first)
- * Initial value : 0xffff
+ * Polynomial    : x^8 + x^2 + x + 1
+ * Initial value : 0x00
  *
- * Used for SPP transfer frames.
- *
+ * \see     ECSS-E-50-11 SpaceWire RMAP Protocol
  * \author  Fabian Greif
  */
-class Crc16Ccitt
+class Crc8
 {
 public:
     inline
-    Crc16Ccitt() :
+    Crc8() :
         mCrc(initialValue)
     {
     }
 
     inline
-    ~Crc16Ccitt()
+    ~Crc8()
     {
     }
 
@@ -57,9 +58,8 @@ public:
      * \retval crc
      *     calculated checksum
      */
-    static uint16_t
-    calculate(const uint8_t* data,
-              size_t length);
+    static uint8_t
+    calculate(cobc::BoundedArray<const uint8_t> data);
 
     /**
      * Reset CRC calculation
@@ -82,7 +82,7 @@ public:
     /**
      * Get result of CRC calculation.
      */
-    inline uint16_t
+    inline uint8_t
     getValue() const
     {
         return mCrc;
@@ -90,21 +90,20 @@ public:
 
 private:
     // disable copy constructor
-    Crc16Ccitt(const Crc16Ccitt&);
+    Crc8(const Crc8&);
 
     // disable copy-assignment operator
-    Crc16Ccitt&
-    operator=(const Crc16Ccitt&);
+    Crc8&
+    operator=(const Crc8&);
 
-    static const uint16_t initialValue = 0xFFFF;
-    static const int numberOfBitsPerByte = 8;
+    static const uint8_t initialValue = 0x00;
     static const int numberOfValuesPerByte = 256;
 
     /// Pre-calculated CRC table for one byte
-    static const uint16_t crcTable[numberOfValuesPerByte];
+    static const uint8_t crcTable[numberOfValuesPerByte];
 
-    uint16_t mCrc;
+    uint8_t mCrc;
 };
 }
 
-#endif // COBC_CRC_H
+#endif

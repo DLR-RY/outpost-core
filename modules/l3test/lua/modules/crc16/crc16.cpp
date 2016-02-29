@@ -14,6 +14,7 @@
  */
 // ----------------------------------------------------------------------------
 
+#include <cobc/utils/crc16.h>
 #include "crc16.h"
 
 #include <stdlib.h>
@@ -23,7 +24,6 @@
 #include <limits.h>
 #include <stdint.h>
 
-#include <cobc/utils/crc.h>
 
 using namespace cobc;
 

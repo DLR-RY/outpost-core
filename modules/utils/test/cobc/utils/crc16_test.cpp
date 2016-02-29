@@ -28,11 +28,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <cobc/utils/crc.h>
+#include <cobc/utils/crc16.h>
 
 using cobc::Crc16Ccitt;
 
-TEST(CrcTest, initialValue)
+TEST(Crc16Test, initialValue)
 {
     Crc16Ccitt crc;
 
@@ -43,67 +43,67 @@ TEST(CrcTest, initialValue)
  * The test is based on the example given in
  * ECSS-E-70-41A Annex A (Version from January 2003).
  */
-TEST(CrcTest, testEcssPus1)
+TEST(Crc16Test, testEcssPus1)
 {
     uint8_t data[] = {
         0x00, 0x00
     };
 
-    EXPECT_EQ(0x1D0F, Crc16Ccitt::calculate(data, 2));
+    EXPECT_EQ(0x1D0F, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
 /**
  * The test is based on the example given in
  * ECSS-E-70-41A Annex A (Version from January 2003).
  */
-TEST(CrcTest, testEcssPus2)
+TEST(Crc16Test, testEcssPus2)
 {
     uint8_t data[] = {
         0x00, 0x00, 0x00
     };
 
-    EXPECT_EQ(0xCC9C, Crc16Ccitt::calculate(data, 3));
+    EXPECT_EQ(0xCC9C, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
 /**
  * The test is based on the example given in
  * ECSS-E-70-41A Annex A (Version from January 2003).
  */
-TEST(CrcTest, testEcssPus3)
+TEST(Crc16Test, testEcssPus3)
 {
     uint8_t data[] = {
         0xAB, 0xCD, 0xEF, 0x01
     };
 
-    EXPECT_EQ(0x04A2, Crc16Ccitt::calculate(data, 4));
+    EXPECT_EQ(0x04A2, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
 /**
  * The test is based on the example given in
  * ECSS-E-70-41A Annex A (Version from January 2003).
  */
-TEST(CrcTest, testEcssPus4)
+TEST(Crc16Test, testEcssPus4)
 {
     uint8_t data[] = {
         0x14, 0x56, 0xF8, 0x9A, 0x00, 0x01
     };
 
-    EXPECT_EQ(0x7FD5, Crc16Ccitt::calculate(data, 6));
+    EXPECT_EQ(0x7FD5, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
 /**
  * Test the result of a CRC over the message + CRC, should be 0
  */
-TEST(CrcTest, testEcssPus4Total)
+TEST(Crc16Test, testEcssPus4Total)
 {
     uint8_t data[] = {
         0x14, 0x56, 0xF8, 0x9A, 0x00, 0x01, 0x7F, 0xD5
     };
 
-    EXPECT_EQ(0, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
-TEST(CrcTest, testMltpExample1)
+TEST(Crc16Test, testMltpExample1)
 {
 	uint8_t data[] = {
 		0x30, 0xC1, 0xA1, 0x7D, 0x43, 0xD2, 0x10, 0x82,
@@ -111,20 +111,20 @@ TEST(CrcTest, testMltpExample1)
 		0x34, 0x7E, 0xE5, 0xC3, 0x90,
 	};
 
-    EXPECT_EQ(0x4959, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0x4959, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
 
-TEST(CrcTest, testMltpExample2)
+TEST(Crc16Test, testMltpExample2)
 {
 	uint8_t data[] = {
 		0x10, 0x82, 0x23, 0x7D, 0x43, 0xD2,
 	};
 
-    EXPECT_EQ(0xF7AC, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0xF7AC, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
-TEST(CrcTest, testMltpExample3)
+TEST(Crc16Test, testMltpExample3)
 {
 	uint8_t data0[] = {
 		0x10, 0x82, 0x8F, 0x7D, 0x00,
@@ -141,18 +141,18 @@ TEST(CrcTest, testMltpExample3)
 		0x90,
 	};
 
-    EXPECT_EQ(0xB233, Crc16Ccitt::calculate(data0, sizeof(data0)));
-    EXPECT_EQ(0x8541, Crc16Ccitt::calculate(data1, sizeof(data1)));
-    EXPECT_EQ(0x0493, Crc16Ccitt::calculate(data2, sizeof(data2)));
+    EXPECT_EQ(0xB233, Crc16Ccitt::calculate(cobc::toArray(data0)));
+    EXPECT_EQ(0x8541, Crc16Ccitt::calculate(cobc::toArray(data1)));
+    EXPECT_EQ(0x0493, Crc16Ccitt::calculate(cobc::toArray(data2)));
 }
 
-TEST(CrcTest, testMltpExample4)
+TEST(Crc16Test, testMltpExample4)
 {
 	uint8_t data[] = {
 		0x30, 0xC1, 0x01, 0x7D, 0x43, 0xD2, 0x10, 0x82,
 	};
 
-    EXPECT_EQ(0x8CC7, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0x8CC7, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
 /**
@@ -161,7 +161,7 @@ TEST(CrcTest, testMltpExample4)
  * The test is based on the example given in
  * ECSS-E-70-41A Annex A (Version from January 2003).
  */
-TEST(CrcTest, testUpdate)
+TEST(Crc16Test, testUpdate)
 {
     uint8_t data[] = {
         0x14, 0x56, 0xf8, 0x9a, 0x00, 0x01
@@ -199,7 +199,7 @@ crc_xmodem_update(uint16_t crc, uint8_t data)
 /**
  * Test that the CRC used here matches the Xmodem CRC from avr-libc
  */
-TEST(CrcTest, testXModemAvr)
+TEST(Crc16Test, testXModemAvr)
 {
     uint8_t data[] = {
         0x14, 0x56, 0xf8, 0x9a, 0x00, 0x01
@@ -213,7 +213,7 @@ TEST(CrcTest, testXModemAvr)
     EXPECT_EQ(0x7fd5, crc);
 }
 
-TEST(CrcTest, testRandom)
+TEST(Crc16Test, testRandom)
 {
     uint8_t data[512];
 
@@ -221,24 +221,24 @@ TEST(CrcTest, testRandom)
         data[i] = 0xff;
     }
 
-    EXPECT_EQ(0x6995, Crc16Ccitt::calculate(data, 512));
+    EXPECT_EQ(0x6995, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
-TEST(CrcTest, testRandom2)
+TEST(Crc16Test, testRandom2)
 {
     uint8_t data[] = {
         '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
 
-    EXPECT_EQ(0x29B1, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0x29B1, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
-TEST(CrcTest, testRandom3)
+TEST(Crc16Test, testRandom3)
 {
     uint8_t data[] = {
         0xff, 0xff
     };
 
-    EXPECT_EQ(0, Crc16Ccitt::calculate(data, sizeof(data)));
+    EXPECT_EQ(0, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 

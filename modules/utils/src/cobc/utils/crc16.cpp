@@ -14,7 +14,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "crc.h"
+#include "crc16.h"
 
 using namespace cobc;
 
@@ -62,11 +62,10 @@ Crc16Ccitt::update(uint8_t data)
 }
 
 uint16_t
-Crc16Ccitt::calculate(const uint8_t* data,
-                      size_t length)
+Crc16Ccitt::calculate(cobc::BoundedArray<const uint8_t> data)
 {
     Crc16Ccitt generator;
-    for (size_t i = 0; i < length; ++i)
+    for (size_t i = 0; i < data.getNumberOfElements(); ++i)
     {
         generator.update(data[i]);
     }
