@@ -16,7 +16,7 @@
 
 /**
  * \file
- * \brief   Test CRC32 functions
+ * \brief   Test CRC-32 functions
  *
  * See https://rosettacode.org/wiki/CRC-32#C.2B.2B for test pattern
  *
@@ -27,11 +27,11 @@
 
 #include <cobc/utils/crc32.h>
 
-using cobc::Crc32Ccitt;
+using cobc::Crc32Reversed;
 
 TEST(Crc32Test, initialValue)
 {
-    Crc32Ccitt crc;
+    Crc32Reversed crc;
 
     EXPECT_EQ(0U, crc.getValue());
 }
@@ -43,7 +43,7 @@ TEST(Crc32Test, randomTest1a)
     // Ignore the appended zero-byte
     size_t length = sizeof(data) - 1;
 
-    EXPECT_EQ(0x414FA339U, Crc32Ccitt::calculate(cobc::BoundedArray<const uint8_t>(data, length)));
+    EXPECT_EQ(0x414FA339U, Crc32Reversed::calculate(cobc::BoundedArray<const uint8_t>(data, length)));
 }
 
 TEST(Crc32Test, randomTest1b)
@@ -58,7 +58,7 @@ TEST(Crc32Test, randomTest1b)
         0x64, 0x6F, 0x67
     };
 
-    EXPECT_EQ(0x414FA339U, Crc32Ccitt::calculate(cobc::toArray(data)));
+    EXPECT_EQ(0x414FA339U, Crc32Reversed::calculate(cobc::toArray(data)));
 }
 
 TEST(Crc32Test, randomTest2)
@@ -71,7 +71,7 @@ TEST(Crc32Test, randomTest2)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    EXPECT_EQ(0x190A55ADU, Crc32Ccitt::calculate(cobc::toArray(data)));
+    EXPECT_EQ(0x190A55ADU, Crc32Reversed::calculate(cobc::toArray(data)));
 }
 
 TEST(Crc32Test, randomTest3)
@@ -84,7 +84,7 @@ TEST(Crc32Test, randomTest3)
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     };
 
-    EXPECT_EQ(0xFF6CAB0BU, Crc32Ccitt::calculate(cobc::toArray(data)));
+    EXPECT_EQ(0xFF6CAB0BU, Crc32Reversed::calculate(cobc::toArray(data)));
 }
 
 TEST(Crc32Test, randomTest4)
@@ -97,7 +97,7 @@ TEST(Crc32Test, randomTest4)
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F
     };
 
-    EXPECT_EQ(0x91267E8AU, Crc32Ccitt::calculate(cobc::toArray(data)));
+    EXPECT_EQ(0x91267E8AU, Crc32Reversed::calculate(cobc::toArray(data)));
 }
 
 static uint32_t
@@ -139,5 +139,5 @@ TEST(Crc32Test, bitwiseTest)
     }
     crc = crc ^ 0xFFFFFFFF;
 
-    EXPECT_EQ(crc, Crc32Ccitt::calculate(cobc::toArray(data)));
+    EXPECT_EQ(crc, Crc32Reversed::calculate(cobc::toArray(data)));
 }

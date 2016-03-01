@@ -32,6 +32,7 @@ namespace cobc
  *
  * Used for SPP transfer frames.
  *
+ * \ingroup crc
  * \author  Fabian Greif
  */
 class Crc16Ccitt

@@ -18,7 +18,7 @@
 
 using namespace cobc;
 
-const uint32_t Crc32Ccitt::crcTable[numberOfValuesPerByte] =
+const uint32_t Crc32Reversed::crcTable[numberOfValuesPerByte] =
 {
     0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
     0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91,
@@ -55,15 +55,15 @@ const uint32_t Crc32Ccitt::crcTable[numberOfValuesPerByte] =
 };
 
 void
-Crc32Ccitt::update(uint8_t data)
+Crc32Reversed::update(uint8_t data)
 {
     mCrc = (mCrc >> numberOfBitsPerByte) ^ crcTable[(mCrc ^ data) & 0xFF];
 }
 
 uint32_t
-Crc32Ccitt::calculate(cobc::BoundedArray<const uint8_t> data)
+Crc32Reversed::calculate(cobc::BoundedArray<const uint8_t> data)
 {
-    Crc32Ccitt generator;
+    Crc32Reversed generator;
     for (size_t i = 0; i < data.getNumberOfElements(); ++i)
     {
         generator.update(data[i]);

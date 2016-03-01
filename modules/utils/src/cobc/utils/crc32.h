@@ -39,19 +39,20 @@ namespace cobc
  * [2] http://www.w3.org/TR/PNG/#D-CRCAppendix
  * [3] http://www.greenend.org.uk/rjk/tech/crc.html
  *
+ * \ingroup crc
  * \author  Fabian Greif
  */
-class Crc32Ccitt
+class Crc32Reversed
 {
 public:
     inline
-    Crc32Ccitt() :
+    Crc32Reversed() :
         mCrc(initialValue)
     {
     }
 
     inline
-    ~Crc32Ccitt()
+    ~Crc32Reversed()
     {
     }
 
@@ -98,11 +99,11 @@ public:
 
 private:
     // disable copy constructor
-    Crc32Ccitt(const Crc32Ccitt&);
+    Crc32Reversed(const Crc32Reversed&);
 
     // disable copy-assignment operator
-    Crc32Ccitt&
-    operator=(const Crc32Ccitt&);
+    Crc32Reversed&
+    operator=(const Crc32Reversed&);
 
     static const uint32_t initialValue = 0xFFFFFFFF;
     static const uint32_t finalXor     = 0xFFFFFFFF;
