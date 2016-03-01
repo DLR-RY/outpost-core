@@ -395,6 +395,12 @@ cobc::List<T>::ConstIterator::ConstIterator(const ConstIterator& other) :
 }
 
 template <typename T>
+cobc::List<T>::ConstIterator::ConstIterator(const Iterator& other) :
+    mNode(other.mNode)
+{
+}
+
+template <typename T>
 typename cobc::List<T>::ConstIterator&
 cobc::List<T>::ConstIterator::operator=(const ConstIterator& other)
 {

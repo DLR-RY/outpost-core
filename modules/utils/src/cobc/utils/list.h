@@ -168,6 +168,7 @@ public:
     {
     public:
         friend class List;
+        friend class ConstIterator;
 
         Iterator();
 
@@ -207,6 +208,8 @@ public:
 		ConstIterator();
 
 		ConstIterator(const ConstIterator& other);
+
+		ConstIterator(const Iterator& other);
 
 		ConstIterator&
 		operator=(const ConstIterator& other);
