@@ -27,7 +27,7 @@ namespace cobc
 /**
  * CRC-16-CCITT calculation.
  *
- * Polynomial    : x^16 + x^12 + x^5 + 1 (0x8408, LSB first)
+ * Polynomial    : x^16 + x^12 + x^5 + 1 (0x1021, MSB first)
  * Initial value : 0xFFFF
  *
  * Used for SPP transfer frames.

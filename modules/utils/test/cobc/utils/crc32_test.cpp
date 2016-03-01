@@ -99,3 +99,45 @@ TEST(Crc32Test, randomTest4)
 
     EXPECT_EQ(0x91267E8AU, Crc32Ccitt::calculate(cobc::toArray(data)));
 }
+
+static uint32_t
+crc32_update_bitwise_lsb_first(uint32_t crc, uint8_t data)
+{
+    uint8_t n = (crc ^ data) & 0xFF;
+
+    uint32_t c = static_cast<uint32_t>(n);
+    for (int k = 0; k < 8; k++)
+    {
+        if (c & 1)
+        {
+            c = 0xEDB88320L ^ (c >> 1);
+        }
+        else
+        {
+            c = c >> 1;
+        }
+    }
+
+    crc = c ^ (crc >> 8);
+    return crc;
+}
+
+TEST(Crc32Test, bitwiseTest)
+{
+    uint8_t data[] =
+    {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+        0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F
+    };
+
+    uint32_t crc = 0xFFFFFFFF;
+    for (auto d : data)
+    {
+        crc = crc32_update_bitwise_lsb_first(crc, d);
+    }
+    crc = crc ^ 0xFFFFFFFF;
+
+    EXPECT_EQ(crc, Crc32Ccitt::calculate(cobc::toArray(data)));
+}

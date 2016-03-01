@@ -26,6 +26,7 @@
 #include <cobc/utils/crc8.h>
 
 using cobc::Crc8;
+using cobc::Crc8Ccitt;
 
 TEST(Crc8Test, initialValue)
 {
@@ -163,4 +164,75 @@ TEST(Crc8Test, rmapCrcTestPatternReply)
 
     EXPECT_EQ(0x52U, Crc8::calculate(cobc::toArray(header)));
     EXPECT_EQ(0xB4U, Crc8::calculate(cobc::toArray(data)));
+}
+
+static uint8_t
+crc8_update_bitwise(uint8_t crc, uint8_t data)
+{
+    uint8_t c = crc ^ data;
+    for (uint_fast8_t i = 0; i < 8; i++)
+    {
+        if (c & 1)
+        {
+            c = 0xE0 ^ (c >> 1);
+        }
+        else
+        {
+            c = c >> 1;
+        }
+    }
+    return c;
+}
+
+TEST(Crc8Test, bitwiseTest)
+{
+    uint8_t data[] =
+    {
+        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+        0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF
+    };
+
+    uint8_t crc = 0;
+    for (auto d : data)
+    {
+        crc = crc8_update_bitwise(crc, d);
+    }
+
+    EXPECT_EQ(crc, Crc8::calculate(cobc::toArray(data)));
+}
+
+// ----------------------------------------------------------------------------
+static uint8_t
+crc8_update_bitwise_msb_first(uint8_t crc, uint8_t data)
+{
+    uint8_t c = crc ^ data;
+    for (uint_fast8_t i = 0; i < 8; i++)
+    {
+        if (c & 0x80)
+        {
+            c = 0x07 ^ (c << 1);
+        }
+        else
+        {
+            c = c << 1;
+        }
+    }
+    return c;
+}
+
+TEST(Crc8CcittTest, bitwiseTest)
+{
+    uint8_t data[] =
+    {
+        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+        0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF
+    };
+
+    uint8_t crc = 0;
+    for (auto d : data)
+    {
+        crc = crc8_update_bitwise_msb_first(crc, d);
+    }
+
+    EXPECT_EQ(crc, Crc8Ccitt::calculate(cobc::toArray(data)));
 }

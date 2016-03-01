@@ -29,12 +29,15 @@ namespace cobc
  *
  * Polynomial    : X^32 + X^26 + X^23 + X^22 + X^16 + X^12 + X^11 +
  *                 X^10 + X^8 + X^7 + X^5 + X^4 + X^2 + X + 1
- *                 (0x04C11DB7, reversed is 0xEDB88320)
+ *                 (0xEDB88320, LSB first)
  * Initial value : 0xFFFFFFFF
+ * Final XOR     : 0xFFFFFFFF
  *
- * Used in IEEE 802.3.
+ * Used in IEEE 802.3 and PNG [2], see also ISO 3309 or ITU-T V.42, [1] and [3]
  *
- * See also http://www.greenend.org.uk/rjk/tech/crc.html
+ * [1] https://users.ece.cmu.edu/~koopman/crc/crc32.html
+ * [2] http://www.w3.org/TR/PNG/#D-CRCAppendix
+ * [3] http://www.greenend.org.uk/rjk/tech/crc.html
  *
  * \author  Fabian Greif
  */
@@ -90,7 +93,7 @@ public:
     inline uint32_t
     getValue() const
     {
-        return mCrc ^ initialValue;
+        return mCrc ^ finalXor;
     }
 
 private:
@@ -102,6 +105,9 @@ private:
     operator=(const Crc32Ccitt&);
 
     static const uint32_t initialValue = 0xFFFFFFFF;
+    static const uint32_t finalXor     = 0xFFFFFFFF;
+
+
     static const int numberOfBitsPerByte = 8;
     static const int numberOfValuesPerByte = 256;
 

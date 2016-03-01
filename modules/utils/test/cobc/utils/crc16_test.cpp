@@ -206,11 +206,12 @@ TEST(Crc16Test, testXModemAvr)
     };
 
     uint16_t crc = 0xffff;
-    for (uint_fast8_t i = 0; i < sizeof(data); ++i) {
+    for (uint_fast8_t i = 0; i < sizeof(data); ++i)
+    {
         crc = crc_xmodem_update(crc, data[i]);
     }
 
-    EXPECT_EQ(0x7fd5, crc);
+    EXPECT_EQ(crc, Crc16Ccitt::calculate(cobc::toArray(data)));
 }
 
 TEST(Crc16Test, testRandom)
