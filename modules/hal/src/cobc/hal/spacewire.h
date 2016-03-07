@@ -133,7 +133,8 @@ public:
      *         Blocking mode.
      */
     virtual Result
-    requestBuffer(TransmitBuffer *& buffer, Blocking blockingMode = blocking) = 0;
+    requestBuffer(TransmitBuffer*& buffer,
+                  Blocking blockingMode = blocking) = 0;
 
     /**
      * Send a configured buffer.
@@ -157,7 +158,8 @@ public:
      *         Blocking mode.
      */
     virtual Result
-    receive(ReceiveBuffer& buffer, Blocking blockingMode = blocking) = 0;
+    receive(ReceiveBuffer& buffer,
+            Blocking blockingMode = blocking) = 0;
 
     /**
      * Release receive buffer.
