@@ -100,10 +100,16 @@ public:
     ~SpaceWire();
 
     /**
+     * Get the maximum length of a SpaceWire packet.
+     */
+    virtual size_t
+    getMaximumPacketLength() const = 0;
+
+    /**
      * Open a configured SpaceWire device.
      *
-     * \return    \c true if the device could be opened,
-     *             \c false otherwise.
+     * \retval  true    If the device could be opened.
+     * \retval  false   otherwise.
      */
     virtual bool
     open() = 0;

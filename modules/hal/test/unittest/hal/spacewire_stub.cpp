@@ -31,6 +31,12 @@ SpaceWireStub::~SpaceWireStub()
 {
 }
 
+size_t
+SpaceWireStub::getMaximumPacketLength() const
+{
+    return mMaximumLength;
+}
+
 bool
 SpaceWireStub::open()
 {

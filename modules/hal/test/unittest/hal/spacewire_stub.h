@@ -59,6 +59,9 @@ public:
     virtual
     ~SpaceWireStub();
 
+    virtual size_t
+    getMaximumPacketLength() const;
+
     virtual bool
     open();
 
