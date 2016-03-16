@@ -74,6 +74,13 @@ public:
         return code;
     }
 
+    inline static FailureCode
+    userError(uint16_t id = 0)
+    {
+        FailureCode code = FailureCode(0xF0040000 | id);
+        return code;
+    }
+
     inline uint32_t
     getCode() const
     {

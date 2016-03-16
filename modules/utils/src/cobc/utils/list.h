@@ -201,41 +201,41 @@ public:
     };
 
     class ConstIterator
-	{
-	public:
-		friend class List;
+    {
+    public:
+        friend class List;
 
-		ConstIterator();
+        ConstIterator();
 
-		ConstIterator(const ConstIterator& other);
+        ConstIterator(const ConstIterator& other);
 
-		ConstIterator(const Iterator& other);
+        ConstIterator(const Iterator& other);
 
-		ConstIterator&
-		operator=(const ConstIterator& other);
+        ConstIterator&
+        operator=(const ConstIterator& other);
 
-		ConstIterator&
-		operator++();
+        ConstIterator&
+        operator++();
 
-		bool
-		operator==(const ConstIterator& other) const;
+        bool
+        operator==(const ConstIterator& other) const;
 
-		bool
-		operator!=(const ConstIterator& other) const;
+        bool
+        operator!=(const ConstIterator& other) const;
 
-		const T&
-		operator*() const;
+        const T&
+        operator*() const;
 
-		const T*
-		operator->() const;
+        const T*
+        operator->() const;
 
-	private:
-		explicit
-		ConstIterator(T* node);
+    private:
+        explicit
+        ConstIterator(T* node);
 
-		/// Pointer to the current node. Set to NULL if end of list.
-		T* mNode;
-	};
+        /// Pointer to the current node. Set to NULL if end of list.
+        T* mNode;
+    };
 
     Iterator
     begin();
@@ -244,10 +244,10 @@ public:
     end();
 
     ConstIterator
-	begin() const;
+    begin() const;
 
     ConstIterator
-	end() const;
+    end() const;
 
 private:
     T* mHead;
