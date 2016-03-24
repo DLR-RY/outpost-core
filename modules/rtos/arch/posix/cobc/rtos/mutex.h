@@ -69,7 +69,7 @@ public:
      *             case of an error or timeout.
      */
     bool
-    acquire(time::Duration timeout);
+    acquire(::cobc::time::Duration timeout);
 
     /**
      * Release the mutex.
@@ -94,4 +94,4 @@ private:
 }
 }
 
-#endif // COBC_RTOS_POSIX_MUTEX_HPP
+#endif

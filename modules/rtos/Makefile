@@ -29,16 +29,16 @@ test: update
 	@printf "$(CINFO) Running RTOS abstraction layer compilation tests$(CEND)\n"
 	
 	@printf "$(CINFO) FreeRTOS (STM32F4 Discovery):$(CEND)\n"
-	@scons $(MAKEJOBS) -Q -C test/freertos || return 1
+	@scons $(MAKEJOBS) -Q -C it/freertos || return 1
 	
 	@printf "$(CINFO) None (OpenRisc 32):$(CEND)\n"
-	@scons $(MAKEJOBS) -Q -C test/none_or32 || return 1
+	@scons $(MAKEJOBS) -Q -C it/none_or32 || return 1
 	
 	@printf "$(CINFO) POSIX (Linux):$(CEND)\n"
-	@scons $(MAKEJOBS) -Q -C test/posix || return 1
+	@scons $(MAKEJOBS) -Q -C it/posix || return 1
 	
 	@printf "$(CINFO) RTEMS (LEON3):$(CEND)\n"
-	@scons $(MAKEJOBS) -Q -C test/rtems || return 1
+	@scons $(MAKEJOBS) -Q -C it/rtems || return 1
 	
 	@printf "$(COK) RTOS abstraction layer compilation tests passed!$(CEND)\n"
 

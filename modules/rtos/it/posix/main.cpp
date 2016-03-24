@@ -14,23 +14,28 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "producer.h"
+#include <stdint.h>
+#include <stdio.h>
 
-Producer::Producer(cobc::rtos::Queue<uint32_t>& queue) :
-    Thread(20, defaultStackSize, "Consumer"),
-    mQueue(queue)
+#include <../../it/reference/consumer.h>
+#include <../../it/reference/producer.h>
+
+cobc::rtos::Queue<uint32_t> queue(10);
+
+Producer producer(queue);
+Consumer consumer(queue);
+
+int
+main(void)
 {
-}
+    producer.start();
+    consumer.start();
 
-void
-Producer::run()
-{
-    uint32_t counter = 0;
-    while (1)
-    {
-        sleep(cobc::time::Milliseconds(500));
+	while (1)
+	{
+	    consumer.waitForNewValue();
+	    uint32_t value = consumer.getCurrentValue();
 
-        mQueue.send(counter);
-        counter++;
-    }
+	    printf("value: %i\n", static_cast<int>(value));
+	}
 }

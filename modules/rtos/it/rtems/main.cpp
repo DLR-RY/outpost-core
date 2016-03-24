@@ -54,7 +54,7 @@ rtems_extensions_table User_extensions = {
 #define CONFIGURE_INITIAL_EXTENSIONS    User_extensions
 
 #define CONFIGURE_INIT
-#include "system.h"
+#include <../../it/rtems/system.h>
 
 void
 fatalErrorHandler(Internal_errors_Source source, bool isInternal, uint32_t errorCode)
