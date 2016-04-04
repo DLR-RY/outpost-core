@@ -200,4 +200,4 @@ cobc::Deque<T>::removeFront()
     mSize--;
 }
 
-#endif // COBC_DEQUE_IMPL_H
+#endif

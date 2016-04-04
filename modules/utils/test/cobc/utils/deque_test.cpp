@@ -17,7 +17,7 @@
 #include <unittest/harness.h>
 #include <cobc/utils/deque.h>
 
-TEST(Deque, forward)
+TEST(DequeTest, forward)
 {
     int16_t buffer[3];
     cobc::Deque<int16_t> deque(buffer, 3);
@@ -67,7 +67,7 @@ TEST(Deque, forward)
     EXPECT_TRUE(deque.isEmpty());
 }
 
-TEST(Deque, backward)
+TEST(DequeTest, backward)
 {
     int16_t buffer[3];
     cobc::Deque<int16_t> deque(buffer, 3);
@@ -101,7 +101,7 @@ TEST(Deque, backward)
     EXPECT_TRUE(deque.isEmpty());
 }
 
-TEST(Deque, both)
+TEST(DequeTest, both)
 {
     int16_t buffer[3];
     cobc::Deque<int16_t> deque(buffer, 3);
@@ -139,7 +139,7 @@ TEST(Deque, both)
     EXPECT_TRUE(deque.isEmpty());
 }
 
-TEST(Deque, clear)
+TEST(DequeTest, clear)
 {
     int16_t buffer[3];
     cobc::Deque<int16_t> deque(buffer, 3);
