@@ -19,13 +19,30 @@ endif
 # Slash at the end is important!
 LIBCOBC_HW_PATH = /home/user/development/ry-avs-cobc/lib/sw/libcobc-hw/
 
-all: test
+all: test-integration
 
 MODULE=rtos
 
 include ../../conf/module.default.mk
 
-test: update
+test:
+	@scons build $(MAKEJOBS) -Q -C test || return 1; \
+	../../build/$(MODULE)/test/unittest/runner --gtest_filter=$(FILTER)
+
+coverage:
+	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
+	find ../../build/$(MODULE)/test/coverage -name "*.gcda" -delete; \
+	../../build/$(MODULE)/test/coverage/runner; \
+	cd ../../build/$(MODULE)/test/coverage; \
+	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory ../../../../modules/$(MODULE)/test --directory . --gcov-tool `which gcov` || return 1; \
+	lcov -r coverage.info "/usr*" "test/*" "time/*" "utils/ext/*" "tools/*" "rtos/*" "default/*" -o coverage.info; \
+	rm -rf report; \
+	genhtml -o report coverage.info
+
+coverage-view:
+	xdg-open ../../build/$(MODULE)/test/coverage/report/index.html &
+
+test-integration: update
 	@printf "$(CINFO) Running RTOS abstraction layer compilation tests$(CEND)\n"
 	
 	@printf "$(CINFO) FreeRTOS (STM32F4 Discovery):$(CEND)\n"
@@ -41,12 +58,6 @@ test: update
 	@scons $(MAKEJOBS) -Q -C it/rtems || return 1
 	
 	@printf "$(COK) RTOS abstraction layer compilation tests passed!$(CEND)\n"
-
-coverage:
-	@printf "$(CERROR)Not supported for this module!$(CEND)\n"
-
-coverage-view:
-	@printf "$(CERROR)Not supported for this module!$(CEND)\n"
 
 clean: clean_default
 	@$(RM) -r ../../build/$(MODULE)/*
