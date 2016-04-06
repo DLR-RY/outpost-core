@@ -43,7 +43,8 @@ struct Resource
         interrupt = 5,
         messageQueue = 6,
         clock = 7,
-        periodicTask = 8
+        periodicTask = 8,
+        driverManager = 9
     };
 };
 
