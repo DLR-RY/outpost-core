@@ -20,6 +20,8 @@
 #include <stdint.h>
 #include <cstddef>
 
+#include <cobc/time/duration.h>
+
 namespace cobc
 {
 namespace hal
@@ -33,12 +35,6 @@ namespace hal
 class SpaceWire
 {
 public:
-    enum Blocking
-    {
-        nonBlocking = 0,
-        blocking = 1
-    };
-
     enum EndMarker
     {
         partial = 0,    ///< Leave packet open to add additional data later
@@ -46,11 +42,14 @@ public:
         eep = 2         ///< Error end of packet
     };
 
-    enum Result
+    struct Result
     {
-        success,
-        failure,
-        timeout
+        enum Type
+        {
+            success,
+            failure,
+            timeout
+        };
     };
 
     /**
@@ -117,11 +116,11 @@ public:
     virtual void
     close() = 0;
 
-    virtual void
-    up(Blocking blockingMode = nonBlocking) = 0;
+    virtual bool
+    up(cobc::time::Duration timeout) = 0;
 
     virtual void
-    down(Blocking blockingMode = nonBlocking) = 0;
+    down(cobc::time::Duration timeout) = 0;
 
     virtual bool
     isUp() = 0;
@@ -133,14 +132,14 @@ public:
      * The SpaceWire link is blocked until the buffer is returned
      * by sending the buffer via send()!
      *
-     * \param[out]    buffer
-     *         Pointer to a send buffer. 0 in a case of a failure.
-     * \param[in]    blockingMode
-     *         Blocking mode.
+     * \param[out]  buffer
+     *      Pointer to a send buffer. 0 in a case of a failure.
+     * \param[in]   timeout
+     *      Time to wait for a free transmit buffer.
      */
-    virtual Result
+    virtual Result::Type
     requestBuffer(TransmitBuffer*& buffer,
-                  Blocking blockingMode = blocking) = 0;
+                  cobc::time::Duration timeout) = 0;
 
     /**
      * Send a configured buffer.
@@ -148,31 +147,31 @@ public:
      * This releases the buffer.
      * The buffer must contain a complete message.
      *
-     * \param[out]    buffer
-     *         Pointer to a send buffer. Must be the same pointer which
-     *         was requested via requestBuffer() earlier.
+     * \param[out]  buffer
+     *      Pointer to a send buffer. Must be the same pointer which
+     *      was requested via requestBuffer() earlier.
      */
-    virtual Result
+    virtual Result::Type
     send(TransmitBuffer* buffer) = 0;
 
     /**
      * Receive data.
      *
-     * \param[out]    buffer
-     *         Pointer to a receive buffer. 0 in a case of a failure.
-     * \param[in]    blockingMode
-     *         Blocking mode.
+     * \param[out]  buffer
+     *      Pointer to a receive buffer. 0 in a case of a failure.
+     * \param[in]   timeout
+     *      Time to wait for a SpaceWire message to arrive.
      */
-    virtual Result
+    virtual Result::Type
     receive(ReceiveBuffer& buffer,
-            Blocking blockingMode = blocking) = 0;
+            cobc::time::Duration timeout) = 0;
 
     /**
      * Release receive buffer.
      *
-     * \param[in]    buffer
-     *         Send buffer. Must be the same pointer which    was acquired
-     *         by a receive() earlier.
+     * \param[in]   buffer
+     *      Send buffer. Must be the same pointer which was acquired
+     *      by a receive() earlier.
      */
     virtual void
     releaseBuffer(const ReceiveBuffer& buffer) = 0;

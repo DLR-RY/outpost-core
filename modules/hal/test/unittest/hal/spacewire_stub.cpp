@@ -49,17 +49,18 @@ SpaceWireStub::close()
     mUp = false;
 }
 
-void
-SpaceWireStub::up(Blocking /*blockingMode*/)
+bool
+SpaceWireStub::up(cobc::time::Duration /*timeout*/)
 {
     if (mOpen)
     {
         mUp = true;
     }
+    return mUp;
 }
 
 void
-SpaceWireStub::down(Blocking /*blockingMode*/)
+SpaceWireStub::down(cobc::time::Duration /*timeout*/)
 {
     mUp = false;
 }
@@ -71,11 +72,11 @@ SpaceWireStub::isUp()
 }
 
 
-SpaceWireStub::Result
+SpaceWireStub::Result::Type
 SpaceWireStub::requestBuffer(TransmitBuffer*& buffer,
-                             Blocking /*blockingMode*/)
+                             cobc::time::Duration /*timeout*/)
 {
-    Result result = success;
+    Result::Type result = Result::success;
 
     std::unique_ptr<TransmitBufferEntry> entry(new TransmitBufferEntry(mMaximumLength));
     buffer = &entry->header;
@@ -84,10 +85,10 @@ SpaceWireStub::requestBuffer(TransmitBuffer*& buffer,
     return result;
 }
 
-SpaceWireStub::Result
+SpaceWireStub::Result::Type
 SpaceWireStub::send(TransmitBuffer* buffer)
 {
-    Result result = success;
+    Result::Type result = Result::success;
     if (mUp)
     {
         try
@@ -100,22 +101,22 @@ SpaceWireStub::send(TransmitBuffer* buffer)
         }
         catch (std::out_of_range&)
         {
-            result = failure;
+            result = Result::failure;
         }
     }
     else
     {
-        result = failure;
+        result = Result::failure;
     }
 
     return result;
 }
 
-SpaceWireStub::Result
+SpaceWireStub::Result::Type
 SpaceWireStub::receive(ReceiveBuffer& buffer,
-                       Blocking /*blockingMode*/)
+                       cobc::time::Duration /*timeout*/)
 {
-    Result result = success;
+    Result::Type result = Result::success;
     if (mUp)
     {
         std::unique_ptr<ReceiveBufferEntry> entry(new ReceiveBufferEntry(std::move(mPacketsToReceive.front().data),
@@ -126,7 +127,7 @@ SpaceWireStub::receive(ReceiveBuffer& buffer,
     }
     else
     {
-        result = failure;
+        result = Result::failure;
     }
 
     return result;

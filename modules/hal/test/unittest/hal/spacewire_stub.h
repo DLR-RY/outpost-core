@@ -68,25 +68,26 @@ public:
     virtual void
     close();
 
-    virtual void
-    up(Blocking blockingMode = nonBlocking);
+    virtual bool
+    up(cobc::time::Duration timeout);
 
     virtual void
-    down(Blocking blockingMode = nonBlocking);
+    down(cobc::time::Duration timeout);
 
     virtual bool
     isUp();
 
 
-    virtual Result
+    virtual Result::Type
     requestBuffer(TransmitBuffer*& buffer,
-                  Blocking blockingMode = blocking);
+                  cobc::time::Duration timeout);
 
-    virtual Result
+    virtual Result::Type
     send(TransmitBuffer* buffer);
 
-    virtual Result
-    receive(ReceiveBuffer& buffer, Blocking blockingMode = blocking);
+    virtual Result::Type
+    receive(ReceiveBuffer& buffer,
+            cobc::time::Duration timeout);
 
     virtual void
     releaseBuffer(const ReceiveBuffer& buffer);
