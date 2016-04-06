@@ -17,9 +17,7 @@
 #ifndef COBC_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
 #define COBC_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
 
-#include <rtems.h>
-
-#include <cobc/time/duration.h>
+#include "rtems/interval.h"
 
 #include <cobc/rtos/failure_handler.h>
 
@@ -96,8 +94,7 @@ public:
     inline Status::Type
     nextPeriod(time::Duration period)
     {
-        rtems_status_code result = rtems_rate_monotonic_period(mId,
-                                      period.milliseconds() * rtems_clock_get_ticks_per_second() / 1000 );
+        rtems_status_code result = rtems_rate_monotonic_period(mId, rtems::getInterval(period));
         return static_cast<Status::Type>(result);
     }
 

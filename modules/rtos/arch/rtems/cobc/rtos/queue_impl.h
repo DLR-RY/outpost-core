@@ -18,6 +18,7 @@
 #define COBC_RTOS_RTEMS_QUEUE_IMPL_H
 
 #include "queue.h"
+#include "rtems/interval.h"
 
 #include <cobc/rtos/failure_handler.h>
 
@@ -50,36 +51,13 @@ cobc::rtos::Queue<T>::send(const T& data)
     return success;
 }
 
-/**
- * Converts a duration into a RTEMS interval.
- *
- * An RTEMS interval needs to be at least 1 tick long, otherwise it would
- * specify an infinite interval.
- */
-static inline rtems_interval
-toRtemsInterval(cobc::time::Duration timeout)
-{
-    rtems_interval interval = timeout.milliseconds();
-    if (interval < 1)
-    {
-        interval = 1;
-    }
-    return interval;
-}
-
 template <typename T>
 bool
 cobc::rtos::Queue<T>::receive(T& data, cobc::time::Duration timeout)
 {
     size_t size;
     rtems_option options = RTEMS_WAIT;
-
-    rtems_interval interval = 0;
-    if (timeout != cobc::time::Duration::infinity())
-    {
-        interval = toRtemsInterval(timeout);
-    }
-
+    rtems_interval interval = rtems::getInterval(timeout)
     rtems_status_code result = rtems_message_queue_receive(id, &data, &size, options, interval);
     bool success = (result == RTEMS_SUCCESSFUL);
 

@@ -29,7 +29,7 @@ void
 cobc::rtos::Timer::start(time::Duration duration)
 {
     rtems_timer_server_fire_after(mTid,
-                                  duration.microseconds()/rtems_configuration_get_microseconds_per_tick(),
+                                  duration.microseconds() / rtems_configuration_get_microseconds_per_tick(),
                                   &Timer::invokeTimer,
                                   (void *) this);
 }

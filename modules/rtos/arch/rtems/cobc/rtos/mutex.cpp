@@ -19,6 +19,8 @@
 #include <rtems.h>
 #include <cobc/rtos/failure_handler.h>
 
+#include "rtems/interval.h"
+
 // ----------------------------------------------------------------------------
 cobc::rtos::Mutex::Mutex()
 {
@@ -52,6 +54,6 @@ cobc::rtos::Mutex::acquire()
 bool
 cobc::rtos::Mutex::acquire(time::Duration timeout)
 {
-    rtems_interval time = timeout.milliseconds();
+    rtems_interval time = rtems::getInterval(timeout);
     return (rtems_semaphore_obtain(mId, RTEMS_WAIT, time) == RTEMS_SUCCESSFUL);
 }

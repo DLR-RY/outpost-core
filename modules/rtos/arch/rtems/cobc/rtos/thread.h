@@ -21,8 +21,7 @@
 #include <stdint.h>
 
 #include <rtems.h>
-
-#include <cobc/time/duration.h>
+#include "rtems/interval.h"
 
 namespace cobc
 {
@@ -178,7 +177,7 @@ public:
     static inline void
     sleep(::cobc::time::Duration duration)
     {
-        rtems_task_wake_after((rtems_clock_get_ticks_per_second() * duration.milliseconds()) /1000);
+        rtems_task_wake_after(rtems::getInterval(duration));
     }
 
 protected:
