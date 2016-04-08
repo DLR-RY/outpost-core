@@ -62,7 +62,7 @@ public:
      * \param[in]    topic
      *         Topic to subscribe to
      * \param[in]    subscriber
-     *         Subscribing class. Must be a subclass of cobc::com::Subscriber.
+     *         Subscribing class. Must be a subclass of cobc::smpc::Subscriber.
      * \param[in]    function
      *         Member function pointer of the subscribing class.
      */
