@@ -10,7 +10,7 @@ import re
 
 notrun_filter = re.compile('(\s*<testcase[^<]+status="notrun"[^<]+)/>')
 
-with open(sys.argv[2], 'w') as output:
+with open(sys.argv[2], 'w+') as output:
 	with open(sys.argv[1], 'r') as input:
 		for line in input:
 			
