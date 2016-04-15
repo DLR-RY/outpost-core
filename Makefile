@@ -83,6 +83,13 @@ test:
 	done
 	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
 
+cloc-source:
+	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+		printf "\n$(CINFO)Count Lines of Code for module \"$$m\":$(CEND)\n" ; \
+		make -C modules/$$m cloc-source-default --no-print-directory || return 1 ; \
+	done
+	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
+
 test-full:
 	@for m in $(MODULES_HW) $(MODULES_GLOBAL) $(MODULES_TEST); do \
 		printf "\n$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \

@@ -112,6 +112,10 @@ coverage-html-default: coverage-default
 coverage-view-default:
 	@xdg-open $(BUILDPATH)/$(MODULE)/test/coverage/report/index.html &
 
+cloc-source-default:
+	@mkdir -p $(BUILDPATH)/cloc
+	@cloc --by-file --xml --out=$(BUILDPATH)/cloc/$(MODULE).xml src/
+
 # Run clang static analyzer (see http://clang-analyzer.llvm.org/). Requires
 # that the unittests are configured in the SConstruct file to be build
 # with the 'hosted-clang' module.
@@ -169,6 +173,7 @@ clean-default:
 	@$(RM) -r $(BUILDPATH)/$(MODULE)/test/unittest
 	@$(RM) -r $(BUILDPATH)/$(MODULE)/test/coverage
 	@$(RM) -r $(BUILDPATH)/test/$(MODULE).xml
+	@$(RM) -r $(BUILDPATH)/cloc/$(MODULE).xml
 	@$(RM) -r $(BUILDPATH)/coverage/$(MODULE).xml
 
 distclean-default:
