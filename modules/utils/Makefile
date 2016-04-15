@@ -13,7 +13,7 @@ test: test-default
 
 coverage: coverage-default
 
-clean: clean_default
+clean: clean-default
 
 distclean: distclean-default
 
