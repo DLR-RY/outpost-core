@@ -32,7 +32,7 @@ public:
     SetUp() override
     {
         mSpaceWire.open();
-        mSpaceWire.up();
+        mSpaceWire.up(cobc::time::Duration::zero());
     }
 
     virtual void
@@ -55,7 +55,7 @@ TEST(SpaceWireStubConnectionTest, shouldBringLinkUp)
     unittest::hal::SpaceWireStub spaceWire(100);
 
     spaceWire.open();
-    spaceWire.up();
+    spaceWire.up(cobc::time::Duration::zero());
 
     EXPECT_TRUE(spaceWire.isUp());
 }
@@ -66,8 +66,8 @@ TEST(SpaceWireStubConnectionTest, shouldBringLinkDown)
 
     spaceWire.open();
 
-    spaceWire.up();
-    spaceWire.down();
+    spaceWire.up(cobc::time::Duration::zero());
+    spaceWire.down(cobc::time::Duration::zero());
 
     EXPECT_FALSE(spaceWire.isUp());
 }
@@ -77,7 +77,7 @@ TEST(SpaceWireStubConnectionTest, shouldBringLinkDownOnClose)
     unittest::hal::SpaceWireStub spaceWire(100);
 
     spaceWire.open();
-    spaceWire.up();
+    spaceWire.up(cobc::time::Duration::zero());
 
     spaceWire.close();
 
@@ -88,7 +88,7 @@ TEST(SpaceWireStubConnectionTest, shouldNotBringLinkUpOnClosedChannel)
 {
     unittest::hal::SpaceWireStub spaceWire(100);
 
-    spaceWire.up();
+    spaceWire.up(cobc::time::Duration::zero());
 
     EXPECT_FALSE(spaceWire.isUp());
 }
@@ -97,7 +97,7 @@ TEST(SpaceWireStubConnectionTest, shouldNotBringLinkUpOnClosedChannel)
 TEST_F(SpaceWireStubTest, shouldProvideTransmitBuffer)
 {
     SpaceWire::TransmitBuffer* buffer = nullptr;
-    ASSERT_EQ(SpaceWire::success, mSpaceWire.requestBuffer(buffer));
+    ASSERT_EQ(SpaceWire::Result::success, mSpaceWire.requestBuffer(buffer, cobc::time::Duration::zero()));
 
     ASSERT_NE(nullptr, buffer);
     EXPECT_FALSE(mSpaceWire.noUsedTransmitBuffers());
@@ -106,8 +106,8 @@ TEST_F(SpaceWireStubTest, shouldProvideTransmitBuffer)
 TEST_F(SpaceWireStubTest, shouldReleaseTransmitBuffer)
 {
     SpaceWire::TransmitBuffer* buffer = nullptr;
-    mSpaceWire.requestBuffer(buffer);
-    ASSERT_EQ(SpaceWire::success, mSpaceWire.send(buffer));
+    mSpaceWire.requestBuffer(buffer, cobc::time::Duration::zero());
+    ASSERT_EQ(SpaceWire::Result::success, mSpaceWire.send(buffer));
 
     EXPECT_TRUE(mSpaceWire.noUsedTransmitBuffers());
 }
@@ -119,7 +119,7 @@ TEST_F(SpaceWireStubTest, shouldTransmitData)
     };
 
     SpaceWire::TransmitBuffer* buffer = nullptr;
-    mSpaceWire.requestBuffer(buffer);
+    mSpaceWire.requestBuffer(buffer, cobc::time::Duration::zero());
 
     memcpy(buffer->data, &expectedData.front(), expectedData.size());
     buffer->length = expectedData.size();
@@ -143,7 +143,7 @@ TEST_F(SpaceWireStubTest, shouldReceiveData)
     mSpaceWire.mPacketsToReceive.emplace_back(unittest::hal::SpaceWireStub::Packet { expectedData, SpaceWire::eep });
 
     SpaceWire::ReceiveBuffer buffer;
-    ASSERT_EQ(SpaceWire::success, mSpaceWire.receive(buffer));
+    ASSERT_EQ(SpaceWire::Result::success, mSpaceWire.receive(buffer, cobc::time::Duration::zero()));
 
     EXPECT_EQ(expectedData.size(), buffer.length);
     EXPECT_EQ(SpaceWire::eep, buffer.end);
