@@ -25,9 +25,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-# Filter for the Unittest runners
-FILTER := *
-
 # Configure the parallel build normal "make -jn" is not possible as SCons
 # is used to build the source files. And make has no option the extract the
 # number of request parallel processes from the "-j" option.
@@ -43,14 +40,77 @@ else
   MAKEJOBS=-j$(NPROCS)
 endif
 
-# Path relative from the module folders (e.g. '/trunk/modules/pus')
-POLYSPACE ?= ../../tools/polyspace
+# Check if the terminal supports colors
+COLORS := $(shell tput colors 2> /dev/null)
 
+ifeq ($(COLORS),)
+# The terminal doesn't support colors, don't output anything
+CINFO  = 
+COK    = 
+CWARN  = 
+CERROR = 
+CEND   = 
+else
+# Color definitions (e.g. for bash 'tput colors' returns '8')
+CINFO  = \033[;0;33m
+COK    = \033[32;01m
+CWARN  = \033[33;01m
+CERROR = \033[31;01m
+CEND   = \033[0m
+endif
+
+# Filter for the Unittest runners.
+GTEST_FILTER ?= *
+
+LCOV_DEFAULT_REMOVE_PATTERN = "/usr*" "test/*" "default/*" "tools/*" "utils-ext/*"
+
+# Path relative from the module folders (e.g. '/trunk/modules/pus').
+ROOTPATH  ?= ../..
+BUILDPATH ?= $(ROOTPATH)/build
+POLYSPACE ?= $(ROOTPATH)/tools/polyspace
+
+# Allow to specifiy a specific set of Polyspace rules to check.
 ifneq ($(RULES),)
   POLYSPACE_RULES=--rules="$(RULES)"
 else
   POLYSPACE_RULES=
 endif
+
+#help:
+#	@echo -e " Please use \`make $(CINFO)<target>$(CEND)\` where $(CINFO)<target>$(CEND) is one of"
+#	@echo -e "  $(CINFO)all$(CEND)                Compile and run unit tests"
+#	@echo -e "  $(CINFO)test$(CEND)               Compile and run unit tests"
+#	@echo -e "  $(CINFO)coverage$(CEND)           Generate coverage analysis"
+#	@echo -e "  $(CINFO)coverage-view$(CEND)      View coverage analysis"
+#	@echo -e "  $(CINFO)doxygen-view$(CEND)       View doxygen documentation"
+#	@echo -e "  $(CINFO)clean$(CEND)              Clean module log"
+
+build-lua-default:
+	@$(MAKE) --no-print-directory -C ../l3test build-lua
+
+test-default:
+	@scons -C test/ -Q $(MAKEJOBS) build
+	@$(BUILDPATH)/$(MODULE)/test/unittest/runner --gtest_filter=$(GTEST_FILTER) --gtest_output=xml:$(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml
+	@mkdir -p $(BUILDPATH)/test
+	@python3 $(ROOTPATH)/tools/gtest_process_skipped.py $(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml $(BUILDPATH)/test/$(MODULE).xml
+
+coverage-default:
+	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
+	find $(BUILDPATH)/$(MODULE)/test/coverage -name "*.gcda" -delete; \
+	$(BUILDPATH)/$(MODULE)/test/coverage/runner; \
+	mkdir -p $(BUILDPATH)/coverage; \
+	cd $(BUILDPATH)/$(MODULE)/test/coverage; \
+	gcovr --root=. --object-directory=. $(foreach dir,$(LCOV_REMOVE_PATTERN), -e $(dir)) --xml-pretty -o $(BUILDPATH_ABSOLUTE)/coverage/$(MODULE).xml
+
+coverage-html-default: coverage-default
+	@cd $(BUILDPATH)/$(MODULE)/test/coverage; \
+	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory $(CURDIR)/test --directory . --gcov-tool `which gcov` || return 1; \
+	lcov -r coverage.info $(LCOV_DEFAULT_REMOVE_PATTERN) $(LCOV_REMOVE_PATTERN) -o coverage.info; \
+	rm -rf report; \
+	genhtml --demangle-cpp -o report coverage.info
+
+coverage-view-default:
+	@xdg-open $(BUILDPATH)/$(MODULE)/test/coverage/report/index.html &
 
 # Run clang static analyzer (see http://clang-analyzer.llvm.org/). Requires
 # that the unittests are configured in the SConstruct file to be build
@@ -62,7 +122,7 @@ analyze-clang:
 	scons build $(MAKEJOBS) analyze=1 -Q -C test/unit
 
 analyze-clang-view:
-	PATH=$(PATH):~/Downloads/llvm/tools/clang/tools/scan-view \
+	@PATH=$(PATH):~/Downloads/llvm/tools/clang/tools/scan-view \
 	scan-view "$(CURDIR)/../../build/$(MODULE)/test/analyze-clang/$(FOLDER)"
 
 codingstyle: codingstyle-simple codingstyle-jsf
@@ -104,11 +164,14 @@ design:
 
 doc: doxygen design
 
-clean_default:
+clean-default:
 	@$(RM) -r doc/doxygen/api/*
+	@$(RM) -r $(BUILDPATH)/$(MODULE)/test/unittest
+	@$(RM) -r $(BUILDPATH)/$(MODULE)/test/coverage
+	@$(RM) -r $(BUILDPATH)/test/$(MODULE).xml
+	@$(RM) -r $(BUILDPATH)/coverage/$(MODULE).xml
 
-distclean_default:
+distclean-default:
 	@scons build coverage=1 -Q -C test/unit -c
 
-.PHONY: doxygen design doc clean_default distclean_default
-
+.PHONY: build-lua test-default coverage-default coverage-html-default

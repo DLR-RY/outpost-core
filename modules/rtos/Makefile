@@ -1,48 +1,28 @@
+# Copyright (c) 2013, German Aerospace Center (DLR)
+# All Rights Reserved.
 
-# Check if the terminal supports colors
-COLORS := $(shell tput colors 2> /dev/null)
+MODULE=rtos
 
-ifeq ($(COLORS),)
-# The terminal doesn't support colors, don't output anything
-CINFO  = 
-COK    = 
-CERROR = 
-CEND   = 
-else
-# Color definitions (e.g. for bash 'tput colors' returns '8')
-CINFO  = \033[;0;33m
-COK    = \033[32m
-CERROR = \033[31;01m
-CEND   = \033[0m
-endif
+LCOV_REMOVE_PATTERN = \
+	"utils/*" "time/*"
 
 # Slash at the end is important!
 LIBCOBC_HW_PATH = /home/user/development/ry-avs-cobc/lib/sw/libcobc-hw/
 
-all: test-integration
-
-MODULE=rtos
+all: test
 
 include ../../conf/module.default.mk
 
-test:
-	@scons build $(MAKEJOBS) -Q -C test || return 1; \
-	../../build/$(MODULE)/test/unittest/runner --gtest_filter=$(FILTER)
+test: test-default
 
-coverage:
-	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
-	find ../../build/$(MODULE)/test/coverage -name "*.gcda" -delete; \
-	../../build/$(MODULE)/test/coverage/runner; \
-	cd ../../build/$(MODULE)/test/coverage; \
-	lcov -t '$(MODULE) library' -o coverage.info -c --base-directory ../../../../modules/$(MODULE)/test --directory . --gcov-tool `which gcov` || return 1; \
-	lcov -r coverage.info "/usr*" "test/*" "time/*" "utils/ext/*" "tools/*" "rtos/*" "default/*" -o coverage.info; \
-	rm -rf report; \
-	genhtml -o report coverage.info
+coverage: coverage-default
 
-coverage-view:
-	xdg-open ../../build/$(MODULE)/test/coverage/report/index.html &
+update-integration:
+	mkdir -p ext/libcobc-hw-backup/src
+	mkdir -p ext/libcobc-hw/
+	rsync -a --delete -b --backup-dir=ext/libcobc-hw-backup/ $(LIBCOBC_HW_PATH) ext/libcobc-hw/
 
-test-integration: update
+test-integration: update-integration
 	@printf "$(CINFO) Running RTOS abstraction layer compilation tests$(CEND)\n"
 	
 	@printf "$(CINFO) FreeRTOS (STM32F4 Discovery):$(CEND)\n"
@@ -59,15 +39,9 @@ test-integration: update
 	
 	@printf "$(COK) RTOS abstraction layer compilation tests passed!$(CEND)\n"
 
-clean: clean_default
-	@$(RM) -r ../../build/$(MODULE)/*
+clean: clean-default
 
-update:
-	mkdir -p ext/libcobc-hw-backup/src
-	mkdir -p ext/libcobc-hw/
-	rsync -a --delete -b --backup-dir=ext/libcobc-hw-backup/ $(LIBCOBC_HW_PATH) ext/libcobc-hw/
-
-distclean: distclean_default
+distclean: distclean-default
 	$(RM) -r ext/libcobc-hw
 
 .PHONY: test coverage coverage-view clean

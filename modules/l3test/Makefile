@@ -1,8 +1,9 @@
-
-
-all: test
+# Copyright (c) 2013, German Aerospace Center (DLR)
+# All Rights Reserved.
 
 MODULE=l3test
+
+all: test
 
 include ../../conf/module.default.mk
 
@@ -14,17 +15,11 @@ build-lua:
 test-lua: build-lua
 	@busted --lpath="lua/src/?.lua;lua/src/?/init.lua" --cpath="bin/lua/?.so" lua/spec
 
-test-cpp:
-	@scons -Q -C test/ -j3
-	@../../build/$(MODULE)/test/unittest/runner
+test: build-lua test-lua test-default
 
-test: build-lua test-lua test-cpp
+coverage: coverage-default
 
-coverage:
-	@scons -Q -C test/unit coverage=1 -j3
-	@../../build/$(MODULE)/test/coverage/runner
-
-clean:
+clean: clean-default
 	@scons -s -C test -c
 	@scons -s -C lua/modules -c
 
