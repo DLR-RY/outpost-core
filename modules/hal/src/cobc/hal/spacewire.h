@@ -21,6 +21,7 @@
 #include <cstddef>
 
 #include <cobc/time/duration.h>
+#include <cobc/utils/bounded_array.h>
 
 namespace cobc
 {
@@ -55,44 +56,156 @@ public:
     /**
      * Send buffer.
      */
-    struct TransmitBuffer
+    class TransmitBuffer
     {
-        TransmitBuffer(uint8_t* d) :
-            data(d),
-            length(),
-            end(eop)
+    public:
+        inline
+        TransmitBuffer() :
+            mData(0),
+            mLength(),
+            mEnd(eop)
         {
         }
 
+        inline explicit
+        TransmitBuffer(cobc::BoundedArray<uint8_t> array) :
+            mData(array.begin()),
+            mLength(array.getNumberOfElements()),
+            mEnd(eop)
+        {
+        }
+
+        inline
+        TransmitBuffer(const TransmitBuffer& other) :
+            mData(other.mData),
+            mLength(other.mLength),
+            mEnd(other.mEnd)
+        {
+        }
+
+        inline TransmitBuffer&
+        operator=(const TransmitBuffer& other)
+        {
+            // This handles self assignment
+            mData   = other.mData;
+            mLength = other.mLength;
+            mEnd    = other.mEnd;
+
+            return *this;
+        }
+
+        inline size_t
+        getLength() const
+        {
+            return mLength;
+        }
+
+        inline void
+        setLength(size_t length)
+        {
+            mLength = length;
+        }
+
+        inline cobc::BoundedArray<uint8_t>
+        getData()
+        {
+            cobc::BoundedArray<uint8_t> array(mData, mLength);
+            return array;
+        }
+
+        inline EndMarker
+        getEndMarker() const
+        {
+            return mEnd;
+        }
+
+        inline void
+        setEndMarker(EndMarker end)
+        {
+            mEnd = end;
+        }
+
+        /**
+         * Access elements of the array.
+         *
+         * \warning
+         *      No out-of-bound error checking is performed.
+         */
+        inline uint8_t&
+        operator[](size_t index)
+        {
+            return mData[index];
+        }
+
+    private:
         /**
          * Points to preallocated memory section.
          * Maximum size is implementation specific.
          */
-        uint8_t* const data;
-        size_t length;
-        EndMarker end;
+        uint8_t* mData;
+        size_t mLength;
+        EndMarker mEnd;
     };
 
-    struct ReceiveBuffer
+    class ReceiveBuffer
     {
+    public:
         ReceiveBuffer() :
-            data(0), length(0), end(eop)
+            mData(cobc::BoundedArray<const uint8_t>::empty()),
+            mEnd(eop)
+        {
+        }
+
+        ReceiveBuffer(cobc::BoundedArray<const uint8_t> data,
+                      EndMarker end) :
+            mData(data),
+            mEnd(end)
         {
         }
 
         const ReceiveBuffer&
         operator=(const ReceiveBuffer& other)
         {
-            data = other.data;
-            length = other.length;
-            end = other.end;
+            // This handles self assignment
+            mData = other.mData;
+            mEnd = other.mEnd;
 
             return *this;
         }
 
-        const uint8_t* data;
-        size_t length;
-        EndMarker end;
+        inline cobc::BoundedArray<const uint8_t>
+        getData() const
+        {
+            return mData;
+        }
+
+        inline size_t
+        getLength() const
+        {
+            return mData.getNumberOfElements();
+        }
+
+        inline EndMarker
+        getEndMarker() const
+        {
+            return mEnd;
+        }
+
+        /**
+         * Access elements of the array.
+         *
+         * \warning
+         *      No out-of-bound error checking is performed.
+         */
+        inline const uint8_t&
+        operator[](size_t index) const
+        {
+            return mData[index];
+        }
+
+    private:
+        cobc::BoundedArray<const uint8_t> mData;
+        EndMarker mEnd;
     };
 
     virtual

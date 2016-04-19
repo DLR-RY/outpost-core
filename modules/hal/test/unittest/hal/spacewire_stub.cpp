@@ -95,8 +95,8 @@ SpaceWireStub::send(TransmitBuffer* buffer)
         {
             std::unique_ptr<TransmitBufferEntry>& entry = mTransmitBuffers.at(buffer);
             mSentPackets.emplace_back(Packet { std::vector<uint8_t>(&entry->buffer.front(),
-                                                                    &entry->buffer.front() + entry->header.length),
-                                               entry->header.end });
+                                                                    &entry->buffer.front() + entry->header.getLength()),
+                                               entry->header.getEndMarker() });
             mTransmitBuffers.erase(buffer);
         }
         catch (std::out_of_range&)
@@ -122,7 +122,7 @@ SpaceWireStub::receive(ReceiveBuffer& buffer,
         std::unique_ptr<ReceiveBufferEntry> entry(new ReceiveBufferEntry(std::move(mPacketsToReceive.front().data),
                                                                          mPacketsToReceive.front().end));
         buffer = entry->header;
-        mReceiveBuffers.emplace(make_pair(entry->header.data, std::move(entry)));
+        mReceiveBuffers.emplace(make_pair(entry->header.getData().begin(), std::move(entry)));
         mPacketsToReceive.pop_front();
     }
     else
@@ -136,7 +136,7 @@ SpaceWireStub::receive(ReceiveBuffer& buffer,
 void
 SpaceWireStub::releaseBuffer(const ReceiveBuffer& buffer)
 {
-    mReceiveBuffers.erase(buffer.data);
+    mReceiveBuffers.erase(buffer.getData().begin());
 }
 
 void

@@ -121,9 +121,9 @@ TEST_F(SpaceWireStubTest, shouldTransmitData)
     SpaceWire::TransmitBuffer* buffer = nullptr;
     mSpaceWire.requestBuffer(buffer, cobc::time::Duration::zero());
 
-    memcpy(buffer->data, &expectedData.front(), expectedData.size());
-    buffer->length = expectedData.size();
-    buffer->end = SpaceWire::eop;
+    memcpy(buffer->getData().begin(), &expectedData.front(), expectedData.size());
+    buffer->setLength(expectedData.size());
+    buffer->setEndMarker(SpaceWire::eop);
 
     mSpaceWire.send(buffer);
 
@@ -145,9 +145,9 @@ TEST_F(SpaceWireStubTest, shouldReceiveData)
     SpaceWire::ReceiveBuffer buffer;
     ASSERT_EQ(SpaceWire::Result::success, mSpaceWire.receive(buffer, cobc::time::Duration::zero()));
 
-    EXPECT_EQ(expectedData.size(), buffer.length);
-    EXPECT_EQ(SpaceWire::eep, buffer.end);
-    ASSERT_THAT(expectedData, testing::ElementsAreArray(buffer.data, buffer.length));
+    EXPECT_EQ(expectedData.size(), buffer.getLength());
+    EXPECT_EQ(SpaceWire::eep, buffer.getEndMarker());
+    ASSERT_THAT(expectedData, testing::ElementsAreArray(buffer.getData().begin(), buffer.getLength()));
 
     mSpaceWire.releaseBuffer(buffer);
 

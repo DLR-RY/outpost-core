@@ -137,7 +137,7 @@ private:
         inline
         TransmitBufferEntry(size_t maximumLength) :
             buffer(maximumLength, 0),
-            header(&buffer.front())
+            header(cobc::BoundedArray<uint8_t>(&buffer.front(), maximumLength))
         {
         }
 
@@ -149,11 +149,8 @@ private:
     {
         ReceiveBufferEntry(std::vector<uint8_t>&& input, EndMarker end) :
             buffer(std::move(input)),
-            header()
+            header(cobc::BoundedArray<const uint8_t>(&buffer.front(), buffer.size()), end)
         {
-            header.data = &buffer.front();
-            header.length = buffer.size();
-            header.end = end;
         }
 
         std::vector<uint8_t> buffer;
