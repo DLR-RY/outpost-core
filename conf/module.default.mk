@@ -143,6 +143,14 @@ codingstyle-jsf:
 	                         -p "$(POLYSPACE)/ssh_info.txt" \
 	                         -x
 
+codingstyle-jsf-python:
+	@$(POLYSPACE)/python/QuickPS.py analyse "src/" \
+	                         --config "$(POLYSPACE)/profiles/$(MODULE)/options_py.cfg" \
+	                         --options "$(POLYSPACE)/profiles/$(MODULE)/options.txt" \
+	                         --include "$(POLYSPACE)/profiles/polyspace_header.h" \
+	                         --ssh "$(POLYSPACE)/python/ssh_info_dlr.ini" \
+	                         -a -x
+
 codingstyle-jsf-view:
 	@$(POLYSPACE)/polyspace_jsf_log_formater.py $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.log \
 	                                            $(POLYSPACE)/results/$(MODULE)/PolySpace_C_R2009a_src_latest.1.log
