@@ -91,7 +91,7 @@ public:
     Thread(uint8_t priority,
            size_t stack = defaultStackSize,
            const char* name = 0,
-           FloatingPointSupport floatingPointSupport = noFloatingPoint);
+           FloatingPointSupport floatingPointSupport = floatingPoint);
 
     /**
      * Destructor.
