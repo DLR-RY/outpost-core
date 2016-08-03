@@ -43,6 +43,8 @@ elif env['OS'] == 'rtems':
         files += env.Glob('../ext/rtems/nexys3/apbuart/*.c')
         
         files += env.Glob('../arch/leon3/cobc/nexys3/*.cpp')
+    elif env['BOARD'] == 'AAC-OBCS':
+        path = []
     else:
         print "Error: Board not defined. Set the environment variable to " +\
               "the desired value. Valid values are 'gr712rc|nexys3'."
