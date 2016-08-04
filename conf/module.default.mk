@@ -67,6 +67,7 @@ LCOV_DEFAULT_REMOVE_PATTERN = "/usr*" "test/*" "default/*" "tools/*" "utils-ext/
 # Path relative from the module folders (e.g. '/trunk/modules/pus').
 ROOTPATH  ?= ../..
 BUILDPATH ?= $(ROOTPATH)/build
+BUILDPATH_ABSOLUTE = $(shell readlink -f $(BUILDPATH))
 POLYSPACE ?= $(ROOTPATH)/tools/polyspace
 
 # Allow to specifiy a specific set of Polyspace rules to check.
