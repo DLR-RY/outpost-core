@@ -89,6 +89,9 @@ endif
 build-lua-default:
 	@$(MAKE) --no-print-directory -C ../l3test build-lua
 
+build-test:
+	@scons -C test/ -Q $(MAKEJOBS) build
+	
 test-default:
 	@scons -C test/ -Q $(MAKEJOBS) build
 	@$(BUILDPATH)/$(MODULE)/test/unittest/runner --gtest_filter=$(GTEST_FILTER) --gtest_output=xml:$(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml
