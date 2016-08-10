@@ -36,6 +36,7 @@ template <typename T, size_t N>
 class FixedSizeArray
 {
 public:
+    typedef T Type;
     typedef typename cobc::remove_const<T>::type NonConstType;
     typedef const NonConstType ConstType;
 
@@ -148,6 +149,96 @@ public:
 
 private:
     T mData[N];
+};
+
+template <typename T, size_t N>
+class FixedSizeArrayView
+{
+public:
+    typedef T Type;
+    typedef typename cobc::remove_const<T>::type NonConstType;
+    typedef const NonConstType ConstType;
+
+    friend class FixedSizeArrayView<const T, N>;
+
+    FixedSizeArrayView(T* array, size_t offset) :
+        mData(&array[offset])
+    {
+    }
+
+    /**
+     * Initialize directly from a C style array.
+     *
+     * The array needs to still have all the type information attached and
+     * must not have degraded to a pointer type.
+     *
+     * Example:
+     * \code
+     * uint8_t array[7];
+     * FixedSizeArrayView<uint8_t, 7> wrappedArray(array);
+     * \endcode
+     *
+     * \param array
+     *      Array with should be wrapped.
+     */
+    explicit inline
+    FixedSizeArrayView(T (&array)[N]) :
+        mData(array)
+    {
+    }
+
+    // This constructor is non-explicit to allow for a conversion from
+    // const to non-const
+    inline
+    FixedSizeArrayView(const FixedSizeArray<NonConstType, N>& rhs) :
+        mData(rhs.mData)
+    {
+    }
+
+    /**
+     * Get number of elements in the array.
+     */
+    inline size_t
+    getNumberOfElements() const
+    {
+        return N;
+    }
+
+    /**
+     * Access elements of the array.
+     *
+     * \code
+     * FixedSizeArrayView<uint8_t, ...> array(...);
+     *
+     * for (size_t i = 0; i < array.getNumberOfElements(); ++i)
+     * {
+     *     array[i] = i;
+     * }
+     * \endcode
+     *
+     * \warning
+     *      No out-of-bound error checking is performed.
+     */
+    inline T&
+    operator[](size_t index)
+    {
+        return mData[index];
+    }
+
+    /**
+     * Access elements of the array.
+     *
+     * \warning
+     *      No out-of-bound error checking is performed.
+     */
+    inline const T&
+    operator[](size_t index) const
+    {
+        return mData[index];
+    }
+
+private:
+    T* mData;
 };
 
 }
