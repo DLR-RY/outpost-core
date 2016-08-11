@@ -22,6 +22,7 @@
 #include <stdint.h>
 
 #include "bounded_array.h"
+#include "fixed_size_array.h"
 
 namespace cobc
 {
@@ -166,6 +167,14 @@ public:
         size_t length = array.getNumberOfElements();
         memcpy(mBuffer, &array[0], length);
         mBuffer += length;
+    }
+
+    template <size_t N>
+    inline void
+    storeBuffer(cobc::FixedSizeArrayView<const uint8_t, N> array)
+    {
+        memcpy(mBuffer, &array[0], N);
+        mBuffer += N;
     }
 
     // explicit template instantiations are provided in serialize_impl.h
