@@ -50,6 +50,13 @@ public:
     {
     }
 
+    template <size_t N>
+    explicit inline
+    Serialize(cobc::FixedSizeArrayView<uint8_t, N> array) :
+            mBuffer(&array[0]), mBegin(&array[0])
+    {
+    }
+
     explicit inline
     Serialize(uint8_t* outputBuffer) :
             mBuffer(outputBuffer), mBegin(outputBuffer)
@@ -266,6 +273,13 @@ public:
 
     explicit inline
     Deserialize(cobc::BoundedArray<const uint8_t> array) :
+            mBuffer(&array[0]), mBegin(&array[0])
+    {
+    }
+
+    template <size_t N>
+    explicit inline
+    Deserialize(cobc::FixedSizeArrayView<const uint8_t, N> array) :
             mBuffer(&array[0]), mBegin(&array[0])
     {
     }
