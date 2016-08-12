@@ -159,6 +159,10 @@ public:
     typedef typename cobc::remove_const<T>::type NonConstType;
     typedef const NonConstType ConstType;
 
+    // STL compatibility
+    typedef T value_type;
+    typedef const T* const_iterator;
+
     friend class FixedSizeArrayView<const T, N>;
 
     FixedSizeArrayView(T* array, size_t offset) :
@@ -235,6 +239,18 @@ public:
     operator[](size_t index) const
     {
         return mData[index];
+    }
+
+    inline const_iterator
+    begin() const
+    {
+        return &mData[0];
+    }
+
+    inline const_iterator
+    end() const
+    {
+        return &mData[N];
     }
 
 private:
