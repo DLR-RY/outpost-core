@@ -4,7 +4,7 @@ import os
 
 rootpath = '../../../../'
 envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
-				        tools=['cobc', 'hosted-llvm', 'buildpath', 'buildformat', 'buildsize'],
+				        tools=['compiler/hosted_llvm', 'utils/buildpath', 'utils/buildformat', 'utils/buildsize'],
 			        	ENV=os.environ)
 
 envGlobal['BASEPATH'] = os.path.abspath('.')

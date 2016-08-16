@@ -9,7 +9,7 @@ module = 'hal'
 
 rootpath = '../../../'
 envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
-                        tools=['cobc', 'buildformat'],
+                        tools=['utils/buildformat'],
                         variables=vars,
                         BASEPATH=os.path.abspath('.'),
                         ENV=os.environ)
@@ -18,11 +18,11 @@ Help(vars.GenerateHelpText(envGlobal))
 buildfolder = os.path.join(rootpath, 'build')
 if envGlobal['coverage']:
     envGlobal.Tool('hosted-gcc-coverage')
-    envGlobal.Tool('buildpath')
+    envGlobal.Tool('utils/buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/coverage'))
 else:
-    envGlobal.Tool('hosted-llvm')
-    envGlobal.Tool('buildpath')
+    envGlobal.Tool('compiler/hosted_llvm')
+    envGlobal.Tool('utils/buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
 
 envGlobal.Append(CPPPATH=[
