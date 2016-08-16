@@ -8,7 +8,7 @@ cobcpath = rootpath + '../../'
 modulepath = cobcpath + 'modules/'
 
 envGlobal = Environment(toolpath=[cobcpath + 'conf/scons/site_tools'],
-			            tools=['utils/buildformat', 'compiler/hosted_gcc', 'utils/buildpath', 'utils/common'],
+			            tools=['utils/buildformat', 'compiler/hosted_gcc', 'settings/buildpath', 'utils/common'],
 				        ENV=os.environ)
 
 envGlobal['BASEPATH']  = os.path.abspath('.')

@@ -4,7 +4,7 @@ import os
 
 rootpath = '../../../../'
 envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
-				        tools=['compiler/or32_aac_elf_gcc', 'utils/buildpath', 'utils/buildformat', 'utils/buildsize'],
+				        tools=['compiler/or32_aac_elf_gcc', 'settings/buildpath', 'utils/buildformat', 'utils/buildsize'],
 			        	ENV=os.environ)
 
 envGlobal['BASEPATH'] = os.path.abspath('.')

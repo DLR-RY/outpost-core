@@ -12,7 +12,7 @@ buildfolder = os.path.join(rootpath, 'build')
 xpccpath = '/home/user/development/xpcc'
 
 envGlobal = Environment(toolpath=[rootpath + '/conf/scons/site_tools'],
-                        tools=['compiler/arm_none_eabi_gcc', 'utils/buildpath', 'utils/buildformat', 'utils/buildsize'],
+                        tools=['compiler/arm_none_eabi_gcc', 'settings/buildpath', 'utils/buildformat', 'utils/buildsize'],
                         OS='freertos',
                         BOARD='stm32f4discovery',
                         CCFLAGS_target=['-mcpu=cortex-m4',
