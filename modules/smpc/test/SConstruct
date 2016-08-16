@@ -18,7 +18,7 @@ Help(vars.GenerateHelpText(envGlobal))
 
 buildfolder = os.path.join(rootpath, 'build')
 if envGlobal['coverage']:
-    envGlobal.Tool('settings/hosted_gcc_coverage')
+    envGlobal.Tool('compiler/hosted_gcc_coverage')
     envGlobal.Tool('settings/buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/coverage'))
 else:
