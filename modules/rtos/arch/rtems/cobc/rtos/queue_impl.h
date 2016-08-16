@@ -57,7 +57,7 @@ cobc::rtos::Queue<T>::receive(T& data, cobc::time::Duration timeout)
 {
     size_t size;
     rtems_option options = RTEMS_WAIT;
-    rtems_interval interval = rtems::getInterval(timeout)
+    rtems_interval interval = rtems::getInterval(timeout);
     rtems_status_code result = rtems_message_queue_receive(id, &data, &size, options, interval);
     bool success = (result == RTEMS_SUCCESSFUL);
 
