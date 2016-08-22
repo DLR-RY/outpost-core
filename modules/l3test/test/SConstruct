@@ -10,7 +10,7 @@ module = 'l3test'
 rootpath = '../../../'
 envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
                         buildroot=[rootpath + 'build/'],
-                        tools=['utils/buildformat'],
+                        tools=['utils_buildformat'],
                         variables=vars,
                         BASEPATH=os.path.abspath('.'),
                         ENV=os.environ)
@@ -18,12 +18,12 @@ Help(vars.GenerateHelpText(envGlobal))
 
 buildfolder = os.path.join(rootpath, 'build')
 if envGlobal['coverage']:
-    envGlobal.Tool('compiler/hosted_gcc_coverage')
-    envGlobal.Tool('settings/buildpath')
+    envGlobal.Tool('compiler_hosted_gcc_coverage')
+    envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/coverage'))
 else:
-    envGlobal.Tool('compiler/hosted_llvm')
-    envGlobal.Tool('settings/buildpath')
+    envGlobal.Tool('compiler_hosted_llvm')
+    envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
 
 envGlobal.Append(CPPPATH=[
