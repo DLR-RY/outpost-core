@@ -184,6 +184,26 @@ public:
         mBuffer += N;
     }
 
+    template <typename T>
+    inline void
+    storeBuffer(cobc::BoundedArray<const T> array)
+    {
+        for (size_t i = 0; i < array.getNumberOfElements(); ++i)
+        {
+            store<T>(array[i]);
+        }
+    }
+
+    template <typename T>
+    inline void
+    storeBuffer(cobc::BoundedArray<T> array)
+    {
+        for (size_t i = 0; i < array.getNumberOfElements(); ++i)
+        {
+            store<T>(array[i]);
+        }
+    }
+
     // explicit template instantiations are provided in serialize_impl.h
     template<typename T>
     inline void

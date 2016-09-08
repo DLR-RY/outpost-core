@@ -26,6 +26,13 @@ namespace cobc
 // Store
 template <>
 inline void
+Serialize::store<char>(char data)
+{
+    store8(data);
+}
+
+template <>
+inline void
 Serialize::store<uint8_t>(uint8_t data)
 {
     store8(data);
