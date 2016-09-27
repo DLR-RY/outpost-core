@@ -22,6 +22,8 @@
 
 #include <cobc/utils/callable.h>
 
+#include "mutex.h"
+
 namespace cobc
 {
 namespace rtos
@@ -194,6 +196,9 @@ private:
     Callable* const mObject;
     Function const mFunction;
 
+    Mutex mMutex;
+    bool mRunning;
+
     rtems_id mTid;
 };
 
@@ -206,6 +211,7 @@ template <typename T>
 cobc::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
     mObject(reinterpret_cast<Callable *>(object)),
     mFunction(reinterpret_cast<Function>(function)),
+    mRunning(false),
     mTid()
 {
     this->createTimer(name);

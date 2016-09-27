@@ -17,6 +17,7 @@
 #include "timer.h"
 
 #include <cobc/rtos/failure_handler.h>
+#include <cobc/rtos/mutex_guard.h>
 
 // ----------------------------------------------------------------------------
 cobc::rtos::Timer::~Timer()
@@ -28,6 +29,8 @@ cobc::rtos::Timer::~Timer()
 void
 cobc::rtos::Timer::start(time::Duration duration)
 {
+    MutexGuard lock(mMutex);
+    mRunning = true;
     rtems_timer_server_fire_after(mTid,
                                   duration.microseconds() / rtems_configuration_get_microseconds_per_tick(),
                                   &Timer::invokeTimer,
@@ -37,28 +40,24 @@ cobc::rtos::Timer::start(time::Duration duration)
 void
 cobc::rtos::Timer::reset()
 {
-    rtems_timer_reset(mTid);
+    MutexGuard lock(mMutex);
+    rtems_status_code result = rtems_timer_reset(mTid);
+    mRunning = (result == RTEMS_SUCCESSFUL);
 }
 
 void
 cobc::rtos::Timer::cancel()
 {
+    MutexGuard lock(mMutex);
+    mRunning = false;
     rtems_timer_cancel(mTid);
 }
 
 bool
 cobc::rtos::Timer::isRunning()
 {
-    rtems_timer_information info;
-    rtems_status_code result = rtems_timer_get_information(mTid, &info);
-
-    if (result != RTEMS_SUCCESSFUL)
-    {
-        FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
-    }
-
-    bool running = (info.the_class != TIMER_DORMANT);
-    return running;
+    MutexGuard lock(mMutex);
+    return mRunning;
 }
 
 // ----------------------------------------------------------------------------
@@ -108,5 +107,9 @@ cobc::rtos::Timer::invokeTimer(rtems_id id, void* parameter)
     (void) id;    // not used here
 
     Timer* timer = reinterpret_cast<Timer *>(parameter);
+    {
+        MutexGuard lock(timer->mMutex);
+        timer->mRunning = false;
+    }
     (timer->mObject->*(timer->mFunction))(timer);
 }
