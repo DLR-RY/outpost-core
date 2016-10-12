@@ -71,20 +71,14 @@ public:
         mBuffer = mBegin;
     }
 
+    // explicit template instantiations are provided in serialize_impl.h
+    template<typename T>
     inline void
-    store8(const uint8_t data)
-    {
-        mBuffer[0] = data;
-        mBuffer += 1;
-    }
+    store(T data);
 
+    template<typename T>
     inline void
-    store16(const uint16_t data)
-    {
-        mBuffer[1] = static_cast<uint8_t>(data >> 8);
-        mBuffer[0] = static_cast<uint8_t>(data >> 0);
-        mBuffer += 2;
-    }
+    storeObject(const T& data);
 
     inline void
     store24(const uint32_t data)
@@ -93,30 +87,6 @@ public:
         mBuffer[1] = static_cast<uint8_t>(data >> 8);
         mBuffer[0] = static_cast<uint8_t>(data >> 0);
         mBuffer += 3;
-    }
-
-    inline void
-    store32(const uint32_t data)
-    {
-        mBuffer[3] = static_cast<uint8_t>(data >> 24);
-        mBuffer[2] = static_cast<uint8_t>(data >> 16);
-        mBuffer[1] = static_cast<uint8_t>(data >> 8);
-        mBuffer[0] = static_cast<uint8_t>(data >> 0);
-        mBuffer += 4;
-    }
-
-    inline void
-    store64(const uint64_t data)
-    {
-        mBuffer[7] = static_cast<uint8_t>(data >> 56);
-        mBuffer[6] = static_cast<uint8_t>(data >> 48);
-        mBuffer[5] = static_cast<uint8_t>(data >> 40);
-        mBuffer[4] = static_cast<uint8_t>(data >> 32);
-        mBuffer[3] = static_cast<uint8_t>(data >> 24);
-        mBuffer[2] = static_cast<uint8_t>(data >> 16);
-        mBuffer[1] = static_cast<uint8_t>(data >> 8);
-        mBuffer[0] = static_cast<uint8_t>(data >> 0);
-        mBuffer += 8;
     }
 
     /**
@@ -135,42 +105,11 @@ public:
     }
 
     inline void
-    storeFloat(const float data)
-    {
-        const uint32_t* ptr = reinterpret_cast<const uint32_t *>(&data);
-        store32(*ptr);
-    }
-
-    inline void
-    storeDouble(const double data)
-    {
-        const uint64_t* ptr = reinterpret_cast<const uint64_t *>(&data);
-        store64(*ptr);
-    }
-
-    inline void
     storeBuffer(const uint8_t* buffer, const size_t length)
     {
         memcpy(mBuffer, buffer, length);
         mBuffer += length;
     }
-
-    inline void
-    storeBuffer(cobc::BoundedArray<const uint8_t> array)
-    {
-        size_t length = array.getNumberOfElements();
-        memcpy(mBuffer, &array[0], length);
-        mBuffer += length;
-    }
-
-    // explicit template instantiations are provided in serialize_impl.h
-    template<typename T>
-    inline void
-    store(T data);
-
-    template<typename T>
-    inline void
-    storeObject(const T& data);
 
     /**
      * Skip forward the given number of bytes.
@@ -233,7 +172,7 @@ private:
 /**
  * Deserialize
  *
- * The read8(), read16() and read32() functions read the number of bits
+ * The read<uint8_t>(), read<uint16_t>() and read<uint32_t>() functions read the number of bits
  * from the current location and move the data pointer forward
  * correspondingly. The peek8(), peek16() and peek32() read a value
  * n bytes in front of the current location and *don't* move the
@@ -280,123 +219,14 @@ public:
         mBuffer = mBegin;
     }
 
-    inline uint8_t
-    read8()
-    {
-        uint8_t value;
-        value = mBuffer[0];
-        mBuffer += 1;
 
-        return value;
-    }
+    template<typename T>
+    inline T
+    peek(const size_t n) const;
 
-    inline uint8_t
-    peek8(const size_t n) const
-    {
-        return mBuffer[n];
-    }
-
-    inline uint16_t
-    read16()
-    {
-        uint16_t value = 0;
-        value |= static_cast<uint16_t>(mBuffer[1]) << 8;
-        value |= static_cast<uint16_t>(mBuffer[0]) << 0;
-        mBuffer += 2;
-
-        return value;
-    }
-
-    inline uint16_t
-    peek16(const size_t n) const
-    {
-        uint16_t value = 0;
-        value |= static_cast<uint16_t>(mBuffer[n + 1]) << 8;
-        value |= static_cast<uint16_t>(mBuffer[n + 0]) << 0;
-
-        return value;
-    }
-
-    inline uint32_t
-    read24()
-    {
-        uint32_t value = 0;
-        value |= static_cast<uint32_t>(mBuffer[2]) << 16;
-        value |= static_cast<uint32_t>(mBuffer[1]) << 8;
-        value |= static_cast<uint32_t>(mBuffer[0]) << 0;
-        mBuffer += 3;
-
-        return value;
-    }
-
-    inline uint32_t
-    peek24(const size_t n) const
-    {
-        uint32_t value = 0;
-        value |= static_cast<uint32_t>(mBuffer[n + 2]) << 16;
-        value |= static_cast<uint32_t>(mBuffer[n + 1]) << 8;
-        value |= static_cast<uint32_t>(mBuffer[n + 0]) << 0;
-
-        return value;
-    }
-
-    inline uint32_t
-    read32()
-    {
-        uint32_t value = 0;
-        value |= static_cast<uint32_t>(mBuffer[3]) << 24;
-        value |= static_cast<uint32_t>(mBuffer[2]) << 16;
-        value |= static_cast<uint32_t>(mBuffer[1]) << 8;
-        value |= static_cast<uint32_t>(mBuffer[0]) << 0;
-        mBuffer += 4;
-
-        return value;
-    }
-
-    inline uint32_t
-    peek32(const size_t n) const
-    {
-        uint32_t value = 0;
-        value |= static_cast<uint32_t>(mBuffer[n + 3]) << 24;
-        value |= static_cast<uint32_t>(mBuffer[n + 2]) << 16;
-        value |= static_cast<uint32_t>(mBuffer[n + 1]) << 8;
-        value |= static_cast<uint32_t>(mBuffer[n + 0]) << 0;
-
-        return value;
-    }
-
-    inline uint64_t
-    read64()
-    {
-        uint64_t value = 0;
-        value |= static_cast<uint64_t>(mBuffer[7]) << 56;
-        value |= static_cast<uint64_t>(mBuffer[6]) << 48;
-        value |= static_cast<uint64_t>(mBuffer[5]) << 40;
-        value |= static_cast<uint64_t>(mBuffer[4]) << 32;
-        value |= static_cast<uint64_t>(mBuffer[3]) << 24;
-        value |= static_cast<uint64_t>(mBuffer[2]) << 16;
-        value |= static_cast<uint64_t>(mBuffer[1]) << 8;
-        value |= static_cast<uint64_t>(mBuffer[0]) << 0;
-        mBuffer += 8;
-
-        return value;
-    }
-
-    inline uint64_t
-    peek64(const size_t n) const
-    {
-        uint64_t value = 0;
-        value |= static_cast<uint64_t>(mBuffer[n + 7]) << 56;
-        value |= static_cast<uint64_t>(mBuffer[n + 6]) << 48;
-        value |= static_cast<uint64_t>(mBuffer[n + 5]) << 40;
-        value |= static_cast<uint64_t>(mBuffer[n + 4]) << 32;
-        value |= static_cast<uint64_t>(mBuffer[n + 3]) << 24;
-        value |= static_cast<uint64_t>(mBuffer[n + 2]) << 16;
-        value |= static_cast<uint64_t>(mBuffer[n + 1]) << 8;
-        value |= static_cast<uint64_t>(mBuffer[n + 0]) << 0;
-
-        return value;
-    }
+    template<typename T>
+    inline T
+    read();
 
     /**
      * Read two 12 bit values from a three byte array.
@@ -425,44 +255,27 @@ public:
         second |= static_cast<uint16_t>(mBuffer[n + 2]) << 4;
     }
 
-    inline float
-    readFloat(void)
+    inline uint32_t
+    read24()
     {
-        float f;
-        const uint32_t value = read32();
+        uint32_t value = 0;
+        value |= static_cast<uint32_t>(mBuffer[2]) << 16;
+        value |= static_cast<uint32_t>(mBuffer[1]) << 8;
+        value |= static_cast<uint32_t>(mBuffer[0]) << 0;
+        mBuffer += 3;
 
-        memcpy(&f, &value, sizeof(f));
-        return f;
+        return value;
     }
 
-    inline float
-    peekFloat(const size_t n) const
+    inline uint32_t
+    peek24(const size_t n) const
     {
-        float f;
-        const uint32_t value = peek32(n);
+        uint32_t value = 0;
+        value |= static_cast<uint32_t>(mBuffer[n + 2]) << 16;
+        value |= static_cast<uint32_t>(mBuffer[n + 1]) << 8;
+        value |= static_cast<uint32_t>(mBuffer[n + 0]) << 0;
 
-        memcpy(&f, &value, sizeof(f));
-        return f;
-    }
-
-    inline double
-    readDouble(void)
-    {
-        double d;
-        const uint64_t value = read64();
-
-        memcpy(&d, &value, sizeof(d));
-        return d;
-    }
-
-    inline double
-    peekDouble(const size_t n) const
-    {
-        double d;
-        const uint64_t value = peek64(n);
-
-        memcpy(&d, &value, sizeof(d));
-        return d;
+        return value;
     }
 
     inline void
@@ -477,14 +290,6 @@ public:
     {
         memcpy(buffer, mBuffer, length);
     }
-
-    template<typename T>
-    inline T
-    peek(const size_t n) const;
-
-    template<typename T>
-    inline T
-    read();
 
     /**
      * Skip forward the given number of bytes.

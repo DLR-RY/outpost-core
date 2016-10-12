@@ -29,11 +29,11 @@ TEST(SerialzeTest, store)
 
     Serialize payload(data);
 
-    payload.store8(0xab);
+    payload.store<uint8_t>(0xab);
 
     EXPECT_EQ(0xab, data[0]);
 
-    payload.store16(0xef12);
+    payload.store<uint16_t>(0xef12);
 
     EXPECT_EQ(0xef, data[1]);
     EXPECT_EQ(0x12, data[2]);
@@ -44,7 +44,7 @@ TEST(SerialzeTest, store)
     EXPECT_EQ(0xc0, data[4]);
     EXPECT_EQ(0x1a, data[5]);
 
-    payload.store32(0x61a9f51e);
+    payload.store<uint32_t>(0x61a9f51e);
 
     EXPECT_EQ(0x61, data[6]);
     EXPECT_EQ(0xa9, data[7]);
@@ -179,7 +179,7 @@ TEST(SerializeTest, storeFloat)
 
     Serialize payload(data);
 
-    payload.storeFloat(f);
+    payload.store<float>(f);
 
     EXPECT_EQ(0x40, data[0]);
     EXPECT_EQ(0x49, data[1]);
@@ -197,7 +197,7 @@ TEST(SerializeTest, storeDouble)
 
     Serialize payload(data);
 
-    payload.storeDouble(d);
+    payload.store<double>(d);
 
     EXPECT_EQ(0x40, data[0]);
     EXPECT_EQ(0x09, data[1]);

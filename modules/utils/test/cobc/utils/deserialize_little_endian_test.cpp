@@ -29,28 +29,28 @@ TEST(DeserialzeLittleEndianTest, getPosition)
 
     EXPECT_EQ(0, payload.getPosition());
 
-    payload.read8();
+    payload.read<uint8_t>();
     EXPECT_EQ(1, payload.getPosition());
 
-    payload.read16();
+    payload.read<uint16_t>();
     EXPECT_EQ(3, payload.getPosition());
 
-    payload.read8();
+    payload.read<uint8_t>();
     EXPECT_EQ(4, payload.getPosition());
 
-    payload.read32();
+    payload.read<uint32_t>();
     EXPECT_EQ(8, payload.getPosition());
 
-    payload.read8();
+    payload.read<uint8_t>();
     EXPECT_EQ(9, payload.getPosition());
 
-    payload.read32();
+    payload.read<uint32_t>();
     EXPECT_EQ(13, payload.getPosition());
 
-    payload.readFloat();
+    payload.read<float>();
     EXPECT_EQ(17, payload.getPosition());
 
-    payload.readDouble();
+    payload.read<double>();
     EXPECT_EQ(25, payload.getPosition());
 }
 
@@ -94,11 +94,11 @@ TEST(DeserialzeLittleEndianTest, shouldReadData)
 
     DeserializeLittleEndian payload(data);
 
-    uint8_t d8 = payload.read8();
+    uint8_t d8 = payload.read<uint8_t>();
     EXPECT_EQ(0xAB, d8);
     EXPECT_EQ(1, payload.getPosition());
 
-    uint16_t d16 = payload.read16();
+    uint16_t d16 = payload.read<uint16_t>();
     EXPECT_EQ(0x12EF, d16);
     EXPECT_EQ(3, payload.getPosition());
 
@@ -106,11 +106,11 @@ TEST(DeserialzeLittleEndianTest, shouldReadData)
     EXPECT_EQ(0x1AC0A6U, d24);
     EXPECT_EQ(6, payload.getPosition());
 
-    uint32_t d32 = payload.read32();
+    uint32_t d32 = payload.read<uint32_t>();
     EXPECT_EQ(0x1EF5A961UL, d32);
     EXPECT_EQ(10, payload.getPosition());
 
-    uint64_t d64 = payload.read64();
+    uint64_t d64 = payload.read<uint64_t>();
     EXPECT_EQ(0xC2327D00B0A25FAEULL, d64);
     EXPECT_EQ(18, payload.getPosition());
 }
@@ -159,7 +159,7 @@ TEST(DeserialzeLittleEndianTest, peekFloat)
 
     DeserializeLittleEndian payload(data);
 
-    float f = payload.peekFloat(0);
+    float f = payload.peek<float>(0);
 
     EXPECT_FLOAT_EQ(3.14159f, f);
     EXPECT_EQ(0, payload.getPosition());
@@ -173,38 +173,10 @@ TEST(DeserialzeLittleEndianTest, peekDouble)
 
     DeserializeLittleEndian payload(data);
 
-    double d = payload.peekDouble(0);
+    double d = payload.peek<double>(0);
 
     EXPECT_DOUBLE_EQ(3.1415926535897931, d);
     EXPECT_EQ(0, payload.getPosition());
-}
-
-TEST(DeserialzeLittleEndianTest, shouldPeek)
-{
-    uint8_t data[18] = {
-        0xAB,
-        0xEF, 0x12,
-        0xA6, 0xC0, 0x1A,
-        0x61, 0xA9, 0xF5, 0x1E,
-        0xAE, 0x5F, 0xA2, 0xB0, 0x00, 0x7D, 0x32, 0xC2
-    };
-
-    DeserializeLittleEndian payload(data);
-
-    uint8_t d8 = payload.peek8(0);
-    EXPECT_EQ(0xAB, d8);
-
-    uint16_t d16 = payload.peek16(1);
-    EXPECT_EQ(0x12EF, d16);
-
-    uint32_t d24 = payload.peek24(3);
-    EXPECT_EQ(0x1AC0A6U, d24);
-
-    uint32_t d32 = payload.peek32(6);
-    EXPECT_EQ(0x1EF5A961UL, d32);
-
-    uint64_t d64 = payload.peek64(10);
-    EXPECT_EQ(0xC2327D00B0A25FAEULL, d64);
 }
 
 TEST(DeserialzeLittleEndianTest, readFloat)
@@ -215,7 +187,7 @@ TEST(DeserialzeLittleEndianTest, readFloat)
 
     DeserializeLittleEndian payload(data);
 
-    float f = payload.readFloat();
+    float f = payload.read<float>();
 
     EXPECT_FLOAT_EQ(3.14159f, f);
     EXPECT_EQ(4, payload.getPosition());
@@ -229,7 +201,7 @@ TEST(DeserialzeLittleEndianTest, readDouble)
 
     DeserializeLittleEndian payload(data);
 
-    double d = payload.readDouble();
+    double d = payload.read<double>();
 
     EXPECT_DOUBLE_EQ(3.1415926535897931, d);
     EXPECT_EQ(8, payload.getPosition());
@@ -240,6 +212,7 @@ TEST(DeserialzeLittleEndianTest, peekTemplate)
     uint8_t data[18] = {
         0xAB,
         0xEF, 0x12,
+        0xA6, 0xC0, 0x1A,
         0x61, 0xA9, 0xF5, 0x1E,
         0xAE, 0x5F, 0xA2, 0xB0, 0x00, 0x7D, 0x32, 0xC2
     };
@@ -252,10 +225,13 @@ TEST(DeserialzeLittleEndianTest, peekTemplate)
     uint16_t d16 = payload.peek<uint16_t>(1);
     EXPECT_EQ(0x12EF, d16);
 
-    uint32_t d32 = payload.peek<uint32_t>(3);
+    uint32_t d24 = payload.peek24(3);
+    EXPECT_EQ(0x1AC0A6U, d24);
+
+    uint32_t d32 = payload.peek<uint32_t>(6);
     EXPECT_EQ(0x1EF5A961UL, d32);
 
-    uint64_t d64 = payload.peek<uint64_t>(7);
+    uint64_t d64 = payload.peek<uint64_t>(10);
     EXPECT_EQ(0xC2327D00B0A25FAEULL, d64);
 }
 

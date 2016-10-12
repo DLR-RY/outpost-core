@@ -29,11 +29,11 @@ TEST(SerialzeLittleEndianTest, store)
 
     SerializeLittleEndian payload(data);
 
-    payload.store8(0xab);
+    payload.store<uint8_t>(0xab);
 
     EXPECT_EQ(0xab, data[0]);
 
-    payload.store16(0xef12);
+    payload.store<uint16_t>(0xef12);
 
     EXPECT_EQ(0x12, data[1]);
     EXPECT_EQ(0xef, data[2]);
@@ -44,7 +44,7 @@ TEST(SerialzeLittleEndianTest, store)
     EXPECT_EQ(0xc0, data[4]);
     EXPECT_EQ(0xa6, data[5]);
 
-    payload.store32(0x61a9f51e);
+    payload.store<uint32_t>(0x61a9f51e);
 
     EXPECT_EQ(0x1e, data[6]);
     EXPECT_EQ(0xf5, data[7]);
@@ -179,7 +179,7 @@ TEST(SerializLittleEndianeTest, storeFloat)
 
     SerializeLittleEndian payload(data);
 
-    payload.storeFloat(f);
+    payload.store<float>(f);
 
     EXPECT_EQ(0xD0, data[0]);
     EXPECT_EQ(0x0F, data[1]);
@@ -197,7 +197,7 @@ TEST(SerializeLittleEndianTest, storeDouble)
 
     SerializeLittleEndian payload(data);
 
-    payload.storeDouble(d);
+    payload.store<double>(d);
 
     EXPECT_EQ(0x18, data[0]);
     EXPECT_EQ(0x2D, data[1]);
