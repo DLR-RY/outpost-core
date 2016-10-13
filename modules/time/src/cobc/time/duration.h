@@ -258,6 +258,12 @@ public:
         return mTicks != rhs.mTicks;
     }
 
+    inline Duration
+    abs() const
+    {
+        return mTicks < 0 ? Duration(-mTicks) : Duration(mTicks);
+    }
+
 protected:
     explicit inline
     Duration(int64_t numberOfTicks) :
