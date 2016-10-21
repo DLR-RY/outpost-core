@@ -343,6 +343,14 @@ Deserialize::read<double>()
     return d;
 }
 
+inline void
+Deserialize::read(cobc::BoundedArray<uint8_t> array)
+{
+    size_t length = array.getNumberOfElements();
+    memcpy(&array[0], mBuffer, length);
+    mBuffer += length;
+}
+
 }
 
 #endif // COBC_UTILS_SERIALIZE_IMPL_H

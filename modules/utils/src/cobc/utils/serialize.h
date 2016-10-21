@@ -272,6 +272,9 @@ public:
     inline T
     read();
 
+    inline void
+    read(cobc::BoundedArray<uint8_t> array);
+
     inline uint32_t
     read24()
     {
