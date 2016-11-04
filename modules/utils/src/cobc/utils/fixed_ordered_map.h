@@ -28,6 +28,17 @@ namespace cobc
 /**
  * Performs a binary search over the ID of all stored functions.
  *
+ * The `Entry` type need to implement the following interface:
+ * \code
+ * class Interface
+ * {
+ * public:
+ *     Key mKey;
+ * };
+ * \endcode
+ *
+ * The `mKey` member is used to find a specific entry in the list of entries.
+ *
  * \author  Fabian Greif
  */
 template <typename Entry, typename Key>
@@ -61,7 +72,6 @@ public:
     FixedOrderedMap(Entry* entries,
                     size_t numberOfEntries);
 
-
     explicit inline
     FixedOrderedMap(BoundedArray<Entry> array) :
         mEntries(&array[0]),
@@ -93,6 +103,15 @@ public:
      */
     Entry*
     getEntry(Key key);
+
+    /**
+     * Convert to a bounded array.
+     */
+    inline BoundedArray<Entry>
+    asArray() const
+    {
+        return cobc::BoundedArray<Entry>(mEntries, mNumberOfEntries);
+    }
 
 private:
     Entry* const mEntries;
