@@ -162,14 +162,14 @@ codingstyle-jsf-annotate:
 	@tar xfz $(POLYSPACE)/profiles/$(MODULE)/results/jsf/polyspace_results.tgz -C $(POLYSPACE)/profiles/$(MODULE)/results/jsf
 	@$(POLYSPACE)/polyspace_jsf_annotate.py -d "src/" \
 	                                        -c "$(POLYSPACE)/profiles/$(MODULE)/jsf-analysis/options.cfg" \
-	                                        -r "$(POLYSPACE)/profiles/$(MODULE)/results/jsf/Polyspace-Doc/log_Developer/root.html" \
+	                                        -r "$(POLYSPACE)/profiles/$(MODULE)/results/jsf/Polyspace-Doc/$(MODULE)_Developer/root.html" \
 	                                        $(POLYSPACE_RULES) \
 	                                        --annotate 
 
 codingstyle-jsf-remove-annotations:
 	@$(POLYSPACE)/polyspace_jsf_annotate.py -d "src/" \
 	                                        -c "$(POLYSPACE)/profiles/$(MODULE)/jsf-analysis/options.cfg" \
-	                                        -r "$(POLYSPACE)/profiles/$(MODULE)/results/jsf/Polyspace-Doc/log_Developer/root.html"
+	                                        -r "$(POLYSPACE)/profiles/$(MODULE)/results/jsf/Polyspace-Doc/$(MODULE)_Developer/root.html"
 
 doxygen:
 	@doxygen doc/doxygen/doxyfile
