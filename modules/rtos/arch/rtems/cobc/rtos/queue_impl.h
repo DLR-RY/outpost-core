@@ -27,7 +27,7 @@ cobc::rtos::Queue<T>::Queue(size_t numberOfItems) :
     id()
 {
     rtems_attribute attributes = RTEMS_FIFO | RTEMS_LOCAL;
-    rtems_status_code result = rtems_message_queue_create("RTQ", numberOfItems, sizeof(T), attributes, &id);
+    rtems_status_code result = rtems_message_queue_create(rtems_build_name('R', 'T', 'Q', '0'), numberOfItems, sizeof(T), attributes, &id);
 
     if (result != RTEMS_SUCCESSFUL)
     {
