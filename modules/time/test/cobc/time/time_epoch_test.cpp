@@ -119,3 +119,13 @@ TEST(TestEpochTest, shouldSetOffsetBetweenScetAndGps)
     EXPECT_EQ(scet, gps.convertTo<SpacecraftElapsedTime>());
     EXPECT_EQ(gps, scet.convertTo<GpsTime>());
 }
+
+// See next leap second table in time_epoch.cpp
+TEST(TestEpochTest, shouldCalculateNextLeapSecond)
+{
+    //2016-12-31T23:59:60Z
+    size_t timeCode = (DateUtils::getDay(Date { 2016, 12, 31, 23, 59, 60 })
+                     - DateUtils::getDay(Date { 1958, 1,  1, 0, 0, 0 }) + 1) * 86400
+                     + 36;
+    EXPECT_EQ(1861920036U, timeCode);
+}

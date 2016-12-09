@@ -45,6 +45,7 @@ cobc::time::setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gps)
  */
 static const int64_t leapSecondArray[] =
 {
+    1861920036, // 36: 2016-12-31T23:59:60Z
     1814400035, // 35: 2015-06-30T23:59:60Z
     1719792034, // 34: 2012-06-30T23:59:60Z
     1609459233, // 33: 2008-12-31T23:59:60Z
