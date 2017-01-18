@@ -37,11 +37,11 @@ cobc::smpc::TopicBase::publishTypeUnsafe(void* message)
 {
     rtos::MutexGuard lock(mMutex);
 
-    for (Subscription* topic = mSubscriptions;
-            topic != 0;
-            topic = topic->mNextTopicSubscription)
+    for (Subscription* subscription = mSubscriptions;
+            subscription != 0;
+            subscription = subscription->mNextTopicSubscription)
     {
-        topic->notify(message);
+        subscription->notify(message);
     }
 }
 
