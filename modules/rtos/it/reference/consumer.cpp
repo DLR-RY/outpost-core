@@ -14,7 +14,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "../../it/reference/consumer.h"
+#include "../reference/consumer.h"
 
 #include <cobc/rtos/mutex_guard.h>
 

@@ -14,7 +14,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "../../it/reference/producer.h"
+#include "../reference/producer.h"
 
 Producer::Producer(cobc::rtos::Queue<uint32_t>& queue) :
     Thread(20, defaultStackSize, "Consumer"),

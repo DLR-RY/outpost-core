@@ -17,8 +17,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include <../../it/reference/consumer.h>
-#include <../../it/reference/producer.h>
+#include <../reference/consumer.h>
+#include <../reference/producer.h>
 
 cobc::rtos::Queue<uint32_t> queue(10);
 
