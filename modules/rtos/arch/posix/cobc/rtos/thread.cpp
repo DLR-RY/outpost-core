@@ -16,6 +16,8 @@
 
 #include "thread.h"
 
+#include <iostream>
+
 // for the access to gettid
 #include <sys/syscall.h>
 #include <unistd.h>
@@ -47,12 +49,17 @@ cobc::rtos::Thread::wrapper(void* object)
 // ----------------------------------------------------------------------------
 cobc::rtos::Thread::Thread(uint8_t,
                            size_t,
-                           const char *,
+                           const char* name,
                            FloatingPointSupport /*floatingPointSupport*/) :
     mIsRunning(false),
     mPthreadId(),
-    mTid()
+    mTid(),
+    mName()
 {
+    if (name != 0)
+    {
+        mName = std::string(name);
+    }
 }
 
 cobc::rtos::Thread::~Thread()
@@ -96,6 +103,14 @@ cobc::rtos::Thread::start()
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::thread));
     }
 
+    if (!mName.empty())
+    {
+        int result = pthread_setname_np(mPthreadId, mName.c_str());
+        if (result != 0)
+        {
+            std::cerr << "Failed to set thread name: '" << mName << "': " << result << std::endl;
+        }
+    }
     pthread_attr_destroy(&attr);
 }
 

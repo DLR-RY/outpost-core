@@ -20,6 +20,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
 #include <pthread.h>
 
 #include <cobc/time/duration.h>
@@ -72,7 +73,7 @@ public:
      * \param stack
      *         Not used for POSIX.
      * \param name
-     *         Not used for POSIX.
+     *         Name of the thread. Must not be longer than 16 characters.
      *
      * \see    rtos::FailureHandler::fatal()
      */
@@ -163,6 +164,7 @@ private:
     bool mIsRunning;
     pthread_t mPthreadId;
     Identifier mTid;
+    std::string mName;
 };
 
 }
