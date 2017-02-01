@@ -17,9 +17,10 @@
 #include "mutex.h"
 
 #include <time.h>
+#include <cobc/rtos/failure_handler.h>
 
 #include "internal/time.h"
-#include <cobc/rtos/failure_handler.h>
+
 using namespace cobc::rtos;
 
 Mutex::Mutex()
@@ -29,9 +30,11 @@ Mutex::Mutex()
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::mutex));
     }
+
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&mutex, &attr);
-    if(pthread_mutexattr_destroy(&attr) != 0)
+
+    if (pthread_mutexattr_destroy(&attr) != 0)
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::mutex));
     }
@@ -40,6 +43,6 @@ Mutex::Mutex()
 bool
 Mutex::acquire(cobc::time::Duration timeout)
 {
-    timespec time = toRelativeTime(timeout);
+    timespec time = toAbsoluteTime(timeout);
     return (pthread_mutex_timedlock(&mutex, &time) == 0);
 }

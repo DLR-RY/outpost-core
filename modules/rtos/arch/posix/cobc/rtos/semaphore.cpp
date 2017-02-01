@@ -39,7 +39,7 @@ cobc::rtos::Semaphore::~Semaphore()
 bool
 cobc::rtos::Semaphore::acquire(time::Duration timeout)
 {
-    timespec t = toRelativeTime(timeout);
+    timespec t = toAbsoluteTime(timeout);
     return (sem_timedwait(&sid, &t) == 0);
 }
 

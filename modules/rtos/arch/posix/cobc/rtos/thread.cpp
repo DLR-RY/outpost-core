@@ -111,6 +111,7 @@ cobc::rtos::Thread::start()
             std::cerr << "Failed to set thread name: '" << mName << "': " << result << std::endl;
         }
     }
+
     pthread_attr_destroy(&attr);
 }
 
@@ -139,7 +140,7 @@ cobc::rtos::Thread::yield()
 void
 cobc::rtos::Thread::sleep(::cobc::time::Duration timeout)
 {
-    timespec req = toRelativeTime(timeout);
+    const timespec req = toRelativeTime(timeout);
     timespec rem;
 
     nanosleep(&req, &rem);
