@@ -5,33 +5,32 @@ import os
 Import('envGlobal')
 
 if envGlobal['ARCHITECTURE'] == 'hosted':
-	#gmock = 'gmock-1.6.0'
 	gmock = 'gmock-1.7.0'
 	# googletest should only be used when compiling for an hosted environment
 	envGlobal.Append(CPPPATH=[
 		os.path.abspath('%s/fused-src' % gmock),
-	    os.path.join( '../../pus/default'),
+	    os.path.join('../../pus/default'),
         os.path.join('../../spp/default'),
 	])
-	
+
 	env = envGlobal.Clone()
-	
+
 	env['CXXFLAGS_language'] = ['-std=c++98']
-	
+
 	env.RemoveFromList('CCFLAGS_warning', [
 		'-Wconversion',
 		'-Wundef',
 		'-Wmissing-declarations'])
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
-	
+
 	files = env.Glob('%s/fused-src/*.cc' % gmock)
 	objects = []
 	for file in files:
 		objects.append(env.Object(file))
 	envGlobal.Append(objects={'gmock': objects})
-	
+
 	library = env.StaticLibrary('gmock-local', objects)
-	
+
 	envGlobal.Install('$BUILDPATH/lib', library)
 	envGlobal.Append(LIBS=['gmock-local', 'pthread'])
-	
+
