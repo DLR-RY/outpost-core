@@ -34,7 +34,6 @@ namespace rtos
 class Mutex
 {
 public:
-
     Mutex();
 
     inline
