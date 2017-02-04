@@ -4,22 +4,22 @@ import os
 
 Import('envGlobal')
 
-envGlobal.Append(CPPPATH=[os.path.abspath('lua-5.2.3/src')])
+envGlobal.Append(CPPPATH=[os.path.abspath('lua-5.3.4/src')])
 envGlobal.Append(LIBS=['dl'])
 
 env = envGlobal.Clone()
 
-files  = env.Glob('lua-5.2.3/src/*.c')
-toRemove = []
+files  = env.Glob('lua-5.3.4/src/*.c')
+to_remove = []
 for file in files:
     filename = str(file)
     if filename.endswith('lua.c') or filename.endswith('luac.c'):
-        toRemove.append(file)
+        to_remove.append(file)
 
-for file in toRemove:
+for file in to_remove:
     files.remove(file)
 
-# Remove warnings triggered by Lua 5.2.3
+# Remove warnings triggered by Lua
 env.RemoveFromList('CCFLAGS_warning', ['-Wcast-align', '-Wcast-qual'])
 env.RemoveFromList('CFLAGS_language', '-pedantic')
 

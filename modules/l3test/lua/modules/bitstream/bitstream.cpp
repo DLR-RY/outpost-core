@@ -70,7 +70,7 @@ l_bitstream_new(lua_State* L)
     int type = lua_type(L, 1);
     if (type == LUA_TNUMBER)
     {
-        int n = luaL_checkint(L, 1);
+        int n = luaL_checkinteger(L, 1);
         luaL_argcheck(L, n >= 0, 1, "invalid size");
 
         size_t nbytes = numberOfBytesForCompleteObject(n);
@@ -146,7 +146,7 @@ getindex(lua_State* L, uint8_t* mask)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
-	int index = luaL_checkint(L, 2) - 1;
+	int index = luaL_checkinteger(L, 2) - 1;
 	luaL_argcheck(L, (0 <= index) && (index < (*b)->size), 2, "index out of range");
 
 	div_t d = div(index, 8);
@@ -211,10 +211,10 @@ check_and_get_field_arguments(lua_State* L, int& startPos, int& width)
 {
 	Bitstream** b = (Bitstream **) luaL_checkudata(L, 1, "dlr.bitstream");
 
-	startPos = luaL_checkint(L, 2) - 1;
+	startPos = luaL_checkinteger(L, 2) - 1;
 	luaL_argcheck(L, (startPos >= 0) && (startPos < (*b)->size), 2, "index out of range");
 
-	width = luaL_checkint(L, 3);
+	width = luaL_checkinteger(L, 3);
 	luaL_argcheck(L, (width >= 0) && (width <= 32), 3, "invalid word width, must be in range [0,32]");
 	luaL_argcheck(L, (startPos + width) <= (*b)->size, 3, "word access out of range");
 
@@ -254,7 +254,7 @@ l_bitstream_insert(lua_State* L)
 
 	Bitstream* a = check_and_get_field_arguments(L, startPos, width);
 
-	uint32_t value = luaL_checkint(L, 4);
+	uint32_t value = luaL_checkinteger(L, 4);
 	uint32_t mask = 1 << (width - 1);
 
 	for (uint_fast8_t i = 0; i < width; ++i)
