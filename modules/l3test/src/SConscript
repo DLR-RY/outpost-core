@@ -6,7 +6,7 @@ Import('envGlobal')
 
 envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 envGlobal.Append(CPPPATH=[os.path.abspath('../lua')])
-envGlobal.Append(CPPPATH=[os.path.abspath('../ext/lua-5.2.3/src')])
+envGlobal.Append(CPPPATH=[os.path.abspath('../ext/lua-5.3.4/src')])
 env = envGlobal.Clone()
 
 # Binding code between Lua (written in C) and C++ has to use some C casts
