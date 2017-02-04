@@ -2,11 +2,11 @@ local s = require('say')
 
 s:set_namespace('zh')
 
-s:set("assertion.same.positive", "希望对象应该相同. 实际值:\n%s\n希望值:\n%s")
-s:set("assertion.same.negative", "希望对象应该不相同. 实际值:\n%s\n不希望与:\n%s\n相同")
+s:set("assertion.same.positive", "希望对象应该相同.\n实际值:\n%s\n希望值:\n%s")
+s:set("assertion.same.negative", "希望对象应该不相同.\n实际值:\n%s\n不希望与:\n%s\n相同")
 
-s:set("assertion.equals.positive", "希望对象应该相等. 实际值:\n%s\n希望值:\n%s")
-s:set("assertion.equals.negative", "希望对象应该不相等. 实际值:\n%s\n不希望等于:\n%s")
+s:set("assertion.equals.positive", "希望对象应该相等.\n实际值:\n%s\n希望值:\n%s")
+s:set("assertion.equals.negative", "希望对象应该不相等.\n实际值:\n%s\n不希望等于:\n%s")
 
 s:set("assertion.unique.positive", "希望对象是唯一的:\n%s")
 s:set("assertion.unique.negative", "希望对象不是唯一的:\n%s")
@@ -28,4 +28,4 @@ s:set("assertion.called_with.negative", "希望有参数的调用函数")
 
 -- errors
 s:set("assertion.internal.argtolittle", "函数'%s'需要最少%s个参数, 实际有%s个参数\n")
-s:set("assertion.internal.badargtype", "函数'%s'需要一个%s作为参数, 实际为: %s\n")
+s:set("assertion.internal.badargtype", "bad argument #%s: 函数'%s'需要一个%s作为参数, 实际为: %s\n")

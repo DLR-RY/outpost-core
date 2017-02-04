@@ -1,3 +1,5 @@
+local unpack = table.unpack or unpack
+
 local registry = { }
 local current_namespace
 local fallback_namespace
@@ -43,7 +45,7 @@ local __meta = {
       table.insert(strings, tostring(v))
     end
 
-    return #strings > 0 and str:format(table.unpack(strings)) or str
+    return #strings > 0 and str:format(unpack(strings)) or str
   end,
 
   __index = function(self, key)
@@ -54,8 +56,6 @@ local __meta = {
 s:set_fallback('en')
 s:set_namespace('en')
 
-if _TEST then
-  s._registry = registry -- force different name to make sure with _TEST behaves exactly as without _TEST
-end
+s._registry = registry
 
 return setmetatable(s, __meta)
