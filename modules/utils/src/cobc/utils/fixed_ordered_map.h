@@ -46,6 +46,7 @@ template <typename Entry, typename Key>
 class FixedOrderedMap
 {
 public:
+    typedef DefaultArrayIterator<Entry> Iterator;
     typedef DefaultConstArrayIterator<Entry> ConstIterator;
 
     /**
@@ -121,6 +122,18 @@ public:
     asArray() const
     {
         return cobc::BoundedArray<Entry>(mEntries, mNumberOfEntries);
+    }
+
+    inline Iterator
+    begin()
+    {
+        return Iterator(&mEntries[0]);
+    }
+
+    inline Iterator
+    end()
+    {
+        return Iterator(&mEntries[mNumberOfEntries]);
     }
 
     inline ConstIterator

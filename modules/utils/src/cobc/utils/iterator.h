@@ -20,6 +20,48 @@
 namespace cobc
 {
 
+// forward declaration
+template <typename T>
+struct ConstArrayIterator;
+
+template <typename T>
+struct DefaultConstArrayIterator;
+
+template <typename T>
+struct ArrayIterator
+{
+    explicit inline
+    ArrayIterator(T* parameters);
+
+    inline ArrayIterator(const ArrayIterator& other);
+
+    inline ArrayIterator& operator=(const ArrayIterator& other);
+    inline ArrayIterator& operator++();
+    inline ArrayIterator& operator--();
+    inline bool operator==(ArrayIterator other) const;
+    inline bool operator!=(ArrayIterator other) const;
+
+protected:
+    friend struct ConstArrayIterator<T>;
+
+    T* mPos;
+};
+
+template <typename T>
+struct DefaultArrayIterator : public ArrayIterator<T>
+{
+    explicit inline
+    DefaultArrayIterator(T* parameters);
+
+    inline T& operator*();
+    inline T* operator->();
+
+private:
+    friend struct DefaultConstArrayIterator<T>;
+};
+
+
+// ----------------------------------------------------------------------------
 /**
  * Iterator for immutable arrays.
  *
@@ -31,6 +73,7 @@ struct ConstArrayIterator
     explicit inline
     ConstArrayIterator(const T* parameters);
 
+    inline ConstArrayIterator(const ArrayIterator<T>& other);
     inline ConstArrayIterator(const ConstArrayIterator& other);
 
     inline ConstArrayIterator& operator=(const ConstArrayIterator& other);
@@ -49,8 +92,11 @@ struct DefaultConstArrayIterator : public ConstArrayIterator<T>
     explicit inline
     DefaultConstArrayIterator(const T* parameters);
 
-    inline const T& operator*();
-    inline const T* operator->();
+    inline
+    DefaultConstArrayIterator(const DefaultArrayIterator<T>& other);
+
+    inline const T& operator*() const;
+    inline const T* operator->() const;
 };
 
 }
