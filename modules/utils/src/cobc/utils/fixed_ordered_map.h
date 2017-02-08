@@ -104,8 +104,15 @@ public:
      *      Pointer to the entry or 0 if no entry with the
      *      requested key is found.
      */
-    Entry*
-    getEntry(Key key);
+    const Entry*
+    getEntry(Key key) const;
+
+    inline Entry*
+    getEntry(Key key)
+    {
+        // Reuse the const version of this function to avoid code duplication.
+        return const_cast<Entry*>(static_cast<const FixedOrderedMap*>(this)->getEntry(key));
+    }
 
     /**
      * Convert to a bounded array.
