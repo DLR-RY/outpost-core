@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, German Aerospace Center (DLR)
+ * Copyright (c) 2015-2017, German Aerospace Center (DLR)
  *
  * This file is part of libCOBC 0.5.
  *
@@ -21,6 +21,7 @@
 #include <stddef.h>
 
 #include "bounded_array.h"
+#include "iterator.h"
 
 namespace cobc
 {
@@ -45,6 +46,8 @@ template <typename Entry, typename Key>
 class FixedOrderedMap
 {
 public:
+    typedef DefaultConstArrayIterator<Entry> ConstIterator;
+
     /**
      * Create list from an array without explicit size.
      *
@@ -111,6 +114,18 @@ public:
     asArray() const
     {
         return cobc::BoundedArray<Entry>(mEntries, mNumberOfEntries);
+    }
+
+    inline ConstIterator
+    begin() const
+    {
+        return ConstIterator(&mEntries[0]);
+    }
+
+    inline ConstIterator
+    end() const
+    {
+        return ConstIterator(&mEntries[mNumberOfEntries]);
     }
 
 private:

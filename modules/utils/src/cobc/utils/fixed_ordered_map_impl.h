@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, German Aerospace Center (DLR)
+ * Copyright (c) 2015-2017, German Aerospace Center (DLR)
  *
  * This file is part of libCOBC 0.5.
  *
@@ -57,4 +57,4 @@ cobc::FixedOrderedMap<Entry, Key>::getEntry(Key key)
     return entry;
 }
 
-#endif // COBC_UTILS_FIXED_ORDERED_MAP_IMPL_H
+#endif
