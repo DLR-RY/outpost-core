@@ -1,0 +1,7 @@
+/build*
+GPATH
+GRTAGS
+GTAGS
+TAGS
+ext/gmock
+ext/boost
