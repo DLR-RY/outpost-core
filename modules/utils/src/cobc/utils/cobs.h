@@ -20,6 +20,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#include "bounded_array.h"
+
 namespace cobc
 {
 namespace utils
@@ -38,6 +40,7 @@ namespace utils
  *
  * \author  Fabian Greif
  */
+template <uint8_t blockLength>
 class CobsEncodingGenerator
 {
 public:
@@ -49,10 +52,8 @@ public:
      *
      * \param data
      *     Input data field.
-     * \param length
-     *     Length of the input data field in bytes.
      */
-    CobsEncodingGenerator(const uint8_t* data, size_t length);
+    CobsEncodingGenerator(cobc::BoundedArray<const uint8_t> input);
 
     ~CobsEncodingGenerator();
 
@@ -93,6 +94,7 @@ private:
  * \see     http://conferences.sigcomm.org/sigcomm/1997/papers/p062.pdf
  * \see     http://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing
  */
+template <uint8_t blockLength>
 class Cobs
 {
 public:
@@ -104,13 +106,9 @@ public:
      *
      * \param input
      *     Input buffer of data to be encoded.
-     * \param inputLength
-     *     Length in bytes of the input buffer.
      * \param output
-     *     Output buffer. The output buffer needs to be one byte per 254 byte
-     *     longer than the input buffer.
-     * \param maximumOutputLength
-     *     Available size in the output buffer. The encoding is aborted if
+     *     Output buffer. The output buffer needs to be one byte per block
+     *     length longer than the input buffer. The encoding is aborted if
      *     the length of the encoded output reaches this number.
      *
      * \return
@@ -118,10 +116,8 @@ public:
      *     will never be bigger than \p maximumOutputLength.
      */
     static size_t
-    encode(const uint8_t* input,
-           size_t inputLength,
-           uint8_t* output,
-           size_t maximumOutputLength);
+    encode(cobc::BoundedArray<const uint8_t> input,
+		   cobc::BoundedArray<uint8_t> output);
 
     static size_t
     getMaximumSizeOfEncodedData(size_t inputLength);
@@ -131,8 +127,6 @@ public:
      *
      * \param input
      *     Input buffer of the COBS encoded data to be decoded.
-     * \param inputLength
-     *     Length in bytes of the input buffer.
      * \param output
      *     Output buffer. The buffer should have at least the same the size
      *     as the input buffer. It is possible to do the encoding in place
@@ -143,12 +137,13 @@ public:
      *     be bigger than \p inputLength.
      */
     static size_t
-    decode(const uint8_t* input,
-           size_t inputLength,
+    decode(cobc::BoundedArray<const uint8_t> input,
            uint8_t* output);
 };
 
 }
 }
+
+#include "cobs_impl.h"
 
 #endif // COBC_UTILS_COBS_H

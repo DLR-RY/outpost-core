@@ -19,7 +19,9 @@
 #include <string.h>     // for memset
 #include <unittest/harness.h>
 
-using cobc::utils::Cobs;
+#include <rapidcheck/gtest.h>
+
+using Cobs = cobc::utils::Cobs<254>;
 using ::testing::ElementsAreArray;
 
 class CobsRoundtriptTest : public ::testing::Test
@@ -33,11 +35,10 @@ public:
     }
 
     size_t
-    roundtrip(const uint8_t* input,
-              size_t inputLength)
+    roundtrip(cobc::BoundedArray<uint8_t> input)
     {
-        size_t encodedLength = Cobs::encode(input, inputLength, encoded, sizeof(encoded));
-        size_t decodedLength = Cobs::decode(encoded, encodedLength, actual);
+        size_t encodedLength = Cobs::encode(input, cobc::toArray(encoded));
+        size_t decodedLength = Cobs::decode(cobc::BoundedArray<uint8_t>(encoded, encodedLength), actual);
 
         return decodedLength;
     }
@@ -53,7 +54,7 @@ TEST_F(CobsRoundtriptTest, singleZeroByte)
 
     uint8_t expected[3] = { 0, 0xAB, 0xAB };
 
-    size_t decodedLength = roundtrip(input, sizeof(input));
+    size_t decodedLength = roundtrip(cobc::toArray(input));
 
     EXPECT_EQ(sizeof(input), decodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, 3));
@@ -65,7 +66,7 @@ TEST_F(CobsRoundtriptTest, zeroPrefixAndSuffix)
 
     uint8_t expected[5] = { 0, 1, 0, 0xAB, 0xAB };
 
-    size_t decodedLength = roundtrip(input, sizeof(input));
+    size_t decodedLength = roundtrip(cobc::toArray(input));
 
     EXPECT_EQ(sizeof(input), decodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, 5));
@@ -79,7 +80,7 @@ TEST_F(CobsRoundtriptTest, blockOfDataWithoutZero)
         input[i] = (i % 255) + 1;
     }
 
-    size_t decodedLength = roundtrip(input, sizeof(input));
+    size_t decodedLength = roundtrip(cobc::toArray(input));
 
     EXPECT_EQ(sizeof(input), decodedLength);
     EXPECT_THAT(input, ElementsAreArray(actual, sizeof(input)));
@@ -98,8 +99,8 @@ TEST_F(CobsRoundtriptTest, inPlaceDecodingOfBlockOfDataWithoutZero)
         input[i] = (i % 255) + 1;
     }
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), encoded, sizeof(encoded));
-    size_t decodedLength = Cobs::decode(encoded, encodedLength, encoded);
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(encoded));
+    size_t decodedLength = Cobs::decode(cobc::BoundedArray<uint8_t>(encoded, encodedLength), encoded);
 
     EXPECT_EQ(sizeof(input), decodedLength);
     EXPECT_THAT(input, ElementsAreArray(encoded, sizeof(input)));
@@ -109,10 +110,21 @@ TEST_F(CobsRoundtriptTest, inPlaceDecodingOfZeroPrefixAndSuffix)
 {
     uint8_t input[3] = { 0, 1, 0 };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), encoded, sizeof(encoded));
-    size_t decodedLength = Cobs::decode(encoded, encodedLength, encoded);
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(encoded));
+    size_t decodedLength = Cobs::decode(cobc::BoundedArray<uint8_t>(encoded, encodedLength), encoded);
 
     EXPECT_EQ(sizeof(input), decodedLength);
     EXPECT_THAT(input, ElementsAreArray(encoded, sizeof(input)));
 }
 
+RC_GTEST_FIXTURE_PROP(CobsRoundtriptTest, shouldPerformRoundTripWithRandomData, ())
+{
+	const auto input = *rc::gen::resize(200, rc::gen::arbitrary<std::vector<uint8_t>>());
+
+	cobc::BoundedArray<const uint8_t> inputArray(&input[0], input.size());
+	size_t encodedLength = cobc::utils::Cobs<32>::encode(inputArray, cobc::toArray(encoded));
+	size_t decodedLength = cobc::utils::Cobs<32>::decode(cobc::BoundedArray<uint8_t>(encoded, encodedLength), encoded);
+
+	RC_ASSERT(input.size() == decodedLength);
+	RC_ASSERT(input == std::vector<uint8_t>(encoded, &encoded[decodedLength]));
+}

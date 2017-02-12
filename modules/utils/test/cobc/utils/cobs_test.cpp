@@ -18,16 +18,12 @@
 
 #include <unittest/harness.h>
 
-using cobc::utils::Cobs;
 using ::testing::ElementsAreArray;
 
-class CobsTest : public ::testing::Test
-{
-public:
-};
+using Cobs = cobc::utils::Cobs<254>;
 
 // ----------------------------------------------------------------------------
-TEST_F(CobsTest, determineMaximumOutputDataLength)
+TEST(CobsTest, determineMaximumOutputDataLength)
 {
     EXPECT_EQ(1U, Cobs::getMaximumSizeOfEncodedData(0));
     EXPECT_EQ(2U, Cobs::getMaximumSizeOfEncodedData(1));
@@ -39,72 +35,70 @@ TEST_F(CobsTest, determineMaximumOutputDataLength)
     EXPECT_EQ(512U, Cobs::getMaximumSizeOfEncodedData(509));
 }
 
-TEST_F(CobsTest, emptyStringIsEncodedAsEmptyString)
+TEST(CobsTest, emptyStringIsEncodedAsEmptyString)
 {
-    uint8_t input[1];
-
     uint8_t actual[128];
     uint8_t expected[] = { 0x01 };
 
-    size_t encodedLength = Cobs::encode(input, 0, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::BoundedArray<uint8_t>::empty(), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST_F(CobsTest, encodingOfSingleBlockWithoutZero)
+TEST(CobsTest, encodingOfSingleBlockWithoutZero)
 {
     uint8_t input[] = { 0x01 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x02, 0x01 };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST_F(CobsTest, singleZeroEncoding)
+TEST(CobsTest, singleZeroEncoding)
 {
     uint8_t input[] = { 0 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01};
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST_F(CobsTest, doubleZeroEncoding)
+TEST(CobsTest, doubleZeroEncoding)
 {
     uint8_t input[] = { 0, 0 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01, 0x01 };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST_F(CobsTest, doubleBlockEncoding)
+TEST(CobsTest, doubleBlockEncoding)
 {
     uint8_t input[] = { 10, 11, 12, 0, 13, 14 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x04, 10, 11, 12, 0x03, 13, 14 };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST_F(CobsTest, exampleFromPaper)
+TEST(CobsTest, exampleFromPaper)
 {
     uint8_t input[] = {
         0x45, 0x00, 0x00, 0x2C, 0x4C, 0x79, 0x00, 0x00,
@@ -117,34 +111,34 @@ TEST_F(CobsTest, exampleFromPaper)
         0x05, 0x40, 0x06, 0x4F, 0x37
     };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
 
-TEST_F(CobsTest, doubleZeroPrefix)
+TEST(CobsTest, doubleZeroPrefix)
 {
     uint8_t input[] = { 0, 0, 1 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01, 0x02, 0x01 };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST_F(CobsTest, zeroPrefixEndingInZero)
+TEST(CobsTest, zeroPrefixEndingInZero)
 {
     uint8_t input[] = { 0, 1, 0 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x02, 0x01, 0x01 };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -153,7 +147,7 @@ TEST_F(CobsTest, zeroPrefixEndingInZero)
 /*
  * see TEST_F(CobsGeneratorTest, blockOfDataWithoutZero)
  */
-TEST_F(CobsTest, blockOfDataWithoutZero)
+TEST(CobsTest, blockOfDataWithoutZero)
 {
     uint8_t input[512];
 
@@ -199,7 +193,7 @@ TEST_F(CobsTest, blockOfDataWithoutZero)
         0xff, 0x01, 0x02,
     };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -208,7 +202,7 @@ TEST_F(CobsTest, blockOfDataWithoutZero)
 /*
  * see TEST_F(CobsGeneratorTest, randomData)
  */
-TEST_F(CobsTest, randomData)
+TEST(CobsTest, randomData)
 {
     uint8_t input[1024] = {
 		0x92, 0x6D, 0x93, 0x34, 0xD0, 0xD2, 0xA7, 0x29, 0x85, 0x53, 0x3F, 0xF3, 0xFF, 0x0B, 0xDC, 0x9A,
@@ -346,7 +340,7 @@ TEST_F(CobsTest, randomData)
 		0x6E, 0x05, 0x9B
 	};
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -357,7 +351,7 @@ TEST_F(CobsTest, randomData)
  * Check that the processing is aborted if the end of the output buffer
  * is reached.
  */
-TEST_F(CobsTest, abortWithAToSmallOutputBuffer)
+TEST(CobsTest, abortWithAToSmallOutputBuffer)
 {
     uint8_t input[] = {
         0x45, 0x00, 0x00, 0x2C, 0x4C, 0x79, 0x00, 0x00,
@@ -373,19 +367,19 @@ TEST_F(CobsTest, abortWithAToSmallOutputBuffer)
         0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB,
     };
 
-    size_t encodedLength = Cobs::encode(input, sizeof(input), actual, 8);
+    size_t encodedLength = Cobs::encode(cobc::toArray(input), cobc::BoundedArray<uint8_t>(actual, 8));
 
     ASSERT_EQ(8U, encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST_F(CobsTest, shouldAbortDecodingWhenZeroBytesAreDetected)
+TEST(CobsTest, shouldAbortDecodingWhenZeroBytesAreDetected)
 {
     uint8_t input[] = {
         0, 0x04, 10, 11, 12, 0x03, 13, 14
     };
 
-    size_t encodedLength = Cobs::decode(input, sizeof(input), input);
+    size_t encodedLength = Cobs::decode(cobc::toArray(input), input);
 
     ASSERT_EQ(0U, encodedLength);
 }

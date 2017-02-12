@@ -14,29 +14,36 @@
  */
 // ----------------------------------------------------------------------------
 
+#ifndef COBC_UTILS_COBS_IMPL_H
+#define COBC_UTILS_COBS_IMPL_H
+
 #include "cobs.h"
 
 #include <string.h>     // for memcpy
 
-using cobc::utils::CobsEncodingGenerator;
-using cobc::utils::Cobs;
+namespace cobc
+{
+namespace utils
+{
 
 // ----------------------------------------------------------------------------
-CobsEncodingGenerator::CobsEncodingGenerator(const uint8_t* data,
-                                             size_t length) :
-    mData(data),
-    mLength(length),
+template <uint8_t blockLength>
+CobsEncodingGenerator<blockLength>::CobsEncodingGenerator(cobc::BoundedArray<const uint8_t> input) :
+    mData(&input[0]),
+    mLength(input.getNumberOfElements()),
     mCurrentPosition(0),
     mNextBlock(0),
     mZeroElementSkip(false)
 {
 }
 
-CobsEncodingGenerator::~CobsEncodingGenerator()
+template <uint8_t blockLength>
+CobsEncodingGenerator<blockLength>::~CobsEncodingGenerator()
 {
 }
 
-CobsEncodingGenerator::CobsEncodingGenerator(const CobsEncodingGenerator& other) :
+template <uint8_t blockLength>
+CobsEncodingGenerator<blockLength>::CobsEncodingGenerator(const CobsEncodingGenerator& other) :
     mData(other.mData),
     mLength(other.mLength),
     mCurrentPosition(other.mCurrentPosition),
@@ -46,8 +53,9 @@ CobsEncodingGenerator::CobsEncodingGenerator(const CobsEncodingGenerator& other)
 
 }
 
-CobsEncodingGenerator&
-CobsEncodingGenerator::operator=(const CobsEncodingGenerator& other)
+template <uint8_t blockLength>
+CobsEncodingGenerator<blockLength>&
+CobsEncodingGenerator<blockLength>::operator=(const CobsEncodingGenerator& other)
 {
     // this handles self assignment gracefully
     mData = other.mData;
@@ -59,8 +67,9 @@ CobsEncodingGenerator::operator=(const CobsEncodingGenerator& other)
     return *this;
 }
 
+template <uint8_t blockLength>
 uint8_t
-CobsEncodingGenerator::getNextByte()
+CobsEncodingGenerator<blockLength>::getNextByte()
 {
     uint8_t value;
     if (mNextBlock == 0)
@@ -79,7 +88,7 @@ CobsEncodingGenerator::getNextByte()
         }
         mNextBlock = findNextBlock();
 
-        if (mNextBlock == maximumBlockLength)
+        if (mNextBlock == blockLength)
         {
             mZeroElementSkip = false;
         }
@@ -96,8 +105,9 @@ CobsEncodingGenerator::getNextByte()
     return value;
 }
 
+template <uint8_t blockLength>
 uint8_t
-CobsEncodingGenerator::findNextBlock()
+CobsEncodingGenerator<blockLength>::findNextBlock()
 {
     uint8_t blockSize = 0;
     size_t position = mCurrentPosition;
@@ -107,7 +117,7 @@ CobsEncodingGenerator::findNextBlock()
     // - No zero is found for 254 consecutive bytes
     // - The end of the input array is reached.
     while ((mData[position] != 0) &&
-           (blockSize < maximumBlockLength) &&
+           (blockSize < blockLength) &&
            (position < mLength))
     {
         position++;
@@ -118,50 +128,52 @@ CobsEncodingGenerator::findNextBlock()
 }
 
 // ----------------------------------------------------------------------------
+template <uint8_t blockLength>
 size_t
-Cobs::encode(const uint8_t* input,
-             size_t inputLength,
-             uint8_t* output,
-             size_t maximumOutputLength)
+Cobs<blockLength>::encode(cobc::BoundedArray<const uint8_t> input,
+						  cobc::BoundedArray<uint8_t> output)
 {
-    const uint8_t* inputEnd = input + inputLength;
+	const uint8_t* inputPtr = &input[0];
+    const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
+    uint8_t* outputPtr = &output[0];
 
     // Pointer to the position where later the block length is inserted
-    uint8_t* blockLengthPtr = output++;
+    uint8_t* blockLengthPtr = outputPtr++;
     size_t length = 1;
-    uint8_t blockLength = 0;
+    uint8_t currentBlockLength = 0;
 
-    while ((input < inputEnd) && (length < maximumOutputLength))
+    while ((inputPtr < inputEnd) && (length < output.getNumberOfElements()))
     {
-        if (*input == 0)
+        if (*inputPtr == 0)
         {
-            *blockLengthPtr = blockLength + 1;
-            blockLengthPtr = output++;
+            *blockLengthPtr = currentBlockLength + 1;
+            blockLengthPtr = outputPtr++;
             length++;
-            blockLength = 0;
+            currentBlockLength = 0;
         }
         else
         {
-            *output++ = *input;
+            *outputPtr++ = *inputPtr;
             length++;
-            blockLength++;
-            if ((blockLength == maximumBlockLength) && (length < maximumOutputLength))
+            currentBlockLength++;
+            if ((currentBlockLength == blockLength) && (length < output.getNumberOfElements()))
             {
-                *blockLengthPtr = blockLength + 1;
-                blockLengthPtr = output++;
+                *blockLengthPtr = currentBlockLength + 1;
+                blockLengthPtr = outputPtr++;
                 length++;
-                blockLength = 0;
+                currentBlockLength = 0;
             }
         }
-        input++;
+        inputPtr++;
     }
-    *blockLengthPtr = blockLength + 1;
+    *blockLengthPtr = currentBlockLength + 1;
 
     return length;
 }
 
+template <uint8_t blockLength>
 size_t
-Cobs::getMaximumSizeOfEncodedData(size_t inputLength)
+Cobs<blockLength>::getMaximumSizeOfEncodedData(size_t inputLength)
 {
     size_t length = inputLength;
     if (inputLength == 0)
@@ -170,42 +182,43 @@ Cobs::getMaximumSizeOfEncodedData(size_t inputLength)
     }
     else
     {
-        length += (inputLength - 1) / Cobs::maximumBlockLength + 1;
+        length += (inputLength - 1) / blockLength + 1;
     }
 
     return length;
 }
 
+template <uint8_t blockLength>
 size_t
-Cobs::decode(const uint8_t* input,
-             size_t inputLength,
-             uint8_t* output)
+Cobs<blockLength>::decode(cobc::BoundedArray<const uint8_t> input,
+						  uint8_t* output)
 {
     size_t outputPosition = 0;
-    const uint8_t* end = input + inputLength;
+    const uint8_t* inputPtr = &input[0];
+	const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
 
-    while (input < end)
+    while (inputPtr < inputEnd)
     {
-        uint8_t data = *input++;
+        uint8_t data = *inputPtr++;
         if (data == 0)
         {
             outputPosition = 0;
-            input = end;
+            inputPtr = inputEnd;
         }
         else
         {
-            uint8_t blockLength = data - 1;
+            uint8_t currentBlockLength = data - 1;
 
             // memmove instead of memcpy is needed here because the input and output
             // array may overlap.
-            memmove(&output[outputPosition], input, blockLength);
-            outputPosition += blockLength;
-            input += blockLength;
+            memmove(&output[outputPosition], inputPtr, currentBlockLength);
+            outputPosition += currentBlockLength;
+            inputPtr += currentBlockLength;
 
-            if (blockLength < maximumBlockLength)
+            if (currentBlockLength < blockLength)
             {
                 // The last (implicit) zero is suppressed and not output.
-                if (input < end)
+                if (inputPtr < inputEnd)
                 {
                     output[outputPosition] = 0;
                     outputPosition++;
@@ -216,3 +229,8 @@ Cobs::decode(const uint8_t* input,
 
     return outputPosition;
 }
+
+}
+}
+
+#endif
