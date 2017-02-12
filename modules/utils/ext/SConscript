@@ -5,10 +5,10 @@ import os
 Import('envGlobal')
 
 if envGlobal['ARCHITECTURE'] == 'hosted':
-    gmock = 'gmock-1.7.0'
+    googletest = 'googletest-1.8.0-fused'
     # googletest should only be used when compiling for an hosted environment
     envGlobal.Append(CPPPATH=[
-        os.path.abspath('%s/fused-src' % gmock),
+        os.path.abspath('%s' % googletest),
         os.path.abspath('rapidcheck/include'),
         os.path.abspath('rapidcheck/extras/gmock/include/'),
         os.path.abspath('rapidcheck/extras/gtest/include/'),
@@ -31,7 +31,7 @@ if envGlobal['ARCHITECTURE'] == 'hosted':
         '-Wmissing-declarations'])
     env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
 
-    files = env.Glob('%s/fused-src/*.cc' % gmock)
+    files = env.Glob('%s/*.cc' % googletest)
     objects = []
     for file in files:
         objects.append(env.Object(file))
