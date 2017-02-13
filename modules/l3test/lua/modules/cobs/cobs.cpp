@@ -25,7 +25,7 @@
 
 #include <cobc/utils/cobs.h>
 
-using cobc::utils::Cobs;
+typedef cobc::utils::Cobs<254> Cobs;
 
 static int
 l_cobs_encode(lua_State* L)
@@ -40,7 +40,8 @@ l_cobs_encode(lua_State* L)
     luaL_Buffer b;
     uint8_t* dst = reinterpret_cast<uint8_t*>(luaL_buffinitsize(L, &b, maxiumLength));
 
-    size_t encodedLength = Cobs::encode(str, length, dst, maxiumLength);
+    size_t encodedLength = Cobs::encode(cobc::BoundedArray<const uint8_t>(str, length),
+                                        cobc::BoundedArray<uint8_t>(dst, maxiumLength));
     luaL_pushresultsize(&b, encodedLength);
 
     return 1;
@@ -55,7 +56,7 @@ l_cobs_decode(lua_State* L)
     luaL_Buffer b;
     uint8_t* dst = reinterpret_cast<uint8_t*>(luaL_buffinitsize(L, &b, length));
 
-    size_t encodedLength = Cobs::decode(str, length, dst);
+    size_t encodedLength = Cobs::decode(cobc::BoundedArray<const uint8_t>(str, length), dst);
     luaL_pushresultsize(&b, encodedLength);
 
     return 1;
