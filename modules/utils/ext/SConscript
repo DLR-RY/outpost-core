@@ -17,7 +17,11 @@ if envGlobal['ARCHITECTURE'] == 'hosted':
     env = envGlobal.Clone()
     env['CXXFLAGS_language'] = ['-std=c++11']
 
-    files  = env.Glob('rapidcheck/src/*.cpp')
+    env.RemoveFromList('CCFLAGS_warning', [
+        '-Wshadow',
+    ])
+
+    files = env.Glob('rapidcheck/src/*.cpp')
     files += env.Glob('rapidcheck/src/*/*.cpp')
     files += env.Glob('rapidcheck/src/*/*/*.cpp')
     libraryRapidCheck = env.StaticLibrary('rapidcheck', files)
