@@ -19,7 +19,7 @@
 #include <unittest/harness.h>
 
 using ::testing::ElementsAreArray;
-using CobsEncodingGenerator = cobc::utils::CobsEncodingGenerator<254>;
+using cobc::utils::CobsEncodingGenerator;
 
 static size_t
 getEncodedArray(CobsEncodingGenerator& generator,

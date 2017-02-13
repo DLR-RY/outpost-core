@@ -20,7 +20,7 @@
 
 using ::testing::ElementsAreArray;
 
-using Cobs = cobc::utils::Cobs<254>;
+using cobc::utils::Cobs;
 
 // ----------------------------------------------------------------------------
 TEST(CobsTest, determineMaximumOutputDataLength)

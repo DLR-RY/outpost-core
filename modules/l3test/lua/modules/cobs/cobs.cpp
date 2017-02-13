@@ -25,7 +25,7 @@
 
 #include <cobc/utils/cobs.h>
 
-typedef cobc::utils::Cobs<254> Cobs;
+using cobc::utils::Cobs;
 
 static int
 l_cobs_encode(lua_State* L)

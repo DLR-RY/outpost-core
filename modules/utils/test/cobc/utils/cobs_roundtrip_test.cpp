@@ -21,7 +21,7 @@
 
 #include <rapidcheck/gtest.h>
 
-using Cobs = cobc::utils::Cobs<254>;
+using cobc::utils::Cobs;
 using ::testing::ElementsAreArray;
 
 class CobsRoundtriptTest : public ::testing::Test
@@ -122,8 +122,8 @@ RC_GTEST_FIXTURE_PROP(CobsRoundtriptTest, shouldPerformRoundTripWithRandomData, 
 	const auto input = *rc::gen::resize(200, rc::gen::arbitrary<std::vector<uint8_t>>());
 
 	cobc::BoundedArray<const uint8_t> inputArray(&input[0], input.size());
-	size_t encodedLength = cobc::utils::Cobs<32>::encode(inputArray, cobc::toArray(encoded));
-	size_t decodedLength = cobc::utils::Cobs<32>::decode(cobc::BoundedArray<uint8_t>(encoded, encodedLength), encoded);
+	size_t encodedLength = cobc::utils::CobsBase<32>::encode(inputArray, cobc::toArray(encoded));
+	size_t decodedLength = cobc::utils::CobsBase<32>::decode(cobc::BoundedArray<uint8_t>(encoded, encodedLength), encoded);
 
 	RC_ASSERT(input.size() == decodedLength);
 	RC_ASSERT(input == std::vector<uint8_t>(encoded, &encoded[decodedLength]));

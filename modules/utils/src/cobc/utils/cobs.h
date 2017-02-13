@@ -41,7 +41,7 @@ namespace utils
  * \author  Fabian Greif
  */
 template <uint8_t blockLength>
-class CobsEncodingGenerator
+class CobsEncodingGeneratorBase
 {
 public:
     /// Maximum length of a COBS block
@@ -53,14 +53,14 @@ public:
      * \param data
      *     Input data field.
      */
-    CobsEncodingGenerator(cobc::BoundedArray<const uint8_t> input);
+    CobsEncodingGeneratorBase(cobc::BoundedArray<const uint8_t> input);
 
-    ~CobsEncodingGenerator();
+    ~CobsEncodingGeneratorBase();
 
-    CobsEncodingGenerator(const CobsEncodingGenerator& other);
+    CobsEncodingGeneratorBase(const CobsEncodingGeneratorBase& other);
 
-    CobsEncodingGenerator&
-    operator =(const CobsEncodingGenerator& other);
+    CobsEncodingGeneratorBase&
+    operator =(const CobsEncodingGeneratorBase& other);
 
     inline bool
     isFinished()
@@ -95,7 +95,7 @@ private:
  * \see     http://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing
  */
 template <uint8_t blockLength>
-class Cobs
+class CobsBase
 {
 public:
     /// Maximum length of a COBS block
@@ -140,6 +140,9 @@ public:
     decode(cobc::BoundedArray<const uint8_t> input,
            uint8_t* output);
 };
+
+typedef CobsEncodingGeneratorBase<254> CobsEncodingGenerator;
+typedef CobsBase<254> Cobs;
 
 }
 }

@@ -28,7 +28,7 @@ namespace utils
 
 // ----------------------------------------------------------------------------
 template <uint8_t blockLength>
-CobsEncodingGenerator<blockLength>::CobsEncodingGenerator(cobc::BoundedArray<const uint8_t> input) :
+CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(cobc::BoundedArray<const uint8_t> input) :
     mData(&input[0]),
     mLength(input.getNumberOfElements()),
     mCurrentPosition(0),
@@ -38,12 +38,12 @@ CobsEncodingGenerator<blockLength>::CobsEncodingGenerator(cobc::BoundedArray<con
 }
 
 template <uint8_t blockLength>
-CobsEncodingGenerator<blockLength>::~CobsEncodingGenerator()
+CobsEncodingGeneratorBase<blockLength>::~CobsEncodingGeneratorBase()
 {
 }
 
 template <uint8_t blockLength>
-CobsEncodingGenerator<blockLength>::CobsEncodingGenerator(const CobsEncodingGenerator& other) :
+CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(const CobsEncodingGeneratorBase& other) :
     mData(other.mData),
     mLength(other.mLength),
     mCurrentPosition(other.mCurrentPosition),
@@ -54,8 +54,8 @@ CobsEncodingGenerator<blockLength>::CobsEncodingGenerator(const CobsEncodingGene
 }
 
 template <uint8_t blockLength>
-CobsEncodingGenerator<blockLength>&
-CobsEncodingGenerator<blockLength>::operator=(const CobsEncodingGenerator& other)
+CobsEncodingGeneratorBase<blockLength>&
+CobsEncodingGeneratorBase<blockLength>::operator=(const CobsEncodingGeneratorBase& other)
 {
     // this handles self assignment gracefully
     mData = other.mData;
@@ -69,7 +69,7 @@ CobsEncodingGenerator<blockLength>::operator=(const CobsEncodingGenerator& other
 
 template <uint8_t blockLength>
 uint8_t
-CobsEncodingGenerator<blockLength>::getNextByte()
+CobsEncodingGeneratorBase<blockLength>::getNextByte()
 {
     uint8_t value;
     if (mNextBlock == 0)
@@ -107,7 +107,7 @@ CobsEncodingGenerator<blockLength>::getNextByte()
 
 template <uint8_t blockLength>
 uint8_t
-CobsEncodingGenerator<blockLength>::findNextBlock()
+CobsEncodingGeneratorBase<blockLength>::findNextBlock()
 {
     uint8_t blockSize = 0;
     size_t position = mCurrentPosition;
@@ -130,8 +130,8 @@ CobsEncodingGenerator<blockLength>::findNextBlock()
 // ----------------------------------------------------------------------------
 template <uint8_t blockLength>
 size_t
-Cobs<blockLength>::encode(cobc::BoundedArray<const uint8_t> input,
-						  cobc::BoundedArray<uint8_t> output)
+CobsBase<blockLength>::encode(cobc::BoundedArray<const uint8_t> input,
+						      cobc::BoundedArray<uint8_t> output)
 {
 	const uint8_t* inputPtr = &input[0];
     const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
@@ -173,7 +173,7 @@ Cobs<blockLength>::encode(cobc::BoundedArray<const uint8_t> input,
 
 template <uint8_t blockLength>
 size_t
-Cobs<blockLength>::getMaximumSizeOfEncodedData(size_t inputLength)
+CobsBase<blockLength>::getMaximumSizeOfEncodedData(size_t inputLength)
 {
     size_t length = inputLength;
     if (inputLength == 0)
@@ -190,8 +190,8 @@ Cobs<blockLength>::getMaximumSizeOfEncodedData(size_t inputLength)
 
 template <uint8_t blockLength>
 size_t
-Cobs<blockLength>::decode(cobc::BoundedArray<const uint8_t> input,
-						  uint8_t* output)
+CobsBase<blockLength>::decode(cobc::BoundedArray<const uint8_t> input,
+						      uint8_t* output)
 {
     size_t outputPosition = 0;
     const uint8_t* inputPtr = &input[0];
