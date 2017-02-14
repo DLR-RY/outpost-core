@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -17,14 +17,14 @@
 #ifndef UNITTEST_SMPC_TESTING_SUBSCRIPTION_H
 #define UNITTEST_SMPC_TESTING_SUBSCRIPTION_H
 
-#include <cobc/smpc/subscription.h>
+#include <outpost/smpc/subscription.h>
 
 namespace unittest
 {
 namespace smpc
 {
 
-class TestingSubscription : public cobc::smpc::Subscription
+class TestingSubscription : public outpost::smpc::Subscription
 {
 public:
     using Subscription::connectSubscriptionsToTopics;

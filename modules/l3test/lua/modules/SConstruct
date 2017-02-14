@@ -4,15 +4,15 @@
 import os
 
 rootpath = '../../'
-cobcpath = rootpath + '../../'
-modulepath = cobcpath + 'modules/'
+outpostpath = rootpath + '../../'
+modulepath = outpostpath + 'modules/'
 
-envGlobal = Environment(toolpath=[cobcpath + 'conf/scons/site_tools'],
+envGlobal = Environment(toolpath=[outpostpath + 'conf/scons/site_tools'],
 			            tools=['utils_buildformat', 'compiler_hosted_gcc', 'settings_buildpath', 'utils_common'],
 				        ENV=os.environ)
 
 envGlobal['BASEPATH']  = os.path.abspath('.')
-envGlobal['BUILDPATH'] = os.path.abspath(cobcpath + 'build/l3test/lua')
+envGlobal['BUILDPATH'] = os.path.abspath(outpostpath + 'build/l3test/lua')
 
 envGlobal.Append(CPPPATH=[rootpath + 'ext/lua-5.2.3/src'])
 
@@ -32,7 +32,7 @@ bitstream_library = env.SharedLibrary(rootpath + 'bin/lua/bitstream', bitstream_
 
 env = envGlobal.Clone()
 
-# Overwrite the global enviroment to compile the libCOBC module with the
+# Overwrite the global enviroment to compile the outpost module with the
 # PIC settings. This is required to be able to link everything into a
 # shared library
 envGlobalTemp = envGlobal
@@ -45,7 +45,7 @@ env.SConscript([
     ],
     exports='envGlobal')
 
-env.Append(LIBS=['cobc_utils'])
+env.Append(LIBS=['outpost_utils'])
 env.Append(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 
 crc16_files   = env.Glob('crc16/*.cpp')

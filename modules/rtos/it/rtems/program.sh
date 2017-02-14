@@ -8,7 +8,7 @@ GRMON="/opt/grmon-eval/bin/grmon"
 fi
 
 if [ -z $2 ]; then
-PORT="/dev/cobc_dsu_3"
+PORT="/dev/outpost_dsu_3"
 else
 PORT=$2
 fi

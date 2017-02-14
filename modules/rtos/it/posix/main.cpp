@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -20,7 +20,7 @@
 #include <../reference/consumer.h>
 #include <../reference/producer.h>
 
-cobc::rtos::Queue<uint32_t> queue(10);
+outpost::rtos::Queue<uint32_t> queue(10);
 
 Producer producer(queue);
 Consumer consumer(queue);

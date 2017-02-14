@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -27,10 +27,10 @@ main(int argc, char** argv)
     // InitGoogleMock initializes Google test, too.
     ::testing::InitGoogleMock(&argc, argv);
 
-    // Using the default listener from cobc/utils/unittest for customized gtest output
+    // Using the default listener from outpost/utils/unittest for customized gtest output
     unittest::registerConfigurableEventListener();
 
-    cobc::l3test::LuaPath::setDefaultPathPrefix("./");
+    outpost::l3test::LuaPath::setDefaultPathPrefix("./");
 
     return RUN_ALL_TESTS();
 }

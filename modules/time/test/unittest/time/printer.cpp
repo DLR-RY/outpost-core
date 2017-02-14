@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -18,25 +18,25 @@
 #include "printer.h"
 
 ::std::ostream&
-cobc::time::operator<<(::std::ostream& os, const cobc::time::Duration& duration)
+outpost::time::operator<<(::std::ostream& os, const outpost::time::Duration& duration)
 {
 	return os << duration.microseconds() << " us";
 }
 
 ::std::ostream&
-cobc::time::operator<<(::std::ostream& os, const cobc::time::Seconds& duration)
+outpost::time::operator<<(::std::ostream& os, const outpost::time::Seconds& duration)
 {
 	return os << duration.microseconds() << " us";
 }
 
 ::std::ostream&
-cobc::time::operator<<(::std::ostream& os, const cobc::time::SpacecraftElapsedTime& time)
+outpost::time::operator<<(::std::ostream& os, const outpost::time::SpacecraftElapsedTime& time)
 {
 	return os << time.timeSinceEpoch().microseconds() << " us";
 }
 
 ::std::ostream&
-cobc::time::operator<<(::std::ostream& os, const cobc::time::Date& date)
+outpost::time::operator<<(::std::ostream& os, const outpost::time::Date& date)
 {
 	os << static_cast<int>(date.year) << "-";
 	os << std::setfill('0') << std::setw(2) << static_cast<int>(date.month) << "-";

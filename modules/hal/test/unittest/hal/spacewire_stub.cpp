@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -50,7 +50,7 @@ SpaceWireStub::close()
 }
 
 bool
-SpaceWireStub::up(cobc::time::Duration /*timeout*/)
+SpaceWireStub::up(outpost::time::Duration /*timeout*/)
 {
     if (mOpen)
     {
@@ -60,7 +60,7 @@ SpaceWireStub::up(cobc::time::Duration /*timeout*/)
 }
 
 void
-SpaceWireStub::down(cobc::time::Duration /*timeout*/)
+SpaceWireStub::down(outpost::time::Duration /*timeout*/)
 {
     mUp = false;
 }
@@ -74,7 +74,7 @@ SpaceWireStub::isUp()
 
 SpaceWireStub::Result::Type
 SpaceWireStub::requestBuffer(TransmitBuffer*& buffer,
-                             cobc::time::Duration /*timeout*/)
+                             outpost::time::Duration /*timeout*/)
 {
     Result::Type result = Result::success;
 
@@ -114,7 +114,7 @@ SpaceWireStub::send(TransmitBuffer* buffer)
 
 SpaceWireStub::Result::Type
 SpaceWireStub::receive(ReceiveBuffer& buffer,
-                       cobc::time::Duration /*timeout*/)
+                       outpost::time::Duration /*timeout*/)
 {
     Result::Type result = Result::success;
     if (mUp)

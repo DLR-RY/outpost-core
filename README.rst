@@ -1,5 +1,5 @@
 =======
-libCOBC
+outpost
 =======
 
 Library for Communication & Services

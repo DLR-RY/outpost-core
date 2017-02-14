@@ -8,19 +8,19 @@ envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 
 env = envGlobal.Clone()
 
-files  = env.Glob('cobc/rtos/*.cpp')
-files += env.Glob('cobc/hal/*.cpp')
+files  = env.Glob('outpost/rtos/*.cpp')
+files += env.Glob('outpost/hal/*.cpp')
 
 if env['OS'] == 'none':
 	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/none')])
 	env.Append(CPPPATH=[os.path.abspath('../arch/none')])
 	
-	files += env.Glob('../arch/none/cobc/rtos/*.cpp')
+	files += env.Glob('../arch/none/outpost/rtos/*.cpp')
 elif env['OS'] == 'rtems':
 	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/rtems')])
 	env.Append(CPPPATH=[os.path.abspath('../arch/rtems')])
 	
-	files += env.Glob('../arch/rtems/cobc/rtos/*.cpp')
+	files += env.Glob('../arch/rtems/outpost/rtos/*.cpp')
 	
 	# Leon 3
 	if env['ARCHITECTURE'] == 'leon3':
@@ -35,10 +35,10 @@ elif env['OS'] == 'rtems':
 		files += env.Glob('../ext/rtems-leon3/apbuart/*.c')
 		files += env.Glob('../ext/rtems-leon3/grspw/*.c')
 		
-		files += env.Glob('cobc/hal/rtems-leon3/*.cpp')
+		files += env.Glob('outpost/hal/rtems-leon3/*.cpp')
 		
 		# TODO only when compiling for the nexys3 board!
-		files += env.Glob('cobc/hal/nexys3/*.cpp')
+		files += env.Glob('outpost/hal/nexys3/*.cpp')
 	
 	# as RTEMS is C it uses C-Style casts. Therefore this warning has to
 	# disabled for the RTEMS wrapper files.
@@ -48,7 +48,7 @@ elif env['OS'] == 'freertos':
 	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/freertos')])
 	env.Append(CPPPATH=[os.path.abspath('../arch/freertos')])
 	
-	files += env.Glob('../arch/freertos/cobc/rtos/*.cpp')
+	files += env.Glob('../arch/freertos/outpost/rtos/*.cpp')
 	
 	# FreeRTOS uses C-Style casts. Therefore this warning has to
 	# disabled for the FreeRTOS wrapper files.
@@ -57,7 +57,7 @@ elif env['OS'] == 'posix':
 	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/posix')])
 	env.Append(CPPPATH=[os.path.abspath('../arch/posix')])
 	
-	files += env.Glob('../arch/posix/cobc/rtos/*.cpp')
+	files += env.Glob('../arch/posix/outpost/rtos/*.cpp')
 	
 	envGlobal.Append(LIBS=['rt', 'pthread'])
 else:
@@ -70,6 +70,6 @@ for file in files:
 	objects.append(env.Object(file))
 envGlobal.Append(objects={'rtos': objects})
 
-library = env.StaticLibrary('cobc_rtos', objects)
+library = env.StaticLibrary('outpost_rtos', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
 

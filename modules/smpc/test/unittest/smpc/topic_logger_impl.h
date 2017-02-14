@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -20,7 +20,7 @@
 #include "topic_logger.h"
 
 template<typename T>
-unittest::smpc::TopicLogger<T>::TopicLogger(cobc::smpc::Topic<T>& topic) :
+unittest::smpc::TopicLogger<T>::TopicLogger(outpost::smpc::Topic<T>& topic) :
     mSubscription(topic, this, &TopicLogger::onReceive)
 {
 }

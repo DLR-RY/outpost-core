@@ -6,7 +6,7 @@
 		<option name="::default_configuration" value="yes" />
 	</options>
 	<modules>
-		<!-- <module>cobc:time</module> -->
-		<module>cobc:pus</module>
+		<!-- <module>outpost:time</module> -->
+		<module>outpost:pus</module>
 	</modules>
 </library>

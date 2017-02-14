@@ -2,7 +2,7 @@
 
 import os
 
-# root folder of the libCOBC library
+# root folder of the outpost library
 rootpath = '../../../../'
 modulepath  = os.path.join(rootpath, 'modules')
 buildfolder = os.path.join(rootpath, 'build')
@@ -57,7 +57,7 @@ for lib in env['objects']:
     for f in env['objects'][lib]:
         files.extend(f)
 
-library = env.StaticLibrary('libcobc', files)
+library = env.StaticLibrary('outpost', files)
 envGlobal.Alias('library', library)
 
 env = Environment(tools= ['xpcc'],
@@ -73,7 +73,7 @@ files += env.Glob('../reference/*.cpp')
 
 program = env.Program(target=env['XPCC_CONFIG']['general']['name'], source=files.sources + library)
 
-env.Append(LIBS=['libcobc', 'nosys'])
+env.Append(LIBS=['outpost', 'nosys'])
 env.Append(LIBPATH=['$BUILDPATH'])
 
 env.Append(CPPPATH=[

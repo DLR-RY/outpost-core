@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -19,7 +19,7 @@
 using namespace unittest::time;
 
 TestingClock::TestingClock() :
-	currentTime(cobc::time::SpacecraftElapsedTime::startOfEpoch())
+	currentTime(outpost::time::SpacecraftElapsedTime::startOfEpoch())
 {
 }
 
@@ -27,14 +27,14 @@ TestingClock::~TestingClock()
 {
 }
 
-cobc::time::SpacecraftElapsedTime
+outpost::time::SpacecraftElapsedTime
 TestingClock::now() const
 {
     return currentTime;
 }
 
 void
-TestingClock::setTime(cobc::time::SpacecraftElapsedTime timePoint)
+TestingClock::setTime(outpost::time::SpacecraftElapsedTime timePoint)
 {
     currentTime = timePoint;
 }

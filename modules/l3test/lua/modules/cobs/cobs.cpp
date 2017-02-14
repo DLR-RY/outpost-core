@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -23,9 +23,9 @@
 #include <limits.h>
 #include <stdint.h>
 
-#include <cobc/utils/cobs.h>
+#include <outpost/utils/cobs.h>
 
-using cobc::utils::Cobs;
+using outpost::utils::Cobs;
 
 static int
 l_cobs_encode(lua_State* L)
@@ -40,8 +40,8 @@ l_cobs_encode(lua_State* L)
     luaL_Buffer b;
     uint8_t* dst = reinterpret_cast<uint8_t*>(luaL_buffinitsize(L, &b, maxiumLength));
 
-    size_t encodedLength = Cobs::encode(cobc::BoundedArray<const uint8_t>(str, length),
-                                        cobc::BoundedArray<uint8_t>(dst, maxiumLength));
+    size_t encodedLength = Cobs::encode(outpost::BoundedArray<const uint8_t>(str, length),
+                                        outpost::BoundedArray<uint8_t>(dst, maxiumLength));
     luaL_pushresultsize(&b, encodedLength);
 
     return 1;
@@ -56,7 +56,7 @@ l_cobs_decode(lua_State* L)
     luaL_Buffer b;
     uint8_t* dst = reinterpret_cast<uint8_t*>(luaL_buffinitsize(L, &b, length));
 
-    size_t encodedLength = Cobs::decode(cobc::BoundedArray<const uint8_t>(str, length), dst);
+    size_t encodedLength = Cobs::decode(outpost::BoundedArray<const uint8_t>(str, length), dst);
     luaL_pushresultsize(&b, encodedLength);
 
     return 1;

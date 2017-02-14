@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -19,7 +19,7 @@
 
 #include <vector>
 
-#include <cobc/hal/serial.h>
+#include <outpost/hal/serial.h>
 
 namespace unittest
 {
@@ -33,7 +33,7 @@ namespace hal
  *
  * \author  Fabian Greif
  */
-class SerialStub : public cobc::hal::Serial
+class SerialStub : public outpost::hal::Serial
 {
 public:
     SerialStub();
@@ -51,12 +51,12 @@ public:
     getNumberOfBytesAvailable() override;
 
     virtual size_t
-    read(cobc::BoundedArray<uint8_t> data,
-         cobc::time::Duration timeout = cobc::time::Duration::maximum()) override;
+    read(outpost::BoundedArray<uint8_t> data,
+         outpost::time::Duration timeout = outpost::time::Duration::maximum()) override;
 
     virtual size_t
-    write(cobc::BoundedArray<const uint8_t> data,
-          cobc::time::Duration timeout = cobc::time::Duration::maximum()) override;
+    write(outpost::BoundedArray<const uint8_t> data,
+          outpost::time::Duration timeout = outpost::time::Duration::maximum()) override;
 
     /// Does nothing in this implementation
     virtual void

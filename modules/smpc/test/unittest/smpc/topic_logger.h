@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -17,8 +17,8 @@
 #ifndef UNITTEST_SMPC_TOPIC_LOGGER_H
 #define UNITTEST_SMPC_TOPIC_LOGGER_H
 
-#include <cobc/smpc/subscription.h>
-#include <cobc/smpc/topic.h>
+#include <outpost/smpc/subscription.h>
+#include <outpost/smpc/topic.h>
 
 #include <unittest/smpc/testing_subscription.h>
 
@@ -33,7 +33,7 @@ template <typename T>
 class TopicLogger
 {
 public:
-    TopicLogger(cobc::smpc::Topic<T>& topic);
+    TopicLogger(outpost::smpc::Topic<T>& topic);
 
     void
     clear();
@@ -48,12 +48,12 @@ public:
     isEmpty() const;
 
 private:
-    typedef typename cobc::remove_const<T>::type NonConstType;
+    typedef typename outpost::remove_const<T>::type NonConstType;
 
     void
     onReceive(T* item);
 
-    cobc::smpc::Subscription mSubscription;
+    outpost::smpc::Subscription mSubscription;
     std::list<NonConstType> mItems;
 };
 

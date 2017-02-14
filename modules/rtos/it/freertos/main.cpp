@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2013, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -25,9 +25,9 @@
  * Uses the xpcc library to provide the STM32F4xx hardware drivers.
  */
 
-#include <cobc/rtos/thread.h>
-#include <cobc/rtos/queue.h>
-#include <cobc/rtos/failure_handler.h>
+#include <outpost/rtos/thread.h>
+#include <outpost/rtos/queue.h>
+#include <outpost/rtos/failure_handler.h>
 
 #include <xpcc/architecture.hpp>
 #include <xpcc/processing/rtos.hpp>
@@ -49,10 +49,10 @@ typedef GpioOutputC9 SystemClockOut;
 /// external on-board 8MHz crystal
 typedef SystemClock<Pll<ExternalCrystal<MHz8>, MHz168, MHz48> > DefaultSystemClock;
 
-cobc::rtos::Queue<uint32_t> queue(100);
+outpost::rtos::Queue<uint32_t> queue(100);
 
 static void
-failureHandler(cobc::rtos::FailureCode code)
+failureHandler(outpost::rtos::FailureCode code)
 {
     (void) code;
 
@@ -73,7 +73,7 @@ main(void)
     LedRed::setOutput(xpcc::Gpio::Low);
     LedBlue::setOutput(xpcc::Gpio::Low);
 
-    cobc::rtos::FailureHandler::setFailureHandlerFunction(&failureHandler);
+    outpost::rtos::FailureHandler::setFailureHandlerFunction(&failureHandler);
 
     LedGreen::set();
 

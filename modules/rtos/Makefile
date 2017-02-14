@@ -7,7 +7,7 @@ LCOV_REMOVE_PATTERN = \
 	"utils/*" "time/*"
 
 # Slash at the end is important!
-LIBCOBC_HW_PATH = /home/user/development/ry-avs-cobc/lib/sw/libcobc-hw/
+LIBCOBC_HW_PATH = /home/user/development/ry-avs-outpost/lib/sw/outpost-hw/
 
 all: test
 
@@ -18,9 +18,9 @@ test: test-default
 coverage: coverage-default
 
 update-integration:
-	mkdir -p ext/libcobc-hw-backup/src
-	mkdir -p ext/libcobc-hw/
-	rsync -a --delete -b --backup-dir=ext/libcobc-hw-backup/ $(LIBCOBC_HW_PATH) ext/libcobc-hw/
+	mkdir -p ext/outpost-hw-backup/src
+	mkdir -p ext/outpost-hw/
+	rsync -a --delete -b --backup-dir=ext/outpost-hw-backup/ $(LIBCOBC_HW_PATH) ext/outpost-hw/
 
 test-integration: update-integration
 	@printf "$(CINFO) Running RTOS abstraction layer compilation tests$(CEND)\n"
@@ -42,7 +42,7 @@ test-integration: update-integration
 clean: clean-default
 
 distclean: distclean-default
-	$(RM) -r ext/libcobc-hw
+	$(RM) -r ext/outpost-hw
 
 .PHONY: test coverage coverage-view clean
 

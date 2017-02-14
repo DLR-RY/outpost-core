@@ -8,13 +8,13 @@ envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 
 env = envGlobal.Clone()
 
-files = env.Glob('cobc/utils/*.cpp')
+files = env.Glob('outpost/utils/*.cpp')
 
 objects = []
 for file in files:
 	objects.append(env.Object(file))
 envGlobal.Append(objects={'utils': objects})
 
-library = env.StaticLibrary('cobc_utils', objects)
+library = env.StaticLibrary('outpost_utils', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
 

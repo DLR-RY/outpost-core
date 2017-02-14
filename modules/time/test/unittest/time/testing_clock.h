@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -17,7 +17,7 @@
 #ifndef UNITTEST_TIME_TESTING_CLOCK_H
 #define UNITTEST_TIME_TESTING_CLOCK_H
 
-#include <cobc/time/clock.h>
+#include <outpost/time/clock.h>
 
 namespace unittest
 {
@@ -29,7 +29,7 @@ namespace time
  *
  * \author  Fabian Greif
  */
-class TestingClock : public cobc::time::Clock
+class TestingClock : public outpost::time::Clock
 {
 public:
     TestingClock();
@@ -37,14 +37,14 @@ public:
     virtual
     ~TestingClock();
 
-    virtual cobc::time::SpacecraftElapsedTime
+    virtual outpost::time::SpacecraftElapsedTime
     now() const;
 
     void
-    setTime(cobc::time::SpacecraftElapsedTime);
+    setTime(outpost::time::SpacecraftElapsedTime);
 
 private:
-    cobc::time::SpacecraftElapsedTime currentTime;
+    outpost::time::SpacecraftElapsedTime currentTime;
 };
 
 }

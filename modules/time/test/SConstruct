@@ -41,14 +41,14 @@ envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports=
 env = envGlobal.Clone()
 
 env.AppendUnique(LIBS=[
-    'cobc_time',
-    'cobc_utils',
+    'outpost_time',
+    'outpost_utils',
 ])
 
 files  = env.Glob('*.cpp')
-files += env.Glob('cobc/*.cpp')
-files += env.Glob('cobc/*/*.cpp')
-files += env.Glob('cobc/*/*/*.cpp')
+files += env.Glob('outpost/*.cpp')
+files += env.Glob('outpost/*/*.cpp')
+files += env.Glob('outpost/*/*/*.cpp')
 
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong

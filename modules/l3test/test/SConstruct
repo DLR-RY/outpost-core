@@ -43,15 +43,15 @@ env = envGlobal.Clone()
 env.AppendUnique(LIBS=[
     'l3test',
     'l3test_lua',
-    'cobc_smpc',
-    'cobc_time',
-    'cobc_utils',
+    'outpost_smpc',
+    'outpost_time',
+    'outpost_utils',
 ])
 
 files  = env.Glob('*.cpp')
-files += env.Glob('cobc/*.cpp')
-files += env.Glob('cobc/*/*.cpp')
-files += env.Glob('cobc/*/*/*.cpp')
+files += env.Glob('outpost/*.cpp')
+files += env.Glob('outpost/*/*.cpp')
+files += env.Glob('outpost/*/*/*.cpp')
 
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong

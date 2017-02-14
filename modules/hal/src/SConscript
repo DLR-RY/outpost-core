@@ -9,7 +9,7 @@ envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 env = envGlobal.Clone()
 
 files = []
-files += env.Glob('cobc/hal/*.cpp')
+files += env.Glob('outpost/hal/*.cpp')
 
 if env['OS'] == 'none':
     None
@@ -33,7 +33,7 @@ elif env['OS'] == 'rtems':
         files += env.Glob('../ext/rtems/gr712rc/grspw/*.c')
         files += env.Glob('../ext/rtems/nexys3/apbuart/*.c')
         
-        files += env.Glob('../arch/leon3/cobc/gr712rc/*.cpp')
+        files += env.Glob('../arch/leon3/outpost/gr712rc/*.cpp')
     elif env['BOARD'] == 'nexys3':
         path = [os.path.abspath('../arch/leon3/'), os.path.abspath('../ext/rtems/nexys3/')]
         env.Append(CPPPATH=path)
@@ -42,7 +42,7 @@ elif env['OS'] == 'rtems':
         files += env.Glob('../ext/rtems/nexys3/spwl/*.c')
         files += env.Glob('../ext/rtems/nexys3/apbuart/*.c')
         
-        files += env.Glob('../arch/leon3/cobc/nexys3/*.cpp')
+        files += env.Glob('../arch/leon3/outpost/nexys3/*.cpp')
     elif env['BOARD'] == 'AAC-OBCS':
         path = []
     elif env['BOARD'] == 'AAC-TCMS':
@@ -61,7 +61,7 @@ elif env['OS'] == 'freertos':
         envGlobal.Append(CPPPATH=[os.path.abspath('../arch/nanomind')])
         env.Append(CPPPATH=[os.path.abspath('../arch/nanomind')])
     
-        files += env.Glob('../arch/nanomind/cobc/nanomind/*.cpp')
+        files += env.Glob('../arch/nanomind/outpost/nanomind/*.cpp')
 
 elif env['OS'] == 'posix':
     None
@@ -75,6 +75,6 @@ for file in files:
     objects.append(env.Object(file))
 envGlobal.Append(objects={'hal': objects})
 
-library = env.StaticLibrary('cobc_hal', objects)
+library = env.StaticLibrary('outpost_hal', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
 

@@ -31,7 +31,7 @@ local cobs = require "cobs"
 describe("Lua modules", function()
 
 	-- The general functionality of the COBS module is covered in the C++
-	-- COBS module unittest as part of libCOBC.
+	-- COBS module unittest as part of outpost.
 	-- 
 	-- These tests only verify that basic functionality for the interfacing
 	-- with Lua is available, not the correctness of the algorithm.

@@ -137,7 +137,7 @@ codingstyle: codingstyle-simple codingstyle-jsf
 
 # Run style checker
 codingstyle-simple:
-	@find src/ -regex ".*\.\(h\|cpp\)" | vera++ -p cobc --show-rule --summary --root ../../tools/vera++
+	@find src/ -regex ".*\.\(h\|cpp\)" | vera++ -p outpost --show-rule --summary --root ../../tools/vera++
 
 
 codingstyle-jsf:

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -22,7 +22,7 @@
 #include <memory>
 #include <list>
 
-#include <cobc/hal/spacewire.h>
+#include <outpost/hal/spacewire.h>
 
 namespace unittest
 {
@@ -41,7 +41,7 @@ namespace hal
  *
  * \author  Fabian Greif
  */
-class SpaceWireStub : public cobc::hal::SpaceWire
+class SpaceWireStub : public outpost::hal::SpaceWire
 {
 public:
     struct Packet
@@ -69,10 +69,10 @@ public:
     close();
 
     virtual bool
-    up(cobc::time::Duration timeout);
+    up(outpost::time::Duration timeout);
 
     virtual void
-    down(cobc::time::Duration timeout);
+    down(outpost::time::Duration timeout);
 
     virtual bool
     isUp();
@@ -80,14 +80,14 @@ public:
 
     virtual Result::Type
     requestBuffer(TransmitBuffer*& buffer,
-                  cobc::time::Duration timeout);
+                  outpost::time::Duration timeout);
 
     virtual Result::Type
     send(TransmitBuffer* buffer);
 
     virtual Result::Type
     receive(ReceiveBuffer& buffer,
-            cobc::time::Duration timeout);
+            outpost::time::Duration timeout);
 
     virtual void
     releaseBuffer(const ReceiveBuffer& buffer);
@@ -137,7 +137,7 @@ private:
         inline
         TransmitBufferEntry(size_t maximumLength) :
             buffer(maximumLength, 0),
-            header(cobc::BoundedArray<uint8_t>(&buffer.front(), maximumLength))
+            header(outpost::BoundedArray<uint8_t>(&buffer.front(), maximumLength))
         {
         }
 
@@ -149,7 +149,7 @@ private:
     {
         ReceiveBufferEntry(std::vector<uint8_t>&& input, EndMarker end) :
             buffer(std::move(input)),
-            header(cobc::BoundedArray<const uint8_t>(&buffer.front(), buffer.size()), end)
+            header(outpost::BoundedArray<const uint8_t>(&buffer.front(), buffer.size()), end)
         {
         }
 

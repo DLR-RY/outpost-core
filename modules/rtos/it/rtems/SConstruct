@@ -2,7 +2,7 @@
 
 import os
 
-# root folder of the libCOBC library
+# root folder of the outpost library
 rootpath    = '../../../..'
 modulepath  = os.path.join(rootpath, 'modules')
 buildfolder = os.path.join(rootpath, 'build')
@@ -31,8 +31,8 @@ envGlobal.Append(CPPPATH=[
 
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
-# Build libcobc-hw
-# envGlobal.SConscript(os.path.join(rootpath, 'modules/rtos/ext/libcobc-hw/src/SConscript'), exports='envGlobal')
+# Build outpost-hw
+# envGlobal.SConscript(os.path.join(rootpath, 'modules/rtos/ext/outpost-hw/src/SConscript'), exports='envGlobal')
 
 env = envGlobal.Clone()
 
@@ -42,14 +42,14 @@ env.Append(CPPPATH=[
 ])
 
 env.AppendUnique(LIBS=[
-	'cobc_hal',
-    'cobc_log',
-    'cobc_pus',
-    'cobc_spp',
-    'cobc_rtos',
-    'cobc_smpc',
-    'cobc_time',
-    'cobc_utils',
+	'outpost_hal',
+    'outpost_log',
+    'outpost_pus',
+    'outpost_spp',
+    'outpost_rtos',
+    'outpost_smpc',
+    'outpost_time',
+    'outpost_utils',
 ])
 env.Append(LIBPATH=['$BUILDPATH/lib'])
 

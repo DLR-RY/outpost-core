@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -17,15 +17,15 @@
 #ifndef CONSUMER_H
 #define CONSUMER_H
 
-#include <cobc/rtos/thread.h>
-#include <cobc/rtos/queue.h>
-#include <cobc/rtos/mutex.h>
-#include <cobc/rtos/semaphore.h>
+#include <outpost/rtos/thread.h>
+#include <outpost/rtos/queue.h>
+#include <outpost/rtos/mutex.h>
+#include <outpost/rtos/semaphore.h>
 
-class Consumer : public cobc::rtos::Thread
+class Consumer : public outpost::rtos::Thread
 {
 public:
-    Consumer(cobc::rtos::Queue<uint32_t>& queue);
+    Consumer(outpost::rtos::Queue<uint32_t>& queue);
 
     uint32_t
     getCurrentValue() const;
@@ -37,12 +37,12 @@ private:
     virtual void
     run();
 
-    cobc::rtos::Queue<uint32_t>& mQueue;
+    outpost::rtos::Queue<uint32_t>& mQueue;
 
-    mutable cobc::rtos::Mutex mMutex;
+    mutable outpost::rtos::Mutex mMutex;
     uint32_t mCurrentValue;
 
-    cobc::rtos::BinarySemaphore mEvent;
+    outpost::rtos::BinarySemaphore mEvent;
 };
 
 #endif // CONSUMER_H

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2014, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -19,7 +19,7 @@
 
 #include <string>
 
-namespace cobc
+namespace outpost
 {
 namespace l3test
 {
@@ -30,7 +30,7 @@ namespace l3test
  * Must be applied to the Lua engine by hand:
  * \code
  * Engine engine;
- * engine.appendDefaultLuaPath(cobc::l3test::LuaPath::getDefaultPathPrefix());
+ * engine.appendDefaultLuaPath(outpost::l3test::LuaPath::getDefaultPathPrefix());
  * \endcode
  */
 class LuaPath

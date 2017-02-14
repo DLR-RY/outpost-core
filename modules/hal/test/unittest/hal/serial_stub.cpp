@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2015, German Aerospace Center (DLR)
  *
- * This file is part of libCOBC 0.6.
+ * This file is part of outpost 0.6.
  *
  * It is distributed under the terms of the GNU General Public License with a
  * linking exception. See the file "LICENSE" for the full license governing
@@ -48,8 +48,8 @@ SerialStub::getNumberOfBytesAvailable()
 }
 
 size_t
-SerialStub::read(cobc::BoundedArray<uint8_t> data,
-                 cobc::time::Duration /*timeout*/)
+SerialStub::read(outpost::BoundedArray<uint8_t> data,
+                 outpost::time::Duration /*timeout*/)
 {
     size_t length = data.getNumberOfElements();
     size_t available = mDataToReceive.size();
@@ -68,8 +68,8 @@ SerialStub::read(cobc::BoundedArray<uint8_t> data,
 }
 
 size_t
-SerialStub::write(cobc::BoundedArray<const uint8_t> data,
-                  cobc::time::Duration /*timeout*/)
+SerialStub::write(outpost::BoundedArray<const uint8_t> data,
+                  outpost::time::Duration /*timeout*/)
 {
     mDataToTransmit.insert(mDataToTransmit.end(), data.begin(), data.end());
     return data.getNumberOfElements();

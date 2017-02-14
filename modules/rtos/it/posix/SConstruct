@@ -25,13 +25,13 @@ env.Append(CPPPATH=[
 	'../reference'
 ])
 env.AppendUnique(LIBS=[
-    'cobc_log',
-    'cobc_pus',
-    'cobc_spp',
-    'cobc_rtos',
-    'cobc_smpc',
-    'cobc_time',
-    'cobc_utils',
+    'outpost_log',
+    'outpost_pus',
+    'outpost_spp',
+    'outpost_rtos',
+    'outpost_smpc',
+    'outpost_time',
+    'outpost_utils',
 ])
 env.Append(LIBPATH=['$BUILDPATH/lib'])
 

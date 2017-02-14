@@ -5,11 +5,11 @@ build:
 	@scons install
 
 program: build
-	@./program.sh bin/rtems.elf /dev/cobc_dsu_$(BOARD)
+	@./program.sh bin/rtems.elf /dev/outpost_dsu_$(BOARD)
 
 terminal-console:
-	@picocom -b38400 /dev/cobc_console_$(BOARD)
+	@picocom -b38400 /dev/outpost_console_$(BOARD)
 
 terminal-link:
-	@picocom -b38400 /dev/cobc_link_$(BOARD)
+	@picocom -b38400 /dev/outpost_link_$(BOARD)
 
