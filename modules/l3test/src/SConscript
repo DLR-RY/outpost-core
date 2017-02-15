@@ -12,7 +12,7 @@ env = envGlobal.Clone()
 # Binding code between Lua (written in C) and C++ has to use some C casts
 env.RemoveFromList('CXXFLAGS_warning', ['-Wold-style-cast'])
 
-files  = env.Glob('*/*.cpp')
+files = env.Glob('*/*.cpp')
 files += env.Glob('*/*/*.cpp')
 files += env.Glob('*/*/*/*.cpp')
 files += env.Glob('../lua/modules/l3test/*.cpp')

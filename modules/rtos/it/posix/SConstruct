@@ -3,7 +3,7 @@
 import os
 
 rootpath = '../../../../'
-envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
+envGlobal = Environment(toolpath=[rootpath + 'scons-tools'],
 				        tools=['compiler_hosted_llvm', 'settings_buildpath', 'utils_buildformat', 'utils_buildsize'],
 			        	ENV=os.environ)
 

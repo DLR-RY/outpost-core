@@ -25,9 +25,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-MODULES_GLOBAL = utils time smpc rtos hal spp pus cdh log
-MODULES_HW = 
-MODULES_TEST = log-decode l3test
+MODULES_GLOBAL = utils time smpc rtos hal
+MODULES_TEST = l3test
 
 MODULES_JSF = $(MODULES_GLOBAL) rtos
 

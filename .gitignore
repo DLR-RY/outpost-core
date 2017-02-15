@@ -1,0 +1,12 @@
+
+# Project files
+.settings
+.project
+.cproject
+.pydevproject
+
+# Build tools
+build/
+bin/
+.sconsign.dblite
+

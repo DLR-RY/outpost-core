@@ -27,8 +27,6 @@ POSSIBILITY OF SUCH DAMAGE.
 local current_folder = (...):gsub('%.init$', '')
 
 local generator = require(current_folder .. '.generator')
-local spp = require(current_folder .. '.spp')
-local pus = require(current_folder .. '.pus')
 
 -- ----------------------------------------------------------------------------
 -- Print a packet represented by a bitstream

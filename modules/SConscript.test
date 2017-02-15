@@ -16,9 +16,6 @@ envGlobal.SConscript([
         'l3test/src/SConscript',
         'l3test/ext/SConscript',
         'l3test/test/SConscript',
-        'spp/test/SConscript',
-        'pus/test/SConscript',
-        'log/test/SConscript',
     ],
     exports='envGlobal')
 

@@ -13,7 +13,7 @@ build-lua:
 
 # Run the unit tests
 test-lua: build-lua
-	@busted --lpath="lua/src/?.lua;lua/src/?/init.lua" --cpath="bin/lua/?.so" lua/spec
+	@busted --lpath="lua/src/?.lua;lua/src/?/init.lua" --cpath="../../bin/lua/?.so" lua/spec
 
 test: build-lua test-lua test-default
 

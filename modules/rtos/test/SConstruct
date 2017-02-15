@@ -8,7 +8,7 @@ vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 module = 'rtos'
 
 rootpath = '../../../'
-envGlobal = Environment(toolpath=[rootpath + 'conf/scons/site_tools'],
+envGlobal = Environment(toolpath=[rootpath + 'scons-tools'],
                         buildroot=[rootpath + 'build/'],
                         tools=['utils_buildformat'],
                         variables=vars,
