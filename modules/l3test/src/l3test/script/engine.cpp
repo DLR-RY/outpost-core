@@ -36,7 +36,7 @@ const std::string Engine::defaultPath[] =
 
 const std::string Engine::defaultCPath[] =
 {
-    "bin/lua/?.so",
+    "../../bin/lua/?.so",
 };
 
 namespace
@@ -136,9 +136,21 @@ Engine::setLuaPath(const char* path)
 }
 
 void
+Engine::appendLuaPath(std::string path)
+{
+    appendPath(L, "path", path);
+}
+
+void
 Engine::setLuaCPath(const char* path)
 {
     setPath(L, "cpath", path);
+}
+
+void
+Engine::appendLuaCPath(std::string path)
+{
+    appendPath(L, "cpath", path);
 }
 
 static std::vector<std::string>&

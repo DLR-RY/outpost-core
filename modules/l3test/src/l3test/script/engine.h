@@ -60,7 +60,13 @@ public:
 	setLuaPath(const char* path);
 
 	void
+	appendLuaPath(std::string path);
+
+	void
 	setLuaCPath(const char* path);
+
+	void
+	appendLuaCPath(std::string path);
 
 	/**
 	 * Register channel for communication between Lua and C++.
