@@ -5,13 +5,13 @@ Requirements
 To build the unittests the following programs in their respective versions
 are needed:
 
-- gcc >= 4.9
-- scons >= 2.3
-- python >= 2.7
-- clang >= 3.2
-- lcov >= 1.10
+- `gcc` >= 4.9 (full support for C++11)
+- `clang` >= 3.2
+- `scons` >= 2.3
+- `python` >= 2.7
+- `lcov` >= 1.10
 
-For Debian-based Linux systems (e.g. Debian 8)::
+For Debian-based Linux systems (e.g. Debian 8):
 
     sudo apt-get install clang llvm scons libboost-dev libsqlite3-dev curl lcov
     
