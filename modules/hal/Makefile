@@ -8,7 +8,7 @@ LCOV_REMOVE_PATTERN = \
 
 all: test
 
-include ../../conf/module.default.mk
+include ../module.default.mk
 
 test: test-default
 

@@ -11,65 +11,6 @@ env = envGlobal.Clone()
 files = []
 files += env.Glob('outpost/hal/*.cpp')
 
-if env['OS'] == 'none':
-    None
-elif env['OS'] == 'rtems':
-    # as RTEMS is C it uses C-Style casts. Therefore this warning has to
-    # disabled for the RTEMS wrapper files.
-    env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
-    
-    # Remove warning because the spacewirelight driver uses void pointer
-    # casts which ignore qualifiers like volatile.
-    env.RemoveFromList('CCFLAGS_warning', ['-Wcast-qual', '-Wcast-align'])
-    
-    # spacewirelight can not be compiled as C99 (with or without pedantic)
-    env['CFLAGS_language'] = '-std=gnu99'
-    
-    if env['BOARD'] == 'gr712rc':
-        path = [os.path.abspath('../arch/leon3/'), os.path.abspath('../ext/rtems/gr712rc/')]
-        env.Append(CPPPATH=path)
-        envGlobal.Append(CPPPATH=path)
-        
-        files += env.Glob('../ext/rtems/gr712rc/grspw/*.c')
-        files += env.Glob('../ext/rtems/nexys3/apbuart/*.c')
-        
-        files += env.Glob('../arch/leon3/outpost/gr712rc/*.cpp')
-    elif env['BOARD'] == 'nexys3':
-        path = [os.path.abspath('../arch/leon3/'), os.path.abspath('../ext/rtems/nexys3/')]
-        env.Append(CPPPATH=path)
-        envGlobal.Append(CPPPATH=path)
-        
-        files += env.Glob('../ext/rtems/nexys3/spwl/*.c')
-        files += env.Glob('../ext/rtems/nexys3/apbuart/*.c')
-        
-        files += env.Glob('../arch/leon3/outpost/nexys3/*.cpp')
-    elif env['BOARD'] == 'AAC-OBCS':
-        path = []
-    elif env['BOARD'] == 'AAC-TCMS':
-        path = []
-    else:
-        print "Error: Board not defined. Set the environment variable to " +\
-              "the desired value. Valid values are 'gr712rc|nexys3'."
-        Exit(1)
-
-elif env['OS'] == 'freertos':
-    # FreeRTOS uses C-Style casts. Therefore this warning has to
-    # disabled for the FreeRTOS wrapper files.
-    env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
-    
-    if env['BOARD'] == 'nanomind':
-        envGlobal.Append(CPPPATH=[os.path.abspath('../arch/nanomind')])
-        env.Append(CPPPATH=[os.path.abspath('../arch/nanomind')])
-    
-        files += env.Glob('../arch/nanomind/outpost/nanomind/*.cpp')
-
-elif env['OS'] == 'posix':
-    None
-else:
-    print "Error: Environment variable 'OS' not defined. Set it to " +\
-          "none|rtems|freertos|posix to define the used operating system!"
-    Exit(1)
-
 objects = []
 for file in files:
     objects.append(env.Object(file))

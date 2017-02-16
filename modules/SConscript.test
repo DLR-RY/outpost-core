@@ -20,7 +20,7 @@ envGlobal.SConscript([
     exports='envGlobal')
 
 envGlobal.PrependUnique(LIBS=['outpost_unittest'])
-envGlobal.AppendUnique(LIBS=['gmock-local', 'pthread'])
+envGlobal.AppendUnique(LIBS=['googletest-local', 'pthread'])
 
 files = envGlobal.get('objects_unittest', [])
 library = envGlobal.StaticLibrary('outpost_unittest', files)

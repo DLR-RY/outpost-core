@@ -39,11 +39,11 @@ if envGlobal['ARCHITECTURE'] == 'hosted':
     objects = []
     for file in files:
         objects.append(env.Object(file))
-    envGlobal.Append(objects={'gmock': objects})
+    envGlobal.Append(objects={'googletest': objects})
 
-    libraryGmock = env.StaticLibrary('gmock-local', objects)
+    libraryGmock = env.StaticLibrary('googletest-local', objects)
 
     envGlobal.Install('$BUILDPATH/lib', libraryGmock)
     envGlobal.Install('$BUILDPATH/lib', libraryRapidCheck)
-    envGlobal.Append(LIBS=['gmock-local', 'rapidcheck', 'pthread'])
+    envGlobal.Append(LIBS=['googletest-local', 'rapidcheck', 'pthread'])
 

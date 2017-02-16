@@ -11,7 +11,7 @@ buildfolder = os.path.join(rootpath, 'build')
 # TODO: don't use a absolute path here!
 xpccpath = '/home/user/development/xpcc'
 
-envGlobal = Environment(toolpath=[rootpath + '/scons-tools'],
+envGlobal = Environment(toolpath=[rootpath + '/scons-tools/site_tools'],
                         tools=['compiler_arm_none_eabi_gcc', 'settings_buildpath', 'utils_buildformat', 'utils_buildsize'],
                         OS='freertos',
                         BOARD='stm32f4discovery',

@@ -5,7 +5,7 @@ MODULE=l3test
 
 all: test
 
-include ../../conf/module.default.mk
+include ../module.default.mk
 
 # Build the C++ extensions
 build-lua:

@@ -7,7 +7,7 @@ rootpath    = '../../../..'
 modulepath  = os.path.join(rootpath, 'modules')
 buildfolder = os.path.join(rootpath, 'build')
 
-envGlobal = Environment(toolpath=[rootpath + '/scons-tools'],
+envGlobal = Environment(toolpath=[rootpath + '/scons-tools/site_tools'],
                         tools=['compiler_sparc_rtems_gcc', 'settings_buildpath', 'utils_buildformat', 'utils_buildsize'],
                         DEVICE_SIZE={
                             'name' : 'Nexys 3 - LEON3',

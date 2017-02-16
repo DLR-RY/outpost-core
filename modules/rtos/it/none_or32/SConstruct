@@ -3,7 +3,7 @@
 import os
 
 rootpath = '../../../../'
-envGlobal = Environment(toolpath=[rootpath + 'scons-tools'],
+envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-tools/site_tools')],
 				        tools=['compiler_or32_aac_elf_gcc', 'settings_buildpath', 'utils_buildformat', 'utils_buildsize'],
 			        	ENV=os.environ)
 
