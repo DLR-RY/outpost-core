@@ -1,16 +1,15 @@
 /*
- * Copyright (c) 2013, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2017, German Aerospace Center (DLR)
  *
- * This file is part of outpost 0.6.
+ * This file is part of the development version of OUTPOST.
  *
- * It is distributed under the terms of the GNU General Public License with a
- * linking exception. See the file "LICENSE" for the full license governing
- * this code.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
+ * Authors:
+ * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2013, Norbert Toth (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
 
