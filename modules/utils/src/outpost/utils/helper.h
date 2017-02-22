@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_HELPER_H
-#define COBC_UTILS_HELPER_H
+#ifndef OUTPOST_UTILS_HELPER_H
+#define OUTPOST_UTILS_HELPER_H
 
 #if __cplusplus > 199711L
 // Nothing to do here, C++11 has support for static_assert
@@ -24,4 +24,4 @@
 
 #endif
 
-#endif // COBC_UTILS_HELPER_H
+#endif

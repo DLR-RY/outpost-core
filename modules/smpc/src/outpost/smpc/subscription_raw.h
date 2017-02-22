@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_SMPC_SUBSCRIPTION_RAW_H
-#define COBC_SMPC_SUBSCRIPTION_RAW_H
+#ifndef OUTPOST_SMPC_SUBSCRIPTION_RAW_H
+#define OUTPOST_SMPC_SUBSCRIPTION_RAW_H
 
 #include <stddef.h>
 
@@ -154,4 +154,4 @@ SubscriptionRaw::SubscriptionRaw(TopicRaw& topic,
 }
 }
 
-#endif // COBC_SMPC_SUBSCRIPTION_RAW_H
+#endif

@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_SMPC_TOPIC_LOGGER_IMPL_H
-#define COBC_SMPC_TOPIC_LOGGER_IMPL_H
+#ifndef OUTPOST_SMPC_TOPIC_LOGGER_IMPL_H
+#define OUTPOST_SMPC_TOPIC_LOGGER_IMPL_H
 
 #include "topic_logger.h"
 

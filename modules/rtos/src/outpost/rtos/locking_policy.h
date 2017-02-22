@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_LOCKING_POLICY_H
-#define COBC_RTOS_LOCKING_POLICY_H
+#ifndef OUTPOST_RTOS_LOCKING_POLICY_H
+#define OUTPOST_RTOS_LOCKING_POLICY_H
 
 #include <outpost/rtos/mutex.h>
 

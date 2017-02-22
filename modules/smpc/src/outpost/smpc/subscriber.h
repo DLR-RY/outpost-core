@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_SMPC_SUBSCRIBER_H
-#define COBC_SMPC_SUBSCRIBER_H
+#ifndef OUTPOST_SMPC_SUBSCRIBER_H
+#define OUTPOST_SMPC_SUBSCRIBER_H
 
 namespace outpost
 {
@@ -40,4 +40,4 @@ class Subscriber
 }
 }
 
-#endif // COBC_SMPC_SUBSCRIBER_H
+#endif

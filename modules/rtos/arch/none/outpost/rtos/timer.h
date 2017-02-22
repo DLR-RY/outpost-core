@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_NONE_TIMER_H
-#define COBC_RTOS_NONE_TIMER_H
+#ifndef OUTPOST_RTOS_NONE_TIMER_H
+#define OUTPOST_RTOS_NONE_TIMER_H
 
 #include <stddef.h>
 #include <outpost/time/duration.h>
@@ -137,4 +137,4 @@ outpost::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const 
     this->createTimer(name);
 }
 
-#endif // COBC_RTOS_RTEMS_TIMER_H
+#endif

@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_BITFIELD_IMPL_H
-#define COBC_UTILS_BITFIELD_IMPL_H
+#ifndef OUTPOST_UTILS_BITFIELD_IMPL_H
+#define OUTPOST_UTILS_BITFIELD_IMPL_H
 
 #include "bitfield.h"
 
@@ -101,4 +101,4 @@ outpost::Bitfield::write(uint8_t* byteArray, uint16_t value)
     byteArray[index + 1] = static_cast<uint8_t>(word);
 }
 
-#endif // COBC_UTILS_BITFIELD_IMPL_H
+#endif

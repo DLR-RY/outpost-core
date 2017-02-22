@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_POSIX_TIME_H
-#define COBC_RTOS_POSIX_TIME_H
+#ifndef OUTPOST_RTOS_POSIX_TIME_H
+#define OUTPOST_RTOS_POSIX_TIME_H
 
 #include <time.h>
 
@@ -68,4 +68,4 @@ toAbsoluteTime(const time::Duration duration)
 }
 }
 
-#endif // COBC_RTOS_POSIX_TIME_H
+#endif

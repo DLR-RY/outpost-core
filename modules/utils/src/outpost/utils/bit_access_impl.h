@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_BIT_ACCESS_IMPL_H
-#define COBC_UTILS_BIT_ACCESS_IMPL_H
+#ifndef OUTPOST_UTILS_BIT_ACCESS_IMPL_H
+#define OUTPOST_UTILS_BIT_ACCESS_IMPL_H
 
 #include "bit_access.h"
 #include "helper.h"
@@ -154,4 +154,4 @@ BitAccess::set<uint32_t, 31, 24>(uint32_t& data, uint32_t value)
 }
 }
 
-#endif // COBC_UTILS_BIT_ACCESS_IMPL_H
+#endif

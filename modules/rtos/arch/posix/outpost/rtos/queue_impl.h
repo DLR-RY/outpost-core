@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_POSIX_QUEUE_IMPL_H
-#define COBC_RTOS_POSIX_QUEUE_IMPL_H
+#ifndef OUTPOST_RTOS_POSIX_QUEUE_IMPL_H
+#define OUTPOST_RTOS_POSIX_QUEUE_IMPL_H
 
 #include "queue.h"
 
@@ -118,4 +118,4 @@ outpost::rtos::Queue<T>::increment(size_t index)
     return index;
 }
 
-#endif // COBC_RTOS_POSIX_QUEUE_IMPL_H
+#endif

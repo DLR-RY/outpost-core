@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_RTEMS_INTERVAL_H
-#define COBC_RTOS_RTEMS_INTERVAL_H
+#ifndef OUTPOST_RTOS_RTEMS_INTERVAL_H
+#define OUTPOST_RTOS_RTEMS_INTERVAL_H
 
 #include <rtems.h>
 #include <outpost/time/duration.h>

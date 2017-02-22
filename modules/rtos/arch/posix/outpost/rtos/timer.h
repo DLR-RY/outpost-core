@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_POSIX_TIMER_H
-#define COBC_RTOS_POSIX_TIMER_H
+#ifndef OUTPOST_RTOS_POSIX_TIMER_H
+#define OUTPOST_RTOS_POSIX_TIMER_H
 
 #include <signal.h>
 #include <time.h>
@@ -165,4 +165,4 @@ outpost::rtos::Timer::Timer(T* object,
     this->createTimer(name);
 }
 
-#endif // COBC_RTOS_POSIX_TIMER_H
+#endif

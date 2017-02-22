@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_POW_H
-#define COBC_POW_H
+#ifndef OUTPOST_POW_H
+#define OUTPOST_POW_H
 
 namespace outpost
 {
@@ -100,4 +100,4 @@ struct Pow<Base, -1>
 
 }
 
-#endif // COBC_POW_H
+#endif

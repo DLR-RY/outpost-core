@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_ITERATOR_H
-#define COBC_UTILS_ITERATOR_H
+#ifndef OUTPOST_UTILS_ITERATOR_H
+#define OUTPOST_UTILS_ITERATOR_H
 
 namespace outpost
 {

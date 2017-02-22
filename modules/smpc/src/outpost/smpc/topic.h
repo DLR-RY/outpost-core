@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_SMPC_TOPIC_H
-#define COBC_SMPC_TOPIC_H
+#ifndef OUTPOST_SMPC_TOPIC_H
+#define OUTPOST_SMPC_TOPIC_H
 
 #include <stdint.h>
 #include <outpost/rtos/mutex.h>
@@ -177,4 +177,4 @@ private:
 }
 }
 
-#endif // COBC_SMPC_TOPIC_H
+#endif

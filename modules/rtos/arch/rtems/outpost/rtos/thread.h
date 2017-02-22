@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_RTEMS_THREAD_H
-#define COBC_RTOS_RTEMS_THREAD_H
+#ifndef OUTPOST_RTOS_RTEMS_THREAD_H
+#define OUTPOST_RTOS_RTEMS_THREAD_H
 
 #include <cstddef>
 #include <stdint.h>
@@ -207,4 +207,4 @@ private:
 }
 }
 
-#endif // COBC_RTOS_RTEMS_THREAD_H
+#endif

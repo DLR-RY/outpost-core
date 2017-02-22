@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_BITORDER_H
-#define COBC_UTILS_BITORDER_H
+#ifndef OUTPOST_UTILS_BITORDER_H
+#define OUTPOST_UTILS_BITORDER_H
 
 #include "helper.h"
 
@@ -66,4 +66,4 @@ public:
 
 }
 
-#endif // COBC_UTILS_BITORDER_H
+#endif

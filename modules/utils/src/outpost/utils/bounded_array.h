@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_BOUNDED_ARRAY_H
-#define COBC_BOUNDED_ARRAY_H
+#ifndef OUTPOST_BOUNDED_ARRAY_H
+#define OUTPOST_BOUNDED_ARRAY_H
 
 #include <stddef.h>
 
@@ -173,4 +173,4 @@ toArray(T (&array)[N])
 
 }
 
-#endif // COBC_BOUNDED_ARRAY_H
+#endif

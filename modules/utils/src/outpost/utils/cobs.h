@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_COBS_H
-#define COBC_UTILS_COBS_H
+#ifndef OUTPOST_UTILS_COBS_H
+#define OUTPOST_UTILS_COBS_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -147,4 +147,4 @@ typedef CobsBase<254> Cobs;
 
 #include "cobs_impl.h"
 
-#endif // COBC_UTILS_COBS_H
+#endif

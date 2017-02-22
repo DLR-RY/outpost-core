@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_PRINTER_H
-#define COBC_TIME_PRINTER_H
+#ifndef OUTPOST_TIME_PRINTER_H
+#define OUTPOST_TIME_PRINTER_H
 
 #include <outpost/time/duration.h>
 #include <outpost/time/date.h>

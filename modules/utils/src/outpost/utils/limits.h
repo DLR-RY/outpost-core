@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_LIMITS_H
-#define COBC_UTILS_LIMITS_H
+#ifndef OUTPOST_UTILS_LIMITS_H
+#define OUTPOST_UTILS_LIMITS_H
 
 namespace outpost
 {
@@ -81,4 +81,4 @@ struct Limits<uint64_t>
 
 }
 
-#endif // COBC_UTILS_LIMITS_H
+#endif

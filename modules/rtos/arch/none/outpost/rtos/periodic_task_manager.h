@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_NONE_PERIODIC_TASK_MANAGER_H
-#define COBC_RTOS_NONE_PERIODIC_TASK_MANAGER_H
+#ifndef OUTPOST_RTOS_NONE_PERIODIC_TASK_MANAGER_H
+#define OUTPOST_RTOS_NONE_PERIODIC_TASK_MANAGER_H
 
 #include <outpost/time/duration.h>
 
@@ -112,4 +112,4 @@ namespace outpost
     }
 }
 
-#endif // COBC_RTOS_NONE_PERIODIC_TASK_MANAGER_H
+#endif

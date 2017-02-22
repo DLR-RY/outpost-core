@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_FREERTOS_THREAD_PRIORITIES_H
-#define COBC_FREERTOS_THREAD_PRIORITIES_H
+#ifndef OUTPOST_FREERTOS_THREAD_PRIORITIES_H
+#define OUTPOST_FREERTOS_THREAD_PRIORITIES_H
 
 #include <stdint.h>
 #include <cstddef>
@@ -46,4 +46,4 @@ fromFreeRtosPriority(uint8_t priority, size_t numPriorities)
     return (priority * stepWidth + offset);
 }
 
-#endif // COBC_FREERTOS_THREAD_PRIORITIES_H
+#endif

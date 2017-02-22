@@ -14,8 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_SERIALIZE_H
-#define COBC_UTILS_SERIALIZE_H
+#ifndef OUTPOST_UTILS_SERIALIZE_H
+#define OUTPOST_UTILS_SERIALIZE_H
 
 #include <stddef.h>
 #include <string.h>
@@ -405,4 +405,4 @@ private:
 
 #include "serialize_impl.h"
 
-#endif // COBC_UTILS_SERIALIZE_H
+#endif

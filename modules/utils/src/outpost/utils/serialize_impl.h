@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_SERIALIZE_IMPL_H
-#define COBC_UTILS_SERIALIZE_IMPL_H
+#ifndef OUTPOST_UTILS_SERIALIZE_IMPL_H
+#define OUTPOST_UTILS_SERIALIZE_IMPL_H
 
 #include "serialize.h"
 
@@ -352,4 +352,4 @@ Deserialize::read(outpost::BoundedArray<uint8_t> array)
 
 }
 
-#endif // COBC_UTILS_SERIALIZE_IMPL_H
+#endif

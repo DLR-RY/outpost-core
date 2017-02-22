@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_SMPC_H
-#define COBC_SMPC_H
+#ifndef OUTPOST_SMPC_H
+#define OUTPOST_SMPC_H
 
 /**
  * \defgroup    smpc    SMPC
@@ -30,4 +30,4 @@
 #include "smpc/subscription.h"
 #include "smpc/topic.h"
 
-#endif    // COBC_SMPC_H
+#endif

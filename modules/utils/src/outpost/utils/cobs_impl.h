@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_COBS_IMPL_H
-#define COBC_UTILS_COBS_IMPL_H
+#ifndef OUTPOST_UTILS_COBS_IMPL_H
+#define OUTPOST_UTILS_COBS_IMPL_H
 
 #include "cobs.h"
 

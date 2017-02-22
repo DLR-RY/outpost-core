@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_SERIALIZE_LITTLE_ENDIAN_IMPL_H
-#define COBC_UTILS_SERIALIZE_LITTLE_ENDIAN_IMPL_H
+#ifndef OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_IMPL_H
+#define OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_IMPL_H
 
 #include "serialize_little_endian.h"
 

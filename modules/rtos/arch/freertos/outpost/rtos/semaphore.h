@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_FREERTOS_SEMAPHORE_HPP
-#define COBC_RTOS_FREERTOS_SEMAPHORE_HPP
+#ifndef OUTPOST_RTOS_FREERTOS_SEMAPHORE_HPP
+#define OUTPOST_RTOS_FREERTOS_SEMAPHORE_HPP
 
 #include <outpost/time/duration.h>
 
@@ -186,4 +186,4 @@ private:
 }
 }
 
-#endif // COBC_RTOS_FREERTOS_SEMAPHORE_HPP
+#endif

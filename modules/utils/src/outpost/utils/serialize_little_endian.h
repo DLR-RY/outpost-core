@@ -14,8 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_SERIALIZE_LITTLE_ENDIAN_H
-#define COBC_UTILS_SERIALIZE_LITTLE_ENDIAN_H
+#ifndef OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_H
+#define OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_H
 
 #include <stddef.h>
 #include <string.h>

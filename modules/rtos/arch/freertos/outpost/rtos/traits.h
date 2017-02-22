@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_FREERTOS_TRAITS_H
-#define COBC_RTOS_FREERTOS_TRAITS_H
+#ifndef OUTPOST_RTOS_FREERTOS_TRAITS_H
+#define OUTPOST_RTOS_FREERTOS_TRAITS_H
 
 #include <stdint.h>
 
@@ -75,4 +75,4 @@ namespace outpost
     }
 }
 
-#endif // COBC_RTOS_FREERTOS_TRAITS_H
+#endif

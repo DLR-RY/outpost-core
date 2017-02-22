@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_POSIX_THREAD_H
-#define COBC_POSIX_THREAD_H
+#ifndef OUTPOST_POSIX_THREAD_H
+#define OUTPOST_POSIX_THREAD_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -168,4 +168,4 @@ private:
 }
 }
 
-#endif // COBC_POSIX_THREAD_H
+#endif

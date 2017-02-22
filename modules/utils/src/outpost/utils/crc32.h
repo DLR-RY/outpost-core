@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_CRC32_H
-#define COBC_CRC32_H
+#ifndef OUTPOST_CRC32_H
+#define OUTPOST_CRC32_H
 
 #include <stdint.h>
 #include <stddef.h>

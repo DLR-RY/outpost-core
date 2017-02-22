@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_FREERTOS_QUEUE_H
-#define COBC_RTOS_FREERTOS_QUEUE_H
+#ifndef OUTPOST_RTOS_FREERTOS_QUEUE_H
+#define OUTPOST_RTOS_FREERTOS_QUEUE_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -94,4 +94,4 @@ private:
 
 #include "queue_impl.h"
 
-#endif // COBC_RTOS_FREERTOS_QUEUE_H
+#endif

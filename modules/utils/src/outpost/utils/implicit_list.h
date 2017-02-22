@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_IMPLICIT_LIST_H
-#define COBC_UTILS_IMPLICIT_LIST_H
+#ifndef OUTPOST_UTILS_IMPLICIT_LIST_H
+#define OUTPOST_UTILS_IMPLICIT_LIST_H
 
 namespace outpost
 {
@@ -123,4 +123,4 @@ private:
 
 }
 
-#endif // COBC_UTILS_IMPLICIT_LIST_H
+#endif

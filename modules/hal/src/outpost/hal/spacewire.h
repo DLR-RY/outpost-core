@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_HAL_SPACEWIRE_H
-#define COBC_HAL_SPACEWIRE_H
+#ifndef OUTPOST_HAL_SPACEWIRE_H
+#define OUTPOST_HAL_SPACEWIRE_H
 
 #include <stdint.h>
 #include <cstddef>
@@ -297,4 +297,4 @@ public:
 }
 }
 
-#endif // COBC_HAL_SPACEWIRE_H
+#endif

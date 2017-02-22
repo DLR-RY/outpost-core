@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_CRC8_H
-#define COBC_CRC8_H
+#ifndef OUTPOST_CRC8_H
+#define OUTPOST_CRC8_H
 
 #include <stdint.h>
 #include <stddef.h>

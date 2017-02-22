@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_H
-#define COBC_RTOS_H
+#ifndef OUTPOST_RTOS_H
+#define OUTPOST_RTOS_H
 
 /**
  * \defgroup rtos   RTOS Wrappers
@@ -33,4 +33,4 @@
 #include <outpost/rtos/mutex_guard.h>
 #include <outpost/utils/callable.h>
 
-#endif // COBC_RTOS_H
+#endif

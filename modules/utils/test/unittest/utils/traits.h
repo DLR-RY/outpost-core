@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TRAITS_H
-#define COBC_TRAITS_H
+#ifndef OUTPOST_TRAITS_H
+#define OUTPOST_TRAITS_H
 
 #include <stdint.h>
 
@@ -105,4 +105,4 @@ namespace outpost
     };
 }
 
-#endif // COBC_TRAITS_H
+#endif

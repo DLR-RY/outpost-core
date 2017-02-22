@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_TIME_POINT_H
-#define COBC_TIME_TIME_POINT_H
+#ifndef OUTPOST_TIME_TIME_POINT_H
+#define OUTPOST_TIME_TIME_POINT_H
 
 #include "duration.h"
 
@@ -206,4 +206,4 @@ private:
 
 #include "time_epoch.h"
 
-#endif // COBC_TIME_TIME_POINT_H
+#endif

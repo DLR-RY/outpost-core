@@ -14,8 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_TIME_EPOCH_H
-#define COBC_TIME_TIME_EPOCH_H
+#ifndef OUTPOST_TIME_TIME_EPOCH_H
+#define OUTPOST_TIME_TIME_EPOCH_H
 
 #include "time_point.h"
 
@@ -102,4 +102,4 @@ setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gps);
 
 #include "time_epoch_impl.h"
 
-#endif // COBC_TIME_TIME_EPOCH_H
+#endif

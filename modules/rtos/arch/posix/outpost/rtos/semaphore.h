@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_POSIX_SEMAPHORE_HPP
-#define COBC_RTOS_POSIX_SEMAPHORE_HPP
+#ifndef OUTPOST_RTOS_POSIX_SEMAPHORE_HPP
+#define OUTPOST_RTOS_POSIX_SEMAPHORE_HPP
 
 #include <stdint.h>
 
@@ -179,4 +179,4 @@ private:
 }
 }
 
-#endif // COBC_RTOS_POSIX_SEMAPHORE_HPP
+#endif

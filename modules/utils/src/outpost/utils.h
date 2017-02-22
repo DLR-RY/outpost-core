@@ -12,12 +12,12 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_H
-#define COBC_UTILS_H
+#ifndef OUTPOST_UTILS_H
+#define OUTPOST_UTILS_H
 
 #include "utils/deque.h"
 #include "utils/pow.h"
 #include "utils/list.h"
 #include "utils/implicit_list.h"
 
-#endif    // COBC_UTILS_H
+#endif

@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_HAL_REGISTER_IMPL_H
-#define COBC_HAL_REGISTER_IMPL_H
+#ifndef OUTPOST_HAL_REGISTER_IMPL_H
+#define OUTPOST_HAL_REGISTER_IMPL_H
 
 #include "register.h"
 

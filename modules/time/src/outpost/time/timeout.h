@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_TIMEOUT_H
-#define COBC_TIME_TIMEOUT_H
+#ifndef OUTPOST_TIME_TIMEOUT_H
+#define OUTPOST_TIME_TIMEOUT_H
 
 #include <outpost/time/clock.h>
 #include <outpost/time/duration.h>

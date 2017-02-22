@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_NONE_THREAD_H
-#define COBC_RTOS_NONE_THREAD_H
+#ifndef OUTPOST_RTOS_NONE_THREAD_H
+#define OUTPOST_RTOS_NONE_THREAD_H
 
 #include <cstddef>
 #include <stdint.h>
@@ -191,4 +191,4 @@ protected:
 }
 }
 
-#endif // COBC_RTOS_NONE_THREAD_H
+#endif

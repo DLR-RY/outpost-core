@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_L3TEST_LUA_PATH_H
-#define COBC_L3TEST_LUA_PATH_H
+#ifndef OUTPOST_L3TEST_LUA_PATH_H
+#define OUTPOST_L3TEST_LUA_PATH_H
 
 #include <string>
 
@@ -47,4 +47,4 @@ private:
 }
 }
 
-#endif // COBC_L3TEST_LUA_PATH_H
+#endif

@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_POSIX_MUTEX_HPP
-#define COBC_RTOS_POSIX_MUTEX_HPP
+#ifndef OUTPOST_RTOS_POSIX_MUTEX_HPP
+#define OUTPOST_RTOS_POSIX_MUTEX_HPP
 
 #include <pthread.h>
 

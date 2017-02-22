@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_FIXED_SIZE_ARRAY_H
-#define COBC_FIXED_SIZE_ARRAY_H
+#ifndef OUTPOST_FIXED_SIZE_ARRAY_H
+#define OUTPOST_FIXED_SIZE_ARRAY_H
 
 #include <stddef.h>
 #include <string.h>     // for memcpy
@@ -257,4 +257,4 @@ private:
 
 }
 
-#endif // COBC_FIXED_SIZE_ARRAY_H
+#endif

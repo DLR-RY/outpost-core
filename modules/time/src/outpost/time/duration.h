@@ -14,8 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_DURATION_H
-#define COBC_TIME_DURATION_H
+#ifndef OUTPOST_TIME_DURATION_H
+#define OUTPOST_TIME_DURATION_H
 
 #include <stdint.h>
 
@@ -355,4 +355,4 @@ public:
 }
 }
 
-#endif // COBC_TIME_DURATION_H
+#endif

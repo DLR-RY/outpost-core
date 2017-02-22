@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_MEMBER_FUNCTION_STORE_H
-#define COBC_UTILS_MEMBER_FUNCTION_STORE_H
+#ifndef OUTPOST_UTILS_MEMBER_FUNCTION_STORE_H
+#define OUTPOST_UTILS_MEMBER_FUNCTION_STORE_H
 
 #include <stddef.h>
 #include "callable.h"

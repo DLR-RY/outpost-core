@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_BITFIELD_H
-#define COBC_UTILS_BITFIELD_H
+#ifndef OUTPOST_UTILS_BITFIELD_H
+#define OUTPOST_UTILS_BITFIELD_H
 
 #include <stdint.h>
 
@@ -122,4 +122,4 @@ private:
 
 #include "bitfield_impl.h"
 
-#endif // COBC_UTILS_BITFIELD_H
+#endif

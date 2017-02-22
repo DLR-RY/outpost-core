@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_CHECKPOINT_H
-#define COBC_RTOS_CHECKPOINT_H
+#ifndef OUTPOST_RTOS_CHECKPOINT_H
+#define OUTPOST_RTOS_CHECKPOINT_H
 
 #include <outpost/rtos/mutex.h>
 #include <outpost/rtos/mutex_guard.h>

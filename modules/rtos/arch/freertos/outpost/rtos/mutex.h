@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_FREERTOS_MUTEX_HPP
-#define COBC_RTOS_FREERTOS_MUTEX_HPP
+#ifndef OUTPOST_RTOS_FREERTOS_MUTEX_HPP
+#define OUTPOST_RTOS_FREERTOS_MUTEX_HPP
 
 #include <stdint.h>
 
@@ -98,4 +98,4 @@ private:
 }
 }
 
-#endif // COBC_RTOS_FREERTOS_MUTEX_HPP
+#endif

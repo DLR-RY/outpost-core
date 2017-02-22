@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_HAL_REGISTER_H
-#define COBC_HAL_REGISTER_H
+#ifndef OUTPOST_HAL_REGISTER_H
+#define OUTPOST_HAL_REGISTER_H
 
 #include <stdint.h>
 #include <outpost/utils/bit_access.h>

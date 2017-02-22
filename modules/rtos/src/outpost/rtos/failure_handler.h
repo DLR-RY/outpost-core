@@ -19,8 +19,8 @@
  * \author  Fabian Greif
  */
 
-#ifndef COBC_RTOS_FAILURE_H
-#define COBC_RTOS_FAILURE_H
+#ifndef OUTPOST_RTOS_FAILURE_H
+#define OUTPOST_RTOS_FAILURE_H
 
 #include <stdint.h>
 
@@ -134,4 +134,4 @@ protected:
 }
 }
 
-#endif // COBC_RTOS_FAILURE_H
+#endif

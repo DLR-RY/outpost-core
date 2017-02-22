@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_SMPC_TOPIC_RAW_H
-#define COBC_SMPC_TOPIC_RAW_H
+#ifndef OUTPOST_SMPC_TOPIC_RAW_H
+#define OUTPOST_SMPC_TOPIC_RAW_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -101,4 +101,4 @@ private:
 }
 }
 
-#endif // COBC_SMPC_TOPIC_RAW_H
+#endif

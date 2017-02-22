@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_FREERTOS_CLOCK_H
-#define COBC_RTOS_FREERTOS_CLOCK_H
+#ifndef OUTPOST_RTOS_FREERTOS_CLOCK_H
+#define OUTPOST_RTOS_FREERTOS_CLOCK_H
 
 #include <outpost/time/time_point.h>
 #include <outpost/time/clock.h>
@@ -37,4 +37,4 @@ public:
 }
 }
 
-#endif // COBC_RTOS_FREERTOS_CLOCK_H
+#endif

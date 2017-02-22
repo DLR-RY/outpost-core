@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_CLOCK_H
-#define COBC_TIME_CLOCK_H
+#ifndef OUTPOST_TIME_CLOCK_H
+#define OUTPOST_TIME_CLOCK_H
 
 #include "time_point.h"
 
@@ -50,4 +50,4 @@ private:
 }
 }
 
-#endif // COBC_TIME_CLOCK_H
+#endif

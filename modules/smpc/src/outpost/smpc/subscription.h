@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_SMPC_SUBSCRIPTION_H
-#define COBC_SMPC_SUBSCRIPTION_H
+#ifndef OUTPOST_SMPC_SUBSCRIPTION_H
+#define OUTPOST_SMPC_SUBSCRIPTION_H
 
 #include "subscriber.h"
 #include "topic.h"
@@ -169,4 +169,4 @@ outpost::smpc::Subscription::Subscription(Topic<T>& topic,
 {
 }
 
-#endif // COBC_SMPC_SUBSCRIPTION_H
+#endif

@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_META_H
-#define COBC_META_H
+#ifndef OUTPOST_META_H
+#define OUTPOST_META_H
 
 namespace outpost
 {

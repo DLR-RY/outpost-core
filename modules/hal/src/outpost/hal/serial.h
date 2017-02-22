@@ -14,8 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_HAL_SERIAL_H
-#define COBC_HAL_SERIAL_H
+#ifndef OUTPOST_HAL_SERIAL_H
+#define OUTPOST_HAL_SERIAL_H
 
 #include <cstddef>
 #include <stdint.h>
@@ -114,4 +114,4 @@ public:
 }
 }
 
-#endif // COBC_HAL_SERIAL_H
+#endif

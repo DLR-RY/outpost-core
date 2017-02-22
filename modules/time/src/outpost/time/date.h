@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_DATE_H
-#define COBC_TIME_DATE_H
+#ifndef OUTPOST_TIME_DATE_H
+#define OUTPOST_TIME_DATE_H
 
 #include "time_epoch.h"
 
@@ -104,4 +104,4 @@ struct GpsDate
 }
 }
 
-#endif // COBC_TIME_DATE_H
+#endif

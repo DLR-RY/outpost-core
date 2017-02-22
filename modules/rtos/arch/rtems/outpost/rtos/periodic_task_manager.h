@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
-#define COBC_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
+#ifndef OUTPOST_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
+#define OUTPOST_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
 
 #include "rtems/interval.h"
 
@@ -133,4 +133,4 @@ private:
 }
 }
 
-#endif // COBC_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
+#endif

@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_FIXED_ORDERED_MAP_H
-#define COBC_UTILS_FIXED_ORDERED_MAP_H
+#ifndef OUTPOST_UTILS_FIXED_ORDERED_MAP_H
+#define OUTPOST_UTILS_FIXED_ORDERED_MAP_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -155,4 +155,4 @@ private:
 
 #include "fixed_ordered_map_impl.h"
 
-#endif // COBC_UTILS_FIXED_ORDERED_MAP_H
+#endif

@@ -14,8 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_LIST_H
-#define COBC_LIST_H
+#ifndef OUTPOST_LIST_H
+#define OUTPOST_LIST_H
 
 #include <stddef.h>
 
@@ -263,4 +263,4 @@ private:
 
 #include "list_impl.h"
 
-#endif // COBC_LIST_H
+#endif

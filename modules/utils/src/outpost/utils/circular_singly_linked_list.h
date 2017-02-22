@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_CIRCULAR_SINGLY_LINKED_LIST_H
-#define COBC_CIRCULAR_SINGLY_LINKED_LIST_H
+#ifndef OUTPOST_CIRCULAR_SINGLY_LINKED_LIST_H
+#define OUTPOST_CIRCULAR_SINGLY_LINKED_LIST_H
 
 #include <stddef.h>
 

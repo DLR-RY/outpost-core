@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_TIME_EPOCH_IMPL_H
-#define COBC_TIME_TIME_EPOCH_IMPL_H
+#ifndef OUTPOST_TIME_TIME_EPOCH_IMPL_H
+#define OUTPOST_TIME_TIME_EPOCH_IMPL_H
 
 #include "time_epoch.h"
 
@@ -159,4 +159,4 @@ public:
 }
 }
 
-#endif // COBC_TIME_TIME_EPOCH_IMPL_H
+#endif

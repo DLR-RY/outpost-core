@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_TIME_H
-#define COBC_TIME_H
+#ifndef OUTPOST_TIME_H
+#define OUTPOST_TIME_H
 
 /**
  * \defgroup    time
@@ -47,4 +47,4 @@ namespace outpost
     }
 }
 
-#endif // COBC_TIME_H
+#endif

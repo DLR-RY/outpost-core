@@ -19,8 +19,8 @@
  * \author    Fabian Greif
  */
 
-#ifndef COBC_HARNESS_H
-#define COBC_HARNESS_H
+#ifndef OUTPOST_HARNESS_H
+#define OUTPOST_HARNESS_H
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -47,4 +47,4 @@
 
 #define ARRAY_SIZE(a)    (sizeof(a)/sizeof(a[0]))
 
-#endif // COBC_HARNESS_H
+#endif

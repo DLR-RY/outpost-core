@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_DEQUE_IMPL_H
-#define COBC_DEQUE_IMPL_H
+#ifndef OUTPOST_DEQUE_IMPL_H
+#define OUTPOST_DEQUE_IMPL_H
 
 #include "deque.h"
 

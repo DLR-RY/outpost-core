@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_BIT_ACCESS_H
-#define COBC_UTILS_BIT_ACCESS_H
+#ifndef OUTPOST_UTILS_BIT_ACCESS_H
+#define OUTPOST_UTILS_BIT_ACCESS_H
 
 #include <stddef.h>
 #include <stdint.h>
@@ -129,4 +129,4 @@ private:
 
 #include "bit_access_impl.h"
 
-#endif // COBC_UTILS_BIT_ACCESS_H
+#endif

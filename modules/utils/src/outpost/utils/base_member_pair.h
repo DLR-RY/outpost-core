@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_UTILS_BASE_MEMBER_PAIR_H
-#define COBC_UTILS_BASE_MEMBER_PAIR_H
+#ifndef OUTPOST_UTILS_BASE_MEMBER_PAIR_H
+#define OUTPOST_UTILS_BASE_MEMBER_PAIR_H
 
 namespace outpost
 {

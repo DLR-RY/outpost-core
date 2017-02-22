@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_FREERTOS_QUEUE_IMPL_H
-#define COBC_RTOS_FREERTOS_QUEUE_IMPL_H
+#ifndef OUTPOST_RTOS_FREERTOS_QUEUE_IMPL_H
+#define OUTPOST_RTOS_FREERTOS_QUEUE_IMPL_H
 
 #include "queue.h"
 
@@ -55,4 +55,4 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
     return xQueueReceive(mHandle, &data, ticks);
 }
 
-#endif // COBC_RTOS_FREERTOS_QUEUE_IMPL_H
+#endif

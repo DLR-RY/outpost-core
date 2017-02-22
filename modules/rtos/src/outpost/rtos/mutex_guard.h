@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_MUTEX_GUARD_HPP
-#define COBC_RTOS_MUTEX_GUARD_HPP
+#ifndef OUTPOST_RTOS_MUTEX_GUARD_HPP
+#define OUTPOST_RTOS_MUTEX_GUARD_HPP
 
 #include <outpost/rtos/mutex.h>
 

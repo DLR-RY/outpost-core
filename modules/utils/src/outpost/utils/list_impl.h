@@ -14,8 +14,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_LIST_IMPL_H
-#define COBC_LIST_IMPL_H
+#ifndef OUTPOST_LIST_IMPL_H
+#define OUTPOST_LIST_IMPL_H
 
 #include "list.h"
 
@@ -478,4 +478,4 @@ outpost::List<T>::end() const
     return it;
 }
 
-#endif // COBC_LIST_IMPL_H
+#endif

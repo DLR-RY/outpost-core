@@ -13,8 +13,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_RTEMS_QUEUE_IMPL_H
-#define COBC_RTOS_RTEMS_QUEUE_IMPL_H
+#ifndef OUTPOST_RTOS_RTEMS_QUEUE_IMPL_H
+#define OUTPOST_RTOS_RTEMS_QUEUE_IMPL_H
 
 #include "queue.h"
 #include "rtems/interval.h"
@@ -63,4 +63,4 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
     return success;
 }
 
-#endif // COBC_RTOS_RTEMS_QUEUE_IMPL_H
+#endif

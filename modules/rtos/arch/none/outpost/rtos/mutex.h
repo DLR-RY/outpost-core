@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef COBC_RTOS_NONE_MUTEX_HPP
-#define COBC_RTOS_NONE_MUTEX_HPP
+#ifndef OUTPOST_RTOS_NONE_MUTEX_HPP
+#define OUTPOST_RTOS_NONE_MUTEX_HPP
 
 #include <stdint.h>
 #include <outpost/time/duration.h>
@@ -104,4 +104,4 @@ private:
 }
 }
 
-#endif // COBC_RTOS_NONE_MUTEX_HPP
+#endif
