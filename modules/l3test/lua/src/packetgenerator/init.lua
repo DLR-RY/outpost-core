@@ -71,7 +71,5 @@ return {
 
 	-- modules
 	generator = generator,
-	spp = spp,
-	pus = pus,
 }
 

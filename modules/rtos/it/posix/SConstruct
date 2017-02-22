@@ -16,30 +16,21 @@ import os
 
 rootpath = '../../../../'
 envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-tools/site_tools')],
-				        tools=['compiler_hosted_llvm', 'settings_buildpath', 'utils_buildformat', 'utils_buildsize'],
-			        	ENV=os.environ)
+                        tools=['compiler_hosted_llvm', 'settings_buildpath', 'utils_buildformat', 'utils_buildsize'],
+                        ENV=os.environ)
 
 envGlobal['BASEPATH'] = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath(rootpath + 'build/rtos/test/posix')
-
-envGlobal.Append(CPPPATH=[
-    os.path.abspath(os.path.join(rootpath, 'modules/spp/default')),
-    os.path.abspath(os.path.join(rootpath, 'modules/pus/default')),
-    os.path.abspath(os.path.join(rootpath, 'modules/log/default')),
-])
 
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
 env = envGlobal.Clone()
 
 env.Append(CPPPATH=[
-	'.',
-	'../reference'
+    '.',
+    '../reference'
 ])
 env.AppendUnique(LIBS=[
-    'outpost_log',
-    'outpost_pus',
-    'outpost_spp',
     'outpost_rtos',
     'outpost_smpc',
     'outpost_time',

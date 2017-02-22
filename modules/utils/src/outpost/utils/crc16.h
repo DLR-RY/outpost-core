@@ -28,7 +28,7 @@ namespace outpost
  * Polynomial    : x^16 + x^12 + x^5 + 1 (0x1021, MSB first)
  * Initial value : 0xFFFF
  *
- * Used for SPP transfer frames.
+ * Used for space packet transfer frames.
  *
  * \ingroup crc
  * \author  Fabian Greif

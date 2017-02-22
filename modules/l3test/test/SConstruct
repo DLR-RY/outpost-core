@@ -40,12 +40,6 @@ else:
     envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
 
-envGlobal.Append(CPPPATH=[
-    os.path.join(rootpath, 'modules/spp/default'),
-    os.path.join(rootpath, 'modules/pus/default'),
-    os.path.join(rootpath, 'modules/log/default'),
-])
-
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
 # The tests use C++11

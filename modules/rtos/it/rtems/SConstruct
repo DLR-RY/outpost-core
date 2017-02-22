@@ -35,12 +35,6 @@ envGlobal['CCFLAGS_other'] = ['-qleon3std']
 envGlobal['BASEPATH']  = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/rtems'))
 
-envGlobal.Append(CPPPATH=[
-    os.path.abspath(os.path.join(rootpath, 'modules/spp/default')),
-    os.path.abspath(os.path.join(rootpath, 'modules/pus/default')),
-    os.path.abspath(os.path.join(rootpath, 'modules/log/default')),
-])
-
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
 # Build outpost-hw
@@ -54,10 +48,7 @@ env.Append(CPPPATH=[
 ])
 
 env.AppendUnique(LIBS=[
-	'outpost_hal',
-    'outpost_log',
-    'outpost_pus',
-    'outpost_spp',
+    'outpost_hal',
     'outpost_rtos',
     'outpost_smpc',
     'outpost_time',
