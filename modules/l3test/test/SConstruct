@@ -49,8 +49,8 @@ envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports=
 env = envGlobal.Clone()
 
 env.AppendUnique(LIBS=[
-    'l3test',
-    'l3test_lua',
+    'outpost_l3test',
+    'outpost_l3test_lua',
     'outpost_smpc',
     'outpost_time',
     'outpost_utils',

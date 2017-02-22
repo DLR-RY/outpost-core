@@ -42,5 +42,5 @@ for file in files:
 	objects.append(env.Object(file))
 envGlobal.Append(objects={'l3test-lua': objects})
 
-library = env.StaticLibrary('l3test_lua', objects)
+library = env.StaticLibrary('outpost_l3test_lua', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
