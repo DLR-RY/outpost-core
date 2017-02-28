@@ -20,7 +20,7 @@ vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 module = 'hal'
 
 rootpath = '../../../'
-envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-tools/site_tools')],
+envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
                         tools=['utils_buildformat'],
                         variables=vars,
                         BASEPATH=os.path.abspath('.'),

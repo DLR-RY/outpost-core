@@ -22,7 +22,7 @@ vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 module = 'l3test'
 
 rootpath = '../../../'
-envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-tools/site_tools')],
+envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
                         buildroot=[rootpath + 'build/'],
                         tools=['utils_buildformat'],
                         variables=vars,

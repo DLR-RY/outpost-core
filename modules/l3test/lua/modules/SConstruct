@@ -18,7 +18,7 @@ rootpath = '../../'
 outpostpath = rootpath + '../../'
 modulepath = outpostpath + 'modules/'
 
-envGlobal = Environment(toolpath=[os.path.join(outpostpath, '../scons-tools/site_tools')],
+envGlobal = Environment(toolpath=[os.path.join(outpostpath, '../scons-build-tools/site_tools')],
 			            tools=[
 							'utils_buildformat',
 							'compiler_hosted_gcc',
