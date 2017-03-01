@@ -5,26 +5,11 @@ import os
 Import('envGlobal')
 
 if envGlobal['ARCHITECTURE'] == 'hosted':
+    # Build GoogleTest
     googletest = 'googletest-1.8.0-fused'
-    # googletest should only be used when compiling for an hosted environment
     envGlobal.Append(CPPPATH=[
         os.path.abspath('%s' % googletest),
-        os.path.abspath('rapidcheck/include'),
-        os.path.abspath('rapidcheck/extras/gmock/include/'),
-        os.path.abspath('rapidcheck/extras/gtest/include/'),
     ])
-
-    env = envGlobal.Clone()
-    env['CXXFLAGS_language'] = ['-std=c++11']
-
-    env.RemoveFromList('CCFLAGS_warning', [
-        '-Wshadow',
-    ])
-
-    files = env.Glob('rapidcheck/src/*.cpp')
-    files += env.Glob('rapidcheck/src/*/*.cpp')
-    files += env.Glob('rapidcheck/src/*/*/*.cpp')
-    libraryRapidCheck = env.StaticLibrary('rapidcheck', files)
 
     env = envGlobal.Clone()
     env['CXXFLAGS_language'] = ['-std=c++98']
@@ -42,8 +27,36 @@ if envGlobal['ARCHITECTURE'] == 'hosted':
     envGlobal.Append(objects={'googletest': objects})
 
     libraryGmock = env.StaticLibrary('googletest-local', objects)
-
     envGlobal.Install('$BUILDPATH/lib', libraryGmock)
-    envGlobal.Install('$BUILDPATH/lib', libraryRapidCheck)
-    envGlobal.Append(LIBS=['googletest-local', 'rapidcheck', 'pthread'])
+    envGlobal.Append(LIBS=['googletest-local'])
 
+    # Build RapidCheck
+    #
+    # The build is disabled for GCC versions < 4.9. Although GCC > 4.8.1 should
+    # have full C++11 support an internal error throws errors for RapidCheck.
+    # The error is only fixed for GCC > 4.9 (see
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55914)
+    if env['GCC_version'] == 0 or env['GCC_version'] >= 40900:
+        envGlobal.Append(CPPPATH=[
+            os.path.abspath('rapidcheck/include'),
+            os.path.abspath('rapidcheck/extras/gmock/include/'),
+            os.path.abspath('rapidcheck/extras/gtest/include/'),
+        ])
+
+        env = envGlobal.Clone()
+        env['CXXFLAGS_language'] = ['-std=c++11']
+
+        env.RemoveFromList('CCFLAGS_warning', [
+            '-Wshadow',
+        ])
+
+        files = env.Glob('rapidcheck/src/*.cpp')
+        files += env.Glob('rapidcheck/src/*/*.cpp')
+        files += env.Glob('rapidcheck/src/*/*/*.cpp')
+        libraryRapidCheck = env.StaticLibrary('rapidcheck', files)
+        envGlobal.Install('$BUILDPATH/lib', libraryRapidCheck)
+        envGlobal.Append(LIBS=['rapidcheck'])
+    else:
+        print("Disable RapidCheck for GCC older than 4.9.0. Found %s" % env['GCC_version'])
+
+    envGlobal.Append(LIBS=['pthread'])
