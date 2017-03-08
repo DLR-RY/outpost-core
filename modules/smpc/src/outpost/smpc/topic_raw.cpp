@@ -35,11 +35,11 @@ outpost::smpc::TopicRaw::publish(const void* message, size_t length)
 {
     rtos::MutexGuard lock(mMutex);
 
-    for (SubscriptionRaw* topic = mSubscriptions;
-            topic != 0;
-            topic = topic->mNextTopicSubscription)
+    for (SubscriptionRaw* subscription = mSubscriptions;
+            subscription != 0;
+            subscription = subscription->mNextTopicSubscription)
     {
-        topic->notify(message, length);
+        subscription->execute(message, length);
     }
 }
 

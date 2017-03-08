@@ -39,7 +39,7 @@ outpost::smpc::TopicBase::publishTypeUnsafe(void* message)
             subscription != 0;
             subscription = subscription->mNextTopicSubscription)
     {
-        subscription->notify(message);
+        subscription->execute(message);
     }
 }
 

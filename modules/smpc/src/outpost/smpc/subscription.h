@@ -16,6 +16,8 @@
 #ifndef OUTPOST_SMPC_SUBSCRIPTION_H
 #define OUTPOST_SMPC_SUBSCRIPTION_H
 
+#include <outpost/utils/functor.h>
+
 #include "subscriber.h"
 #include "topic.h"
 
@@ -109,21 +111,12 @@ public:
 
 protected:
     /**
-     * Base-type to cast all member function pointers to. The correct type
-     * is restored when calling the function. Although it the member
-     * function is later called with a void-pointer everything remains
-     * safe as only member functions with a correct signature can
-     * be bound to a topic.
-     */
-    typedef void (Subscriber::*Function)(void *);
-
-    /**
      * Relay message to the subscribing component.
      */
     inline void
-    notify(void* message) const
+    execute(void* message) const
     {
-        (mSubscriber->*mFunction)(message);
+        mFunctor.execute(message);
     }
 
 private:
@@ -147,9 +140,16 @@ private:
     TopicBase* const mTopic;
     Subscription* mNextTopicSubscription;
 
-    /// Object and member function to forward a received message to
-    Subscriber* const mSubscriber;
-    Function const mFunction;
+    /**
+     * Base-type to cast all member function pointers to. The correct type
+     * is restored when calling the function. Although it the member
+     * function is later called with a void-pointer everything remains
+     * safe as only member functions with a correct signature can
+     * be bound to a topic.
+     */
+    typedef void (Subscriber::*Function)(void *);
+
+    const Functor1<void(void*)> mFunctor;
 };
 
 }
@@ -159,13 +159,13 @@ private:
 // Implementation of the template constructor
 template <typename T, typename S>
 outpost::smpc::Subscription::Subscription(Topic<T>& topic,
-                                       S* subscriber,
-                                       typename SubscriberFunction<T, S>::Type function) :
+                                          S* subscriber,
+                                          typename SubscriberFunction<T, S>::Type function) :
     ImplicitList<Subscription>(listOfAllSubscriptions, this),
     mTopic(&topic),
     mNextTopicSubscription(0),
-    mSubscriber(reinterpret_cast<Subscriber*>(subscriber)),
-    mFunction(reinterpret_cast<Function>(function))
+    mFunctor(*reinterpret_cast<Subscriber*>(subscriber),
+             reinterpret_cast<Function>(function))
 {
 }
 

@@ -17,6 +17,8 @@
 
 #include <stddef.h>
 
+#include <outpost/utils/functor.h>
+
 #include "subscriber.h"
 #include "topic_raw.h"
 
@@ -39,16 +41,11 @@ namespace smpc
  * \ingroup smpc
  * \author  Fabian Greif
  */
-class SubscriptionRaw : public ImplicitList<SubscriptionRaw>
+class SubscriptionRaw : public ImplicitList<SubscriptionRaw>,
+                        protected Functor2<void(const void* message, size_t length)>
 {
 public:
     friend class TopicRaw;
-
-    template <typename S>
-    struct SubscriberFunction
-    {
-        typedef void (S::*Type)(const void* message, size_t length);
-    };
 
     /**
      * Constructor.
@@ -65,7 +62,7 @@ public:
     template <typename S>
     SubscriptionRaw(TopicRaw& topic,
                     S* subscriber,
-                    typename SubscriberFunction<S>::Type function);
+                    typename FunctionType<S>::Type function);
 
     /**
      * Destroy the subscription
@@ -91,18 +88,6 @@ public:
     connectSubscriptionsToTopics();
 
 protected:
-    /** Base-type to cast all member function pointers to. */
-    typedef void (Subscriber::*Function)(const void*, size_t);
-
-    /**
-     * Relay message to the subscribing component.
-     */
-    inline void
-    notify(const void* message, size_t length) const
-    {
-        (mSubscriber->*mFunction)(message, length);
-    }
-
     /**
      * Release all subscriptions.
      *
@@ -131,10 +116,6 @@ private:
     // their corresponding topics.
     TopicRaw* const mTopic;
     SubscriptionRaw* mNextTopicSubscription;
-
-    // Object and member function to forward a received message to
-    Subscriber* const mSubscriber;
-    Function const mFunction;
 };
 
 // ----------------------------------------------------------------------------
@@ -142,12 +123,11 @@ private:
 template <typename S>
 SubscriptionRaw::SubscriptionRaw(TopicRaw& topic,
                                  S* subscriber,
-                                 typename SubscriberFunction<S>::Type function) :
+                                 typename FunctionType<S>::Type function) :
     ImplicitList<SubscriptionRaw>(listOfAllSubscriptions, this),
+    Functor2<void(const void* message, size_t length)>(*subscriber, function),
     mTopic(&topic),
-    mNextTopicSubscription(0),
-    mSubscriber(reinterpret_cast<Subscriber *>(subscriber)),
-    mFunction(reinterpret_cast<Function>(function))
+    mNextTopicSubscription(0)
 {
 }
 
