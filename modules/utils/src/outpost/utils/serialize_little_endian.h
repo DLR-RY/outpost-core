@@ -23,6 +23,8 @@
 
 #include "bounded_array.h"
 
+#include "serialize_little_endian_traits.h"
+
 namespace outpost
 {
 
@@ -71,14 +73,35 @@ public:
         mBuffer = mBegin;
     }
 
+    template<typename T>
+    static inline size_t
+    getTypeSize()
+    {
+        return SerializeLittleEndianTraits<T>::size();
+    }
+
+    inline void
+    store(outpost::BoundedArray<const uint8_t> array)
+    {
+        size_t length = array.getNumberOfElements();
+        memcpy(mBuffer, &array[0], length);
+        mBuffer += length;
+    }
+
     // explicit template instantiations are provided in serialize_impl.h
     template<typename T>
     inline void
-    store(T data);
+    store(T data)
+    {
+        SerializeLittleEndianTraits<T>::store(mBuffer, data);
+    }
 
     template<typename T>
     inline void
-    storeObject(const T& data);
+    storeObject(const T& data)
+    {
+        SerializeLittleEndianTraits<T>::store(mBuffer, data);
+    }
 
     inline void
     store24(const uint32_t data)
@@ -127,7 +150,7 @@ public:
     inline void
     skip()
     {
-        mBuffer += sizeof(T);
+        mBuffer += SerializeLittleEndianTraits<T>::size();
     }
 
     inline uint8_t*
@@ -222,11 +245,17 @@ public:
 
     template<typename T>
     inline T
-    peek(const size_t n) const;
+    peek(const size_t n) const
+    {
+        return SerializeLittleEndianTraits<T>::peek(mBuffer, n);
+    }
 
     template<typename T>
     inline T
-    read();
+    read()
+    {
+        return SerializeLittleEndianTraits<T>::read(mBuffer);
+    }
 
     /**
      * Read two 12 bit values from a three byte array.
@@ -307,7 +336,7 @@ public:
     inline void
     skip()
     {
-        mBuffer += sizeof(T);
+        mBuffer += SerializeLittleEndianTraits<T>::size();
     }
 
     template<typename T>
@@ -355,7 +384,5 @@ private:
     const uint8_t* const mBegin;
 };
 }
-
-#include "serialize_little_endian_impl.h"
 
 #endif

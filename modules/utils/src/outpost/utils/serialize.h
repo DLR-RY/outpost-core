@@ -24,6 +24,9 @@
 #include "bounded_array.h"
 #include "fixed_size_array.h"
 
+#include "serialize_traits.h"
+#include "serialize_storage_traits.h"
+
 namespace outpost
 {
 
@@ -84,14 +87,26 @@ public:
         mBuffer = mBegin;
     }
 
-    // explicit template instantiations are provided in serialize_impl.h
     template<typename T>
-    inline void
-    store(T data);
+    static inline size_t
+    getTypeSize()
+    {
+        return SerializeBigEndianTraits<T>::size();
+    }
 
     template<typename T>
     inline void
-    storeObject(const T& data);
+    store(T data)
+    {
+        SerializeBigEndianTraits<T>::store(mBuffer, data);
+    }
+
+    template<typename T>
+    inline void
+    storeObject(const T& data)
+    {
+        SerializeBigEndianTraits<T>::store(mBuffer, data);
+    }
 
     inline void
     store24(const uint32_t data)
@@ -121,6 +136,14 @@ public:
     storeBuffer(const uint8_t* buffer, const size_t length)
     {
         memcpy(mBuffer, buffer, length);
+        mBuffer += length;
+    }
+
+    inline void
+    store(outpost::BoundedArray<const uint8_t> array)
+    {
+        size_t length = array.getNumberOfElements();
+        memcpy(mBuffer, &array[0], length);
         mBuffer += length;
     }
 
@@ -168,7 +191,7 @@ public:
     inline void
     skip()
     {
-        mBuffer += sizeof(T);
+        mBuffer += SerializeBigEndianTraits<T>::size();
     }
 
     inline uint8_t*
@@ -266,14 +289,25 @@ public:
 
     template<typename T>
     inline T
-    peek(const size_t n) const;
+    peek(const size_t n) const
+    {
+        return SerializeBigEndianTraits<T>::peek(mBuffer, n);
+    }
 
     template<typename T>
     inline T
-    read();
+    read()
+    {
+        return SerializeBigEndianTraits<T>::read(mBuffer);
+    }
 
     inline void
-    read(outpost::BoundedArray<uint8_t> array);
+    read(outpost::BoundedArray<uint8_t> array)
+    {
+        size_t length = array.getNumberOfElements();
+        memcpy(&array[0], mBuffer, length);
+        mBuffer += length;
+    }
 
     inline uint32_t
     read24()
@@ -354,7 +388,7 @@ public:
     inline void
     skip()
     {
-        mBuffer += sizeof(T);
+        mBuffer += SerializeBigEndianTraits<T>::size();
     }
 
     template<typename T>
@@ -402,7 +436,5 @@ private:
     const uint8_t* const mBegin;
 };
 }
-
-#include "serialize_impl.h"
 
 #endif
