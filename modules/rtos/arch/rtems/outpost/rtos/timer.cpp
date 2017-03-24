@@ -30,8 +30,13 @@ outpost::rtos::Timer::start(time::Duration duration)
 {
     MutexGuard lock(mMutex);
     mRunning = true;
+    uint32_t ticks = duration.microseconds() / rtems_configuration_get_microseconds_per_tick();
+    if (ticks == 0)
+    {
+        ticks = 1;
+    }
     rtems_timer_server_fire_after(mTid,
-                                  duration.microseconds() / rtems_configuration_get_microseconds_per_tick(),
+                                  ticks,
                                   &Timer::invokeTimer,
                                   (void *) this);
 }
