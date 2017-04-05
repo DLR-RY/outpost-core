@@ -192,7 +192,7 @@ public:
     // This constructor is non-explicit to allow for a conversion from
     // const to non-const
     inline
-    FixedSizeArrayView(const FixedSizeArray<NonConstType, N>& rhs) :
+    FixedSizeArrayView(const FixedSizeArray<T, N>& rhs) :
         mData(rhs.mData)
     {
     }
@@ -237,6 +237,12 @@ public:
     operator[](size_t index) const
     {
         return mData[index];
+    }
+
+    inline
+    operator FixedSizeArrayView<const T, N>() const
+    {
+        return FixedSizeArrayView<const T, N>(mData, 0);
     }
 
     inline const_iterator
