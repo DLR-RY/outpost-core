@@ -28,7 +28,7 @@ namespace outpost
 namespace hal
 {
 /**
- * Serial Interface
+ * Serial Interface.
  *
  * \author  Fabian Greif
  */
@@ -55,6 +55,7 @@ public:
 
     /**
      * Check how many bytes are available in the input buffers.
+     *
      * \return  Number of bytes in the buffer
      */
     virtual size_t
@@ -65,15 +66,17 @@ public:
      *
      * Waits until the timeout occurs to read the given number of
      * bytes. May return earlier if enough bytes are available. The
-     * exact number of bytes read will be return, it will be up to
-     * \p length byte but can also be any value lower.
+     * exact number of bytes read will be returned, it will be up to
+     * \p data.getNumberOfElements() bytes but can also be any lower value.
      *
-     * \param *data
-     *      Pointer to a buffer big enough to storage \p length bytes
-     * \param  length
-     *      Number of bytes to be read
-     *
-     * \return    Number of bytes which could be read, maximal \p length
+     * \param data
+     *      Buffer to write the received data to.
+     * \param timeout
+     *      Will return if call has exceeded this time, default is
+     *      blocking call.
+     * \return
+     *      Number of bytes which could be read, maximal
+     *      \p data.getNumberOfElements().
      */
     virtual size_t
     read(outpost::BoundedArray<uint8_t> data,
@@ -82,13 +85,14 @@ public:
     /**
      * Write a block of bytes with timeout.
      *
-     *
-     *
-     * \param *data
-     *      Pointer to a buffer
-     * \param length
-     *      Number of bytes to be write
-     * \return  Number of bytes written.
+     * \param data
+     *      Buffer containing the data to send.
+     * \param timeout
+     *      Will return if call has exceeded this time, default is
+     *      blocking call.
+     * \return
+     *      Number of bytes which could be sent, maximal
+     *      \p data.getNumberOfElements().
      */
     virtual size_t
     write(outpost::BoundedArray<const uint8_t> data,
