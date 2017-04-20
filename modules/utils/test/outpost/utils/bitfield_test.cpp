@@ -113,3 +113,70 @@ TEST_F(BitfieldTest, readValueOverlappingTwoBytes)
     uint16_t value = Bitfield::read<4, 11>(data);
     EXPECT_EQ(0x23U, value);
 }
+
+TEST_F(BitfieldTest, writeSingleByte)
+{
+    uint8_t buffer[8] = {};
+    Bitfield::write<0, 7>(buffer, 0x12);
+    EXPECT_EQ(0x12U, buffer[0]);
+}
+
+TEST_F(BitfieldTest, writeSingleByte2)
+{
+    uint8_t buffer[8] = {};
+    Bitfield::write<16, 23>(buffer, 0x56);
+    EXPECT_EQ(0x00U, buffer[0]);
+    EXPECT_EQ(0x00U, buffer[1]);
+    EXPECT_EQ(0x56U, buffer[2]);
+    EXPECT_EQ(0x00U, buffer[3]);
+}
+
+TEST_F(BitfieldTest, writeTwoBytesFromStart)
+{
+    uint8_t buffer[8] = {};
+    Bitfield::write<0, 15>(buffer, 0x1234);
+    EXPECT_EQ(0x12U, buffer[0]);
+    EXPECT_EQ(0x34U, buffer[1]);
+}
+
+TEST_F(BitfieldTest, writeTwoBytesWithOffset)
+{
+    uint8_t buffer[8] = {};
+    Bitfield::write<8, 23>(buffer, 0x3456);
+    EXPECT_EQ(0x34U, buffer[1]);
+    EXPECT_EQ(0x56U, buffer[2]);
+}
+
+TEST_F(BitfieldTest, writeTwoBytesWithOffset2)
+{
+    uint8_t buffer[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
+
+    Bitfield::write<8, 23>(buffer, 0);
+    EXPECT_EQ(0xFFU, buffer[0]);
+    EXPECT_EQ(0x00U, buffer[1]);
+    EXPECT_EQ(0x00U, buffer[2]);
+    EXPECT_EQ(0xFFU, buffer[3]);
+}
+
+TEST_F(BitfieldTest, writeShorterbuffer)
+{
+    uint8_t buffer[8] = {};
+    Bitfield::write<4, 7>(buffer, 0x02);
+    EXPECT_EQ(0x2U, buffer[0]);
+}
+
+TEST_F(BitfieldTest, writebufferOverlappingTwoBytes)
+{
+    uint8_t buffer[8] = {};
+    Bitfield::write<4, 11>(buffer, 0x23);
+    EXPECT_EQ(0x02U, buffer[0]);
+    EXPECT_EQ(0x30U, buffer[1]);
+}
+
+TEST_F(BitfieldTest, shouldWriteWithBiggerOffset)
+{
+    uint8_t buffer[8] = {};
+    Bitfield::write<41, 55>(buffer, 0x123);
+    EXPECT_EQ(0x01U, buffer[5]);
+    EXPECT_EQ(0x23U, buffer[6]);
+}
