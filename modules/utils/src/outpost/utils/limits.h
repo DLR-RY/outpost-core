@@ -15,6 +15,8 @@
 #ifndef OUTPOST_UTILS_LIMITS_H
 #define OUTPOST_UTILS_LIMITS_H
 
+#include <stdint.h>
+
 namespace outpost
 {
 
