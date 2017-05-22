@@ -47,23 +47,21 @@ public:
     template <typename ReferenceEpoch>
     friend class TimePoint;
 
-    static const int64_t nanosecondsPerMicrosecond = 1000;
-    static const int64_t microsecondsPerMillisecond = 1000;
-    static const int64_t millisecondsPerSecond = 1000;
-    static const int64_t secondsPerMinute = 60;
-    static const int64_t minutesPerHour = 60;
+    static constexpr int64_t nanosecondsPerMicrosecond = 1000;
+    static constexpr int64_t microsecondsPerMillisecond = 1000;
+    static constexpr int64_t millisecondsPerSecond = 1000;
+    static constexpr int64_t secondsPerMinute = 60;
+    static constexpr int64_t minutesPerHour = 60;
 
-    static const int64_t secondsPerDay = 86400;
+    static constexpr int64_t secondsPerDay = 86400;
 
     inline
-    ~Duration()
-    {
-    }
+    ~Duration() = default;
 
     /**
      * Copy constructor
      */
-    inline
+    inline constexpr
     Duration(const Duration& other) :
         mTicks(other.mTicks)
     {
@@ -82,7 +80,7 @@ public:
      *
      * \return  Returns number of hours truncating any fractional hours.
      */
-    inline int64_t
+    inline constexpr int64_t
     hours() const
     {
         return mTicks / (microsecondsPerMillisecond *
@@ -96,7 +94,7 @@ public:
      *
      * \return  Returns number of minutes truncating any fractional minutes.
      */
-    inline int64_t
+    inline constexpr int64_t
     minutes() const
     {
         return mTicks / (microsecondsPerMillisecond *
@@ -109,7 +107,7 @@ public:
      *
      * \return  Returns number of seconds truncating any fractional seconds.
      */
-    inline int64_t
+    inline constexpr int64_t
     seconds() const
     {
         return mTicks / (microsecondsPerMillisecond *
@@ -122,7 +120,7 @@ public:
      * \return    Returns number of milliseconds truncating any
      *             fractional milliseconds.
      */
-    inline int64_t
+    inline constexpr int64_t
     milliseconds() const
     {
         return mTicks / microsecondsPerMillisecond;
@@ -134,55 +132,55 @@ public:
      * \return    Returns number of microseconds truncating any
      *             fractional microseconds.
      */
-    inline int64_t
+    inline constexpr int64_t
     microseconds() const
     {
         return mTicks;
     }
 
-    static inline Duration
+    static inline constexpr Duration
     maximum()
     {
         return Duration(maximumValue);
     }
 
-    static inline Duration
+    static inline constexpr Duration
     infinity()
     {
         return Duration(maximumValue);
     }
 
-    static inline Duration
+    static inline constexpr Duration
     zero()
     {
         return Duration(0);
     }
 
-    inline Duration
+    inline constexpr Duration
     operator-() const
     {
         return Duration(-mTicks);
     }
 
-    inline Duration
+    inline constexpr Duration
     operator-(Duration other) const
     {
         return Duration(mTicks - other.mTicks);
     }
 
-    inline Duration
+    inline constexpr Duration
     operator+(Duration other) const
     {
         return Duration(mTicks + other.mTicks);
     }
 
-    inline Duration
+    inline constexpr Duration
     operator*(Duration other) const
     {
         return Duration(mTicks + other.mTicks);
     }
 
-    inline Duration
+    inline constexpr Duration
     operator/(int divisor) const
     {
         return Duration(mTicks / divisor);
@@ -209,7 +207,7 @@ public:
         return Duration(mTicks);
     }
 
-    inline Duration
+    inline constexpr Duration
     operator*(int rhs) const
     {
         return Duration(mTicks * rhs);
@@ -222,50 +220,50 @@ public:
         return Duration(mTicks);
     }
 
-    inline bool
+    inline constexpr bool
     operator<(Duration rhs)  const
     {
         return mTicks < rhs.mTicks;
     }
 
-    inline bool
+    inline constexpr bool
     operator>(Duration rhs)  const
     {
         return mTicks > rhs.mTicks;
     }
 
-    inline bool
+    inline constexpr bool
     operator<=(Duration rhs)  const
     {
         return mTicks <= rhs.mTicks;
     }
 
-    inline bool
+    inline constexpr bool
     operator>=(Duration rhs)  const
     {
         return mTicks >= rhs.mTicks;
     }
 
-    inline bool
+    inline constexpr bool
     operator==(Duration rhs)  const
     {
         return mTicks == rhs.mTicks;
     }
 
-    inline bool
+    inline constexpr bool
     operator!=(Duration rhs)  const
     {
         return mTicks != rhs.mTicks;
     }
 
-    inline Duration
+    inline constexpr Duration
     abs() const
     {
         return mTicks < 0 ? Duration(-mTicks) : Duration(mTicks);
     }
 
 protected:
-    explicit inline
+    explicit constexpr inline
     Duration(int64_t numberOfTicks) :
         mTicks(numberOfTicks)
     {
@@ -277,14 +275,14 @@ private:
     // With 64 bit a time span of 9 * 10^12 seconds is possible.
     int64_t mTicks;
 
-    static const int64_t maximumValue = 9223372036854775807LL;
-    static const int64_t minimalValue = -maximumValue - 1;
+    static constexpr int64_t maximumValue = 9223372036854775807LL;
+    static constexpr int64_t minimalValue = -maximumValue - 1;
 };
 
 class Hours : public Duration
 {
 public:
-    explicit inline
+    explicit inline constexpr
     Hours(int64_t value) :
         Duration(value * minutesPerHour *
                          secondsPerMinute *
@@ -297,7 +295,7 @@ public:
 class Minutes : public Duration
 {
 public:
-    explicit inline
+    explicit inline constexpr
     Minutes(int64_t value) :
         Duration(value * secondsPerMinute *
                          millisecondsPerSecond *
@@ -314,7 +312,7 @@ public:
 class Seconds : public Duration
 {
 public:
-    explicit inline
+    explicit inline constexpr
     Seconds(int64_t value) :
         Duration(value * millisecondsPerSecond *
                          microsecondsPerMillisecond)
@@ -330,7 +328,7 @@ public:
 class Milliseconds : public Duration
 {
 public:
-    explicit inline
+    explicit inline constexpr
     Milliseconds(int64_t value) :
         Duration(value * microsecondsPerMillisecond)
     {
@@ -345,7 +343,7 @@ public:
 class Microseconds : public Duration
 {
 public:
-    explicit inline
+    explicit inline constexpr
     Microseconds(int64_t value) :
         Duration(value)
     {

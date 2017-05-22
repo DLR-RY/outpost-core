@@ -72,11 +72,10 @@ getDaysBeforeYear(int year)
  *   Jan   10   306.5    306
  *   Feb   11   337.1    337
  */
-static inline int
+static inline constexpr int
 getDaysBeforeMonth(int month)
 {
-    int days = (month * 306 + 5) / 10;
-    return days;
+    return (month * 306 + 5) / 10;
 }
 
 /**
@@ -101,11 +100,10 @@ getDaysBeforeMonth(int month)
  *   Jan      30     10     306      336     10.017    10.997
  *   Feb     28/29   11     337    365/366   11.030    11.945
  */
-static inline int
+static inline constexpr int
 getMonthFromDayOfYear(int day)
 {
-    int mi = (100 * day + 52) / 3060;
-    return mi;
+    return (100 * day + 52) / 3060;
 }
 
 /**
@@ -204,14 +202,13 @@ Date::fromUnixTime(UnixTime time)
     return date;
 }
 
-static bool
+static constexpr bool
 isLeapYear(int year)
 {
-    bool leap = (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));
-    return leap;
+    return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));
 }
 
-static const int daysPerMonth[12] =
+static constexpr int daysPerMonth[12] =
 {
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 };
@@ -242,23 +239,6 @@ Date::isValid() const
     }
 
     return valid;
-}
-
-bool
-Date::operator==(const Date& other) const
-{
-    return ((year == other.year)
-            && (month == other.month)
-            && (day == other.day)
-            && (hour == other.hour)
-            && (minute == other.minute)
-            && (second == other.second));
-}
-
-bool
-Date::operator!=(const Date& other) const
-{
-    return !(*this == other);
 }
 
 // ----------------------------------------------------------------------------

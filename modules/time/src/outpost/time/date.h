@@ -63,12 +63,22 @@ struct Date
     bool
     isValid() const;
 
-    bool
-    operator==(const Date& other) const;
+    constexpr bool
+    operator==(const Date& other) const
+    {
+        return ((year == other.year)
+                && (month == other.month)
+                && (day == other.day)
+                && (hour == other.hour)
+                && (minute == other.minute)
+                && (second == other.second));
+    }
 
-    bool
-    operator!=(const Date& other) const;
-
+    constexpr bool
+    operator!=(const Date& other) const
+    {
+        return !(*this == other);
+    }
 
     uint16_t year;
     uint8_t month;

@@ -60,30 +60,28 @@ class TimePoint
 public:
     typedef ReferenceEpoch Epoch;
 
-    inline
+    inline constexpr
     TimePoint() :
         mDuration(Seconds(0))
     {
     }
 
-    inline
+    inline constexpr
     TimePoint(const TimePoint& other) :
         mDuration(other.mDuration)
     {
     }
 
     inline
-    ~TimePoint()
-    {
-    }
+    ~TimePoint() = default;
 
-    inline Duration
+    inline constexpr Duration
     operator-(TimePoint other) const
     {
         return Duration(mDuration - other.mDuration);
     }
 
-    inline TimePoint
+    inline constexpr TimePoint
     operator-(Duration duration) const
     {
         return TimePoint(mDuration - duration);
@@ -96,7 +94,7 @@ public:
         return *this;
     }
 
-    inline TimePoint
+    inline constexpr TimePoint
     operator+(Duration d) const
     {
         return TimePoint(mDuration + d);
@@ -109,37 +107,37 @@ public:
         return *this;
     }
 
-    inline bool
+    inline constexpr bool
     operator==(TimePoint other) const
     {
         return (mDuration == other.mDuration);
     }
 
-    inline bool
+    inline constexpr bool
     operator!=(TimePoint other) const
     {
         return (mDuration != other.mDuration);
     }
 
-    inline bool
+    inline constexpr bool
     operator<(TimePoint other) const
     {
         return (mDuration - other.mDuration) < Seconds(0);
     }
 
-    inline bool
+    inline constexpr bool
     operator>(TimePoint other) const
     {
         return (mDuration - other.mDuration) > Seconds(0);
     }
 
-    inline bool
+    inline constexpr bool
     operator<=(TimePoint other) const
     {
         return (mDuration - other.mDuration) <= Seconds(0);
     }
 
-    inline bool
+    inline constexpr bool
     operator>=(TimePoint other) const
     {
         return (mDuration - other.mDuration) >= Seconds(0);
@@ -156,7 +154,7 @@ public:
     /**
      * Get the duration since the start of the epoch.
      */
-    inline Duration
+    inline constexpr Duration
     timeSinceEpoch() const
     {
         return mDuration;
@@ -165,19 +163,19 @@ public:
     /**
      * Construct a time point a given time after the start of the epoch.
      */
-    static inline TimePoint<ReferenceEpoch>
+    static inline constexpr TimePoint<ReferenceEpoch>
     afterEpoch(Duration duration)
     {
         return TimePoint(duration);
     }
 
-    static inline TimePoint<ReferenceEpoch>
+    static inline constexpr TimePoint<ReferenceEpoch>
     startOfEpoch()
     {
         return TimePoint(Seconds(0));
     }
 
-    static inline TimePoint<ReferenceEpoch>
+    static inline constexpr TimePoint<ReferenceEpoch>
     endOfEpoch()
     {
         return TimePoint(Duration::maximum());
@@ -191,7 +189,7 @@ public:
     }
 
 protected:
-    explicit inline
+    explicit inline constexpr
     TimePoint(const Duration duration) :
             mDuration(duration)
     {
