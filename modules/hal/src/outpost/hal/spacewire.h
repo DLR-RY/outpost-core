@@ -34,6 +34,13 @@ namespace hal
 class SpaceWire
 {
 public:
+
+    enum Blocking
+    {
+        nonBlocking = 0,
+        blocking = 1
+    };
+
     enum EndMarker
     {
         partial = 0,    ///< Leave packet open to add additional data later
@@ -189,6 +196,12 @@ public:
             return mEnd;
         }
 
+        inline void
+        setEndMarker(const EndMarker marker)
+        {
+            mEnd = marker;
+        }
+
         /**
          * Access elements of the array.
          *
@@ -261,9 +274,12 @@ public:
      * \param[out]  buffer
      *      Pointer to a send buffer. Must be the same pointer which
      *      was requested via requestBuffer() earlier.
+     * \param[in]   timeout
+     *      Time to wait for a SpaceWire message to be sent. Only for blocking
+     *      transmission
      */
     virtual Result::Type
-    send(TransmitBuffer* buffer) = 0;
+    send(TransmitBuffer* buffer, outpost::time::Duration timeout) = 0;
 
     /**
      * Receive data.
