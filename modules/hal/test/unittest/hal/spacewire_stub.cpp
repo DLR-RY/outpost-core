@@ -84,7 +84,7 @@ SpaceWireStub::requestBuffer(TransmitBuffer*& buffer,
 }
 
 SpaceWireStub::Result::Type
-SpaceWireStub::send(TransmitBuffer* buffer)
+SpaceWireStub::send(TransmitBuffer* buffer, outpost::time::Duration /*timeout*/)
 {
     Result::Type result = Result::success;
     if (mUp)
