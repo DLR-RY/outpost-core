@@ -36,24 +36,6 @@ elif env['OS'] == 'rtems':
 	
 	files += env.Glob('../arch/rtems/outpost/rtos/*.cpp')
 	
-	# Leon 3
-	if env['ARCHITECTURE'] == 'leon3':
-		# Remove warning because the spacewirelight driver uses void pointer
-		# casts which ignore qualifiers like volatile.
-		env.RemoveFromList('CCFLAGS_warning', '-Wcast-qual')
-		
-		# spacewirelight can not be compiled as C99 (with or without pedantic)
-		env['CFLAGS_language'] = '-std=gnu99'
-		
-		files += env.Glob('../ext/rtems-leon3/spwl/*.c')
-		files += env.Glob('../ext/rtems-leon3/apbuart/*.c')
-		files += env.Glob('../ext/rtems-leon3/grspw/*.c')
-		
-		files += env.Glob('outpost/hal/rtems-leon3/*.cpp')
-		
-		# TODO only when compiling for the nexys3 board!
-		files += env.Glob('outpost/hal/nexys3/*.cpp')
-	
 	# as RTEMS is C it uses C-Style casts. Therefore this warning has to
 	# disabled for the RTEMS wrapper files.
 	env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')

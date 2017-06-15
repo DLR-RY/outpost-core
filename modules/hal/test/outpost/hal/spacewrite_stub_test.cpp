@@ -105,7 +105,7 @@ TEST_F(SpaceWireStubTest, shouldReleaseTransmitBuffer)
 {
     SpaceWire::TransmitBuffer* buffer = nullptr;
     mSpaceWire.requestBuffer(buffer, outpost::time::Duration::zero());
-    ASSERT_EQ(SpaceWire::Result::success, mSpaceWire.send(buffer));
+    ASSERT_EQ(SpaceWire::Result::success, mSpaceWire.send(buffer, outpost::time::Duration::zero()));
 
     EXPECT_TRUE(mSpaceWire.noUsedTransmitBuffers());
 }
@@ -123,7 +123,7 @@ TEST_F(SpaceWireStubTest, shouldTransmitData)
     buffer->setLength(expectedData.size());
     buffer->setEndMarker(SpaceWire::eop);
 
-    mSpaceWire.send(buffer);
+    mSpaceWire.send(buffer, outpost::time::Duration::zero());
 
     ASSERT_EQ(1U, mSpaceWire.mSentPackets.size());
 
