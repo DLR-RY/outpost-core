@@ -35,11 +35,11 @@ class SpaceWire
 {
 public:
 
-    enum Blocking
-    {
-        nonBlocking = 0,
-        blocking = 1
-    };
+//    enum Blocking
+//    {
+//        nonBlocking = 0,
+//        blocking = 1
+//    };
 
     enum EndMarker
     {
