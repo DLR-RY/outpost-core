@@ -35,12 +35,6 @@ class SpaceWire
 {
 public:
 
-//    enum Blocking
-//    {
-//        nonBlocking = 0,
-//        blocking = 1
-//    };
-
     enum EndMarker
     {
         partial = 0,    ///< Leave packet open to add additional data later
