@@ -1,4 +1,4 @@
-[![Build Status](http://hbryavsci1l.hb.dlr.de:8080/job/outpost-core/badge/icon)](http://hbryavsci1l.hb.dlr.de:8080/job/outpost-core/)
+[![Build Status](http://hbryavsci1l.hb.dlr.de:8080/job/outpost-core/job/master/badge/icon)](http://hbryavsci1l.hb.dlr.de:8080/job/outpost-core/job/master/)
 
 <img src="doc/images/OUTPOST_logo.png" height="200px" />
 
