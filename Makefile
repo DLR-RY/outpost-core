@@ -10,7 +10,7 @@
 # - 2013-2017, Fabian Greif (DLR RY-AVS)
 # - 2014, Murat Goeksu (DLR RY-AVS)
 
-MODULES_GLOBAL = utils time smpc rtos hal
+MODULES_GLOBAL = utils time smpc rtos hal comm
 MODULES_TEST = l3test
 
 MODULES_JSF = $(MODULES_GLOBAL) rtos
