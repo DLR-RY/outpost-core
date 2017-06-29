@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2014-2017, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2014-2015, 2017, Fabian Greif (DLR RY-AVS)
+# - 2014, Muhammad Bassam (DLR RY-AVS)
+# - 2016, Jan-Gerd Mess (DLR RY-AVS)
+
+import os
+
+Import('envGlobal')
+
+envGlobal.Append(CPPPATH=[os.path.abspath('.')])
+
+env = envGlobal.Clone()
+
+files = []
+files += env.Glob('outpost/comm/*.cpp')
+files += env.Glob('outpost/comm/*/*.cpp')
+
+objects = []
+for file in files:
+    objects.append(env.Object(file))
+envGlobal.Append(objects={'comm': objects})
+
+library = env.StaticLibrary('outpost_comm', objects)
+envGlobal.Install('$BUILDPATH/lib', library)
+

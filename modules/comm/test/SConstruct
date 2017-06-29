@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2013-2014, 2016-2017, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2013-2014, 2016-2017, Fabian Greif (DLR RY-AVS)
+
+import os
+
+vars = Variables('custom.py')
+vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+
+module = 'comm'
+
+rootpath = '../../../'
+envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
+                        tools=['utils_buildformat'],
+                        variables=vars,
+                        BASEPATH=os.path.abspath('.'),
+                        ENV=os.environ)
+Help(vars.GenerateHelpText(envGlobal))
+
+buildfolder = os.path.join(rootpath, 'build')
+if envGlobal['coverage']:
+    envGlobal.Tool('compiler_hosted_gcc_coverage')
+    envGlobal.Tool('settings_buildpath')
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/coverage'))
+else:
+    envGlobal.Tool('compiler_hosted_llvm')
+    envGlobal.Tool('settings_buildpath')
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
+envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
+
+# The tests use C++11
+envGlobal['CXXFLAGS_language'] = ['-std=c++0x']
+envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports='envGlobal')
+
+env = envGlobal.Clone()
+
+env.AppendUnique(LIBS=[
+    'outpost_hal',
+    'outpost_smpc',
+    'outpost_time',
+    'outpost_utils',
+    'outpost_rtos',
+])
+
+files  = env.Glob('*.cpp')
+files += env.Glob('outpost/*.cpp')
+files += env.Glob('outpost/*/*.cpp')
+files += env.Glob('outpost/*/*/*.cpp')
+
+# Do not include the module files as library but directly as compiled objects.
+# Otherwise only the realy used symbols are pulled in which yields wrong
+# results for the coverage analysis.
+files += env['objects'][module]
+
+envGlobal.Alias('build', env.Program('runner', files))
+envGlobal.Default('build')
