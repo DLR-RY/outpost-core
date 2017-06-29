@@ -12,6 +12,7 @@
 #include <outpost/utils/bounded_array.h>
 #include <outpost/utils/bit_access.h>
 #include <outpost/utils/crc.h>
+#include <outpost/smpc/subscription.h>
 
 namespace outpost
 {
@@ -52,9 +53,9 @@ public:
 
     bool
     sendPacket(RmapInitiator &init,
-                        RmapTransaction *trans,
-                        uint8_t *buffer,
-                        uint16_t len)
+               RmapTransaction *trans,
+               uint8_t *buffer,
+               uint16_t len)
     {
         return init.sendPacket(trans, buffer, len);
     }
@@ -74,6 +75,29 @@ public:
 };
 }
 }
+
+class NonRmapReceiverTest : public outpost::smpc::Subscriber
+{
+public:
+    NonRmapReceiverTest() :
+            mLocalDataBuffer(), mDataReceived(false)
+    {
+    }
+
+    ~NonRmapReceiverTest()
+    {
+    }
+
+    void
+    receiveData(outpost::comm::NonRmapDataType *data)
+    {
+        memcpy(mLocalDataBuffer, data->begin(), data->getNumberOfElements());
+        mDataReceived = true;
+    }
+
+    uint8_t mLocalDataBuffer[32];
+    bool mDataReceived;
+};
 
 using outpost::hal::SpaceWire;
 
@@ -96,7 +120,7 @@ public:
                     targetSpwAddress, replyAddressLength, replyAddress,
                     targetLogicalAddress, 0xFE, key),
             mTargetNodes(), mRmapInitiator(mSpaceWire, &mTargetNodes),
-            mTestingRmap()
+            mTestingRmap(), mNonRmapReceiver()
     {
     }
 
@@ -117,6 +141,7 @@ public:
     RmapTargetsList mTargetNodes;
     RmapInitiator mRmapInitiator;
     TestingRmap mTestingRmap;
+    NonRmapReceiverTest mNonRmapReceiver;
 };
 
 uint8_t RmapTest::targetSpwAddress[numberOfTargetSpwAddresses] = { 0 };
@@ -195,8 +220,7 @@ TEST_F(RmapTest, shouldSendWritePacket)
     transaction.setTimeoutDuration(outpost::time::Duration::zero());
 
     EXPECT_TRUE(
-            mTestingRmap.sendPacket(mRmapInitiator, &transaction,
-                    buffer, 4));
+            mTestingRmap.sendPacket(mRmapInitiator, &transaction, buffer, 4));
 
     // Set reply packet
     uint8_t instr = cmd->getInstruction();
@@ -213,13 +237,11 @@ TEST_F(RmapTest, shouldSendWritePacket)
     rply.push_back(0);
     rply.push_back(transaction.getTransactionID());
     uint8_t crc = outpost::Crc8CcittReversed::calculate(
-            outpost::BoundedArray<const uint8_t>(&rply.front(),
-                    rply.size()));
+            outpost::BoundedArray<const uint8_t>(&rply.front(), rply.size()));
     rply.push_back(crc);
 
     mSpaceWire.mPacketsToReceive.emplace_back(
-            unittest::hal::SpaceWireStub::Packet { rply, SpaceWire::eop});
-
+            unittest::hal::SpaceWireStub::Packet { rply, SpaceWire::eop });
 
     RmapPacket rxedPacket;
     EXPECT_TRUE(mTestingRmap.receivePacket(mRmapInitiator, &rxedPacket));
@@ -232,68 +254,41 @@ TEST_F(RmapTest, shouldSendWritePacket)
 
 TEST_F(RmapTest, shouldSendReadPacket)
 {
-
-    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
-    EXPECT_EQ(1, mTargetNodes.getSize());
-    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
-
     uint8_t buffer[4] = { 0x01, 0x02, 0x03, 0x04 };
-    RmapTransaction transaction;
-    RmapPacket *cmd = transaction.getCommandPacket();
-    cmd->setInitiatorLogicalAddress(0xFE);
-    cmd->setRead();
-    cmd->isRead();
-    cmd->setCommand();
-    cmd->unsetIncrementFlag();
-    cmd->unsetVerifyFlag();
-    cmd->setReplyFlag();
-    cmd->setExtendedAddress(0x00);
-    cmd->setAddress(0x1000);
-    cmd->setDataLength(4);
 
-    cmd->setTargetInformation(&mRmapTarget);
-    transaction.setBlockingMode(true);
-    transaction.setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
-    transaction.setTimeoutDuration(outpost::time::Duration::zero());
-
-    EXPECT_TRUE(
-            mTestingRmap.sendPacket(mRmapInitiator, &transaction,
-                    buffer, 4));
-
-    // Set reply packet
-    uint8_t instr = cmd->getInstruction();
+    // Construct packet that should be received
+    uint8_t instr = 0;
     std::vector<uint8_t> rply;
 
     outpost::BitAccess::set<uint8_t, 7, 6>(instr, 0);
 
-    rply.push_back(cmd->getInitiatorLogicalAddress());
+    rply.push_back(0xFE);
     rply.push_back(0x01);
     rply.push_back(instr);
     rply.push_back(0);
-    rply.push_back(cmd->getTargetLogicalAddress());
+    rply.push_back(0xFE);
     rply.push_back(0);
-    rply.push_back(transaction.getTransactionID());
+    rply.push_back(1);
     rply.push_back(0);
     rply.push_back(0);
     rply.push_back(0);
     rply.push_back(4);
     uint8_t crc = outpost::Crc8CcittReversed::calculate(
-            outpost::BoundedArray<const uint8_t>(&rply.front(),
-                    rply.size()));
+            outpost::BoundedArray<const uint8_t>(&rply.front(), rply.size()));
     rply.push_back(crc);
 
     auto data_start = &rply.back() + 1;
-    rply.push_back(1);
-    rply.push_back(2);
-    rply.push_back(3);
-    rply.push_back(4);
+    rply.push_back(buffer[0]);
+    rply.push_back(buffer[1]);
+    rply.push_back(buffer[2]);
+    rply.push_back(buffer[3]);
     crc = outpost::Crc8CcittReversed::calculate(
             outpost::BoundedArray<const uint8_t>(
                     reinterpret_cast<uint8_t*>(data_start), 4));
     rply.push_back(crc);
 
     mSpaceWire.mPacketsToReceive.emplace_back(
-            unittest::hal::SpaceWireStub::Packet { rply, SpaceWire::eop});
+            unittest::hal::SpaceWireStub::Packet { rply, SpaceWire::eop });
 
     RmapPacket rxedPacket;
     EXPECT_TRUE(mTestingRmap.receivePacket(mRmapInitiator, &rxedPacket));
@@ -301,11 +296,42 @@ TEST_F(RmapTest, shouldSendReadPacket)
 
     uint8_t rxbuffer[10];
     mTestingRmap.getRxData(mRmapInitiator, rxbuffer);
-    for(uint8_t i = 0; i< rxedPacket.getDataLength(); i++)
+    for (uint8_t i = 0; i < rxedPacket.getDataLength(); i++)
     {
         EXPECT_EQ(rxbuffer[i], buffer[i]);
     }
 
     EXPECT_TRUE(mSpaceWire.mPacketsToReceive.empty());
     EXPECT_TRUE(mSpaceWire.noUsedReceiveBuffers());
+}
+
+TEST_F(RmapTest, shouldSendReadPacketToNonRmapReceiver)
+{
+    outpost::smpc::Subscription *subscription0 =
+            new outpost::smpc::Subscription(
+                    outpost::comm::nonRmapPacketReceived, &mNonRmapReceiver,
+                    &NonRmapReceiverTest::receiveData);
+
+    outpost::smpc::Subscription::connectSubscriptionsToTopics();
+
+    // Packet to receive
+    std::vector<uint8_t> rply = { 0xFE, 0x02, 0x03, 4, 5 };
+
+    mSpaceWire.mPacketsToReceive.emplace_back(
+            unittest::hal::SpaceWireStub::Packet { rply, SpaceWire::eop });
+
+    RmapPacket rxedPacket;
+    EXPECT_FALSE(mTestingRmap.receivePacket(mRmapInitiator, &rxedPacket));
+
+    EXPECT_TRUE(mNonRmapReceiver.mDataReceived);
+
+    for (uint8_t i = 0; i < 4; i++)
+    {
+        EXPECT_EQ(mNonRmapReceiver.mLocalDataBuffer[i], rply[i]);
+    }
+
+    EXPECT_TRUE(mSpaceWire.mPacketsToReceive.empty());
+    EXPECT_TRUE(mSpaceWire.noUsedReceiveBuffers());
+
+    delete subscription0;
 }
