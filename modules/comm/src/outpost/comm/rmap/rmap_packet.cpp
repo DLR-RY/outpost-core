@@ -92,8 +92,6 @@ RmapPacket::constructPacket(outpost::BoundedArray<uint8_t> buffer,
 {
     outpost::Serialize stream(buffer);
 
-    console_out("RMAP-Packet: Constructing packet\n");
-
     // Construct header first
     constructHeader(stream);
 
@@ -110,8 +108,6 @@ RmapPacket::constructPacket(outpost::BoundedArray<uint8_t> buffer,
     if (isWrite())
     {
         mDataCRC = outpost::Crc8CcittReversed::calculate(data);
-
-        console_out("DataCRC %x\n", mDataCRC);
 
         stream.storeBuffer(data.begin(), data.getNumberOfElements());
         stream.store<uint8_t>(mDataCRC);
@@ -151,7 +147,6 @@ RmapPacket::extractPacket(outpost::BoundedArray<const uint8_t> &data,
     {
         if (data[i] == ila)
         {
-            console_out("ILA @ %u\n", i);
             break;
         }
         else if (data[i] < 32)

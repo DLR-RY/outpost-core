@@ -76,16 +76,11 @@ class RmapTargetNode : public RmapNode
 {
 
 public:
-    static const uint8_t DefaultLogicalAddress = 0xFE;
-    static const uint8_t DefaultKey = 0x20;
-
     RmapTargetNode();
     RmapTargetNode(const char *name,
                    uint8_t id,
-                   uint8_t numOftargetSpWAddr,
-                   uint8_t *targetSpWAddr,
-                   uint8_t numOfRplyAddr,
-                   uint8_t *rplyAddress,
+                   outpost::BoundedArray<uint8_t> spwTargets,
+                   outpost::BoundedArray<uint8_t> replyAddress,
                    uint8_t targetLogicalAddress,
                    uint8_t initiatorLogicalAddress,
                    uint8_t key);
@@ -168,9 +163,6 @@ public:
     {
         return mInitiatorLogicalAddress;
     }
-
-    void
-    printTarget();
 
 private:
     uint8_t mNumOfTargetSpaceWireAddress;

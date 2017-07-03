@@ -51,7 +51,7 @@ public:
     };
 
     static void
-    replyStatusToString(uint8_t status)
+    replyStatus(uint8_t status)
     {
         switch (status)
         {

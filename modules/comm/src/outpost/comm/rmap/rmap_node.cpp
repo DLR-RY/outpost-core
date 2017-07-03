@@ -12,6 +12,7 @@
  */
 // ----------------------------------------------------------------------------
 #include "rmap_status.h"
+#include "rmap_packet.h"
 #include "rmap_node.h"
 
 using namespace outpost::comm;
@@ -19,8 +20,8 @@ using namespace outpost::comm;
 //------------------------------------------------------------------------------
 RmapTargetNode::RmapTargetNode() :
         mNumOfTargetSpaceWireAddress(0), mNumReplyAddrLength(0),
-        mTargetLogicalAddress(0xFE), mInitiatorLogicalAddress(0xFE),
-        mKey(DefaultKey), mIsInitiatorLogicalAddressSet(false)
+        mTargetLogicalAddress(RmapPacket::defaultLogicalAddress), mInitiatorLogicalAddress(RmapPacket::defaultLogicalAddress),
+        mKey(0), mIsInitiatorLogicalAddressSet(false)
 {
     memset(mTargetSpaceWireAddress, 0, sizeof(mTargetSpaceWireAddress));
     memset(mReplyAddress, 0, sizeof(mReplyAddress));
@@ -28,15 +29,13 @@ RmapTargetNode::RmapTargetNode() :
 
 RmapTargetNode::RmapTargetNode(const char *name,
                                uint8_t id,
-                               uint8_t numOftargetSpWAddr,
-                               uint8_t *targetSpWAddr,
-                               uint8_t numOfRplyAddr,
-                               uint8_t *rplyAddress,
+                               outpost::BoundedArray<uint8_t> spwTargets,
+                               outpost::BoundedArray<uint8_t> replyAddress,
                                uint8_t targetLogicalAddress,
                                uint8_t initiatorLogicalAddress,
                                uint8_t key) :
-        mNumOfTargetSpaceWireAddress(numOftargetSpWAddr),
-        mNumReplyAddrLength(numOfRplyAddr),
+        mNumOfTargetSpaceWireAddress(spwTargets.getNumberOfElements()),
+        mNumReplyAddrLength(replyAddress.getNumberOfElements()),
         mTargetLogicalAddress(targetLogicalAddress),
         mInitiatorLogicalAddress(initiatorLogicalAddress), mKey(key),
         mIsInitiatorLogicalAddressSet(true)
@@ -44,33 +43,14 @@ RmapTargetNode::RmapTargetNode(const char *name,
     setName(name);
     setID(id);
 
-    memcpy(mTargetSpaceWireAddress, targetSpWAddr,
-            mNumOfTargetSpaceWireAddress);
-    memcpy(mReplyAddress, rplyAddress, mNumReplyAddrLength);
+    memcpy(mTargetSpaceWireAddress, spwTargets.begin(),
+           spwTargets.getNumberOfElements());
+    memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
 }
 
 RmapTargetNode::~RmapTargetNode()
 {
 
-}
-
-void
-RmapTargetNode::printTarget()
-{
-    console_out("Name                      : %s\n", mName); console_out("ID                        : %u\n", mId);
-    if (isInitiatorLogicalAddressSet())
-    {
-        console_out("Initiator Logical Address : 0x%02X\n",
-                mInitiatorLogicalAddress);
-    } console_out("Target Logical Address    : 0x%02X\n", mTargetLogicalAddress); console_out("Target SpaceWire Address  : ");
-    for (uint8_t i = 0; i < maxNodes; i++)
-    {
-        console_out("0x%02X ", mTargetSpaceWireAddress[i]);
-    } console_out("\n"); console_out("Reply Address             : ");
-    for (uint8_t i = 0; i < maxNodes; i++)
-    {
-        console_out("0x%02X ", mReplyAddress[i]);
-    } console_out("\n"); console_out("Key               : 0x02%X\n", mKey);
 }
 
 //------------------------------------------------------------------------------

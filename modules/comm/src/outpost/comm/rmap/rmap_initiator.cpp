@@ -153,7 +153,7 @@ RmapInitiator::write(RmapTargetNode *rmapTargetNode,
                 {
                     console_out("RMAP-Initiator: reply received with failure\n");
 
-                    RmapReplyStatus::replyStatusToString(
+                    RmapReplyStatus::replyStatus(
                             static_cast<RmapReplyStatus::ErrorStatusCodes>(rply->getStatus()));
 
                     // Delete the transaction from the list
@@ -213,9 +213,6 @@ RmapInitiator::read(RmapTargetNode* rmapTargetNode,
     outpost::rtos::MutexGuard lock(mOperationLock);
     bool result = false;
 
-    console_out("RMAP-Initiator: Read from 0x%08lX of length %lu\n", memoryAddress,
-            length);
-
     RmapTransaction *transaction = mTransactionsList.getFreeTransaction();
 
     if (!transaction)
@@ -223,8 +220,6 @@ RmapInitiator::read(RmapTargetNode* rmapTargetNode,
         console_out("RMAP-Initiator: All transactions are in use\n");
         return false;
     }
-
-    console_out("RMAP-Initiator: Transaction @ %p\n", transaction);
 
     RmapPacket * cmd = transaction->getCommandPacket();
 
@@ -350,8 +345,6 @@ RmapInitiator::run()
 {
     RmapPacket packet;
 
-    console_out("RMAP-Initiator: Transaction handler started\n");
-
     mStopped = false;
     while (!mStopped)
     {
@@ -368,8 +361,6 @@ RmapInitiator::run()
     }
 
     mStopped = true;
-
-    console_out("RMAP-Initiator: Transaction handler stopped\n");
 }
 
 bool
@@ -383,8 +374,6 @@ RmapInitiator::sendPacket(RmapTransaction* transaction,
     bool result = false;
 
     transactionID = getNextAvailableTransactionID();
-
-    console_out("Initiating transaction with ID: %u\n", transactionID);
 
     transaction->setTransactionID(transactionID);
     cmd->setTransactionID(transactionID);
@@ -445,8 +434,6 @@ RmapInitiator::receivePacket(RmapPacket *rxedPacket)
     hal::SpaceWire::ReceiveBuffer rxBuffer;
     bool result = false;
 
-    console_out("RMAP-Initiator: Waiting for incoming RMAP packets\n");
-
     // Receive response
     if (mSpW.receive(rxBuffer, outpost::time::Duration::maximum())
             == hal::SpaceWire::Result::success)
@@ -497,8 +484,6 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
 {
     // Find a corresponding command packet
     RmapTransaction* transaction = resolveTransaction(packet);
-
-    console_out("RMAP-Initiator: Transaction @ %p\n", transaction);
 
     if (!transaction)
     {
@@ -557,8 +542,6 @@ RmapInitiator::getNextAvailableTransactionID()
         }
     }
 
-    console_out("RMAP-Initiator: Available transaction ID %u\n", transactionId);
-
     return transactionId;
 }
 
@@ -574,4 +557,3 @@ RmapInitiator::getDiscardedReplyPackets()
     return outpost::BoundedArray<RmapPacket*>(mDiscardedPackets.mPackets,
             mDiscardedPackets.mIndex);
 }
-
