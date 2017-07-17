@@ -41,6 +41,15 @@ public:
     public:
         /**
          * Constructor
+         */
+        Address() :
+            mPort(0)
+        {
+            memset(&mIpAddress[0], 0, mIpAddress.getNumberOfElements());
+        }
+
+        /**
+         * Constructor
          * 
          * \param ipAddress IPv4 Address provided in host-byte-order
          * \param port Port provided in host-byte-order
@@ -73,24 +82,32 @@ public:
                 uint16_t port) :
             mPort(port)
         { 
+            // store the ip address in network-byte-order
             mIpAddress[0] = byte1;
             mIpAddress[1] = byte2;
             mIpAddress[2] = byte3;
             mIpAddress[3] = byte4;
         }
         
-        inline
-        uint16_t getPort() const
+        /**
+        * \return The port in host-byte-order
+        */
+        inline uint16_t
+        getPort() const
         {
             return mPort;
         }
 
+        /**
+        * Returns the internal byte array holding the ip-address in network-byte-order
+        *   \return Array holding the IP-Address
+        */
         inline outpost::FixedSizeArray<uint8_t, 4>
         getIpAddress() const
         {
             return mIpAddress;
         }
-
+        
     protected:
         outpost::FixedSizeArray<uint8_t, 4> mIpAddress;
         uint16_t mPort;
