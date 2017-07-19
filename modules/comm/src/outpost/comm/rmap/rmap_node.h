@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
 
@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include <outpost/utils/bounded_array.h>
 
+#include "rmap_common.h"
 
 namespace outpost
 {
@@ -26,63 +27,16 @@ namespace comm
 {
 
 //------------------------------------------------------------------------------
-class RmapNode
+class RmapTargetNode
 {
 public:
-    // Maximum nodes is specified from the number of SpW target addresses that
-    // can be accommodated into a single RMAP packet (see ECSS-E-ST-50-52C pg. 24)
-    static const uint8_t maxNodes = 12;
 
-    RmapNode() :
-            mName(), mId(0)
-    {
-    }
-    ~RmapNode()
-    {
-
-    }
-
-    char*
-    getName() const
-    {
-        return const_cast<char*>(mName);
-    }
-
-    uint8_t
-    getId() const
-    {
-        return mId;
-    }
-
-    void
-    setName(const char *name)
-    {
-        strcpy(mName, name);
-    }
-
-    void
-    setID(uint8_t id)
-    {
-        mId = id;
-    }
-
-protected:
-    char mName[20];
-    uint8_t mId;
-};
-
-//------------------------------------------------------------------------------
-class RmapTargetNode : public RmapNode
-{
-
-public:
     RmapTargetNode();
     RmapTargetNode(const char *name,
                    uint8_t id,
                    outpost::BoundedArray<uint8_t> spwTargets,
                    outpost::BoundedArray<uint8_t> replyAddress,
                    uint8_t targetLogicalAddress,
-                   uint8_t initiatorLogicalAddress,
                    uint8_t key);
     ~RmapTargetNode();
 
@@ -95,7 +49,8 @@ public:
     inline outpost::BoundedArray<uint8_t>
     getReplyAddress()
     {
-        return outpost::BoundedArray<uint8_t>(mReplyAddress, mNumReplyAddrLength);
+        return outpost::BoundedArray<uint8_t>(mReplyAddress,
+                mReplyAddressLength);
     }
 
     inline uint8_t
@@ -107,7 +62,8 @@ public:
     inline outpost::BoundedArray<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::BoundedArray<uint8_t>(mTargetSpaceWireAddress, mNumOfTargetSpaceWireAddress);
+        return outpost::BoundedArray<uint8_t>(mTargetSpaceWireAddress,
+                mTargetSpaceWireAddressLength);
     }
 
     inline void
@@ -116,11 +72,17 @@ public:
         mKey = defaultKey;
     }
 
-    inline void
+    inline bool
     setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress)
     {
-        memcpy(mReplyAddress, replyAddress.begin(),
+        bool result = false;
+        if (replyAddress.getNumberOfElements() <= maxAddressLength)
+        {
+            memcpy(mReplyAddress, replyAddress.begin(),
                 replyAddress.getNumberOfElements());
+            result = true;
+        }
+        return result;
     }
 
     inline void
@@ -129,51 +91,43 @@ public:
         mTargetLogicalAddress = targetLogicalAddress;
     }
 
-    inline void
+    inline bool
     setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
     {
-        memcpy(mTargetSpaceWireAddress, targetSpaceWireAddress.begin(),
-                targetSpaceWireAddress.getNumberOfElements());
-        mNumOfTargetSpaceWireAddress =
-                targetSpaceWireAddress.getNumberOfElements();
+        bool result = false;
+        if (targetSpaceWireAddress.getNumberOfElements() <= maxAddressLength)
+        {
+            memcpy(mTargetSpaceWireAddress, targetSpaceWireAddress.begin(),
+                    targetSpaceWireAddress.getNumberOfElements());
+            mTargetSpaceWireAddressLength =
+                    targetSpaceWireAddress.getNumberOfElements();
+            result = true;
+        }
+        return result;
     }
 
-    inline void
-    setInitiatorLogicalAddress(uint8_t initiatorLogicalAddress)
+    const char*
+    getName() const
     {
-        mIsInitiatorLogicalAddressSet = true;
-        mInitiatorLogicalAddress = initiatorLogicalAddress;
+        return mName;
     }
 
-    inline void
-    unsetInitiatorLogicalAddress()
+    uint8_t
+    getId() const
     {
-        mIsInitiatorLogicalAddressSet = false;
-        mInitiatorLogicalAddress = 0xFE;
-    }
-
-    inline bool
-    isInitiatorLogicalAddressSet()
-    {
-        return mIsInitiatorLogicalAddressSet;
-    }
-
-    inline uint8_t
-    getInitiatorLogicalAddress()
-    {
-        return mInitiatorLogicalAddress;
+        return mId;
     }
 
 private:
-    uint8_t mNumOfTargetSpaceWireAddress;
-    uint8_t mTargetSpaceWireAddress[maxNodes];
-    uint8_t mNumReplyAddrLength;
-    uint8_t mReplyAddress[maxNodes];
+    uint8_t mTargetSpaceWireAddressLength;
+    uint8_t mTargetSpaceWireAddress[maxAddressLength];
+    uint8_t mReplyAddressLength;
+    uint8_t mReplyAddress[maxAddressLength];
     uint8_t mTargetLogicalAddress;
-    uint8_t mInitiatorLogicalAddress;
     uint8_t mKey;
 
-    bool mIsInitiatorLogicalAddressSet;
+    char mName[maxNodeNameLength];
+    uint8_t mId;
 };
 
 //------------------------------------------------------------------------------
@@ -240,13 +194,13 @@ public:
     }
 
     inline outpost::BoundedArray<RmapTargetNode*>
-    getAllRMAPTargetNodes()
+    getTargetNodes()
     {
         return outpost::BoundedArray<RmapTargetNode*>(mNodes, mSize);
     }
 
 private:
-    RmapTargetNode* mNodes[RmapNode::maxNodes];
+    RmapTargetNode* mNodes[maxAddressLength];
     uint8_t mSize;
 };
 }

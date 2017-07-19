@@ -8,9 +8,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
+
 #include <outpost/utils/crc.h>
 
 #include "rmap_packet.h"
@@ -276,13 +277,6 @@ RmapPacket::setTargetInformation(RmapTargetNode *rmapTargetNode)
 
     // Set packet key field according to the RMAP target node
     setKey(rmapTargetNode->getKey());
-
-    // Set packet initiator logical address field according to the RMAP target node
-    if (rmapTargetNode->isInitiatorLogicalAddressSet())
-    {
-        setInitiatorLogicalAddress(
-                rmapTargetNode->getInitiatorLogicalAddress());
-    }
 }
 
 void
@@ -312,7 +306,9 @@ RmapPacket::constructHeader(outpost::Serialize &stream)
         // Command packet
 
         for (uint8_t i = 0; i < mNumOfSpwTargets; i++)
+        {
             stream.store<uint8_t>(mSpwTargets[i]);
+        }
 
         stream.store<uint8_t>(mTargetLogicalAddress);
         stream.store<uint8_t>(protocolIdentifier);

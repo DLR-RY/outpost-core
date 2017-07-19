@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
 
@@ -23,7 +23,6 @@
 #include <outpost/comm/rmap/rmap_node.h>
 #include <outpost/comm/rmap/rmap_status.h>
 
-
 namespace outpost
 {
 namespace comm
@@ -31,9 +30,6 @@ namespace comm
 class RmapPacket
 {
 public:
-    static constexpr uint8_t minimumReplySize = 8;
-    static constexpr uint8_t defaultLogicalAddress = 0xFE;
-    static constexpr uint8_t protocolIdentifier = 0x01;
 
     struct Instruction
     {
@@ -64,56 +60,64 @@ public:
         setRead()
         {
             // bit5 operation
-            outpost::BitAccess::set<uint8_t, 5>(mField, static_cast<uint8_t>(read));
+            outpost::BitAccess::set<uint8_t, 5>(mField,
+                    static_cast<uint8_t>(read));
         }
 
         bool
         isRead()
         {
             // bit5 operation
-            return (outpost::BitAccess::get<uint8_t, 5>(mField) == static_cast<uint8_t>(read));
+            return (outpost::BitAccess::get<uint8_t, 5>(mField)
+                    == static_cast<uint8_t>(read));
         }
 
         void
         setWrite()
         {
             // bit5 operation
-            outpost::BitAccess::set<uint8_t, 5>(mField, static_cast<uint8_t>(write));
+            outpost::BitAccess::set<uint8_t, 5>(mField,
+                    static_cast<uint8_t>(write));
         }
 
         bool
         isWrite()
         {
             // bit5 operation
-            return (outpost::BitAccess::get<uint8_t, 5>(mField) == static_cast<uint8_t>(write));
+            return (outpost::BitAccess::get<uint8_t, 5>(mField)
+                    == static_cast<uint8_t>(write));
         }
 
         void
         setCommandPacket()
         {
             // bit7 & bit6 packet type
-            outpost::BitAccess::set<uint8_t, 7, 6>(mField, static_cast<uint8_t>(commandPacket));
+            outpost::BitAccess::set<uint8_t, 7, 6>(mField,
+                    static_cast<uint8_t>(commandPacket));
         }
 
         bool
         isCommandPacket()
         {
             // bit7 & bit6 packet type
-            return (outpost::BitAccess::get<uint8_t, 7, 6>(mField) == static_cast<uint8_t>(commandPacket));
+            return (outpost::BitAccess::get<uint8_t, 7, 6>(mField)
+                    == static_cast<uint8_t>(commandPacket));
         }
 
         void
         setReplyPacket()
         {
             // bit7 & bit6 packet type
-            outpost::BitAccess::set<uint8_t, 7, 6>(mField, static_cast<uint8_t>(replyPacket));
+            outpost::BitAccess::set<uint8_t, 7, 6>(mField,
+                    static_cast<uint8_t>(replyPacket));
         }
 
         bool
         isReplyPacket()
         {
             // bit7 & bit6 packet type
-            return (outpost::BitAccess::get<uint8_t, 7, 6>(mField) == static_cast<uint8_t>(replyPacket));
+            return (outpost::BitAccess::get<uint8_t, 7, 6>(mField)
+                    == static_cast<uint8_t>(replyPacket));
         }
 
         void
@@ -241,7 +245,8 @@ public:
     reset();
 
     bool
-    constructPacket(outpost::BoundedArray<uint8_t> buffer, outpost::BoundedArray<uint8_t> data);
+    constructPacket(outpost::BoundedArray<uint8_t> buffer,
+                    outpost::BoundedArray<uint8_t> data);
 
     bool
     extractPacket(outpost::BoundedArray<const uint8_t> &data, uint8_t ila);
@@ -277,11 +282,11 @@ public:
         return *this;
     }
 
-
     inline void
     setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
     {
-        memcpy(mSpwTargets, targetSpaceWireAddress.begin(), targetSpaceWireAddress.getNumberOfElements());
+        memcpy(mSpwTargets, targetSpaceWireAddress.begin(),
+                targetSpaceWireAddress.getNumberOfElements());
         mNumOfSpwTargets = targetSpaceWireAddress.getNumberOfElements();
     }
 
@@ -294,7 +299,9 @@ public:
     inline outpost::BoundedArray<uint8_t>
     getReplyAddress()
     {
-        return outpost::BoundedArray<uint8_t>(reinterpret_cast<uint8_t*>(mReplyAddress), mInstruction.getReplyAddrLength());
+        return outpost::BoundedArray<uint8_t>(
+                reinterpret_cast<uint8_t*>(mReplyAddress),
+                mInstruction.getReplyAddrLength());
     }
 
     inline void
@@ -516,8 +523,10 @@ public:
     inline void
     setData(uint8_t *buffer)
     {
-        if(buffer)
+        if (buffer)
+        {
             mData = buffer;
+        }
     }
     inline uint8_t *
     getData() const

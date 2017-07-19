@@ -8,21 +8,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
+
 #include "rmap_status.h"
 #include "rmap_packet.h"
 #include "rmap_node.h"
+
 
 using namespace outpost::comm;
 
 //------------------------------------------------------------------------------
 RmapTargetNode::RmapTargetNode() :
-        mNumOfTargetSpaceWireAddress(0), mNumReplyAddrLength(0),
-        mTargetLogicalAddress(RmapPacket::defaultLogicalAddress), mInitiatorLogicalAddress(RmapPacket::defaultLogicalAddress),
-        mKey(0), mIsInitiatorLogicalAddressSet(false)
+        mTargetSpaceWireAddressLength(0), mReplyAddressLength(0),
+        mTargetLogicalAddress(defaultLogicalAddress), mKey(0), mId(0)
 {
+    strcpy(mName, "Default");
     memset(mTargetSpaceWireAddress, 0, sizeof(mTargetSpaceWireAddress));
     memset(mReplyAddress, 0, sizeof(mReplyAddress));
 }
@@ -32,20 +34,23 @@ RmapTargetNode::RmapTargetNode(const char *name,
                                outpost::BoundedArray<uint8_t> spwTargets,
                                outpost::BoundedArray<uint8_t> replyAddress,
                                uint8_t targetLogicalAddress,
-                               uint8_t initiatorLogicalAddress,
                                uint8_t key) :
-        mNumOfTargetSpaceWireAddress(spwTargets.getNumberOfElements()),
-        mNumReplyAddrLength(replyAddress.getNumberOfElements()),
-        mTargetLogicalAddress(targetLogicalAddress),
-        mInitiatorLogicalAddress(initiatorLogicalAddress), mKey(key),
-        mIsInitiatorLogicalAddressSet(true)
+        mTargetSpaceWireAddressLength(spwTargets.getNumberOfElements()),
+        mReplyAddressLength(replyAddress.getNumberOfElements()),
+        mTargetLogicalAddress(targetLogicalAddress), mKey(key), mId(id)
 {
-    setName(name);
-    setID(id);
-
+    if(strlen(name) < maxNodeNameLength)
+    {
+        strcpy(mName, name);
+    }
+    else
+    {
+        strcpy(mName, "Default");
+    }
     memcpy(mTargetSpaceWireAddress, spwTargets.begin(),
-           spwTargets.getNumberOfElements());
-    memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
+            spwTargets.getNumberOfElements());
+    memcpy(mReplyAddress, replyAddress.begin(),
+            replyAddress.getNumberOfElements());
 }
 
 RmapTargetNode::~RmapTargetNode()
@@ -75,7 +80,7 @@ RmapTargetsList::addTargetNode(RmapTargetNode* node)
 {
     bool result = false;
 
-    if (mSize < RmapNode::maxNodes)
+    if (mSize < maxAddressLength)
     {
         mNodes[mSize++] = node;
         result = true;
@@ -89,7 +94,7 @@ RmapTargetsList::addTargetNodes(outpost::BoundedArray<RmapTargetNode*> nodes)
     bool result = false;
     size_t listElements = nodes.getNumberOfElements();
 
-    if(listElements <= mSize)
+    if (listElements <= mSize)
     {
         for (size_t i = 0; i < listElements; i++)
         {

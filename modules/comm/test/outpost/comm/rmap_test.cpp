@@ -1,9 +1,16 @@
 /*
- * rmap_test.cpp
+ * Copyright (c) 2016-2017, German Aerospace Center (DLR)
  *
- *  Created on: Jun 21, 2017
- *      Author: user
+ * This file is part of the development version of OUTPOST.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Authors:
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
+// ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
 
@@ -120,7 +127,7 @@ public:
                     outpost::BoundedArray<uint8_t>(targetSpwAddress,
                             numberOfTargetSpwAddresses),
                     outpost::BoundedArray<uint8_t>(replyAddress,
-                            replyAddressLength), targetLogicalAddress, 0xFE,
+                            replyAddressLength), targetLogicalAddress,
                     key),
             mTargetNodes(), mRmapInitiator(mSpaceWire, &mTargetNodes),
             mTestingRmap(), mNonRmapReceiver()
@@ -234,40 +241,41 @@ TEST_F(RmapTest, shouldSendWritePacket)
 TEST_F(RmapTest, shouldSendReadPacket)
 {
     uint8_t buffer[4] = { 0x01, 0x02, 0x03, 0x04 };
+    uint8_t rply[20];
 
     // Construct packet that should be received
     uint8_t instr = 0;
-    std::vector<uint8_t> rply;
+    //std::vector<uint8_t> rply;
 
     outpost::BitAccess::set<uint8_t, 7, 6>(instr, 0);
 
-    rply.push_back(0xFE);
-    rply.push_back(0x01);
-    rply.push_back(instr);
-    rply.push_back(0);
-    rply.push_back(0xFE);
-    rply.push_back(0);
-    rply.push_back(1);
-    rply.push_back(0);
-    rply.push_back(0);
-    rply.push_back(0);
-    rply.push_back(4);
+    rply[0] = 0xFE;
+    rply[1] = 0x01;
+    rply[2] = instr;
+    rply[3] = 0;
+    rply[4] = 0xFE;
+    rply[5] = 0;
+    rply[6] = 1;
+    rply[7] = 0;
+    rply[8] = 0;
+    rply[9] = 0;
+    rply[10] = 4;
     uint8_t crc = outpost::Crc8CcittReversed::calculate(
-            outpost::BoundedArray<const uint8_t>(&rply.front(), rply.size()));
-    rply.push_back(crc);
+            outpost::BoundedArray<const uint8_t>(&rply[0], 11));
+    rply[11] = crc;
 
-    auto data_start = &rply.back() + 1;
-    rply.push_back(buffer[0]);
-    rply.push_back(buffer[1]);
-    rply.push_back(buffer[2]);
-    rply.push_back(buffer[3]);
+    rply[12] = buffer[0];
+    rply[13] = buffer[1];
+    rply[14] = buffer[2];
+    rply[15] = buffer[3];
+    auto data_start = &rply[12];
     crc = outpost::Crc8CcittReversed::calculate(
             outpost::BoundedArray<const uint8_t>(
                     reinterpret_cast<uint8_t*>(data_start), 4));
-    rply.push_back(crc);
+    rply[16] = crc;
 
     mSpaceWire.mPacketsToReceive.emplace_back(
-            unittest::hal::SpaceWireStub::Packet { rply, SpaceWire::eop });
+            unittest::hal::SpaceWireStub::Packet { std::vector<uint8_t>(rply, rply + 17), SpaceWire::eop });
 
     RmapPacket rxedPacket;
     EXPECT_TRUE(mTestingRmap.receivePacket(mRmapInitiator, &rxedPacket));

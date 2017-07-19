@@ -8,9 +8,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
+
 #ifndef OUTPOST_COMM_RMAP_INITIATOR_H_
 #define OUTPOST_COMM_RMAP_INITIATOR_H_
 
@@ -33,10 +34,6 @@ class RmapInitiator : public outpost::rtos::Thread
 
 public:
     static uint16_t transactionId;
-    static constexpr size_t maximumTIDNumber = 65536;
-    static constexpr uint8_t priority = 100;
-    static constexpr size_t stackSize = 4096;
-    static constexpr uint8_t maxConcurrentTransactions = 10;
 
     enum Operation
     {
@@ -59,7 +56,8 @@ public:
 
     struct Buffer
     {
-        Buffer() : mLength(0)
+        Buffer() :
+                mLength(0)
         {
             memset(mData, 0, sizeof(mData));
         }
@@ -69,7 +67,7 @@ public:
         {
             bool result = false;
 
-            if(len < sizeof(mData))
+            if (len < sizeof(mData))
             {
                 mLength = len;
                 memcpy(mData, buffer, mLength);
@@ -160,7 +158,9 @@ public:
                 return &mTransactions[i];
             }
             else
+            {
                 return NULL;
+            }
         }
 
         bool

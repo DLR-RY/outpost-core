@@ -8,10 +8,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-
 #ifndef OUTPOST_COMM_RMAP_TRANSACTION_H_
 #define OUTPOST_COMM_RMAP_TRANSACTION_H_
 
@@ -142,10 +141,14 @@ public:
     void
     blockTransaction(outpost::time::Duration timeout)
     {
-        if(timeout == outpost::time::Duration::maximum())
+        if (timeout == outpost::time::Duration::maximum())
+        {
             mReplyLock.acquire();
+        }
         else
+        {
             mReplyLock.acquire(timeout);
+        }
     }
 
     inline void

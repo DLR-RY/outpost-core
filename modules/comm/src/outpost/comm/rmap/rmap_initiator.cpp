@@ -8,9 +8,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
+
+#include "rmap_common.h"
 #include "rmap_initiator.h"
 
 using namespace outpost::comm;
@@ -21,9 +23,9 @@ uint16_t RmapInitiator::transactionId = 0;
 
 //-----------------------------------------------------------------------------
 RmapInitiator::RmapInitiator(hal::SpaceWire &spw, RmapTargetsList *list) :
-        outpost::rtos::Thread(priority, stackSize, "RMEN"),
-        mSpW(spw), mTargetNodes(list), mOperationLock(),
-        mInitiatorLogicalAddress(RmapPacket::defaultLogicalAddress),
+        outpost::rtos::Thread(priority, stackSize, "RMEN"), mSpW(spw),
+        mTargetNodes(list), mOperationLock(),
+        mInitiatorLogicalAddress(defaultLogicalAddress),
         mIncrementMode(false), mVerifyMode(false), mReplyMode(false),
         mStopped(true), mTransactionsList(), mLatestAssignedTransactionID(0),
         mDiscardedPackets(), mCounters(), mRxData()
@@ -264,13 +266,13 @@ RmapInitiator::read(RmapTargetNode* rmapTargetNode,
     {
         transaction->setState(RmapTransaction::CommandSent);
 
-        console_out("RMAP-Initiator: Command sent %lu, waiting for reply\n",
+        console_out("RMAP-Initiator: Command sent %u, waiting for reply\n",
                 transaction->getState());
 
         // Wait for the RMAP reply
         transaction->blockTransaction(outpost::time::Duration::maximum());
 
-        console_out("RMAP-Initiator: Notified with state: %lu\n",
+        console_out("RMAP-Initiator: Notified with state: %u\n",
                 transaction->getState());
 
         if (transaction->getState() == RmapTransaction::ReplyReceived)
@@ -407,12 +409,14 @@ RmapInitiator::sendPacket(RmapTransaction* transaction,
 
 #ifdef DEBUG_EN
             outpost::BoundedArray<uint8_t> txData = txBuffer->getData();
-            console_out("TX-Data length: %u\n", txData.getNumberOfElements());
+            console_out("TX-Data length: %zu\n", txData.getNumberOfElements());
             for (uint16_t i = 0; i < txData.getNumberOfElements(); i++)
             {
                 console_out("%02X ", txData[i]);
                 if (i % 30 == 29)
-                console_out("\n");
+                {
+                    console_out("\n");
+                }
             }
             console_out("\n");
 #endif
@@ -443,20 +447,25 @@ RmapInitiator::receivePacket(RmapPacket *rxedPacket)
             outpost::BoundedArray<const uint8_t> rxData = rxBuffer.getData();
 
 #ifdef DEBUG_EN
-            console_out("RX-Data length: %u\n", rxData.getNumberOfElements());
+            console_out("RX-Data length: %zu\n", rxData.getNumberOfElements());
             for (uint16_t i = 0; i < rxData.getNumberOfElements(); i++)
             {
                 console_out("%02X ", rxData[i]);
                 if (i % 30 == 29)
-                console_out("\n");
+                {
+                    console_out("\n");
+                }
             }
             console_out("\n");
 #endif
 
             if (rxedPacket->extractPacket(rxData, mInitiatorLogicalAddress))
             {
-                if(mRxData.addData(rxedPacket->getData(), rxedPacket->getDataLength()))
+                if (mRxData.addData(rxedPacket->getData(),
+                        rxedPacket->getDataLength()))
+                {
                     result = true;
+                }
                 mSpW.releaseBuffer(rxBuffer);
             }
             else
@@ -490,9 +499,9 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
         // If not found, increment error counter
         mCounters.mErrorneousReplyPackets++;
         mDiscardedPackets.addDiscardedPacket(packet);
-        console_out("RMAP Reply packet (dataLength= %lu bytes) was received but "
+        console_out("RMAP Reply packet (dataLength %lu bytes) was received but "
                 "no corresponding transaction was found. The size of "
-                "discardedRMAPReplyPackets = %u\n", packet->getLength(),
+                "discarded packets %u\n", packet->getDataLength(),
                 mDiscardedPackets.mIndex);
     }
     else
@@ -533,7 +542,7 @@ uint16_t
 RmapInitiator::getNextAvailableTransactionID()
 {
     // Check in the current transaction list that the TID is not in use
-    for (uint32_t i = 0; i < maximumTIDNumber; i++)
+    for (uint32_t i = 0; i < maxTransactionIds; i++)
     {
         if (!mTransactionsList.isTransactionIdUsed(i))
         {
