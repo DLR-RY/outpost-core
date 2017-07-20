@@ -42,10 +42,16 @@ public:
         /**
          * Constructor
          */
+        constexpr
         Address() :
+            mIpAddress {
+                static_cast<uint8_t>(0),
+                static_cast<uint8_t>(0),
+                static_cast<uint8_t>(0),
+                static_cast<uint8_t>(0)
+            },
             mPort(0)
         {
-            memset(&mIpAddress[0], 0, mIpAddress.getNumberOfElements());
         }
 
         /**
@@ -74,24 +80,21 @@ public:
          * \param byte4 Fourth byte (right most) of an IPv4 Address
          * \param port Port provided in host-byte-order
          */  
-        inline
+        inline constexpr
         Address(uint8_t byte1, 
                 uint8_t byte2, 
                 uint8_t byte3, 
                 uint8_t byte4, 
                 uint16_t port) :
+            // store the IP address in network-byte-order
+            mIpAddress { byte1, byte2, byte3, byte4 },
             mPort(port)
         { 
-            // store the ip address in network-byte-order
-            mIpAddress[0] = byte1;
-            mIpAddress[1] = byte2;
-            mIpAddress[2] = byte3;
-            mIpAddress[3] = byte4;
         }
         
         /**
-        * \return The port in host-byte-order
-        */
+         * \return The port in host-byte-order
+         */
         inline uint16_t
         getPort() const
         {
@@ -99,9 +102,11 @@ public:
         }
 
         /**
-        * Returns the internal byte array holding the ip-address in network-byte-order
-        *   \return Array holding the IP-Address
-        */
+         * Returns the internal byte array holding the ip-address in
+         * network-byte-order.
+         *
+         * \return Array holding the IP-Address
+         */
         inline outpost::FixedSizeArray<uint8_t, 4>
         getIpAddress() const
         {

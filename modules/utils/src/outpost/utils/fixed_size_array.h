@@ -40,7 +40,15 @@ public:
 
     friend class FixedSizeArray<const T, N>;
 
+    constexpr
     FixedSizeArray()
+    {
+    }
+
+    template <typename... U>
+    explicit constexpr
+    FixedSizeArray(const U... ts) :
+        mData { ts... }
     {
     }
 
