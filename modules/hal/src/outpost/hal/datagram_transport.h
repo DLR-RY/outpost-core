@@ -15,6 +15,8 @@
 #ifndef OUTPOST_HAL_DATAGRAM_TRANSPORT_H
 #define OUTPOST_HAL_DATAGRAM_TRANSPORT_H
 
+#include <array>
+
 #include <outpost/time/duration.h>
 #include <outpost/utils/fixed_size_array.h>
 
@@ -35,7 +37,79 @@ namespace hal
 class DatagramTransport
 {
 public:
-    
+    class IpAddress
+    {
+    public:
+        /**
+         * Default constructor.
+         *
+         * Set the Ip address to zero.
+         */
+        constexpr
+        IpAddress() :
+            mIpAddress {{ 0, 0, 0, 0 }}
+        {
+        }
+
+        /**
+         * Constructor
+         *
+         * \param ipAddress IPv4 Address provided in host-byte-order
+         */
+        constexpr
+        IpAddress(std::array<uint8_t, 4> ipAddress) :
+            mIpAddress(ipAddress)
+        {
+        }
+
+        /**
+         * Constructor
+         *
+         * Allows to provide the IP-Address more conveniently, e.g.:
+         * \code
+         * IpAddress myIp(192, 168, 0, 1);
+         * \endcode
+         *
+         * \param byte1 First byte (left most) of an IPv4 Address
+         * \param byte2 Second  byte of an IPv4 Address
+         * \param byte3 Third byte of an IPv4 Address
+         * \param byte4 Fourth byte (right most) of an IPv4 Address
+         */
+        constexpr
+        IpAddress(uint8_t byte1,
+                  uint8_t byte2,
+                  uint8_t byte3,
+                  uint8_t byte4) :
+           // store the IP address in network-byte-order
+           mIpAddress {{ byte1, byte2, byte3, byte4 }}
+        {
+        }
+
+        /**
+         * Returns the internal byte array holding the ip-address in
+         * network-byte-order.
+         *
+         * \return Array holding the IP-Address
+         */
+        inline std::array<uint8_t, 4>
+        getArray() const
+        {
+            return mIpAddress;
+        }
+
+        inline constexpr uint8_t
+        operator[](size_t index) const
+        {
+            return mIpAddress[index];
+        }
+
+    private:
+        std::array<uint8_t, 4> mIpAddress;
+    };
+
+    /**
+     * Representation of an datagram address composed of an IP and a port number.
+     */
     class Address
     {
     public:
@@ -44,26 +118,14 @@ public:
          */
         constexpr
         Address() :
-            mIpAddress {
-                static_cast<uint8_t>(0),
-                static_cast<uint8_t>(0),
-                static_cast<uint8_t>(0),
-                static_cast<uint8_t>(0)
-            },
+            mIpAddress(),
             mPort(0)
         {
         }
 
-        /**
-         * Constructor
-         * 
-         * \param ipAddress IPv4 Address provided in host-byte-order
-         * \param port Port provided in host-byte-order
-         */
-        inline
-        Address(outpost::FixedSizeArray<uint8_t, 4> ipAddress, 
-                uint16_t port) :
-            mIpAddress(ipAddress),
+        inline constexpr
+        Address(IpAddress ip, uint16_t port) :
+            mIpAddress(ip),
             mPort(port)
         {
         }
@@ -78,8 +140,9 @@ public:
          * \param byte2 Second  byte of an IPv4 Address
          * \param byte3 Third byte of an IPv4 Address
          * \param byte4 Fourth byte (right most) of an IPv4 Address
-         * \param port Port provided in host-byte-order
-         */  
+         *
+         * \param port Port number
+         */
         inline constexpr
         Address(uint8_t byte1, 
                 uint8_t byte2, 
@@ -91,7 +154,7 @@ public:
             mPort(port)
         { 
         }
-        
+
         /**
          * \return The port in host-byte-order
          */
@@ -101,20 +164,14 @@ public:
             return mPort;
         }
 
-        /**
-         * Returns the internal byte array holding the ip-address in
-         * network-byte-order.
-         *
-         * \return Array holding the IP-Address
-         */
-        inline outpost::FixedSizeArray<uint8_t, 4>
+        inline IpAddress
         getIpAddress() const
         {
             return mIpAddress;
         }
         
     protected:
-        outpost::FixedSizeArray<uint8_t, 4> mIpAddress;
+        IpAddress mIpAddress;
         uint16_t mPort;
     };
 
