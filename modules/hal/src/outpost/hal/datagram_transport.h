@@ -131,31 +131,6 @@ public:
         }
 
         /**
-         * Constructor
-         * 
-         * Allows to provide the IP-Address more conveniently, e.g.:
-         * Adress myIp(192, 168, 0, 1, 8080);
-         *
-         * \param byte1 First byte (left most) of an IPv4 Address
-         * \param byte2 Second  byte of an IPv4 Address
-         * \param byte3 Third byte of an IPv4 Address
-         * \param byte4 Fourth byte (right most) of an IPv4 Address
-         *
-         * \param port Port number
-         */
-        inline constexpr
-        Address(uint8_t byte1, 
-                uint8_t byte2, 
-                uint8_t byte3, 
-                uint8_t byte4, 
-                uint16_t port) :
-            // store the IP address in network-byte-order
-            mIpAddress { byte1, byte2, byte3, byte4 },
-            mPort(port)
-        { 
-        }
-
-        /**
          * \return The port in host-byte-order
          */
         inline uint16_t
