@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -22,7 +22,7 @@ using namespace outpost::comm;
 //------------------------------------------------------------------------------
 RmapTargetNode::RmapTargetNode() :
         mTargetSpaceWireAddressLength(0), mReplyAddressLength(0),
-        mTargetLogicalAddress(defaultLogicalAddress), mKey(0), mId(0)
+        mTargetLogicalAddress(rmap::defaultLogicalAddress), mKey(0), mId(0)
 {
     strcpy(mName, "Default");
     memset(mTargetSpaceWireAddress, 0, sizeof(mTargetSpaceWireAddress));
@@ -39,7 +39,7 @@ RmapTargetNode::RmapTargetNode(const char *name,
         mReplyAddressLength(replyAddress.getNumberOfElements()),
         mTargetLogicalAddress(targetLogicalAddress), mKey(key), mId(id)
 {
-    if(strlen(name) < maxNodeNameLength)
+    if(strlen(name) < rmap::maxNodeNameLength)
     {
         strcpy(mName, name);
     }
@@ -56,6 +56,34 @@ RmapTargetNode::RmapTargetNode(const char *name,
 RmapTargetNode::~RmapTargetNode()
 {
 
+}
+
+bool
+RmapTargetNode::setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress)
+{
+    bool result = false;
+    if (replyAddress.getNumberOfElements() <= rmap::maxAddressLength)
+    {
+        memcpy(mReplyAddress, replyAddress.begin(),
+            replyAddress.getNumberOfElements());
+        result = true;
+    }
+    return result;
+}
+
+bool
+RmapTargetNode::setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
+{
+    bool result = false;
+    if (targetSpaceWireAddress.getNumberOfElements() <= rmap::maxAddressLength)
+    {
+        memcpy(mTargetSpaceWireAddress, targetSpaceWireAddress.begin(),
+                targetSpaceWireAddress.getNumberOfElements());
+        mTargetSpaceWireAddressLength =
+                targetSpaceWireAddress.getNumberOfElements();
+        result = true;
+    }
+    return result;
 }
 
 //------------------------------------------------------------------------------
@@ -80,7 +108,7 @@ RmapTargetsList::addTargetNode(RmapTargetNode* node)
 {
     bool result = false;
 
-    if (mSize < maxAddressLength)
+    if (mSize < rmap::maxAddressLength)
     {
         mNodes[mSize++] = node;
         result = true;
@@ -114,7 +142,7 @@ RmapTargetsList::getTargetNode(const char *name)
     {
         for (uint8_t i = 0; i < mSize; i++)
         {
-            if (!strcmp(mNodes[i]->getName(), name))
+            if (!strncmp(mNodes[i]->getName(), name, rmap::maxNodeNameLength))
             {
                 rt = mNodes[i];
                 break;

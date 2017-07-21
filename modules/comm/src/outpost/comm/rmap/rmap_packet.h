@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -11,7 +11,6 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-
 #ifndef OUTPOST_COMM_RMAP_PACKET_H_
 #define OUTPOST_COMM_RMAP_PACKET_H_
 
@@ -27,97 +26,78 @@ namespace outpost
 {
 namespace comm
 {
+
+/**
+ * RMAP packet.
+ *
+ * Provides RMAP packet definitions and methods to setup the send/receive packet
+ * for RMAP transaction.
+ *
+ * \author  Muhammad Bassam
+ */
 class RmapPacket
 {
 public:
 
-    struct Instruction
+    /**
+     * RMAP packet instruction field, for reference
+     * (see ECSS-E-ST-50-52C pg. 17)
+     *
+     * */
+    struct InstructionField
     {
         enum PacketType
-        {
-            replyPacket = 0, commandPacket = 1
+            : uint8_t
+            {
+                replyPacket = 0, commandPacket = 1
         };
 
         enum Operation
-        {
-            read = 0, write = 1
+            : uint8_t
+            {
+                read = 0, write = 1
         };
 
         enum ReplyAddressLength
-        {
-            zeroBytes = 0, fourBytes = 1, eigthBytes = 2, twelveBytes = 3
+            : uint8_t
+            {
+                zeroBytes = 0, fourBytes = 1, eigthBytes = 2, twelveBytes = 3
         };
 
-        Instruction() :
+        InstructionField() :
                 mField(0)
         {
         }
-        ~Instruction()
+        ~InstructionField()
         {
         }
 
         void
-        setRead()
+        setOperation(Operation op)
         {
             // bit5 operation
-            outpost::BitAccess::set<uint8_t, 5>(mField,
-                    static_cast<uint8_t>(read));
+            outpost::BitAccess::set<uint8_t, 5>(mField, op);
         }
 
-        bool
-        isRead()
+        Operation
+        getOperation() const
         {
             // bit5 operation
-            return (outpost::BitAccess::get<uint8_t, 5>(mField)
-                    == static_cast<uint8_t>(read));
+            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, 5>(mField));
         }
 
         void
-        setWrite()
-        {
-            // bit5 operation
-            outpost::BitAccess::set<uint8_t, 5>(mField,
-                    static_cast<uint8_t>(write));
-        }
-
-        bool
-        isWrite()
-        {
-            // bit5 operation
-            return (outpost::BitAccess::get<uint8_t, 5>(mField)
-                    == static_cast<uint8_t>(write));
-        }
-
-        void
-        setCommandPacket()
+        setPacketType(PacketType type)
         {
             // bit7 & bit6 packet type
-            outpost::BitAccess::set<uint8_t, 7, 6>(mField,
-                    static_cast<uint8_t>(commandPacket));
+            outpost::BitAccess::set<uint8_t, 7, 6>(mField, type);
         }
 
-        bool
-        isCommandPacket()
+        PacketType
+        getPacketType() const
         {
             // bit7 & bit6 packet type
-            return (outpost::BitAccess::get<uint8_t, 7, 6>(mField)
-                    == static_cast<uint8_t>(commandPacket));
-        }
-
-        void
-        setReplyPacket()
-        {
-            // bit7 & bit6 packet type
-            outpost::BitAccess::set<uint8_t, 7, 6>(mField,
-                    static_cast<uint8_t>(replyPacket));
-        }
-
-        bool
-        isReplyPacket()
-        {
-            // bit7 & bit6 packet type
-            return (outpost::BitAccess::get<uint8_t, 7, 6>(mField)
-                    == static_cast<uint8_t>(replyPacket));
+            return static_cast<PacketType>(outpost::BitAccess::get<uint8_t, 7, 6>(mField));
         }
 
         void
@@ -184,26 +164,27 @@ public:
         }
 
         void
-        setReplyAddrLength(uint8_t len)
+        setReplyAddressLength(ReplyAddressLength len)
         {
             // bit 1 & bit 0 reply length
             outpost::BitAccess::set<uint8_t, 1, 0>(mField, len);
         }
 
-        uint8_t
-        getReplyAddrLength() const
+        ReplyAddressLength
+        getReplyAddressLength() const
         {
-            return outpost::BitAccess::get<uint8_t, 1, 0>(mField);
+            return static_cast<ReplyAddressLength>(outpost::BitAccess::get<
+                    uint8_t, 1, 0>(mField));
         }
 
         void
-        setInstruction(uint8_t inst)
+        setAllRaw(uint8_t inst)
         {
             mField = inst;
         }
 
         uint8_t
-        getInstruction() const
+        getRaw() const
         {
             return mField;
         }
@@ -213,21 +194,22 @@ public:
         {
             mField = 0;
         }
-    private:
+
         // disable copy constructor
-        Instruction(const Instruction&);
+        InstructionField(const InstructionField&) = delete;
 
         // disable copy-assignment operator
-        Instruction&
-        operator=(const Instruction&);
-
+        InstructionField&
+        operator=(const InstructionField&) = delete;
+    private:
         uint8_t mField;
     };
 
+    //--------------------------------------------------------------------------
     RmapPacket();
     RmapPacket(outpost::BoundedArray<uint8_t> spwTargets,
                uint8_t targetLogicalAddress,
-               Instruction::ReplyAddressLength rplyAddrLen,
+               InstructionField::ReplyAddressLength rplyAddrLen,
                uint8_t key,
                uint8_t* replyAddress,
                uint8_t initiatorLogicalAddress,
@@ -241,47 +223,74 @@ public:
                uint32_t dataLength);
     ~RmapPacket();
 
+    /**
+     * Reset or clear the contents of the packet. This method is being
+     * used by the RMAP initiator thread for clearing the received old packet
+     * contents for next incoming packets.
+     *
+     * */
     void
     reset();
 
+    /**
+     * Construct the RMAP packet according to the given standard. After filling
+     * the packet content corresponding CRC will be calculated and inserted into
+     * the packet buffer making it ready to send.
+     *
+     * \param buffer
+     *      SpW buffer provided by the RMAP initiator
+     *
+     * \param data
+     *      User data for write commands, for read commands this object will be
+     *      outpost::BoundedArray<uint8_t>::empty() and will be ignored
+     *
+     * \return
+     *      True for successful integration of packet into the buffer, false for
+     *      insufficient memory space in the buffer
+     *
+     * */
     bool
     constructPacket(outpost::BoundedArray<uint8_t> buffer,
                     outpost::BoundedArray<uint8_t> data);
 
+    /**
+     * Extract the received RMAP packet according to the given standard by
+     * checking it's content and verifying particular CRC's for packet data
+     * validity checks.
+     *
+     * \param data
+     *      Reference to the raw received data buffer from SpW
+     *
+     * \param initiatorLogicalAddress
+     *      Used to validating if the packet is intended for the provided packet
+     *      initiator
+     *
+     * \return
+     *      True for valid RMAP packet and its extraction, otherwise false
+     *
+     * */
     bool
-    extractPacket(outpost::BoundedArray<const uint8_t> &data, uint8_t ila);
+    extractPacket(outpost::BoundedArray<const uint8_t> &data,
+                  uint8_t initiatorLogicalAddress);
 
+    /**
+     * Setting the RMAP target specific information into the packet, will be
+     * done before initiating the transaction for sending commands.
+     *
+     * \param rmapTargetNode
+     *      Reference to the RMAP target node
+     *
+     * */
     void
     setTargetInformation(RmapTargetNode *rmapTargetNode);
 
-    void
-    getData(uint8_t *buffer, size_t maxLength);
+    RmapPacket&
+    operator=(const RmapPacket& rhs);
+
+    // Disabling copy constructor
+    RmapPacket(const RmapPacket&) = delete;
 
     //--------------------------------------------------------------------------
-    inline RmapPacket&
-    operator=(const RmapPacket& rhs)
-    {
-        mNumOfSpwTargets = rhs.mNumOfSpwTargets;
-        memcpy(mSpwTargets, rhs.mSpwTargets, sizeof(mSpwTargets));
-        mTargetLogicalAddress = rhs.mTargetLogicalAddress;
-        mInstruction.setInstruction(rhs.mInstruction.getInstruction());
-        mDestKey = rhs.mDestKey;
-        memcpy(mReplyAddress, rhs.mReplyAddress, sizeof(mReplyAddress));
-        mInitiatorLogicalAddress = rhs.mInitiatorLogicalAddress;
-        mExtendedAddress = rhs.mExtendedAddress;
-        mTransactionIdentifier = rhs.mTransactionIdentifier;
-        mAddress = rhs.mAddress;
-        mDataLength = rhs.mDataLength;
-        mStatus = rhs.mStatus;
-        mHeaderLength = rhs.mHeaderLength;
-
-        mData = rhs.mData;
-
-        mHeaderCRC = rhs.mHeaderCRC;
-        mDataCRC = rhs.mDataCRC;
-        return *this;
-    }
-
     inline void
     setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
     {
@@ -301,19 +310,19 @@ public:
     {
         return outpost::BoundedArray<uint8_t>(
                 reinterpret_cast<uint8_t*>(mReplyAddress),
-                mInstruction.getReplyAddrLength());
+                mInstruction.getReplyAddressLength());
     }
 
     inline void
-    setReplyPathAddressLength(uint8_t pathAddressLength)
+    setReplyPathAddressLength(InstructionField::ReplyAddressLength pathAddressLength)
     {
-        mInstruction.setReplyAddrLength(pathAddressLength);
+        mInstruction.setReplyAddressLength(pathAddressLength);
     }
 
     inline uint8_t
     getReplyPathAddressLength()
     {
-        return mInstruction.getReplyAddrLength();
+        return mInstruction.getReplyAddressLength();
     }
 
     inline void
@@ -343,55 +352,60 @@ public:
     inline uint8_t
     getInstruction() const
     {
-        return mInstruction.getInstruction();
+        return mInstruction.getRaw();
     }
 
     inline bool
     isCommandPacket()
     {
-        return mInstruction.isCommandPacket();
+        return (mInstruction.getPacketType() == InstructionField::commandPacket);
     }
 
     inline void
     setCommand()
     {
-        mInstruction.setCommandPacket();
+        //mInstruction.setCommandPacket();
+        mInstruction.setPacketType(InstructionField::commandPacket);
     }
 
     inline void
     setReply()
     {
-        mInstruction.setReplyPacket();
+        //mInstruction.setReplyPacket();
+        mInstruction.setPacketType(InstructionField::replyPacket);
     }
 
     inline bool
     isReplyPacket()
     {
-        return mInstruction.isReplyPacket();
+        //return mInstruction.isReplyPacket();
+        return (mInstruction.getPacketType() == InstructionField::replyPacket);
     }
 
     inline bool
     isWrite()
     {
-        return mInstruction.isWrite();
+        //return mInstruction.isWrite();
+        return (mInstruction.getOperation() == InstructionField::write);
     }
 
     inline void
     setWrite()
     {
-        mInstruction.setWrite();
+        mInstruction.setOperation(InstructionField::write);
     }
 
     inline bool
     isRead()
     {
-        return mInstruction.isRead();
+        //return mInstruction.isRead();
+        return (mInstruction.getOperation() == InstructionField::read);
     }
 
     inline void
     setRead()
     {
-        mInstruction.setRead();
+        mInstruction.setOperation(InstructionField::read);
     }
 
     inline bool
@@ -554,15 +568,23 @@ public:
 
 private:
 
+    /**
+     * Construct RMAP packet header.
+     *
+     * \param stream
+     *      Reference to the serialize stream of SpW buffer
+     *
+     * */
     void
     constructHeader(outpost::Serialize &stream);
 
+    //--------------------------------------------------------------------------
     uint8_t mNumOfSpwTargets;
-    uint8_t mSpwTargets[32];
+    uint8_t mSpwTargets[rmap::maxPhysicalRouterOutputPorts];
     uint8_t mTargetLogicalAddress;
-    Instruction mInstruction;
+    InstructionField mInstruction;
     uint8_t mDestKey;
-    uint32_t mReplyAddress[3];
+    uint32_t mReplyAddress[rmap::maxAddressLength/4];
     uint8_t mInitiatorLogicalAddress;
     uint8_t mExtendedAddress;
     uint16_t mTransactionIdentifier;

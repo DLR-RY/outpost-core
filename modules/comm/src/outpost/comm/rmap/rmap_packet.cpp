@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -11,7 +11,6 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-
 #include <outpost/utils/crc.h>
 
 #include "rmap_packet.h"
@@ -19,20 +18,22 @@
 using namespace outpost::comm;
 
 RmapPacket::RmapPacket() :
-        mNumOfSpwTargets(0), mTargetLogicalAddress(defaultLogicalAddress),
+        mNumOfSpwTargets(0), mTargetLogicalAddress(rmap::defaultLogicalAddress),
         mInstruction(), mDestKey(0),
-        mInitiatorLogicalAddress(defaultLogicalAddress), mExtendedAddress(0),
-        mTransactionIdentifier(0), mAddress(0), mDataLength(0), mStatus(0),
-        mHeaderLength(0), mData(0), mHeaderCRC(0), mDataCRC(0)
+        mInitiatorLogicalAddress(rmap::defaultLogicalAddress),
+        mExtendedAddress(rmap::defaultExtendedAddress),
+        mTransactionIdentifier(0), mAddress(0), mDataLength(0),
+        mStatus(RmapReplyStatus::unknown), mHeaderLength(0), mData(0),
+        mHeaderCRC(0), mDataCRC(0)
 
 {
-    memset(mSpwTargets, 0, 32);
-    memset(mReplyAddress, 0, 12);
+    memset(mSpwTargets, 0, sizeof(mSpwTargets));
+    memset(mReplyAddress, 0, sizeof(mReplyAddress));
 }
 
 RmapPacket::RmapPacket(outpost::BoundedArray<uint8_t> spwTargets,
                        uint8_t targetLogicalAddress,
-                       Instruction::ReplyAddressLength rplyAddrLen,
+                       InstructionField::ReplyAddressLength rplyAddrLen,
                        uint8_t key,
                        uint8_t* replyAddress,
                        uint8_t initiatorLogicalAddress,
@@ -41,9 +42,11 @@ RmapPacket::RmapPacket(outpost::BoundedArray<uint8_t> spwTargets,
         mNumOfSpwTargets(spwTargets.getNumberOfElements()),
         mTargetLogicalAddress(targetLogicalAddress), mInstruction(),
         mDestKey(key), mInitiatorLogicalAddress(initiatorLogicalAddress),
-        mExtendedAddress(0), mTransactionIdentifier(0), mAddress(address),
-        mDataLength(dataLength), mStatus(0), mHeaderLength(0), mData(0),
+        mExtendedAddress(rmap::defaultExtendedAddress),
+        mTransactionIdentifier(0), mAddress(address), mDataLength(dataLength),
+        mStatus(RmapReplyStatus::unknown), mHeaderLength(0), mData(0),
         mHeaderCRC(0), mDataCRC(0)
+
 {
     memcpy(mSpwTargets, spwTargets.begin(), spwTargets.getNumberOfElements());
     memcpy(mReplyAddress, replyAddress, rplyAddrLen * 4);
@@ -56,12 +59,14 @@ RmapPacket::RmapPacket(uint8_t targetLogicalAddress,
                        uint32_t dataLength) :
         mNumOfSpwTargets(0), mTargetLogicalAddress(targetLogicalAddress),
         mInstruction(), mDestKey(key),
-        mInitiatorLogicalAddress(initiatorLogicalAddress), mExtendedAddress(0),
+        mInitiatorLogicalAddress(initiatorLogicalAddress),
+        mExtendedAddress(rmap::defaultExtendedAddress),
         mTransactionIdentifier(0), mAddress(address), mDataLength(dataLength),
-        mStatus(0), mHeaderLength(0), mData(0), mHeaderCRC(0), mDataCRC(0)
+        mStatus(RmapReplyStatus::unknown), mHeaderLength(0), mData(0),
+        mHeaderCRC(0), mDataCRC(0)
 {
-    memset(mSpwTargets, 0, 32);
-    memset(mReplyAddress, 0, 12);
+    memset(mSpwTargets, 0, sizeof(mSpwTargets));
+    memset(mReplyAddress, 0, sizeof(mReplyAddress));
 }
 
 RmapPacket::~RmapPacket()
@@ -72,19 +77,8 @@ RmapPacket::~RmapPacket()
 void
 RmapPacket::reset()
 {
-    memset(mSpwTargets, 0, 12);
-    mTargetLogicalAddress = 0;
-    mInstruction.reset();
-    mDestKey = 0;
-    memset(mReplyAddress, 0, 12);
-    mInitiatorLogicalAddress = 0;
-    mExtendedAddress = 0;
-    mTransactionIdentifier = 0;
-    mAddress = 0;
-    mDataLength = 0;
-    mStatus = RmapReplyStatus::commandExecutedSuccessfully;
-    mHeaderCRC = 0;
-    mDataCRC = 0;
+    RmapPacket empty;
+    *this = empty;
 }
 
 bool
@@ -119,10 +113,10 @@ RmapPacket::constructPacket(outpost::BoundedArray<uint8_t> buffer,
 
 bool
 RmapPacket::extractPacket(outpost::BoundedArray<const uint8_t> &data,
-                          uint8_t ila)
+                          uint8_t initiatorLogicalAddress)
 {
 
-    if (data.getNumberOfElements() < minimumReplySize)
+    if (data.getNumberOfElements() < rmap::minimumReplySize)
     {
         console_out("RMAP-Packet: packet size less then minimum\n");
         return false;
@@ -138,15 +132,15 @@ RmapPacket::extractPacket(outpost::BoundedArray<const uint8_t> &data,
 
     // Extract path addresses from the packet. Maximum SpW nodes supported in the
     // network is 32. So max value of the SpW node ID would be less then 32
-    uint8_t spwPathAddr[32];
+    uint8_t spwPathAddr[rmap::maxPhysicalRouterOutputPorts];
     uint8_t validSpWPathAddr = 0;
 
-    memset(spwPathAddr, 0, 32);
-    memset(mSpwTargets, 0, 32);
+    memset(spwPathAddr, 0, sizeof(spwPathAddr));
+    memset(mSpwTargets, 0, sizeof(mSpwTargets));
 
-    for (uint8_t i = 0; i < 32; i++)
+    for (uint8_t i = 0; i < rmap::maxPhysicalRouterOutputPorts; i++)
     {
-        if (data[i] == ila)
+        if (data[i] == initiatorLogicalAddress)
         {
             break;
         }
@@ -159,7 +153,7 @@ RmapPacket::extractPacket(outpost::BoundedArray<const uint8_t> &data,
 
     uint8_t initiatoraLogicalAddress = stream.read<uint8_t>();
 
-    if (initiatoraLogicalAddress != ila)
+    if (initiatoraLogicalAddress != initiatorLogicalAddress)
     {
         console_out("RMAP-Packet: Initiator logical address doesn't match\n");
         return false;
@@ -167,13 +161,13 @@ RmapPacket::extractPacket(outpost::BoundedArray<const uint8_t> &data,
 
     uint8_t protocolIdentifiter = stream.read<uint8_t>();
 
-    if (protocolIdentifiter != protocolIdentifier)
+    if (protocolIdentifiter != rmap::protocolIdentifier)
     {
         console_out("RMAP-Packet: Protocol ID is not RMAP\n");
         return false;
     }
 
-    mInstruction.setInstruction(stream.read<uint8_t>());
+    mInstruction.setAllRaw(stream.read<uint8_t>());
 
     // If reply packet is received
     if (isReplyPacket())
@@ -187,7 +181,7 @@ RmapPacket::extractPacket(outpost::BoundedArray<const uint8_t> &data,
         mTransactionIdentifier = stream.read<uint16_t>();
 
         // Write command reply
-        if (mInstruction.isWrite())
+        if (isWrite())
         {
             currentStreamPos = stream.getPosition();
             packetHeaderCRC = stream.read<uint8_t>();
@@ -264,46 +258,57 @@ RmapPacket::extractPacket(outpost::BoundedArray<const uint8_t> &data,
 void
 RmapPacket::setTargetInformation(RmapTargetNode *rmapTargetNode)
 {
-    // Set packet target logical address field according to the RMAP target node
-    mTargetLogicalAddress = rmapTargetNode->getTargetLogicalAddress();
+    if(rmapTargetNode != nullptr)
+    {
+        // Set packet target logical address field according to the RMAP target node
+        mTargetLogicalAddress = rmapTargetNode->getTargetLogicalAddress();
 
-    // Set packet reply address field according to the RMAP target node
-    outpost::BoundedArray<uint8_t> rplyAddr = rmapTargetNode->getReplyAddress();
-    memcpy(mReplyAddress, &rplyAddr[0], rplyAddr.getNumberOfElements());
-    mInstruction.setReplyAddrLength(rplyAddr.getNumberOfElements() / 4);
+        // Set packet reply address field according to the RMAP target node
+        outpost::BoundedArray<uint8_t> rplyAddr = rmapTargetNode->getReplyAddress();
+        memcpy(mReplyAddress, &rplyAddr[0], rplyAddr.getNumberOfElements());
+        mInstruction.setReplyAddressLength(
+                static_cast<InstructionField::ReplyAddressLength>(rplyAddr.getNumberOfElements()
+                        / 4));
 
-    // Set packet target path SpW address field according to the RMAP target node
-    setTargetSpaceWireAddress(rmapTargetNode->getTargetSpaceWireAddress());
+        // Set packet target path SpW address field according to the RMAP target node
+        setTargetSpaceWireAddress(rmapTargetNode->getTargetSpaceWireAddress());
 
-    // Set packet key field according to the RMAP target node
-    setKey(rmapTargetNode->getKey());
+        // Set packet key field according to the RMAP target node
+        setKey(rmapTargetNode->getKey());
+    }
 }
 
-void
-RmapPacket::getData(uint8_t *buffer, size_t maxLength)
+RmapPacket&
+RmapPacket::operator=(const RmapPacket& rhs)
 {
-    size_t length = mDataLength;
+    mNumOfSpwTargets = rhs.mNumOfSpwTargets;
+    memcpy(mSpwTargets, rhs.mSpwTargets, sizeof(mSpwTargets));
+    mTargetLogicalAddress = rhs.mTargetLogicalAddress;
+    mInstruction.setAllRaw(rhs.mInstruction.getRaw());
+    mDestKey = rhs.mDestKey;
+    memcpy(mReplyAddress, rhs.mReplyAddress, sizeof(mReplyAddress));
+    mInitiatorLogicalAddress = rhs.mInitiatorLogicalAddress;
+    mExtendedAddress = rhs.mExtendedAddress;
+    mTransactionIdentifier = rhs.mTransactionIdentifier;
+    mAddress = rhs.mAddress;
+    mDataLength = rhs.mDataLength;
+    mStatus = rhs.mStatus;
+    mHeaderLength = rhs.mHeaderLength;
 
-    if (maxLength < length)
-    {
-        console_out("Insufficient buffer size\n");
-    }
-    else
-    {
-        for (uint32_t i = 0; i < length; i++)
-        {
-            buffer[i] = mData[i];
-        }
-    }
+    mData = rhs.mData;
+
+    mHeaderCRC = rhs.mHeaderCRC;
+    mDataCRC = rhs.mDataCRC;
+    return *this;
 }
 
 //=============================================================================
 void
 RmapPacket::constructHeader(outpost::Serialize &stream)
 {
+    // Only handling command packets
     if (isCommandPacket())
     {
-        // Command packet
 
         for (uint8_t i = 0; i < mNumOfSpwTargets; i++)
         {
@@ -311,12 +316,12 @@ RmapPacket::constructHeader(outpost::Serialize &stream)
         }
 
         stream.store<uint8_t>(mTargetLogicalAddress);
-        stream.store<uint8_t>(protocolIdentifier);
-        stream.store<uint8_t>(mInstruction.getInstruction());
+        stream.store<uint8_t>(rmap::protocolIdentifier);
+        stream.store<uint8_t>(mInstruction.getRaw());
         stream.store<uint8_t>(mDestKey);
-        if (mInstruction.getReplyAddrLength() > 0)
+        if (mInstruction.getReplyAddressLength() > InstructionField::zeroBytes)
         {
-            for (size_t i = 0; i < mInstruction.getReplyAddrLength(); i++)
+            for (size_t i = 0; i < mInstruction.getReplyAddressLength(); i++)
             {
                 stream.store<uint32_t>(mReplyAddress[i]);
             }
@@ -327,26 +332,6 @@ RmapPacket::constructHeader(outpost::Serialize &stream)
         stream.store<uint8_t>(mExtendedAddress);
         stream.store<uint32_t>(mAddress);
         stream.store24(mDataLength);
-    }
-    else
-    {
-        // Reply packet
-        for (size_t i = 0; i < (mInstruction.getReplyAddrLength() * 4); i++)
-        {
-            stream.store<uint32_t>(mReplyAddress[i]);
-        }
-        stream.store<uint8_t>(mInitiatorLogicalAddress);
-        stream.store<uint8_t>(protocolIdentifier);
-        stream.store<uint8_t>(mInstruction.getInstruction());
-        stream.store<uint8_t>(mStatus);
-        stream.store<uint8_t>(mTargetLogicalAddress);
-        stream.store<uint16_t>(mTransactionIdentifier);
-
-        if (isRead())
-        {
-            stream.store<uint8_t>(0);
-            stream.store24(mDataLength);
-        }
     }
 
     mHeaderLength = stream.getPosition();

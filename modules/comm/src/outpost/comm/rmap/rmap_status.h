@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *

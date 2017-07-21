@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -25,12 +25,16 @@ namespace outpost
 {
 namespace comm
 {
-
-//------------------------------------------------------------------------------
+/**
+ * RMAP target node.
+ *
+ * Provides the RMAP object level information for the listed RMAP targets.
+ *
+ * \author  Muhammad Bassam
+ */
 class RmapTargetNode
 {
 public:
-
     RmapTargetNode();
     RmapTargetNode(const char *name,
                    uint8_t id,
@@ -40,6 +44,33 @@ public:
                    uint8_t key);
     ~RmapTargetNode();
 
+    /**
+     * Sets the reply address of the target to the given value
+     *
+     * \param replyAddress
+     *      Reply address to be set
+     *
+     * \return
+     *      True for successful, false for wrong size parameter
+     *
+     * */
+    bool
+    setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress);
+
+    /**
+     * Sets the SpW target addresses to the given value
+     *
+     * \param targetSpaceWireAddress
+     *      SpW addresses to be set
+     *
+     * \return
+     *      True for successful, false for wrong size parameter
+     *
+     * */
+    bool
+    setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress);
+
+    //--------------------------------------------------------------------------
     inline uint8_t
     getKey() const
     {
@@ -72,47 +103,19 @@ public:
         mKey = defaultKey;
     }
 
-    inline bool
-    setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress)
-    {
-        bool result = false;
-        if (replyAddress.getNumberOfElements() <= maxAddressLength)
-        {
-            memcpy(mReplyAddress, replyAddress.begin(),
-                replyAddress.getNumberOfElements());
-            result = true;
-        }
-        return result;
-    }
-
     inline void
     setTargetLogicalAddress(uint8_t targetLogicalAddress)
     {
         mTargetLogicalAddress = targetLogicalAddress;
     }
 
-    inline bool
-    setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
-    {
-        bool result = false;
-        if (targetSpaceWireAddress.getNumberOfElements() <= maxAddressLength)
-        {
-            memcpy(mTargetSpaceWireAddress, targetSpaceWireAddress.begin(),
-                    targetSpaceWireAddress.getNumberOfElements());
-            mTargetSpaceWireAddressLength =
-                    targetSpaceWireAddress.getNumberOfElements();
-            result = true;
-        }
-        return result;
-    }
-
-    const char*
+    inline const char*
     getName() const
     {
         return mName;
     }
 
-    uint8_t
+    inline uint8_t
     getId() const
     {
         return mId;
@@ -120,17 +123,23 @@ public:
 
 private:
     uint8_t mTargetSpaceWireAddressLength;
-    uint8_t mTargetSpaceWireAddress[maxAddressLength];
+    uint8_t mTargetSpaceWireAddress[rmap::maxAddressLength];
     uint8_t mReplyAddressLength;
-    uint8_t mReplyAddress[maxAddressLength];
+    uint8_t mReplyAddress[rmap::maxAddressLength];
     uint8_t mTargetLogicalAddress;
     uint8_t mKey;
-
-    char mName[maxNodeNameLength];
+    char mName[rmap::maxNodeNameLength];
     uint8_t mId;
 };
 
 //------------------------------------------------------------------------------
+/**
+ * RMAP target node list.
+ *
+ * Provides the list for RMAP targets to be used by the RMAP initiator class.
+ *
+ * \author  Muhammad Bassam
+ */
 class RmapTargetsList
 {
 public:
@@ -187,6 +196,7 @@ public:
     RmapTargetNode*
     getTargetNode(uint8_t logicalAddress);
 
+    //--------------------------------------------------------------------------
     inline uint8_t
     getSize() const
     {
@@ -200,7 +210,7 @@ public:
     }
 
 private:
-    RmapTargetNode* mNodes[maxAddressLength];
+    RmapTargetNode* mNodes[rmap::maxAddressLength];
     uint8_t mSize;
 };
 }

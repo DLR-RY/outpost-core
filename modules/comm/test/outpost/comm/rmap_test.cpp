@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -11,7 +11,6 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-
 #include <unittest/harness.h>
 
 #include <outpost/comm/rmap/rmap_initiator.h>
@@ -127,8 +126,7 @@ public:
                     outpost::BoundedArray<uint8_t>(targetSpwAddress,
                             numberOfTargetSpwAddresses),
                     outpost::BoundedArray<uint8_t>(replyAddress,
-                            replyAddressLength), targetLogicalAddress,
-                    key),
+                            replyAddressLength), targetLogicalAddress, key),
             mTargetNodes(), mRmapInitiator(mSpaceWire, &mTargetNodes),
             mTestingRmap(), mNonRmapReceiver()
     {
@@ -206,23 +204,77 @@ TEST_F(RmapTest, shouldGetUsedTransactionFromList)
     EXPECT_TRUE(mTestingRmap.isUsedTransaction(mRmapInitiator, 80));
 }
 
-TEST_F(RmapTest, shouldSendWritePacket)
+TEST_F(RmapTest, shouldSetReplyPacketType)
 {
+    RmapPacket::InstructionField instruction;
+    instruction.setPacketType(RmapPacket::InstructionField::replyPacket);
+    EXPECT_EQ(RmapPacket::InstructionField::replyPacket,
+            instruction.getPacketType());
+}
+
+TEST_F(RmapTest, shouldSetCommandPacketType)
+{
+    RmapPacket::InstructionField instruction;
+    instruction.setPacketType(RmapPacket::InstructionField::commandPacket);
+    EXPECT_EQ(RmapPacket::InstructionField::commandPacket,
+            instruction.getPacketType());
+}
+
+TEST_F(RmapTest, shouldSetWriteOperationType)
+{
+    RmapPacket::InstructionField instruction;
+    instruction.setOperation(RmapPacket::InstructionField::write);
+    EXPECT_EQ(RmapPacket::InstructionField::write, instruction.getOperation());
+}
+
+TEST_F(RmapTest, shouldSetReadOperationType)
+{
+    RmapPacket::InstructionField instruction;
+    instruction.setOperation(RmapPacket::InstructionField::read);
+    EXPECT_EQ(RmapPacket::InstructionField::read, instruction.getOperation());
+}
+
+TEST_F(RmapTest, shouldSetZeroReplyAddressLength)
+{
+    RmapPacket::InstructionField instruction;
+
+    instruction.setReplyAddressLength(RmapPacket::InstructionField::zeroBytes);
+    EXPECT_EQ(RmapPacket::InstructionField::zeroBytes,
+            instruction.getReplyAddressLength());
+
+    instruction.setReplyAddressLength(RmapPacket::InstructionField::fourBytes);
+    EXPECT_EQ(RmapPacket::InstructionField::fourBytes,
+            instruction.getReplyAddressLength());
+
+    instruction.setReplyAddressLength(RmapPacket::InstructionField::eigthBytes);
+    EXPECT_EQ(RmapPacket::InstructionField::eigthBytes,
+            instruction.getReplyAddressLength());
+
+    instruction.setReplyAddressLength(
+            RmapPacket::InstructionField::twelveBytes);
+    EXPECT_EQ(RmapPacket::InstructionField::twelveBytes,
+            instruction.getReplyAddressLength());
+}
+
+TEST_F(RmapTest, shouldSendWriteCommandPacket)
+{
+    // Register RMAP target
     EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
     EXPECT_EQ(1, mTargetNodes.getSize());
     EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
 
+    // *** Constructing and sending write command ***
     uint8_t buffer[4] = { 0x01, 0x02, 0x03, 0x04 };
     RmapTransaction transaction;
     RmapPacket *cmd = transaction.getCommandPacket();
-    cmd->setInitiatorLogicalAddress(0xFE);
+    cmd->setInitiatorLogicalAddress(rmap::defaultLogicalAddress);
     cmd->setWrite();
     cmd->setCommand();
     cmd->unsetIncrementFlag();
     cmd->unsetVerifyFlag();
     cmd->unsetReplyFlag();
     transaction.setBlockingMode(false);
-    cmd->setExtendedAddress(0x00);
+    cmd->setExtendedAddress(rmap::defaultExtendedAddress);
     cmd->setAddress(0x100);
     cmd->setDataLength(4);
     cmd->setTargetInformation(&mRmapTarget);
@@ -238,44 +290,114 @@ TEST_F(RmapTest, shouldSendWritePacket)
     EXPECT_TRUE(mSpaceWire.noUsedTransmitBuffers());
 }
 
-TEST_F(RmapTest, shouldSendReadPacket)
+TEST_F(RmapTest, shouldReceiveReplyOfWriteCommandPacket)
 {
-    uint8_t buffer[4] = { 0x01, 0x02, 0x03, 0x04 };
-    uint8_t rply[20];
+    // *** Constructing and sending write reply packet acc. to RMAP standard ***
+    uint8_t reply[20];
+    outpost::Serialize stream { outpost::BoundedArray<uint8_t>(reply) };
 
     // Construct packet that should be received
-    uint8_t instr = 0;
-    //std::vector<uint8_t> rply;
+    RmapPacket::InstructionField instr;
 
-    outpost::BitAccess::set<uint8_t, 7, 6>(instr, 0);
+    instr.setPacketType(RmapPacket::InstructionField::replyPacket);
+    instr.setOperation(RmapPacket::InstructionField::write);
 
-    rply[0] = 0xFE;
-    rply[1] = 0x01;
-    rply[2] = instr;
-    rply[3] = 0;
-    rply[4] = 0xFE;
-    rply[5] = 0;
-    rply[6] = 1;
-    rply[7] = 0;
-    rply[8] = 0;
-    rply[9] = 0;
-    rply[10] = 4;
+    stream.store<uint8_t>(rmap::defaultLogicalAddress);  // Initiator logical address field
+    stream.store<uint8_t>(rmap::protocolIdentifier);   // RMAP protocol ID field
+    stream.store<uint8_t>(instr.getRaw());              // Instruction field
+    stream.store<uint8_t>(0);                           // Status field
+    stream.store<uint8_t>(rmap::defaultLogicalAddress);  // Target logical address field
+    stream.store<uint16_t>(1);                          // Transaction ID
+
     uint8_t crc = outpost::Crc8CcittReversed::calculate(
-            outpost::BoundedArray<const uint8_t>(&rply[0], 11));
-    rply[11] = crc;
-
-    rply[12] = buffer[0];
-    rply[13] = buffer[1];
-    rply[14] = buffer[2];
-    rply[15] = buffer[3];
-    auto data_start = &rply[12];
-    crc = outpost::Crc8CcittReversed::calculate(
-            outpost::BoundedArray<const uint8_t>(
-                    reinterpret_cast<uint8_t*>(data_start), 4));
-    rply[16] = crc;
+            outpost::BoundedArray<uint8_t>(stream.getPointer(),
+                    stream.getPosition()));
+    stream.store<uint8_t>(crc);                         // Header CRC
 
     mSpaceWire.mPacketsToReceive.emplace_back(
-            unittest::hal::SpaceWireStub::Packet { std::vector<uint8_t>(rply, rply + 17), SpaceWire::eop });
+            unittest::hal::SpaceWireStub::Packet { std::vector<uint8_t>(reply,
+                    reply + stream.getPosition()), SpaceWire::eop });
+
+    RmapPacket receivedPacket;
+    EXPECT_TRUE(mTestingRmap.receivePacket(mRmapInitiator, &receivedPacket));
+    EXPECT_TRUE(receivedPacket.isReplyPacket());
+    EXPECT_TRUE(receivedPacket.isWrite());
+
+    EXPECT_TRUE(mSpaceWire.mPacketsToReceive.empty());
+    EXPECT_TRUE(mSpaceWire.noUsedReceiveBuffers());
+
+}
+
+TEST_F(RmapTest, shouldSendReadCommandPacket)
+{
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // *** Constructing and sending write command ***
+    RmapTransaction transaction;
+    RmapPacket *cmd = transaction.getCommandPacket();
+    cmd->setInitiatorLogicalAddress(rmap::defaultLogicalAddress);
+    cmd->setRead();
+    cmd->setCommand();
+    cmd->unsetIncrementFlag();
+    cmd->unsetVerifyFlag();
+    cmd->setReplyFlag();
+    transaction.setBlockingMode(false);
+    cmd->setExtendedAddress(rmap::defaultExtendedAddress);
+    cmd->setAddress(0x100);
+    cmd->setDataLength(4);
+    cmd->setTargetInformation(&mRmapTarget);
+    transaction.setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
+    transaction.setTimeoutDuration(outpost::time::Duration::zero());
+
+    EXPECT_TRUE(
+            mTestingRmap.sendPacket(mRmapInitiator, &transaction, nullptr, 0));
+
+    size_t expectedSize = 1;
+
+    EXPECT_EQ(expectedSize, mSpaceWire.mSentPackets.size());
+    EXPECT_TRUE(mSpaceWire.noUsedTransmitBuffers());
+}
+
+TEST_F(RmapTest, shouldReceiveReplyOfReadCommandPacket)
+{
+    uint8_t data[4] = { 0x01, 0x02, 0x03, 0x04 };
+    uint8_t reply[20];
+    outpost::Serialize stream { outpost::BoundedArray<uint8_t>(reply) };
+
+    // Construct packet that should be received
+    RmapPacket::InstructionField instr;
+
+    instr.setPacketType(RmapPacket::InstructionField::replyPacket);
+    instr.setOperation(RmapPacket::InstructionField::read);
+
+    stream.store<uint8_t>(rmap::defaultLogicalAddress); // Initiator logical address field
+    stream.store<uint8_t>(rmap::protocolIdentifier);    // RMAP protocol ID field
+    stream.store<uint8_t>(instr.getRaw());              // Instruction field
+    stream.store<uint8_t>(0);                           // Status field
+    stream.store<uint8_t>(rmap::defaultLogicalAddress); // Target logical address field
+    stream.store<uint16_t>(1);                          // Transaction ID
+    stream.store<uint8_t>(0);                           // Reserved byte
+    stream.store24(sizeof(data));                       // Transaction ID
+
+    uint8_t crc = outpost::Crc8CcittReversed::calculate(
+            outpost::BoundedArray<uint8_t>(stream.getPointer(),
+                    stream.getPosition()));
+    stream.store<uint8_t>(crc);                         // Header CRC
+
+    uint8_t *dataStart = stream.getPointerToCurrentPosition();
+    stream.storeBuffer(data, sizeof(data));             // Data bytes to be read
+
+    crc = outpost::Crc8CcittReversed::calculate(
+            outpost::BoundedArray<uint8_t>(dataStart, sizeof(data)));
+
+    stream.store<uint8_t>(crc);                         // Data CRC
+
+    mSpaceWire.mPacketsToReceive.emplace_back(
+            unittest::hal::SpaceWireStub::Packet { std::vector<uint8_t>(reply,
+                    reply + stream.getPosition()), SpaceWire::eop });
 
     RmapPacket rxedPacket;
     EXPECT_TRUE(mTestingRmap.receivePacket(mRmapInitiator, &rxedPacket));
@@ -285,7 +407,7 @@ TEST_F(RmapTest, shouldSendReadPacket)
     mTestingRmap.getRxData(mRmapInitiator, rxbuffer);
     for (uint8_t i = 0; i < rxedPacket.getDataLength(); i++)
     {
-        EXPECT_EQ(rxbuffer[i], buffer[i]);
+        EXPECT_EQ(rxbuffer[i], data[i]);
     }
 
     EXPECT_TRUE(mSpaceWire.mPacketsToReceive.empty());
@@ -321,4 +443,26 @@ TEST_F(RmapTest, shouldReceiveAndPublishNonRmapPacket)
     EXPECT_TRUE(mSpaceWire.noUsedReceiveBuffers());
 
     delete subscription0;
+}
+
+TEST_F(RmapTest, shouldSendHigherLevelWriteCommandPacket)
+{
+    uint8_t dataToSend[4] = { 0x01, 0x02, 0x03, 0x04 };
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    mRmapInitiator.unsetIncrementMode();
+    mRmapInitiator.unsetVerifyMode();
+    mRmapInitiator.unsetReplyMode();
+
+    EXPECT_TRUE(mRmapInitiator.write(targetName, 0x1000, dataToSend, sizeof(dataToSend)));
+
+    size_t expectedSize = 1;
+
+    EXPECT_EQ(expectedSize, mSpaceWire.mSentPackets.size());
+    EXPECT_TRUE(mSpaceWire.noUsedTransmitBuffers());
 }

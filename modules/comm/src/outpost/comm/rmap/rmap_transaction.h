@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -23,6 +23,15 @@ namespace outpost
 {
 namespace comm
 {
+
+/**
+ * RMAP transaction.
+ *
+ * Provides RMAP transaction level information. The class contains the command
+ * and reply packets to be used by RMAP initiator.
+ *
+ * \author  Muhammad Bassam
+ */
 class RmapTransaction
 {
 public:
@@ -35,19 +44,32 @@ public:
         Timeout = 0x04,
     };
 
-    RmapTransaction() :
-            mTargetLogicalAddress(0), mInitiatorLogicalAddress(0),
-            mTransactionID(0), mTimeoutDuration(outpost::time::Milliseconds(0)),
-            mState(NotInitiated), mBlockingMode(false), mReplyPacket(),
-            mCommandPacket(),
-            mReplyLock(outpost::rtos::BinarySemaphore::State::acquired)
-    {
-    }
-    ~RmapTransaction()
-    {
+    RmapTransaction();
+    ~RmapTransaction();
 
-    }
+    /**
+     * Blocks the current thread holding the transaction by accessing lock until
+     * specified timeout duration.
+     *
+     * \param timeout
+     *      Duration for which the thread should be blocked
+     *
+     * \return
+     *      True for successfully obtaining the lock, otherwise false
+     * */
+    bool
+    blockTransaction(outpost::time::Duration timeout);
 
+    /**
+     * Reset or clear the contents of the transaction. This method is being
+     * used by the RMAP initiator for clearing the completed transaction
+     * placeholder for future access.
+     *
+     * */
+    void
+    reset();
+
+    //-------------------------------------------------------------------------
     inline void
     setInitiatorLogicalAddress(uint8_t addr)
     {
@@ -138,38 +160,11 @@ public:
         mReplyPacket = *replyPacket;
     }
 
-    void
-    blockTransaction(outpost::time::Duration timeout)
-    {
-        if (timeout == outpost::time::Duration::maximum())
-        {
-            mReplyLock.acquire();
-        }
-        else
-        {
-            mReplyLock.acquire(timeout);
-        }
-    }
 
     inline void
     releaseTransaction()
     {
         mReplyLock.release();
-    }
-
-    void
-    reset()
-    {
-        mTargetLogicalAddress = 0;
-        mInitiatorLogicalAddress = 0;
-        mTransactionID = 0;
-        mTimeoutDuration = outpost::time::Duration::zero();
-        mState = NotInitiated;
-
-        mBlockingMode = false;
-        mCommandPacket.reset();
-        mReplyPacket.reset();
-        //mReplyLock.release();
     }
 
     inline RmapTransaction&
@@ -180,13 +175,14 @@ public:
         mTransactionID = rhs.mTransactionID;
         mTimeoutDuration = rhs.mTimeoutDuration;
         mState = rhs.mState;
-
         mBlockingMode = rhs.mBlockingMode;
         mCommandPacket = rhs.mCommandPacket;
-        mReplyPacket = rhs.mReplyPacket;
-
+        mReplyPacket = rhs.mReplyPacket;;
         return *this;
     }
+
+    // Disabling copy constructor
+    RmapTransaction(const RmapTransaction&) = delete;
 
 private:
     uint8_t mTargetLogicalAddress;

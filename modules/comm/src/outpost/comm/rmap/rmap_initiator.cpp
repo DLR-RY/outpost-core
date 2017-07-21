@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -23,9 +23,9 @@ uint16_t RmapInitiator::transactionId = 0;
 
 //-----------------------------------------------------------------------------
 RmapInitiator::RmapInitiator(hal::SpaceWire &spw, RmapTargetsList *list) :
-        outpost::rtos::Thread(priority, stackSize, "RMEN"), mSpW(spw),
+        outpost::rtos::Thread(rmap::initiatorPriority, rmap::initiatorStackSize, "RMEN"), mSpW(spw),
         mTargetNodes(list), mOperationLock(),
-        mInitiatorLogicalAddress(defaultLogicalAddress),
+        mInitiatorLogicalAddress(rmap::defaultLogicalAddress),
         mIncrementMode(false), mVerifyMode(false), mReplyMode(false),
         mStopped(true), mTransactionsList(), mLatestAssignedTransactionID(0),
         mDiscardedPackets(), mCounters(), mRxData()
@@ -37,7 +37,7 @@ RmapInitiator::~RmapInitiator()
 }
 
 bool
-RmapInitiator::write(char *targetNodeName,
+RmapInitiator::write(const char *targetNodeName,
                      uint32_t memoryAddress,
                      uint8_t *data,
                      uint32_t length,
@@ -185,10 +185,10 @@ RmapInitiator::write(RmapTargetNode *rmapTargetNode,
 }
 
 bool
-RmapInitiator::read(char * targetNodeName,
+RmapInitiator::read(const char *targetNodeName,
                     uint32_t memoryAddress,
-                    uint32_t length,
                     uint8_t* buffer,
+                    uint32_t length,
                     outpost::time::Duration timeout)
 {
     bool result = false;
@@ -198,7 +198,7 @@ RmapInitiator::read(char * targetNodeName,
                 targetNodeName);
         if (targetNode)
         {
-            result = read(targetNode, memoryAddress, length, buffer, timeout);
+            result = read(targetNode, memoryAddress, buffer, length, timeout);
         }
     }
     return result;
@@ -207,8 +207,8 @@ RmapInitiator::read(char * targetNodeName,
 bool
 RmapInitiator::read(RmapTargetNode* rmapTargetNode,
                     uint32_t memoryAddress,
-                    uint32_t length,
                     uint8_t *buffer,
+                    uint32_t length,
                     outpost::time::Duration timeout)
 {
     // Guard operation against concurrent accesses
@@ -359,6 +359,10 @@ RmapInitiator::run()
             {
                 replyPacketReceived(&packet);
             }
+            else
+            {
+                mCounters.mErrorneousReplyPackets++;
+            }
         }
     }
 
@@ -466,6 +470,10 @@ RmapInitiator::receivePacket(RmapPacket *rxedPacket)
                 {
                     result = true;
                 }
+                else
+                {
+                    mCounters.mErrorInStoringReplyPacket++;
+                }
                 mSpW.releaseBuffer(rxBuffer);
             }
             else
@@ -473,7 +481,7 @@ RmapInitiator::receivePacket(RmapPacket *rxedPacket)
                 console_out("RMAP-Initiator: packet interpretation failed, could be non-rmap"
                         "packet\n");
                 nonRmapPacketReceived.publish(rxData);
-                mCounters.mDiscardedReceivedPackets++;
+                mCounters.mNonRmapPacketReceived++;
                 mSpW.releaseBuffer(rxBuffer);
                 result = false;
             }
@@ -497,7 +505,7 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
     if (!transaction)
     {
         // If not found, increment error counter
-        mCounters.mErrorneousReplyPackets++;
+        mCounters.mDiscardedReceivedPackets++;
         mDiscardedPackets.addDiscardedPacket(packet);
         console_out("RMAP Reply packet (dataLength %lu bytes) was received but "
                 "no corresponding transaction was found. The size of "
@@ -542,7 +550,7 @@ uint16_t
 RmapInitiator::getNextAvailableTransactionID()
 {
     // Check in the current transaction list that the TID is not in use
-    for (uint32_t i = 0; i < maxTransactionIds; i++)
+    for (uint32_t i = 0; i < rmap::maxTransactionIds; i++)
     {
         if (!mTransactionsList.isTransactionIdUsed(i))
         {
@@ -550,7 +558,6 @@ RmapInitiator::getNextAvailableTransactionID()
             break;
         }
     }
-
     return transactionId;
 }
 
