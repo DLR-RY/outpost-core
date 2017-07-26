@@ -60,10 +60,9 @@ public:
     bool
     sendPacket(RmapInitiator &init,
                RmapTransaction *trans,
-               uint8_t *buffer,
-               uint16_t len)
+               outpost::BoundedArray<uint8_t> data)
     {
-        return init.sendPacket(trans, buffer, len);
+        return init.sendPacket(trans, data);
     }
 
     bool
@@ -127,7 +126,7 @@ public:
                             numberOfTargetSpwAddresses),
                     outpost::BoundedArray<uint8_t>(replyAddress,
                             replyAddressLength), targetLogicalAddress, key),
-            mTargetNodes(), mRmapInitiator(mSpaceWire, &mTargetNodes),
+            mTargetNodes(), mRmapInitiator(mSpaceWire, &mTargetNodes, 100, 4096),
             mTestingRmap(), mNonRmapReceiver()
     {
     }
@@ -277,12 +276,13 @@ TEST_F(RmapTest, shouldSendWriteCommandPacket)
     cmd->setExtendedAddress(rmap::defaultExtendedAddress);
     cmd->setAddress(0x100);
     cmd->setDataLength(4);
-    cmd->setTargetInformation(&mRmapTarget);
+    cmd->setTargetInformation(mRmapTarget);
     transaction.setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction.setTimeoutDuration(outpost::time::Duration::zero());
 
     EXPECT_TRUE(
-            mTestingRmap.sendPacket(mRmapInitiator, &transaction, buffer, 4));
+            mTestingRmap.sendPacket(mRmapInitiator, &transaction,
+                    outpost::BoundedArray<uint8_t>(buffer, 4)));
 
     size_t expectedSize = 1;
 
@@ -348,12 +348,13 @@ TEST_F(RmapTest, shouldSendReadCommandPacket)
     cmd->setExtendedAddress(rmap::defaultExtendedAddress);
     cmd->setAddress(0x100);
     cmd->setDataLength(4);
-    cmd->setTargetInformation(&mRmapTarget);
+    cmd->setTargetInformation(mRmapTarget);
     transaction.setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction.setTimeoutDuration(outpost::time::Duration::zero());
 
     EXPECT_TRUE(
-            mTestingRmap.sendPacket(mRmapInitiator, &transaction, nullptr, 0));
+            mTestingRmap.sendPacket(mRmapInitiator, &transaction,
+                    outpost::BoundedArray<uint8_t>::empty()));
 
     size_t expectedSize = 1;
 
@@ -459,7 +460,10 @@ TEST_F(RmapTest, shouldSendHigherLevelWriteCommandPacket)
     mRmapInitiator.unsetVerifyMode();
     mRmapInitiator.unsetReplyMode();
 
-    EXPECT_TRUE(mRmapInitiator.write(targetName, 0x1000, dataToSend, sizeof(dataToSend)));
+    EXPECT_TRUE(
+            mRmapInitiator.write(targetName, 0x1000,
+                    outpost::BoundedArray<uint8_t>(dataToSend,
+                            sizeof(dataToSend))));
 
     size_t expectedSize = 1;
 

@@ -25,8 +25,6 @@ namespace rmap
 {
 
 static constexpr uint32_t maxTransactionIds = 65536;
-static constexpr uint8_t initiatorPriority = 100;
-static constexpr uint16_t initiatorStackSize = 4096;
 static constexpr uint8_t maxConcurrentTransactions = 10;
 static constexpr uint8_t minimumReplySize = 8;
 static constexpr uint8_t defaultLogicalAddress = 0xFE;

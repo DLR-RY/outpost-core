@@ -122,7 +122,7 @@ RmapTargetsList::addTargetNodes(outpost::BoundedArray<RmapTargetNode*> nodes)
     bool result = false;
     size_t listElements = nodes.getNumberOfElements();
 
-    if (listElements <= mSize)
+    if ((listElements + mSize) < rmap::maxAddressLength)
     {
         for (size_t i = 0; i < listElements; i++)
         {
@@ -138,15 +138,12 @@ RmapTargetsList::getTargetNode(const char *name)
 {
     RmapTargetNode* rt = nullptr;
 
-    if (mSize != 0)
+    for (uint8_t i = 0; i < mSize; i++)
     {
-        for (uint8_t i = 0; i < mSize; i++)
+        if (!strncmp(mNodes[i]->getName(), name, rmap::maxNodeNameLength))
         {
-            if (!strncmp(mNodes[i]->getName(), name, rmap::maxNodeNameLength))
-            {
-                rt = mNodes[i];
-                break;
-            }
+            rt = mNodes[i];
+            break;
         }
     }
 
@@ -156,22 +153,15 @@ RmapTargetsList::getTargetNode(const char *name)
 RmapTargetNode*
 RmapTargetsList::getTargetNode(uint8_t logicalAddress)
 {
-    RmapTargetNode* rt = NULL;
+    RmapTargetNode* rt = nullptr;
 
-    if (mSize != 0)
+    for (uint8_t i = 0; i < mSize; i++)
     {
-        for (uint8_t i = 0; i < mSize; i++)
+        if (mNodes[i]->getTargetLogicalAddress() == logicalAddress)
         {
-            if (mNodes[i]->getTargetLogicalAddress() == logicalAddress)
-            {
-                rt = mNodes[i];
-                break;
-            }
+            rt = mNodes[i];
+            break;
         }
-    }
-    else
-    {
-        console_out("Database empty\n");
     }
 
     if (!rt)

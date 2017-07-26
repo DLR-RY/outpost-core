@@ -222,42 +222,11 @@ public:
         uint8_t mIndex;
     };
 
-    /**
-     * Discarded packets are stored immediately if no waiting transaction is
-     * found with valid transaction ID for the received packet. It is made
-     * available for the user in case it needed for being inspected. New discarded
-     * packets will be overwritten on the old one, once the buffer is full.
-     * */
-    struct DiscardedPackets
-    {
-        DiscardedPackets() :
-                mPackets(), mIndex(0)
-        {
-        }
-        ~DiscardedPackets()
-        {
-        }
-
-        void
-        addDiscardedPacket(RmapPacket *packet)
-        {
-            mPackets[mIndex] = packet;
-            mIndex =
-                    (mIndex == (rmap::maxConcurrentTransactions - 1) ? 0 : mIndex + 1);
-        }
-
-        RmapPacket*
-        getLatestDiscardedPacket() const
-        {
-            return mPackets[mIndex];
-        }
-
-        RmapPacket *mPackets[rmap::maxConcurrentTransactions];
-        uint8_t mIndex;
-    };
-
     //--------------------------------------------------------------------------
-    RmapInitiator(hal::SpaceWire &spw, RmapTargetsList *list);
+    RmapInitiator(hal::SpaceWire &spw,
+                  RmapTargetsList *list,
+                  uint8_t priority,
+                  uint16_t stackSize);
     ~RmapInitiator();
 
     /**
@@ -290,8 +259,7 @@ public:
     bool
     write(const char *targetNodeName,
           uint32_t memoryAddress,
-          uint8_t* data,
-          uint32_t length,
+          outpost::BoundedArray<uint8_t> data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
     /**
@@ -302,7 +270,7 @@ public:
      * reply.
      *
      * @param targetNode
-     *      Pointer to the target node object
+     *      Reference to the target node object found from the list
      *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
@@ -321,10 +289,9 @@ public:
      *      True in case of successful operations, false for any errors encountered
      */
     bool
-    write(RmapTargetNode *targetNode,
+    write(RmapTargetNode &targetNode,
           uint32_t memoryAddress,
-          uint8_t* data,
-          uint32_t length,
+          outpost::BoundedArray<uint8_t> &data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
     /**
@@ -362,7 +329,7 @@ public:
      * thread and waits for the desired reply until specific time interval.
      *
      * @param targetNode
-     *      Pointer to the target node object
+     *      Reference to the target node object found from the list
      *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
@@ -381,9 +348,9 @@ public:
      */
 
     bool
-    read(RmapTargetNode* rmapTargetNode,
+    read(RmapTargetNode &rmapTargetNode,
          uint32_t memoryAddress,
-         uint8_t *buffer,
+         uint8_t* buffer,
          uint32_t length,
          outpost::time::Duration timeout = outpost::time::Seconds(1));
 
@@ -459,6 +426,13 @@ public:
     {
         return mCounters;
     }
+
+    inline RmapPacket*
+    getLatestDiscardedPacket() const
+    {
+        return mDiscardedPacket;
+    }
+
 private:
     virtual void
     run() override;
@@ -485,7 +459,8 @@ private:
     }
 
     bool
-    sendPacket(RmapTransaction* transaction, uint8_t *data, uint16_t length);
+    sendPacket(RmapTransaction* transaction,
+               outpost::BoundedArray<uint8_t> &data);
 
     bool
     receivePacket(RmapPacket *rxedPacket);
@@ -499,12 +474,6 @@ private:
     uint16_t
     getNextAvailableTransactionID();
 
-    size_t
-    getTotalDiscardedReplyPackets();
-
-    outpost::BoundedArray<RmapPacket*>
-    getDiscardedReplyPackets();
-
     //--------------------------------------------------------------------------
     hal::SpaceWire& mSpW;
     RmapTargetsList *mTargetNodes;
@@ -516,7 +485,16 @@ private:
     bool mStopped;
     TransactionsList mTransactionsList;
     uint16_t mLatestAssignedTransactionID;
-    DiscardedPackets mDiscardedPackets;
+
+    /**
+     * Discarded packet is stored immediately if no waiting transaction is
+     * found with valid transaction ID for the received packet. It is made
+     * available for the user in case its needed for being inspected. Discarded
+     * packet will be invalidated as soon as there is new incoming packet at the
+     * reception node.
+     * */
+    RmapPacket *mDiscardedPacket;
+
     ErrorCounters mCounters;
     Buffer mRxData;
 };

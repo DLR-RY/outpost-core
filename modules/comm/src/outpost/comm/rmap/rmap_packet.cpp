@@ -83,7 +83,7 @@ RmapPacket::reset()
 
 bool
 RmapPacket::constructPacket(outpost::BoundedArray<uint8_t> buffer,
-                            outpost::BoundedArray<uint8_t> data)
+                            outpost::BoundedArray<uint8_t> &data)
 {
     outpost::Serialize stream(buffer);
 
@@ -104,7 +104,7 @@ RmapPacket::constructPacket(outpost::BoundedArray<uint8_t> buffer,
     {
         mDataCRC = outpost::Crc8CcittReversed::calculate(data);
 
-        stream.storeBuffer(data.begin(), data.getNumberOfElements());
+        stream.store(data);
         stream.store<uint8_t>(mDataCRC);
     }
 
@@ -256,26 +256,23 @@ RmapPacket::extractPacket(outpost::BoundedArray<const uint8_t> &data,
 }
 
 void
-RmapPacket::setTargetInformation(RmapTargetNode *rmapTargetNode)
+RmapPacket::setTargetInformation(RmapTargetNode &rmapTargetNode)
 {
-    if(rmapTargetNode != nullptr)
-    {
-        // Set packet target logical address field according to the RMAP target node
-        mTargetLogicalAddress = rmapTargetNode->getTargetLogicalAddress();
+    // Set packet target logical address field according to the RMAP target node
+    mTargetLogicalAddress = rmapTargetNode.getTargetLogicalAddress();
 
-        // Set packet reply address field according to the RMAP target node
-        outpost::BoundedArray<uint8_t> rplyAddr = rmapTargetNode->getReplyAddress();
-        memcpy(mReplyAddress, &rplyAddr[0], rplyAddr.getNumberOfElements());
-        mInstruction.setReplyAddressLength(
-                static_cast<InstructionField::ReplyAddressLength>(rplyAddr.getNumberOfElements()
-                        / 4));
+    // Set packet reply address field according to the RMAP target node
+    outpost::BoundedArray<uint8_t> rplyAddr = rmapTargetNode.getReplyAddress();
+    memcpy(mReplyAddress, &rplyAddr[0], rplyAddr.getNumberOfElements());
+    mInstruction.setReplyAddressLength(
+            static_cast<InstructionField::ReplyAddressLength>(rplyAddr.getNumberOfElements()
+                    / 4));
 
-        // Set packet target path SpW address field according to the RMAP target node
-        setTargetSpaceWireAddress(rmapTargetNode->getTargetSpaceWireAddress());
+    // Set packet target path SpW address field according to the RMAP target node
+    setTargetSpaceWireAddress(rmapTargetNode.getTargetSpaceWireAddress());
 
-        // Set packet key field according to the RMAP target node
-        setKey(rmapTargetNode->getKey());
-    }
+    // Set packet key field according to the RMAP target node
+    setKey(rmapTargetNode.getKey());
 }
 
 RmapPacket&

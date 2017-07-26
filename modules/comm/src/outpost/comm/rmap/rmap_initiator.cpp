@@ -11,7 +11,6 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-
 #include "rmap_common.h"
 #include "rmap_initiator.h"
 
@@ -22,13 +21,16 @@ outpost::smpc::Topic<outpost::comm::NonRmapDataType> outpost::comm::nonRmapPacke
 uint16_t RmapInitiator::transactionId = 0;
 
 //-----------------------------------------------------------------------------
-RmapInitiator::RmapInitiator(hal::SpaceWire &spw, RmapTargetsList *list) :
-        outpost::rtos::Thread(rmap::initiatorPriority, rmap::initiatorStackSize, "RMEN"), mSpW(spw),
+RmapInitiator::RmapInitiator(hal::SpaceWire &spw,
+                             RmapTargetsList *list,
+                             uint8_t priority,
+                             uint16_t stackSize) :
+        outpost::rtos::Thread(priority, stackSize, "RMEN"), mSpW(spw),
         mTargetNodes(list), mOperationLock(),
         mInitiatorLogicalAddress(rmap::defaultLogicalAddress),
         mIncrementMode(false), mVerifyMode(false), mReplyMode(false),
         mStopped(true), mTransactionsList(), mLatestAssignedTransactionID(0),
-        mDiscardedPackets(), mCounters(), mRxData()
+        mDiscardedPacket(nullptr), mCounters(), mRxData()
 {
 }
 
@@ -39,8 +41,7 @@ RmapInitiator::~RmapInitiator()
 bool
 RmapInitiator::write(const char *targetNodeName,
                      uint32_t memoryAddress,
-                     uint8_t *data,
-                     uint32_t length,
+                     outpost::BoundedArray<uint8_t> data,
                      outpost::time::Duration timeout)
 {
     bool result = false;
@@ -50,17 +51,20 @@ RmapInitiator::write(const char *targetNodeName,
                 targetNodeName);
         if (targetNode)
         {
-            result = write(targetNode, memoryAddress, data, length, timeout);
+            // Exit if trying to send zero length
+            if (data.getNumberOfElements() != 0)
+            {
+                result = write(*targetNode, memoryAddress, data, timeout);
+            }
         }
     }
     return result;
 }
 
 bool
-RmapInitiator::write(RmapTargetNode *rmapTargetNode,
+RmapInitiator::write(RmapTargetNode &rmapTargetNode,
                      uint32_t memoryAddress,
-                     uint8_t *data,
-                     uint32_t length,
+                     outpost::BoundedArray<uint8_t> &data,
                      outpost::time::Duration timeout)
 {
     // Guard operation against concurrent accesses
@@ -110,12 +114,12 @@ RmapInitiator::write(RmapTargetNode *rmapTargetNode,
     }
     cmd->setExtendedAddress(0x00);
     cmd->setAddress(memoryAddress);
-    cmd->setDataLength(length);
+    cmd->setDataLength(data.getNumberOfElements());
     cmd->setTargetInformation(rmapTargetNode);
     transaction->setTimeoutDuration(timeout);
 
     // Transaction will be initiated and sent through the SpW interface
-    if (sendPacket(transaction, data, length))
+    if (sendPacket(transaction, data))
     {
         // If reply is expected
         if (mReplyMode)
@@ -198,14 +202,18 @@ RmapInitiator::read(const char *targetNodeName,
                 targetNodeName);
         if (targetNode)
         {
-            result = read(targetNode, memoryAddress, buffer, length, timeout);
+            // Exit if trying to read zero length
+            if (length != 0)
+            {
+                result = read(*targetNode, memoryAddress, buffer, length, timeout);
+            }
         }
     }
     return result;
 }
 
 bool
-RmapInitiator::read(RmapTargetNode* rmapTargetNode,
+RmapInitiator::read(RmapTargetNode &rmapTargetNode,
                     uint32_t memoryAddress,
                     uint8_t *buffer,
                     uint32_t length,
@@ -260,9 +268,10 @@ RmapInitiator::read(RmapTargetNode* rmapTargetNode,
     cmd->setTargetInformation(rmapTargetNode);
     transaction->setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction->setTimeoutDuration(timeout);
+    outpost::BoundedArray<uint8_t> empty{outpost::BoundedArray<uint8_t>::empty()};
 
     // Command is read, thus no data bytes available
-    if (sendPacket(transaction, NULL, 0))
+    if (sendPacket(transaction, empty))
     {
         transaction->setState(RmapTransaction::CommandSent);
 
@@ -345,13 +354,11 @@ RmapInitiator::read(RmapTargetNode* rmapTargetNode,
 void
 RmapInitiator::run()
 {
-    RmapPacket packet;
+    static RmapPacket packet;
 
     mStopped = false;
     while (!mStopped)
     {
-        packet.reset();
-
         if (receivePacket(&packet))
         {
             // Only handling reply packet, no command packets
@@ -371,8 +378,7 @@ RmapInitiator::run()
 
 bool
 RmapInitiator::sendPacket(RmapTransaction* transaction,
-                          uint8_t *data,
-                          uint16_t length)
+                          outpost::BoundedArray<uint8_t> &data)
 {
     RmapPacket *cmd = transaction->getCommandPacket();
     hal::SpaceWire::TransmitBuffer* txBuffer = 0;
@@ -393,8 +399,7 @@ RmapInitiator::sendPacket(RmapTransaction* transaction,
             == hal::SpaceWire::Result::success)
     {
         // Serialize the packet content to the SpW buffer
-        if (cmd->constructPacket(txBuffer->getData(),
-                outpost::BoundedArray<uint8_t>(data, length)))
+        if (cmd->constructPacket(txBuffer->getData(), data))
         {
             // Total packet length varies with command type
             if (cmd->isWrite())
@@ -463,6 +468,8 @@ RmapInitiator::receivePacket(RmapPacket *rxedPacket)
             console_out("\n");
 #endif
 
+            rxedPacket->reset();
+
             if (rxedPacket->extractPacket(rxData, mInitiatorLogicalAddress))
             {
                 if (mRxData.addData(rxedPacket->getData(),
@@ -506,7 +513,7 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
     {
         // If not found, increment error counter
         mCounters.mDiscardedReceivedPackets++;
-        mDiscardedPackets.addDiscardedPacket(packet);
+        mDiscardedPacket = packet;
         console_out("RMAP Reply packet (dataLength %lu bytes) was received but "
                 "no corresponding transaction was found. The size of "
                 "discarded packets %u\n", packet->getDataLength(),
@@ -559,17 +566,4 @@ RmapInitiator::getNextAvailableTransactionID()
         }
     }
     return transactionId;
-}
-
-size_t
-RmapInitiator::getTotalDiscardedReplyPackets()
-{
-    return mDiscardedPackets.mIndex;
-}
-
-outpost::BoundedArray<RmapPacket*>
-RmapInitiator::getDiscardedReplyPackets()
-{
-    return outpost::BoundedArray<RmapPacket*>(mDiscardedPackets.mPackets,
-            mDiscardedPackets.mIndex);
 }

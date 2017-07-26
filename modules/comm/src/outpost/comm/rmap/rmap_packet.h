@@ -64,6 +64,7 @@ public:
                 zeroBytes = 0, fourBytes = 1, eigthBytes = 2, twelveBytes = 3
         };
 
+        constexpr
         InstructionField() :
                 mField(0)
         {
@@ -241,8 +242,9 @@ public:
      *      SpW buffer provided by the RMAP initiator
      *
      * \param data
-     *      User data for write commands, for read commands this object will be
-     *      outpost::BoundedArray<uint8_t>::empty() and will be ignored
+     *      Reference to the user data for write commands, for read commands
+     *      this object will be outpost::BoundedArray<uint8_t>::empty() and will
+     *      be ignored
      *
      * \return
      *      True for successful integration of packet into the buffer, false for
@@ -251,7 +253,7 @@ public:
      * */
     bool
     constructPacket(outpost::BoundedArray<uint8_t> buffer,
-                    outpost::BoundedArray<uint8_t> data);
+                    outpost::BoundedArray<uint8_t> &data);
 
     /**
      * Extract the received RMAP packet according to the given standard by
@@ -282,7 +284,7 @@ public:
      *
      * */
     void
-    setTargetInformation(RmapTargetNode *rmapTargetNode);
+    setTargetInformation(RmapTargetNode &rmapTargetNode);
 
     RmapPacket&
     operator=(const RmapPacket& rhs);
