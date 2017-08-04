@@ -484,7 +484,6 @@ private:
     bool mReplyMode;
     bool mStopped;
     TransactionsList mTransactionsList;
-    uint16_t mLatestAssignedTransactionID;
 
     /**
      * Discarded packet is stored immediately if no waiting transaction is

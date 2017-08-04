@@ -48,8 +48,14 @@ RmapPacket::RmapPacket(outpost::BoundedArray<uint8_t> spwTargets,
         mHeaderCRC(0), mDataCRC(0)
 
 {
-    memcpy(mSpwTargets, spwTargets.begin(), spwTargets.getNumberOfElements());
-    memcpy(mReplyAddress, replyAddress, rplyAddrLen * 4);
+    if(spwTargets.getNumberOfElements() <= sizeof(mSpwTargets))
+    {
+        memcpy(mSpwTargets, spwTargets.begin(), spwTargets.getNumberOfElements());
+    }
+    if((rplyAddrLen * 4) <= sizeof(mReplyAddress))
+    {
+        memcpy(mReplyAddress, replyAddress, rplyAddrLen * 4);
+    }
 }
 
 RmapPacket::RmapPacket(uint8_t targetLogicalAddress,

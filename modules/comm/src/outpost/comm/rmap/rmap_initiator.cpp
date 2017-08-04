@@ -29,8 +29,8 @@ RmapInitiator::RmapInitiator(hal::SpaceWire &spw,
         mTargetNodes(list), mOperationLock(),
         mInitiatorLogicalAddress(rmap::defaultLogicalAddress),
         mIncrementMode(false), mVerifyMode(false), mReplyMode(false),
-        mStopped(true), mTransactionsList(), mLatestAssignedTransactionID(0),
-        mDiscardedPacket(nullptr), mCounters(), mRxData()
+        mStopped(true), mTransactionsList(), mDiscardedPacket(nullptr),
+        mCounters(), mRxData()
 {
 }
 
@@ -205,7 +205,8 @@ RmapInitiator::read(const char *targetNodeName,
             // Exit if trying to read zero length
             if (length != 0)
             {
-                result = read(*targetNode, memoryAddress, buffer, length, timeout);
+                result = read(*targetNode, memoryAddress, buffer, length,
+                        timeout);
             }
         }
     }
@@ -268,7 +269,8 @@ RmapInitiator::read(RmapTargetNode &rmapTargetNode,
     cmd->setTargetInformation(rmapTargetNode);
     transaction->setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction->setTimeoutDuration(timeout);
-    outpost::BoundedArray<uint8_t> empty{outpost::BoundedArray<uint8_t>::empty()};
+    outpost::BoundedArray<uint8_t> empty {
+        outpost::BoundedArray<uint8_t>::empty() };
 
     // Command is read, thus no data bytes available
     if (sendPacket(transaction, empty))

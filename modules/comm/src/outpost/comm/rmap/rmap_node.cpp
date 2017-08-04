@@ -100,7 +100,11 @@ RmapTargetsList::~RmapTargetsList()
 
 RmapTargetsList::RmapTargetsList(outpost::BoundedArray<RmapTargetNode*> rmapTargetNodes)
 {
-    addTargetNodes(rmapTargetNodes);
+    if (rmapTargetNodes.getNumberOfElements() <= rmap::maxAddressLength)
+    {
+        mSize = rmapTargetNodes.getNumberOfElements();
+        addTargetNodes(rmapTargetNodes);
+    }
 }
 
 bool
