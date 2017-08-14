@@ -18,6 +18,8 @@
 #include <outpost/rtos/failure_handler.h>
 #include <outpost/rtos/mutex_guard.h>
 
+#include "rtems/interval.h"
+
 // ----------------------------------------------------------------------------
 outpost::rtos::Timer::~Timer()
 {
@@ -30,13 +32,8 @@ outpost::rtos::Timer::start(time::Duration duration)
 {
     MutexGuard lock(mMutex);
     mRunning = true;
-    uint32_t ticks = duration.microseconds() / rtems_configuration_get_microseconds_per_tick();
-    if (ticks == 0)
-    {
-        ticks = 1;
-    }
     rtems_timer_server_fire_after(mTid,
-                                  ticks,
+                                  rtems::getInterval(duration),
                                   &Timer::invokeTimer,
                                   (void *) this);
 }

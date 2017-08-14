@@ -39,10 +39,15 @@ getInterval(outpost::time::Duration duration)
     {
         interval = 0;
     }
+    else if (duration < outpost::time::Duration::zero())
+    {
+        // Negative intervals are invalid and are rounded up to the
+        // smallest positive interval.
+        interval = 1;
+    }
     else
     {
-        interval = (rtems_clock_get_ticks_per_second()
-                  * duration.milliseconds()) / time::Duration::millisecondsPerSecond;
+        interval = duration.microseconds() / rtems_configuration_get_microseconds_per_tick();
         if (interval < 1)
         {
             interval = 1;
