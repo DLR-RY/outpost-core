@@ -84,7 +84,8 @@ public:
         getOperation() const
         {
             // bit5 operation
-            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, 5>(mField));
+            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, 5>(
+                    mField));
         }
 
         void
@@ -98,7 +99,8 @@ public:
         getPacketType() const
         {
             // bit7 & bit6 packet type
-            return static_cast<PacketType>(outpost::BitAccess::get<uint8_t, 7, 6>(mField));
+            return static_cast<PacketType>(outpost::BitAccess::get<uint8_t, 7, 6>(
+                    mField));
         }
 
         void
@@ -536,15 +538,7 @@ public:
         return mHeaderCRC;
     }
 
-    inline void
-    setData(uint8_t *buffer)
-    {
-        if (buffer)
-        {
-            mData = buffer;
-        }
-    }
-    inline uint8_t *
+    inline uint8_t*
     getData() const
     {
         return mData;
@@ -586,7 +580,7 @@ private:
     uint8_t mTargetLogicalAddress;
     InstructionField mInstruction;
     uint8_t mDestKey;
-    uint32_t mReplyAddress[rmap::maxAddressLength/4];
+    uint32_t mReplyAddress[rmap::maxAddressLength / 4];
     uint8_t mInitiatorLogicalAddress;
     uint8_t mExtendedAddress;
     uint16_t mTransactionIdentifier;

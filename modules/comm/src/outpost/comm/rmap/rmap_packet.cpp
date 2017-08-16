@@ -109,6 +109,7 @@ RmapPacket::constructPacket(outpost::BoundedArray<uint8_t> buffer,
     if (isWrite())
     {
         mDataCRC = outpost::Crc8CcittReversed::calculate(data);
+        mData = data.begin();
 
         stream.store(data);
         stream.store<uint8_t>(mDataCRC);
