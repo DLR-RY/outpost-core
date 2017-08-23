@@ -48,11 +48,10 @@ class RmapInitiator : public outpost::rtos::Thread
     friend class TestingRmap;
 
 public:
-    static uint16_t transactionId;
 
     enum Operation
     {
-        OPERATION_READ = 0x01, OPERATION_WRITE = 0x02
+        operationRead = 0x01, operationWrite = 0x02
     };
 
     struct ErrorCounters
@@ -86,7 +85,7 @@ public:
         }
 
         bool
-        addData(uint8_t *buffer, uint16_t len)
+        addData(uint8_t* buffer, uint16_t len)
         {
             bool result = false;
 
@@ -141,7 +140,7 @@ public:
         }
 
         void
-        addTransaction(RmapTransaction *trans)
+        addTransaction(RmapTransaction* trans)
         {
             mTransactions[mIndex] = *trans;
             mIndex =
@@ -210,7 +209,7 @@ public:
             for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
             {
                 if (mTransactions[i].getState()
-                        == RmapTransaction::NotInitiated)
+                        == RmapTransaction::notInitiated)
                 {
                     return &mTransactions[i];
                 }
@@ -223,10 +222,10 @@ public:
     };
 
     //--------------------------------------------------------------------------
-    RmapInitiator(hal::SpaceWire &spw,
-                  RmapTargetsList *list,
+    RmapInitiator(hal::SpaceWire& spw,
+                  RmapTargetsList* list,
                   uint8_t priority,
-                  uint16_t stackSize);
+                  size_t stackSize);
     ~RmapInitiator();
 
     /**
@@ -257,9 +256,9 @@ public:
      *      True in case of successful operations, false for any errors encountered
      */
     bool
-    write(const char *targetNodeName,
+    write(const char* targetNodeName,
           uint32_t memoryAddress,
-          outpost::BoundedArray<uint8_t> data,
+          outpost::BoundedArray<const uint8_t> data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
     /**
@@ -289,9 +288,9 @@ public:
      *      True in case of successful operations, false for any errors encountered
      */
     bool
-    write(RmapTargetNode &targetNode,
+    write(RmapTargetNode& targetNode,
           uint32_t memoryAddress,
-          outpost::BoundedArray<uint8_t> &data,
+          outpost::BoundedArray<const uint8_t> data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
     /**
@@ -318,7 +317,7 @@ public:
      *      True in case of successful operations, false for any errors encountered
      */
     bool
-    read(const char *targetNodeName,
+    read(const char* targetNodeName,
          uint32_t memoryAddress,
          uint8_t* buffer,
          uint32_t length,
@@ -348,7 +347,7 @@ public:
      */
 
     bool
-    read(RmapTargetNode &rmapTargetNode,
+    read(RmapTargetNode& rmapTargetNode,
          uint32_t memoryAddress,
          uint8_t* buffer,
          uint32_t length,
@@ -460,10 +459,10 @@ private:
 
     bool
     sendPacket(RmapTransaction* transaction,
-               outpost::BoundedArray<uint8_t> &data);
+               outpost::BoundedArray<const uint8_t> data);
 
     bool
-    receivePacket(RmapPacket *rxedPacket);
+    receivePacket(RmapPacket* rxedPacket);
 
     void
     replyPacketReceived(RmapPacket* packet);
@@ -476,13 +475,14 @@ private:
 
     //--------------------------------------------------------------------------
     hal::SpaceWire& mSpW;
-    RmapTargetsList *mTargetNodes;
+    RmapTargetsList* mTargetNodes;
     outpost::rtos::Mutex mOperationLock;
     uint8_t mInitiatorLogicalAddress;
     bool mIncrementMode;
     bool mVerifyMode;
     bool mReplyMode;
     bool mStopped;
+    uint16_t mTransactionId;
     TransactionsList mTransactionsList;
 
     /**
@@ -492,7 +492,7 @@ private:
      * packet will be invalidated as soon as there is new incoming packet at the
      * reception node.
      * */
-    RmapPacket *mDiscardedPacket;
+    RmapPacket* mDiscardedPacket;
 
     ErrorCounters mCounters;
     Buffer mRxData;

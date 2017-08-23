@@ -16,11 +16,15 @@
 using namespace outpost::comm;
 
 RmapTransaction::RmapTransaction() :
-        mTargetLogicalAddress(0), mInitiatorLogicalAddress(0),
-        mTransactionID(0), mTimeoutDuration(outpost::time::Milliseconds(0)),
-        mState(NotInitiated), mBlockingMode(false), mReplyPacket(),
-        mCommandPacket(),
-        mReplyLock(outpost::rtos::BinarySemaphore::State::acquired)
+    mTargetLogicalAddress(0),
+    mInitiatorLogicalAddress(0),
+    mTransactionID(0),
+    mTimeoutDuration(outpost::time::Milliseconds(0)),
+    mState(notInitiated),
+    mBlockingMode(false),
+    mReplyPacket(),
+    mCommandPacket(),
+    mReplyLock(outpost::rtos::BinarySemaphore::State::acquired)
 {
 }
 

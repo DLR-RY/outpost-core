@@ -11,7 +11,6 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-
 #ifndef OUTPOST_COMM_RMAP_NODE_H_
 #define OUTPOST_COMM_RMAP_NODE_H_
 
@@ -36,7 +35,7 @@ class RmapTargetNode
 {
 public:
     RmapTargetNode();
-    RmapTargetNode(const char *name,
+    RmapTargetNode(const char* name,
                    uint8_t id,
                    outpost::BoundedArray<uint8_t> spwTargets,
                    outpost::BoundedArray<uint8_t> replyAddress,
@@ -80,8 +79,7 @@ public:
     inline outpost::BoundedArray<uint8_t>
     getReplyAddress()
     {
-        return outpost::BoundedArray<uint8_t>(mReplyAddress,
-                mReplyAddressLength);
+        return outpost::BoundedArray<uint8_t>(mReplyAddress, mReplyAddressLength);
     }
 
     inline uint8_t
@@ -93,8 +91,7 @@ public:
     inline outpost::BoundedArray<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::BoundedArray<uint8_t>(mTargetSpaceWireAddress,
-                mTargetSpaceWireAddressLength);
+        return outpost::BoundedArray<uint8_t>(mTargetSpaceWireAddress, mTargetSpaceWireAddressLength);
     }
 
     inline void
@@ -182,7 +179,7 @@ public:
      *      Pointer to the node if found, otherwise nullptr
      * */
     RmapTargetNode*
-    getTargetNode(const char *name);
+    getTargetNode(const char* name);
 
     /**
      * Get RMAP target node from the list

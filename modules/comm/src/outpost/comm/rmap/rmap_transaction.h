@@ -37,11 +37,7 @@ class RmapTransaction
 public:
     enum State : uint8_t
     {
-        NotInitiated = 0x00,
-        Initiated = 0x01,
-        CommandSent = 0x02,
-        ReplyReceived = 0x03,
-        Timeout = 0x04,
+            notInitiated = 0x00, initiated = 0x01, commandSent = 0x02, replyReceived = 0x03, timeout = 0x04
     };
 
     RmapTransaction();
@@ -155,11 +151,10 @@ public:
     }
 
     inline void
-    setReplyPacket(RmapPacket *replyPacket)
+    setReplyPacket(RmapPacket* replyPacket)
     {
         mReplyPacket = *replyPacket;
     }
-
 
     inline void
     releaseTransaction()
@@ -177,7 +172,8 @@ public:
         mState = rhs.mState;
         mBlockingMode = rhs.mBlockingMode;
         mCommandPacket = rhs.mCommandPacket;
-        mReplyPacket = rhs.mReplyPacket;;
+        mReplyPacket = rhs.mReplyPacket;
+        ;
         return *this;
     }
 

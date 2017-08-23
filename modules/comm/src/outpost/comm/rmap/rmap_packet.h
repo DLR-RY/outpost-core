@@ -46,153 +46,147 @@ public:
      * */
     struct InstructionField
     {
-        enum PacketType
-            : uint8_t
-            {
+        enum PacketType : uint8_t
+        {
                 replyPacket = 0, commandPacket = 1
         };
 
-        enum Operation
-            : uint8_t
-            {
+        enum Operation : uint8_t
+        {
                 read = 0, write = 1
         };
 
-        enum ReplyAddressLength
-            : uint8_t
-            {
+        enum ReplyAddressLength : uint8_t
+        {
                 zeroBytes = 0, fourBytes = 1, eigthBytes = 2, twelveBytes = 3
         };
 
         constexpr
         InstructionField() :
-                mField(0)
+            mField(0)
         {
         }
         ~InstructionField()
         {
         }
 
-        void
+        inline void
         setOperation(Operation op)
         {
             // bit5 operation
             outpost::BitAccess::set<uint8_t, 5>(mField, op);
         }
 
-        Operation
+        inline Operation
         getOperation() const
         {
             // bit5 operation
-            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, 5>(
-                    mField));
+            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, 5>(mField));
         }
 
-        void
+        inline void
         setPacketType(PacketType type)
         {
             // bit7 & bit6 packet type
             outpost::BitAccess::set<uint8_t, 7, 6>(mField, type);
         }
 
-        PacketType
+        inline PacketType
         getPacketType() const
         {
             // bit7 & bit6 packet type
-            return static_cast<PacketType>(outpost::BitAccess::get<uint8_t, 7, 6>(
-                    mField));
+            return static_cast<PacketType>(outpost::BitAccess::get<uint8_t, 7, 6>(mField));
         }
 
-        void
+        inline void
         enableVerify()
         {
             // bit4 verify
             outpost::BitAccess::set<uint8_t, 4>(mField, 1);
         }
 
-        void
+        inline void
         disableVerify()
         {
             // bit4 verify
             outpost::BitAccess::set<uint8_t, 4>(mField, 0);
         }
 
-        void
+        inline void
         enableReply()
         {
             // bit3 reply
             outpost::BitAccess::set<uint8_t, 3>(mField, 1);
         }
 
-        void
+        inline void
         disableReply()
         {
             // bit3 reply
             outpost::BitAccess::set<uint8_t, 3>(mField, 0);
         }
 
-        void
+        inline void
         enableIncrement()
         {
             // bit2 increment
             outpost::BitAccess::set<uint8_t, 2>(mField, 1);
         }
 
-        void
+        inline void
         disableIncrement()
         {
             // bit2 increment
             outpost::BitAccess::set<uint8_t, 2>(mField, 0);
         }
 
-        bool
+        inline bool
         isVerifyEnabled()
         {
             // bit4 verify
             return outpost::BitAccess::get<uint8_t, 4>(mField);
         }
 
-        bool
+        inline bool
         isReplyEnabled()
         {
             // bit3 reply
             return outpost::BitAccess::get<uint8_t, 3>(mField);
         }
 
-        bool
+        inline bool
         isIncrementEnabled()
         {
             // bit2 increment
             return outpost::BitAccess::get<uint8_t, 2>(mField);
         }
 
-        void
+        inline void
         setReplyAddressLength(ReplyAddressLength len)
         {
             // bit 1 & bit 0 reply length
             outpost::BitAccess::set<uint8_t, 1, 0>(mField, len);
         }
 
-        ReplyAddressLength
+        inline ReplyAddressLength
         getReplyAddressLength() const
         {
-            return static_cast<ReplyAddressLength>(outpost::BitAccess::get<
-                    uint8_t, 1, 0>(mField));
+            return static_cast<ReplyAddressLength>(outpost::BitAccess::get<uint8_t, 1, 0>(mField));
         }
 
-        void
+        inline void
         setAllRaw(uint8_t inst)
         {
             mField = inst;
         }
 
-        uint8_t
+        inline uint8_t
         getRaw() const
         {
             return mField;
         }
 
-        void
+        inline void
         reset()
         {
             mField = 0;
@@ -254,8 +248,7 @@ public:
      *
      * */
     bool
-    constructPacket(outpost::BoundedArray<uint8_t> buffer,
-                    outpost::BoundedArray<uint8_t> &data);
+    constructPacket(outpost::BoundedArray<uint8_t> buffer, outpost::BoundedArray<const uint8_t>& data);
 
     /**
      * Extract the received RMAP packet according to the given standard by
@@ -274,8 +267,7 @@ public:
      *
      * */
     bool
-    extractPacket(outpost::BoundedArray<const uint8_t> &data,
-                  uint8_t initiatorLogicalAddress);
+    extractPacket(outpost::BoundedArray<const uint8_t>& data, uint8_t initiatorLogicalAddress);
 
     /**
      * Setting the RMAP target specific information into the packet, will be
@@ -286,7 +278,7 @@ public:
      *
      * */
     void
-    setTargetInformation(RmapTargetNode &rmapTargetNode);
+    setTargetInformation(RmapTargetNode& rmapTargetNode);
 
     RmapPacket&
     operator=(const RmapPacket& rhs);
@@ -298,8 +290,7 @@ public:
     inline void
     setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
     {
-        memcpy(mSpwTargets, targetSpaceWireAddress.begin(),
-                targetSpaceWireAddress.getNumberOfElements());
+        memcpy(mSpwTargets, targetSpaceWireAddress.begin(), targetSpaceWireAddress.getNumberOfElements());
         mNumOfSpwTargets = targetSpaceWireAddress.getNumberOfElements();
     }
 
@@ -312,9 +303,8 @@ public:
     inline outpost::BoundedArray<uint8_t>
     getReplyAddress()
     {
-        return outpost::BoundedArray<uint8_t>(
-                reinterpret_cast<uint8_t*>(mReplyAddress),
-                mInstruction.getReplyAddressLength());
+        return outpost::BoundedArray<uint8_t>(reinterpret_cast<uint8_t*>(mReplyAddress),
+            mInstruction.getReplyAddressLength());
     }
 
     inline void
@@ -368,28 +358,24 @@ public:
     inline void
     setCommand()
     {
-        //mInstruction.setCommandPacket();
         mInstruction.setPacketType(InstructionField::commandPacket);
     }
 
     inline void
     setReply()
     {
-        //mInstruction.setReplyPacket();
         mInstruction.setPacketType(InstructionField::replyPacket);
     }
 
     inline bool
     isReplyPacket()
     {
-        //return mInstruction.isReplyPacket();
         return (mInstruction.getPacketType() == InstructionField::replyPacket);
     }
 
     inline bool
     isWrite()
     {
-        //return mInstruction.isWrite();
         return (mInstruction.getOperation() == InstructionField::write);
     }
 
@@ -402,7 +388,6 @@ public:
     inline bool
     isRead()
     {
-        //return mInstruction.isRead();
         return (mInstruction.getOperation() == InstructionField::read);
     }
 
@@ -572,7 +557,7 @@ private:
      *
      * */
     void
-    constructHeader(outpost::Serialize &stream);
+    constructHeader(outpost::Serialize& stream);
 
     //--------------------------------------------------------------------------
     uint8_t mNumOfSpwTargets;
@@ -588,7 +573,7 @@ private:
     uint32_t mDataLength;
     uint8_t mStatus;
     uint32_t mHeaderLength;
-    uint8_t *mData;
+    uint8_t* mData;
 
     uint8_t mHeaderCRC;
     uint8_t mDataCRC;

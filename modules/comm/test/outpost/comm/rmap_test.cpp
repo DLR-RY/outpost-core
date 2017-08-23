@@ -60,7 +60,7 @@ public:
     bool
     sendPacket(RmapInitiator &init,
                RmapTransaction *trans,
-               outpost::BoundedArray<uint8_t> data)
+               outpost::BoundedArray<const uint8_t> data)
     {
         return init.sendPacket(trans, data);
     }

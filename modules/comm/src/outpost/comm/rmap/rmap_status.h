@@ -11,7 +11,6 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-
 #ifndef OUTPOST_COMM_RMAP_STATUS_H_
 #define OUTPOST_COMM_RMAP_STATUS_H_
 

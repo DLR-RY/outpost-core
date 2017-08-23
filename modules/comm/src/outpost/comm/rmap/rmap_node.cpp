@@ -11,35 +11,38 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-
 #include "rmap_status.h"
 #include "rmap_packet.h"
 #include "rmap_node.h"
-
 
 using namespace outpost::comm;
 
 //------------------------------------------------------------------------------
 RmapTargetNode::RmapTargetNode() :
-        mTargetSpaceWireAddressLength(0), mReplyAddressLength(0),
-        mTargetLogicalAddress(rmap::defaultLogicalAddress), mKey(0), mId(0)
+    mTargetSpaceWireAddressLength(0),
+    mReplyAddressLength(0),
+    mTargetLogicalAddress(rmap::defaultLogicalAddress),
+    mKey(0),
+    mId(0)
 {
     strcpy(mName, "Default");
     memset(mTargetSpaceWireAddress, 0, sizeof(mTargetSpaceWireAddress));
     memset(mReplyAddress, 0, sizeof(mReplyAddress));
 }
 
-RmapTargetNode::RmapTargetNode(const char *name,
+RmapTargetNode::RmapTargetNode(const char* name,
                                uint8_t id,
                                outpost::BoundedArray<uint8_t> spwTargets,
                                outpost::BoundedArray<uint8_t> replyAddress,
                                uint8_t targetLogicalAddress,
                                uint8_t key) :
-        mTargetSpaceWireAddressLength(spwTargets.getNumberOfElements()),
-        mReplyAddressLength(replyAddress.getNumberOfElements()),
-        mTargetLogicalAddress(targetLogicalAddress), mKey(key), mId(id)
+    mTargetSpaceWireAddressLength(spwTargets.getNumberOfElements()),
+    mReplyAddressLength(replyAddress.getNumberOfElements()),
+    mTargetLogicalAddress(targetLogicalAddress),
+    mKey(key),
+    mId(id)
 {
-    if(strlen(name) < rmap::maxNodeNameLength)
+    if (strlen(name) < rmap::maxNodeNameLength)
     {
         strcpy(mName, name);
     }
@@ -47,10 +50,8 @@ RmapTargetNode::RmapTargetNode(const char *name,
     {
         strcpy(mName, "Default");
     }
-    memcpy(mTargetSpaceWireAddress, spwTargets.begin(),
-            spwTargets.getNumberOfElements());
-    memcpy(mReplyAddress, replyAddress.begin(),
-            replyAddress.getNumberOfElements());
+    memcpy(mTargetSpaceWireAddress, spwTargets.begin(), spwTargets.getNumberOfElements());
+    memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
 }
 
 RmapTargetNode::~RmapTargetNode()
@@ -64,8 +65,7 @@ RmapTargetNode::setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress)
     bool result = false;
     if (replyAddress.getNumberOfElements() <= rmap::maxAddressLength)
     {
-        memcpy(mReplyAddress, replyAddress.begin(),
-            replyAddress.getNumberOfElements());
+        memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
         result = true;
     }
     return result;
@@ -77,10 +77,8 @@ RmapTargetNode::setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetS
     bool result = false;
     if (targetSpaceWireAddress.getNumberOfElements() <= rmap::maxAddressLength)
     {
-        memcpy(mTargetSpaceWireAddress, targetSpaceWireAddress.begin(),
-                targetSpaceWireAddress.getNumberOfElements());
-        mTargetSpaceWireAddressLength =
-                targetSpaceWireAddress.getNumberOfElements();
+        memcpy(mTargetSpaceWireAddress, targetSpaceWireAddress.begin(), targetSpaceWireAddress.getNumberOfElements());
+        mTargetSpaceWireAddressLength = targetSpaceWireAddress.getNumberOfElements();
         result = true;
     }
     return result;
@@ -88,7 +86,8 @@ RmapTargetNode::setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetS
 
 //------------------------------------------------------------------------------
 RmapTargetsList::RmapTargetsList() :
-        mNodes(), mSize(0)
+    mNodes(),
+    mSize(0)
 {
 
 }
@@ -138,7 +137,7 @@ RmapTargetsList::addTargetNodes(outpost::BoundedArray<RmapTargetNode*> nodes)
 }
 
 RmapTargetNode*
-RmapTargetsList::getTargetNode(const char *name)
+RmapTargetsList::getTargetNode(const char* name)
 {
     RmapTargetNode* rt = nullptr;
 
