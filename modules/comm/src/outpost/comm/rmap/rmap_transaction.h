@@ -54,7 +54,7 @@ public:
      *      True for successfully obtaining the lock, otherwise false
      * */
     bool
-    blockTransaction(outpost::time::Duration timeout);
+    blockTransaction(outpost::time::Duration timeoutDuration);
 
     /**
      * Reset or clear the contents of the transaction. This method is being
@@ -115,9 +115,9 @@ public:
     }
 
     inline void
-    setTimeoutDuration(outpost::time::Duration timeout)
+    setTimeoutDuration(outpost::time::Duration timeoutDuration)
     {
-        mTimeoutDuration = timeout;
+        mTimeoutDuration = timeoutDuration;
     }
 
     inline outpost::time::Duration

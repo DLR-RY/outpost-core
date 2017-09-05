@@ -34,15 +34,15 @@ RmapTransaction::~RmapTransaction()
 }
 
 bool
-RmapTransaction::blockTransaction(outpost::time::Duration timeout)
+RmapTransaction::blockTransaction(outpost::time::Duration timeoutDuration)
 {
-    if (timeout == outpost::time::Duration::maximum())
+    if (timeoutDuration == outpost::time::Duration::maximum())
     {
         return mReplyLock.acquire();
     }
     else
     {
-        return mReplyLock.acquire(timeout);
+        return mReplyLock.acquire(timeoutDuration);
     }
 }
 
