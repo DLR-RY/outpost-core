@@ -137,8 +137,6 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                     "RMAP-Initiator: command sent but no reply received for the transaction %u\n",
                     transaction->getTransactionID());
 
-                // Delete the transaction from the list
-                mTransactionsList.removeTransaction(transaction->getTransactionID());
                 result = false;
             }
             // Command sent and reply received
@@ -150,8 +148,6 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                 {
                     console_out("RMAP-Initiator: reply received with success\n");
 
-                    // Delete the transaction from the list
-                    mTransactionsList.removeTransaction(transaction->getTransactionID());
                     result = true;
                 }
                 else
@@ -159,9 +155,6 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                     console_out("RMAP-Initiator: reply received with failure\n");
 
                     RmapReplyStatus::replyStatus(static_cast<RmapReplyStatus::ErrorStatusCodes>(rply->getStatus()));
-
-                    // Delete the transaction from the list
-                    mTransactionsList.removeTransaction(transaction->getTransactionID());
 
                     result = false;
                 }
@@ -182,6 +175,10 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
             }
         }
     }
+
+    // Delete the transaction from the list
+    mTransactionsList.removeTransaction(transaction->getTransactionID());
+
     return result;
 }
 
@@ -275,7 +272,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
             transaction->getState());
 
         // Wait for the RMAP reply
-        transaction->blockTransaction(outpost::time::Duration::maximum());
+        transaction->blockTransaction(timeout);
 
         console_out("RMAP-Initiator: Notified with state: %u\n",
             transaction->getState());
@@ -290,9 +287,6 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                 console_out(
                     "RMAP-Initiator: Command not executed successfully: %u\n",
                     replyStatus);
-
-                // Delete the transaction from the list
-                mTransactionsList.removeTransaction(transaction->getTransactionID());
                 result = false;
             }
             else
@@ -301,18 +295,12 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                 {
                     console_out(
                         "RMAP-Initiator: Read reply with insufficient data\n");
-
-                    // Delete the transaction from the list
-                    mTransactionsList.removeTransaction(transaction->getTransactionID());
                     result = false;
                 }
                 else
                 {
                     // Copy received data to the external buffer
                     mRxData.getData(buffer);
-
-                    // Delete the transaction from the list
-                    mTransactionsList.removeTransaction(transaction->getTransactionID());
 
                     // Release the SpW buffer
 
@@ -323,20 +311,17 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
         else
         {
             console_out("RMAP-Initiator: Timeout\n");
-
-            // Delete the transaction from the list
-            mTransactionsList.removeTransaction(transaction->getTransactionID());
             result = false;
         }
     }
     else
     {
         console_out("RMAP-Initiator: Transaction could not be initiated\n");
-
-        // Delete the transaction from the list
-        mTransactionsList.removeTransaction(transaction->getTransactionID());
         result = false;
     }
+
+    // Delete the transaction from the list
+    mTransactionsList.removeTransaction(transaction->getTransactionID());
 
     return result;
 }
@@ -422,6 +407,7 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::BoundedArray<co
             if (mSpW.send(txBuffer, transaction->getTimeoutDuration()) == hal::SpaceWire::Result::success)
             {
                 transaction->setState(RmapTransaction::initiated);
+
                 result = true;
             }
         }
@@ -501,9 +487,7 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
         mCounters.mDiscardedReceivedPackets++;
         mDiscardedPacket = packet;
         console_out("RMAP Reply packet (dataLength %lu bytes) was received but "
-            "no corresponding transaction was found. The size of "
-            "discarded packets %u\n", packet->getDataLength(),
-            mDiscardedPackets.mIndex);
+            "no corresponding transaction was found.\n", packet->getDataLength());
     }
     else
     {
@@ -518,6 +502,8 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
 
         if (transaction->isBlockingMode())
         {
+            console_out(
+                        "RMAP-Initiator: Transaction with TID %u is blocking, thus releasing lock...\n", transaction->getTransactionID());
             transaction->releaseTransaction();
         }
     }

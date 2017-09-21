@@ -321,7 +321,7 @@ public:
          uint32_t memoryAddress,
          uint8_t* buffer,
          uint32_t length,
-         outpost::time::Duration timeout = outpost::time::Seconds(1));
+         outpost::time::Duration timeout = outpost::time::Duration::maximum());
 
     /**
      * Read from remote memory. The method blocks the current
@@ -351,7 +351,7 @@ public:
          uint32_t memoryAddress,
          uint8_t* buffer,
          uint32_t length,
-         outpost::time::Duration timeout = outpost::time::Seconds(1));
+         outpost::time::Duration timeout = outpost::time::Duration::maximum());
 
     //--------------------------------------------------------------------------
     inline bool
