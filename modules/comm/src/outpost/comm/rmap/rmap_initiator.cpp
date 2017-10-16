@@ -178,6 +178,8 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
 
     // Delete the transaction from the list
     mTransactionsList.removeTransaction(transaction->getTransactionID());
+    transaction = nullptr;
+    cmd = nullptr;
 
     return result;
 }
@@ -322,6 +324,8 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
 
     // Delete the transaction from the list
     mTransactionsList.removeTransaction(transaction->getTransactionID());
+    transaction = nullptr;
+    cmd = nullptr;
 
     return result;
 }

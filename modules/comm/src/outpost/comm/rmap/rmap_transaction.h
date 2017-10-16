@@ -159,7 +159,10 @@ public:
     inline void
     releaseTransaction()
     {
-        mReplyLock.release();
+        if(mReplyLock)
+        {
+            mReplyLock->release();
+        }
     }
 
     inline RmapTransaction&
@@ -173,7 +176,6 @@ public:
         mBlockingMode = rhs.mBlockingMode;
         mCommandPacket = rhs.mCommandPacket;
         mReplyPacket = rhs.mReplyPacket;
-        ;
         return *this;
     }
 
@@ -190,7 +192,7 @@ private:
     bool mBlockingMode;
     RmapPacket mReplyPacket;
     RmapPacket mCommandPacket;
-    outpost::rtos::BinarySemaphore mReplyLock;
+    outpost::rtos::BinarySemaphore* mReplyLock;
 };
 }
 }

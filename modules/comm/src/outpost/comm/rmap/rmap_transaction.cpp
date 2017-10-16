@@ -19,12 +19,12 @@ RmapTransaction::RmapTransaction() :
     mTargetLogicalAddress(0),
     mInitiatorLogicalAddress(0),
     mTransactionID(0),
-    mTimeoutDuration(outpost::time::Milliseconds(0)),
+    mTimeoutDuration(outpost::time::Duration::zero()),
     mState(notInitiated),
     mBlockingMode(false),
     mReplyPacket(),
     mCommandPacket(),
-    mReplyLock(outpost::rtos::BinarySemaphore::State::acquired)
+    mReplyLock(nullptr)
 {
 }
 
@@ -36,19 +36,39 @@ RmapTransaction::~RmapTransaction()
 bool
 RmapTransaction::blockTransaction(outpost::time::Duration timeoutDuration)
 {
-    if (timeoutDuration == outpost::time::Duration::maximum())
+    bool ret = false;
+
+    mReplyLock = new outpost::rtos::BinarySemaphore(outpost::rtos::BinarySemaphore::State::acquired);
+
+    if(mReplyLock)
     {
-        return mReplyLock.acquire();
+        if (timeoutDuration == outpost::time::Duration::maximum())
+        {
+            ret = mReplyLock->acquire();
+        }
+        else
+        {
+            ret = mReplyLock->acquire(timeoutDuration);
+        }
+
+        mReplyLock->~BinarySemaphore();
+        delete mReplyLock;
+        mReplyLock = nullptr;
     }
-    else
-    {
-        return mReplyLock.acquire(timeoutDuration);
-    }
+
+    return ret;
 }
 
 void
 RmapTransaction::reset()
 {
-    RmapTransaction empty;
-    *this = empty;
+    mTargetLogicalAddress = 0;
+    mInitiatorLogicalAddress = 0;
+    mTransactionID = 0;
+    mTimeoutDuration = outpost::time::Duration::zero();
+    mState = notInitiated;
+    mBlockingMode = false;
+    mReplyPacket.reset();
+    mCommandPacket.reset();
+    mReplyLock = nullptr;
 }

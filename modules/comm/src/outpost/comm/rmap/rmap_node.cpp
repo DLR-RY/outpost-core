@@ -20,7 +20,9 @@ using namespace outpost::comm;
 //------------------------------------------------------------------------------
 RmapTargetNode::RmapTargetNode() :
     mTargetSpaceWireAddressLength(0),
+    mTargetSpaceWireAddress(),
     mReplyAddressLength(0),
+    mReplyAddress(),
     mTargetLogicalAddress(rmap::defaultLogicalAddress),
     mKey(0),
     mId(0)
@@ -50,8 +52,16 @@ RmapTargetNode::RmapTargetNode(const char* name,
     {
         strcpy(mName, "Default");
     }
-    memcpy(mTargetSpaceWireAddress, spwTargets.begin(), spwTargets.getNumberOfElements());
-    memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
+
+    if (spwTargets.getNumberOfElements() <= rmap::maxAddressLength)
+    {
+        memcpy(mTargetSpaceWireAddress, spwTargets.begin(), spwTargets.getNumberOfElements());
+    }
+
+    if (replyAddress.getNumberOfElements() <= rmap::maxAddressLength)
+    {
+        memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
+    }
 }
 
 RmapTargetNode::~RmapTargetNode()

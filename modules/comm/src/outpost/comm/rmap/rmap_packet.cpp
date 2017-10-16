@@ -62,11 +62,11 @@ RmapPacket::RmapPacket(outpost::BoundedArray<uint8_t> spwTargets,
     mDataCRC(0)
 
 {
-    if (spwTargets.getNumberOfElements() <= sizeof(mSpwTargets))
+    if (spwTargets.getNumberOfElements() <= rmap::maxPhysicalRouterOutputPorts)
     {
         memcpy(mSpwTargets, spwTargets.begin(), spwTargets.getNumberOfElements());
     }
-    if ((rplyAddrLen * 4) <= sizeof(mReplyAddress))
+    if ((rplyAddrLen * 4) <= rmap::maxAddressLength)
     {
         memcpy(mReplyAddress, replyAddress, rplyAddrLen * 4);
     }
@@ -353,6 +353,6 @@ RmapPacket::constructHeader(outpost::Serialize& stream)
     mHeaderLength = stream.getPosition();
 
     mHeaderCRC = outpost::Crc8CcittReversed::calculate(
-        outpost::BoundedArray<uint8_t>(stream.getPointer(), stream.getPosition()));
+        outpost::BoundedArray<uint8_t>(stream.getPointer() + mNumOfSpwTargets, stream.getPosition() - mNumOfSpwTargets));
     stream.store<uint8_t>(mHeaderCRC);
 }
