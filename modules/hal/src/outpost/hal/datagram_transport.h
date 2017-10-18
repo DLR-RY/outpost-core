@@ -174,6 +174,19 @@ public:
     virtual Address 
     getAddress() const = 0;
 
+    /**
+     * Sets the address of the device and disconnects listening clients
+     *
+     * Will reset the connection causing all active calls to \ref sendTo and
+     * \ref receiveFrom to return immediately. The internal address is set to
+     * newAddress. The connection is not initialized automatically. A call to
+     * \ref connect is needed before any data can be received or send again.
+     *
+     * \param newAddress The new address to use
+     */
+    virtual void
+    setAddress(const Address& newAddress) = 0;
+
     /**      
      * Check if a new datagram is available
      *      
