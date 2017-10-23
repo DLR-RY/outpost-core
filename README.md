@@ -7,8 +7,8 @@ critical software.
 The library set up to be modular, allowing the user to choose which
 modules to use and which modules to leave out.
 
-OUTPOST is split into two repositories: outpost-core contains the open-source
-base environment and outpost-satellite contains the closed-source satellite
+OUTPOST is split into two repositories: *outpost-core* contains the open-source
+base environment and *outpost-satellite* contains the closed-source satellite
 specific modules.
 
 
@@ -52,7 +52,7 @@ License
 -------
 
 Unless otherwise noted the source code is licensed under the
-terms of the Mozilla Public License, v. 2.0 (see mpl-v2.0.txt).
+terms of the *Mozilla Public License, v. 2.0* (see mpl-v2.0.txt).
 
 Files with a different license:
 
