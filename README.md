@@ -1,5 +1,3 @@
-[![Build Status](http://hbryavsci1l.hb.dlr.de:8080/job/outpost-core/job/master/badge/icon)](http://hbryavsci1l.hb.dlr.de:8080/job/outpost-core/job/master/)
-
 <img src="doc/images/OUTPOST_logo.png" height="200px" />
 
 The **OUTPOST** library (Open modUlar sofTware PlatfOrm for SpacecrafT)
@@ -9,9 +7,10 @@ critical software.
 The library set up to be modular, allowing the user to choose which
 modules to use and which modules to leave out.
 
-OUTPOST is split into two repositories [outpost-core][] contaning the base
-environment and [outpost-satellite][] containing the satellite specific
-modules.
+OUTPOST is split into two repositories: outpost-core contains the open-source
+base environment and outpost-satellite contains the closed-source satellite
+specific modules.
+
 
 Modules
 -------
@@ -63,6 +62,3 @@ Files with a different license:
 
 
 [German Aerospace Center (DLR)]: http://www.dlr.de/irs/en/
-
-[outpost-core]: https://hbryavsci1l.hb.dlr.de:8929/avionics-software/outpost-core
-[outpost-satellite]: https://hbryavsci1l.hb.dlr.de:8929/avionics-software/outpost-satellite
