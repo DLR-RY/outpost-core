@@ -24,39 +24,13 @@ RmapTransaction::RmapTransaction() :
     mBlockingMode(false),
     mReplyPacket(),
     mCommandPacket(),
-    mReplyLock(nullptr)
+    mReplyLock(outpost::rtos::BinarySemaphore::State::released)
 {
 }
 
 RmapTransaction::~RmapTransaction()
 {
 
-}
-
-bool
-RmapTransaction::blockTransaction(outpost::time::Duration timeoutDuration)
-{
-    bool ret = false;
-
-    mReplyLock = new outpost::rtos::BinarySemaphore(outpost::rtos::BinarySemaphore::State::acquired);
-
-    if(mReplyLock)
-    {
-        if (timeoutDuration == outpost::time::Duration::maximum())
-        {
-            ret = mReplyLock->acquire();
-        }
-        else
-        {
-            ret = mReplyLock->acquire(timeoutDuration);
-        }
-
-        mReplyLock->~BinarySemaphore();
-        delete mReplyLock;
-        mReplyLock = nullptr;
-    }
-
-    return ret;
 }
 
 void
@@ -70,5 +44,4 @@ RmapTransaction::reset()
     mBlockingMode = false;
     mReplyPacket.reset();
     mCommandPacket.reset();
-    mReplyLock = nullptr;
 }

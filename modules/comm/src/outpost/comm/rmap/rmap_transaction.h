@@ -43,23 +43,13 @@ public:
     RmapTransaction();
     ~RmapTransaction();
 
-    /**
-     * Blocks the current thread holding the transaction by accessing lock until
-     * specified timeout duration.
-     *
-     * \param timeout
-     *      Duration for which the thread should be blocked
-     *
-     * \return
-     *      True for successfully obtaining the lock, otherwise false
-     * */
-    bool
-    blockTransaction(outpost::time::Duration timeoutDuration);
+
 
     /**
-     * Reset or clear the contents of the transaction. This method is being
-     * used by the RMAP initiator for clearing the completed transaction
-     * placeholder for future access.
+     * Reset or clear the contents of the transaction.
+     *
+     * This method is being used by the RMAP initiator for clearing the
+     * completed transaction placeholder for future access.
      *
      * */
     void
@@ -156,13 +146,34 @@ public:
         mReplyPacket = *replyPacket;
     }
 
+    /**
+     * Blocks the current thread holding initiating the transaction.
+     *
+     * A binary semaphore is being acquired to lock the task.
+     *
+     * \param timeout
+     *      Duration for which the thread should be blocked
+     *
+     * \return
+     *      \retval true
+     *         For successfully obtaining the lock
+     *      \retval false
+     *         For failure in obtaining the lock
+     * */
+    inline bool
+    blockTransaction(outpost::time::Duration timeoutDuration)
+    {
+        return mReplyLock.acquire(timeoutDuration);
+    }
+
+    /**
+     * Release the lock which has been acquired to lock the transaction.
+     *
+     * */
     inline void
     releaseTransaction()
     {
-        if(mReplyLock)
-        {
-            mReplyLock->release();
-        }
+        mReplyLock.release();
     }
 
     inline RmapTransaction&
@@ -192,7 +203,7 @@ private:
     bool mBlockingMode;
     RmapPacket mReplyPacket;
     RmapPacket mCommandPacket;
-    outpost::rtos::BinarySemaphore* mReplyLock;
+    outpost::rtos::BinarySemaphore mReplyLock;
 };
 }
 }

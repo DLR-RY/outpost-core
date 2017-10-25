@@ -62,11 +62,11 @@ RmapPacket::RmapPacket(outpost::BoundedArray<uint8_t> spwTargets,
     mDataCRC(0)
 
 {
-    if (spwTargets.getNumberOfElements() <= rmap::maxPhysicalRouterOutputPorts)
+    if (spwTargets.getNumberOfElements() <= sizeof(mSpwTargets))
     {
         memcpy(mSpwTargets, spwTargets.begin(), spwTargets.getNumberOfElements());
     }
-    if ((rplyAddrLen * 4) <= rmap::maxAddressLength)
+    if ((rplyAddrLen * 4) <= sizeof(mReplyAddress))
     {
         memcpy(mReplyAddress, replyAddress, rplyAddrLen * 4);
     }
