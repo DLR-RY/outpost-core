@@ -105,6 +105,9 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
         // Sets the transaction mode
         transaction->setBlockingMode(true);
 
+        // Extra block call with zero timeout for acquiring already released lock
+        transaction->blockTransaction(outpost::time::Duration::zero());
+
         cmd->setReplyFlag();
     }
     else
@@ -127,9 +130,6 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
         if (mReplyMode)
         {
             transaction->setState(RmapTransaction::commandSent);
-
-            // Extra block call with zero timeout for acquiring already released lock
-            transaction->blockTransaction(outpost::time::Duration::zero());
 
             // Wait for the RMAP reply
             transaction->blockTransaction(timeout);
@@ -235,6 +235,9 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     // Read transaction will always be blocking
     transaction->setBlockingMode(true);
 
+    // Extra block call with zero timeout for acquiring already released lock
+    transaction->blockTransaction(outpost::time::Duration::zero());
+
     // Sets the command packet
     cmd->setInitiatorLogicalAddress(mInitiatorLogicalAddress);
     cmd->setRead();
@@ -276,9 +279,6 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
 
         console_out("RMAP-Initiator: Command sent %u, waiting for reply\n",
             transaction->getState());
-
-        // Extra block call with zero timeout for acquiring already released lock
-        transaction->blockTransaction(outpost::time::Duration::zero());
 
         // Wait for the RMAP reply
         transaction->blockTransaction(timeout);
