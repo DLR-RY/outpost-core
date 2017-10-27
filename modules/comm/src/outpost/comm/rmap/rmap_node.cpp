@@ -34,12 +34,10 @@ RmapTargetNode::RmapTargetNode() :
 
 RmapTargetNode::RmapTargetNode(const char* name,
                                uint8_t id,
-                               outpost::BoundedArray<uint8_t> spwTargets,
-                               outpost::BoundedArray<uint8_t> replyAddress,
                                uint8_t targetLogicalAddress,
                                uint8_t key) :
-    mTargetSpaceWireAddressLength(spwTargets.getNumberOfElements()),
-    mReplyAddressLength(replyAddress.getNumberOfElements()),
+    mTargetSpaceWireAddressLength(0),
+    mReplyAddressLength(0),
     mTargetLogicalAddress(targetLogicalAddress),
     mKey(key),
     mId(id)
@@ -53,15 +51,8 @@ RmapTargetNode::RmapTargetNode(const char* name,
         strcpy(mName, "Default");
     }
 
-    if (spwTargets.getNumberOfElements() <= rmap::maxAddressLength)
-    {
-        memcpy(mTargetSpaceWireAddress, spwTargets.begin(), spwTargets.getNumberOfElements());
-    }
-
-    if (replyAddress.getNumberOfElements() <= rmap::maxAddressLength)
-    {
-        memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
-    }
+    memset(mTargetSpaceWireAddress, 0, sizeof(mTargetSpaceWireAddress));
+    memset(mReplyAddress, 0, sizeof(mReplyAddress));
 }
 
 RmapTargetNode::~RmapTargetNode()
@@ -73,7 +64,7 @@ bool
 RmapTargetNode::setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress)
 {
     bool result = false;
-    if (replyAddress.getNumberOfElements() <= rmap::maxAddressLength)
+    if (replyAddress.getNumberOfElements() <= sizeof(mReplyAddress))
     {
         memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
         result = true;
@@ -85,7 +76,7 @@ bool
 RmapTargetNode::setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
 {
     bool result = false;
-    if (targetSpaceWireAddress.getNumberOfElements() <= rmap::maxAddressLength)
+    if (targetSpaceWireAddress.getNumberOfElements() <= sizeof(mTargetSpaceWireAddress))
     {
         memcpy(mTargetSpaceWireAddress, targetSpaceWireAddress.begin(), targetSpaceWireAddress.getNumberOfElements());
         mTargetSpaceWireAddressLength = targetSpaceWireAddress.getNumberOfElements();

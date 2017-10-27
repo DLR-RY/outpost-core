@@ -77,6 +77,13 @@ public:
         init.mRxData.getData(buffer);
     }
 
+    void
+    constructPacketHeader(RmapPacket& pckt, uint8_t* buffer)
+    {
+        outpost::Serialize stream(buffer);
+        pckt.constructHeader(stream);
+    }
+
 };
 }
 }
@@ -121,11 +128,7 @@ public:
 
     RmapTest() :
             mSpaceWire(100),
-            mRmapTarget(targetName, 1,
-                    outpost::BoundedArray<uint8_t>(targetSpwAddress,
-                            numberOfTargetSpwAddresses),
-                    outpost::BoundedArray<uint8_t>(replyAddress,
-                            replyAddressLength), targetLogicalAddress, key),
+            mRmapTarget(targetName, 1, targetLogicalAddress, key),
             mTargetNodes(), mRmapInitiator(mSpaceWire, &mTargetNodes, 100, 4096),
             mTestingRmap(), mNonRmapReceiver()
     {
@@ -136,6 +139,12 @@ public:
     {
         mSpaceWire.open();
         mSpaceWire.up(outpost::time::Duration::zero());
+        mRmapTarget.setTargetSpaceWireAddress(
+                            outpost::BoundedArray<uint8_t>(targetSpwAddress,
+                                    numberOfTargetSpwAddresses));
+        mRmapTarget.setReplyAddress(
+                            outpost::BoundedArray<uint8_t>(replyAddress,
+                                    replyAddressLength));
     }
 
     virtual void
@@ -253,6 +262,40 @@ TEST_F(RmapTest, shouldSetZeroReplyAddressLength)
             RmapPacket::InstructionField::twelveBytes);
     EXPECT_EQ(RmapPacket::InstructionField::twelveBytes,
             instruction.getReplyAddressLength());
+}
+
+TEST_F(RmapTest, shouldBuildVerifyPacketHeaderCRC)
+{
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // *** Constructing command ***
+    uint8_t sendBuffer[50] = {0};
+    RmapPacket send;
+    send.setInitiatorLogicalAddress(rmap::defaultLogicalAddress);
+    send.setWrite();
+    send.setCommand();
+    send.unsetIncrementFlag();
+    send.unsetVerifyFlag();
+    send.unsetReplyFlag();
+    send.setExtendedAddress(rmap::defaultExtendedAddress);
+    send.setAddress(0x100);
+    send.setDataLength(4);
+    send.setTargetInformation(mRmapTarget);
+    send.setInitiatorLogicalAddress(0xFE);
+
+    mTestingRmap.constructPacketHeader(send, sendBuffer);
+
+    // Acc to RMAP protocol definition, all the SpW target address will be truncated by the
+    // router upon receiving the packet at the target node. Thus final packet will be considered
+    // without SpW target fields
+    uint8_t numberOfTargets = send.getTargetSpaceWireAddress().getNumberOfElements();
+    uint8_t calculatedCrc = outpost::Crc8CcittReversed::calculate(
+        outpost::BoundedArray<uint8_t>(sendBuffer + numberOfTargets, send.getHeaderLength() - numberOfTargets));
+
+    EXPECT_EQ(calculatedCrc, send.getHeaderCRC());
 }
 
 TEST_F(RmapTest, shouldSendWriteCommandPacket)
@@ -432,7 +475,6 @@ TEST_F(RmapTest, shouldReceiveAndPublishNonRmapPacket)
 
     RmapPacket rxedPacket;
     EXPECT_FALSE(mTestingRmap.receivePacket(mRmapInitiator, &rxedPacket));
-
     EXPECT_TRUE(mNonRmapReceiver.mDataReceived);
 
     for (uint8_t i = 0; i < 4; i++)

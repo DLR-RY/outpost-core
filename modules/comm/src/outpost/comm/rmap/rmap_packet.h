@@ -37,6 +37,7 @@ namespace comm
  */
 class RmapPacket
 {
+    friend class TestingRmap;
 public:
 
     /**

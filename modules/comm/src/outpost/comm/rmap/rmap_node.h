@@ -37,8 +37,6 @@ public:
     RmapTargetNode();
     RmapTargetNode(const char* name,
                    uint8_t id,
-                   outpost::BoundedArray<uint8_t> spwTargets,
-                   outpost::BoundedArray<uint8_t> replyAddress,
                    uint8_t targetLogicalAddress,
                    uint8_t key);
     ~RmapTargetNode();
