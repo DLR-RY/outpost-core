@@ -18,7 +18,9 @@
 #include <array>
 
 #include <outpost/time/duration.h>
-#include <outpost/utils/fixed_size_array.h>
+
+#include <outpost/container/fixed_size_array.h>
+#include <outpost/container/bounded_array.h>
 
 namespace outpost 
 {

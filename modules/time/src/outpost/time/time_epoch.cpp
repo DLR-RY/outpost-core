@@ -16,7 +16,7 @@
 
 #include "time_epoch.h"
 
-#include <outpost/utils/bounded_array.h>
+#include <outpost/container/bounded_array.h>
 
 using namespace outpost::time;
 

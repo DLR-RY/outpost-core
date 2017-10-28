@@ -19,7 +19,7 @@
 #include <cstddef>
 
 #include <outpost/time/duration.h>
-#include <outpost/utils/bounded_array.h>
+#include <outpost/container/bounded_array.h>
 
 namespace outpost
 {

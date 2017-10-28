@@ -16,7 +16,7 @@
 
 #include <string.h>
 #include <stdint.h>
-#include <outpost/utils/bounded_array.h>
+#include <outpost/container/bounded_array.h>
 
 #include "rmap_common.h"
 

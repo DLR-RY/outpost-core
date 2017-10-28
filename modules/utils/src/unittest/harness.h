@@ -25,8 +25,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <outpost/utils.h>
-
 /**
  * Compare two arrays.
  *

@@ -11,7 +11,7 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-#include <outpost/utils/crc.h>
+#include <outpost/coding/crc.h>
 
 #include "rmap_packet.h"
 

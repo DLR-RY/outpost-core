@@ -15,9 +15,9 @@
 
 #include <outpost/comm/rmap/rmap_initiator.h>
 #include <unittest/hal/spacewire_stub.h>
-#include <outpost/utils/bounded_array.h>
-#include <outpost/utils/bit_access.h>
-#include <outpost/utils/crc.h>
+#include <outpost/container/bounded_array.h>
+#include <outpost/storage/bit_access.h>
+#include <outpost/coding/crc.h>
 #include <outpost/smpc/subscription.h>
 
 namespace outpost
