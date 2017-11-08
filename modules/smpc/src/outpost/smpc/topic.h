@@ -146,6 +146,13 @@ public:
     {
     }
 
+    // disable copy constructor
+    Topic(const Topic&) = delete;
+
+    // disable assignment operator
+    Topic&
+    operator=(const Topic&) = delete;
+
     /**
      * Publish new data.
      *
@@ -164,14 +171,6 @@ public:
         NonConstType* ptr = const_cast<NonConstType*>(&message);
         TopicBase::publishTypeUnsafe(reinterpret_cast<void*>(ptr));
     }
-
-private:
-    // disable copy constructor
-    Topic(const Topic&);
-
-    // disable assignment operator
-    Topic&
-    operator=(const Topic&);
 };
 
 }

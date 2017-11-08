@@ -31,20 +31,17 @@ class Clock
 {
 public:
     Clock();
+    
+    Clock(const Clock&) = delete;
+
+    Clock&
+    operator=(const Clock&) = delete;
 
     virtual
     ~Clock();
 
     virtual SpacecraftElapsedTime
     now() const = 0;
-
-private:
-    // disable copy constructor
-    Clock(const Clock&);
-
-    // disable assignment operator
-    Clock&
-    operator=(const Clock&);
 };
 
 }

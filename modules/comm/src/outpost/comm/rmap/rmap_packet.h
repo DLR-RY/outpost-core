@@ -49,17 +49,17 @@ public:
     {
         enum PacketType : uint8_t
         {
-                replyPacket = 0, commandPacket = 1
+            replyPacket = 0, commandPacket = 1
         };
 
         enum Operation : uint8_t
         {
-                read = 0, write = 1
+            read = 0, write = 1
         };
 
         enum ReplyAddressLength : uint8_t
         {
-                zeroBytes = 0, fourBytes = 1, eigthBytes = 2, twelveBytes = 3
+            zeroBytes = 0, fourBytes = 1, eigthBytes = 2, twelveBytes = 3
         };
 
         constexpr
@@ -67,6 +67,12 @@ public:
             mField(0)
         {
         }
+
+        InstructionField(const InstructionField&) = delete;
+
+        InstructionField&
+        operator=(const InstructionField&) = delete;
+
         ~InstructionField()
         {
         }
@@ -193,12 +199,6 @@ public:
             mField = 0;
         }
 
-        // disable copy constructor
-        InstructionField(const InstructionField&) = delete;
-
-        // disable copy-assignment operator
-        InstructionField&
-        operator=(const InstructionField&) = delete;
     private:
         uint8_t mField;
     };
