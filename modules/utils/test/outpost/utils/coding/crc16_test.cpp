@@ -47,7 +47,7 @@ TEST(Crc16Test, testEcssPus1)
         0x00, 0x00
     };
 
-    EXPECT_EQ(0x1D0F, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x1D0F, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -60,7 +60,7 @@ TEST(Crc16Test, testEcssPus2)
         0x00, 0x00, 0x00
     };
 
-    EXPECT_EQ(0xCC9C, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0xCC9C, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -73,7 +73,7 @@ TEST(Crc16Test, testEcssPus3)
         0xAB, 0xCD, 0xEF, 0x01
     };
 
-    EXPECT_EQ(0x04A2, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x04A2, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -86,7 +86,7 @@ TEST(Crc16Test, testEcssPus4)
         0x14, 0x56, 0xF8, 0x9A, 0x00, 0x01
     };
 
-    EXPECT_EQ(0x7FD5, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x7FD5, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -98,7 +98,7 @@ TEST(Crc16Test, testEcssPus4Total)
         0x14, 0x56, 0xF8, 0x9A, 0x00, 0x01, 0x7F, 0xD5
     };
 
-    EXPECT_EQ(0, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 TEST(Crc16Test, testMltpExample1)
@@ -109,7 +109,7 @@ TEST(Crc16Test, testMltpExample1)
         0x34, 0x7E, 0xE5, 0xC3, 0x90,
     };
 
-    EXPECT_EQ(0x4959, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x4959, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 
@@ -119,7 +119,7 @@ TEST(Crc16Test, testMltpExample2)
         0x10, 0x82, 0x23, 0x7D, 0x43, 0xD2,
     };
 
-    EXPECT_EQ(0xF7AC, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0xF7AC, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 TEST(Crc16Test, testMltpExample3)
@@ -139,9 +139,9 @@ TEST(Crc16Test, testMltpExample3)
         0x90,
     };
 
-    EXPECT_EQ(0xB233, Crc16Ccitt::calculate(outpost::toArray(data0)));
-    EXPECT_EQ(0x8541, Crc16Ccitt::calculate(outpost::toArray(data1)));
-    EXPECT_EQ(0x0493, Crc16Ccitt::calculate(outpost::toArray(data2)));
+    EXPECT_EQ(0xB233, Crc16Ccitt::calculate(outpost::asSlice(data0)));
+    EXPECT_EQ(0x8541, Crc16Ccitt::calculate(outpost::asSlice(data1)));
+    EXPECT_EQ(0x0493, Crc16Ccitt::calculate(outpost::asSlice(data2)));
 }
 
 TEST(Crc16Test, testMltpExample4)
@@ -150,7 +150,7 @@ TEST(Crc16Test, testMltpExample4)
         0x30, 0xC1, 0x01, 0x7D, 0x43, 0xD2, 0x10, 0x82,
     };
 
-    EXPECT_EQ(0x8CC7, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x8CC7, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -209,7 +209,7 @@ TEST(Crc16Test, testXModemAvr)
         crc = crc_xmodem_update(crc, data[i]);
     }
 
-    EXPECT_EQ(crc, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(crc, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 TEST(Crc16Test, testRandom)
@@ -220,7 +220,7 @@ TEST(Crc16Test, testRandom)
         data[i] = 0xff;
     }
 
-    EXPECT_EQ(0x6995, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x6995, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 TEST(Crc16Test, testRandom2)
@@ -229,7 +229,7 @@ TEST(Crc16Test, testRandom2)
         '1', '2', '3', '4', '5', '6', '7', '8', '9'
     };
 
-    EXPECT_EQ(0x29B1, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x29B1, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 
 TEST(Crc16Test, testRandom3)
@@ -238,6 +238,6 @@ TEST(Crc16Test, testRandom3)
         0xff, 0xff
     };
 
-    EXPECT_EQ(0, Crc16Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0, Crc16Ccitt::calculate(outpost::asSlice(data)));
 }
 

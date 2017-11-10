@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include "bounded_array.h"
+#include "slice.h"
 
 #include <outpost/utils/iterator.h>
 
@@ -76,7 +76,7 @@ public:
                     size_t numberOfEntries);
 
     explicit inline
-    FixedOrderedMap(BoundedArray<Entry> array) :
+    FixedOrderedMap(Slice<Entry> array) :
         mEntries(&array[0]),
         mNumberOfEntries(array.getNumberOfElements())
     {
@@ -117,10 +117,10 @@ public:
     /**
      * Convert to a bounded array.
      */
-    inline BoundedArray<Entry>
+    inline Slice<Entry>
     asArray() const
     {
-        return outpost::BoundedArray<Entry>(mEntries, mNumberOfEntries);
+        return outpost::Slice<Entry>(mEntries, mNumberOfEntries);
     }
 
     inline Iterator

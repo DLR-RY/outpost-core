@@ -41,7 +41,7 @@ TEST(Crc32Test, randomTest1a)
     // Ignore the appended zero-byte
     size_t length = sizeof(data) - 1;
 
-    EXPECT_EQ(0x414FA339U, Crc32Reversed::calculate(outpost::BoundedArray<const uint8_t>(data, length)));
+    EXPECT_EQ(0x414FA339U, Crc32Reversed::calculate(outpost::Slice<const uint8_t>(data, length)));
 }
 
 TEST(Crc32Test, randomTest1b)
@@ -56,7 +56,7 @@ TEST(Crc32Test, randomTest1b)
         0x64, 0x6F, 0x67
     };
 
-    EXPECT_EQ(0x414FA339U, Crc32Reversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x414FA339U, Crc32Reversed::calculate(outpost::asSlice(data)));
 }
 
 TEST(Crc32Test, randomTest2)
@@ -69,7 +69,7 @@ TEST(Crc32Test, randomTest2)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    EXPECT_EQ(0x190A55ADU, Crc32Reversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x190A55ADU, Crc32Reversed::calculate(outpost::asSlice(data)));
 }
 
 TEST(Crc32Test, randomTest3)
@@ -82,7 +82,7 @@ TEST(Crc32Test, randomTest3)
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     };
 
-    EXPECT_EQ(0xFF6CAB0BU, Crc32Reversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0xFF6CAB0BU, Crc32Reversed::calculate(outpost::asSlice(data)));
 }
 
 TEST(Crc32Test, randomTest4)
@@ -95,7 +95,7 @@ TEST(Crc32Test, randomTest4)
         0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F
     };
 
-    EXPECT_EQ(0x91267E8AU, Crc32Reversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x91267E8AU, Crc32Reversed::calculate(outpost::asSlice(data)));
 }
 
 static uint32_t
@@ -137,5 +137,5 @@ TEST(Crc32Test, bitwiseTest)
     }
     crc = crc ^ 0xFFFFFFFF;
 
-    EXPECT_EQ(crc, Crc32Reversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(crc, Crc32Reversed::calculate(outpost::asSlice(data)));
 }

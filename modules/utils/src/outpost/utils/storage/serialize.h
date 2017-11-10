@@ -21,7 +21,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 #include <outpost/utils/container/fixed_size_array.h>
 
 #include "serialize_traits.h"
@@ -48,7 +48,7 @@ class Serialize
 {
 public:
     explicit inline
-    Serialize(outpost::BoundedArray<uint8_t> array) :
+    Serialize(outpost::Slice<uint8_t> array) :
             mBuffer(&array[0]), mBegin(&array[0])
     {
     }
@@ -140,7 +140,7 @@ public:
     }
 
     inline void
-    store(outpost::BoundedArray<const uint8_t> array)
+    store(outpost::Slice<const uint8_t> array)
     {
         size_t length = array.getNumberOfElements();
         memcpy(mBuffer, &array[0], length);
@@ -157,7 +157,7 @@ public:
 
     template <typename U>
     inline void
-    store(outpost::BoundedArray<const U> array)
+    store(outpost::Slice<const U> array)
     {
         for (size_t i = 0; i < array.getNumberOfElements(); ++i)
         {
@@ -167,7 +167,7 @@ public:
 
     template <typename U>
     inline void
-    store(outpost::BoundedArray<U> array)
+    store(outpost::Slice<U> array)
     {
         for (size_t i = 0; i < array.getNumberOfElements(); ++i)
         {
@@ -254,7 +254,7 @@ public:
     }
 
     explicit inline
-    Deserialize(outpost::BoundedArray<const uint8_t> array) :
+    Deserialize(outpost::Slice<const uint8_t> array) :
             mBuffer(&array[0]), mBegin(&array[0])
     {
     }
@@ -302,7 +302,7 @@ public:
     }
 
     inline void
-    read(outpost::BoundedArray<uint8_t> array)
+    read(outpost::Slice<uint8_t> array)
     {
         size_t length = array.getNumberOfElements();
         memcpy(&array[0], mBuffer, length);

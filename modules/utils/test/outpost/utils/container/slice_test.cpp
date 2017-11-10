@@ -13,28 +13,28 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
-using outpost::BoundedArray;
+using outpost::Slice;
 
-class BoundedArrayTest : public testing::Test
+class SliceTest : public testing::Test
 {
 };
 
-TEST_F(BoundedArrayTest, createFromCStyleArray)
+TEST_F(SliceTest, createFromCStyleArray)
 {
     uint8_t data[7];
 
-    BoundedArray<uint8_t> array(data);
+    Slice<uint8_t> array(data);
 
     EXPECT_EQ(7U, array.getNumberOfElements());
 }
 
-TEST_F(BoundedArrayTest, dataAccessWithCStyleArray)
+TEST_F(SliceTest, dataAccessWithCStyleArray)
 {
     uint8_t data[6] = { 6, 5, 4, 3, 2, 1 };
 
-    BoundedArray<uint8_t> array(data);
+    Slice<uint8_t> array(data);
 
     EXPECT_EQ(6U, array.getNumberOfElements());
     EXPECT_EQ(6, array[0]);
@@ -42,16 +42,16 @@ TEST_F(BoundedArrayTest, dataAccessWithCStyleArray)
     EXPECT_EQ(2, array[4]);
 }
 
-TEST_F(BoundedArrayTest, createWithExplicitSize)
+TEST_F(SliceTest, createWithExplicitSize)
 {
     uint8_t data[6];
 
-    BoundedArray<uint8_t> array(data, 4);
+    Slice<uint8_t> array(data, 4);
 
     EXPECT_EQ(4U, array.getNumberOfElements());
 }
 
-TEST_F(BoundedArrayTest, createArrayOfPointers)
+TEST_F(SliceTest, createArrayOfPointers)
 {
     class TestClass
     {
@@ -67,7 +67,7 @@ TEST_F(BoundedArrayTest, createArrayOfPointers)
         &testClass3
     };
 
-    BoundedArray<TestClass*> array(data);
+    Slice<TestClass*> array(data);
 
     EXPECT_EQ(3U, array.getNumberOfElements());
 

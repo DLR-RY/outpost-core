@@ -12,8 +12,8 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef OUTPOST_BOUNDED_ARRAY_H
-#define OUTPOST_BOUNDED_ARRAY_H
+#ifndef OUTPOST_SLICE_H
+#define OUTPOST_SLICE_H
 
 #include <stddef.h>
 
@@ -23,19 +23,27 @@ namespace outpost
 {
 
 /**
- * Wrapper for C style arrays with additional length information.
+ * Slices are a dynamically-sized view into a contiguous sequence of memory.
+ *
+ * Slices are a view into a block of memory represented as a pointer and
+ * a length. The implementation here is inspired by [Rust slices][1] and
+ * the [`span<T>` type][2] defined in the [C++ Core Guidelines][3].
+ *
+ * [1]: https://doc.rust-lang.org/std/slice/
+ * [2]: http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#SS-views
+ * [3]: http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines
  *
  * \author  Fabian Greif
  */
 template <typename T>
-class BoundedArray
+class Slice
 {
 public:
     typedef typename outpost::remove_const<T>::type NonConstType;
     typedef const NonConstType ConstType;
 
-    friend class BoundedArray<NonConstType>;
-    friend class BoundedArray<ConstType>;
+    friend class Slice<NonConstType>;
+    friend class Slice<ConstType>;
 
     /**
      * Initialize directly from a C style array.
@@ -46,7 +54,7 @@ public:
      * Example:
      * \code
      * uint8_t array[7];
-     * BoundedArray<uint8_t> wrappedArray(array);
+     * Slice<uint8_t> wrappedArray(array);
      * \endcode
      *
      * \param array
@@ -54,21 +62,21 @@ public:
      */
     template <size_t N>
     explicit inline
-    BoundedArray(T (&array)[N]) :
+    Slice(T (&array)[N]) :
         mData(array),
         mNumberOfElements(N)
     {
     }
 
     inline
-    BoundedArray(const BoundedArray& rhs) :
+    Slice(const Slice& rhs) :
         mData(rhs.mData),
         mNumberOfElements(rhs.mNumberOfElements)
     {
     }
 
-    inline BoundedArray&
-    operator=(const BoundedArray& rhs)
+    inline Slice&
+    operator=(const Slice& rhs)
     {
         mData = rhs.mData;
         mNumberOfElements = rhs.mNumberOfElements;
@@ -78,10 +86,10 @@ public:
     /**
      * Generate an empty array.
      */
-    static inline BoundedArray
+    static inline Slice
     empty()
     {
-        BoundedArray array(0, 0);
+        Slice array(0, 0);
         return array;
     }
 
@@ -92,7 +100,7 @@ public:
      * Example:
      * \code
      * uint8_t array[7];
-     * BoundedArray<uint8_t> wrappedArray(&array[0], 7);
+     * Slice<uint8_t> wrappedArray(&array[0], 7);
      * \endcode
      *
      * \param array
@@ -101,7 +109,7 @@ public:
      *      Number of elements in the array.
      */
     inline
-    BoundedArray(T* array, size_t numberOfElements) :
+    Slice(T* array, size_t numberOfElements) :
         mData(array),
         mNumberOfElements(numberOfElements)
     {
@@ -120,7 +128,7 @@ public:
      * Access elements of the array.
      *
      * \code
-     * BoundedArray<uint8_t> array(...);
+     * Slice<uint8_t> array(...);
      *
      * for (size_t i = 0; i < array.getNumberOfElements(); ++i)
      * {
@@ -150,9 +158,9 @@ public:
     }
 
     inline
-    operator BoundedArray<const T>() const
+    operator Slice<const T>() const
     {
-        return BoundedArray<const T>(mData, mNumberOfElements);
+        return Slice<const T>(mData, mNumberOfElements);
     }
 
 private:
@@ -164,10 +172,10 @@ private:
 };
 
 template <typename T, size_t N>
-static inline outpost::BoundedArray<T>
-toArray(T (&array)[N])
+static inline outpost::Slice<T>
+asSlice(T (&array)[N])
 {
-    outpost::BoundedArray<T> a(array);
+    outpost::Slice<T> a(array);
     return a;
 }
 

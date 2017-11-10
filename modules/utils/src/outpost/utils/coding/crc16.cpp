@@ -60,7 +60,7 @@ Crc16Ccitt::update(uint8_t data)
 }
 
 uint16_t
-Crc16Ccitt::calculate(outpost::BoundedArray<const uint8_t> data)
+Crc16Ccitt::calculate(outpost::Slice<const uint8_t> data)
 {
     Crc16Ccitt generator;
     for (size_t i = 0; i < data.getNumberOfElements(); ++i)

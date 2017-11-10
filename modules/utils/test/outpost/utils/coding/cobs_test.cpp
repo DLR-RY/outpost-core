@@ -38,7 +38,7 @@ TEST(CobsTest, emptyStringIsEncodedAsEmptyString)
     uint8_t actual[128];
     uint8_t expected[] = { 0x01 };
 
-    size_t encodedLength = Cobs::encode(outpost::BoundedArray<uint8_t>::empty(), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::Slice<uint8_t>::empty(), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -51,7 +51,7 @@ TEST(CobsTest, encodingOfSingleBlockWithoutZero)
     uint8_t actual[128];
     uint8_t expected[] = { 0x02, 0x01 };
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -64,7 +64,7 @@ TEST(CobsTest, singleZeroEncoding)
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01};
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -77,7 +77,7 @@ TEST(CobsTest, doubleZeroEncoding)
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01, 0x01 };
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -90,7 +90,7 @@ TEST(CobsTest, doubleBlockEncoding)
     uint8_t actual[128];
     uint8_t expected[] = { 0x04, 10, 11, 12, 0x03, 13, 14 };
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -109,7 +109,7 @@ TEST(CobsTest, exampleFromPaper)
         0x05, 0x40, 0x06, 0x4F, 0x37
     };
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -123,7 +123,7 @@ TEST(CobsTest, doubleZeroPrefix)
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01, 0x02, 0x01 };
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -136,7 +136,7 @@ TEST(CobsTest, zeroPrefixEndingInZero)
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x02, 0x01, 0x01 };
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -191,7 +191,7 @@ TEST(CobsTest, blockOfDataWithoutZero)
         0xff, 0x01, 0x02,
     };
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -338,7 +338,7 @@ TEST(CobsTest, randomData)
 		0x6E, 0x05, 0x9B
 	};
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -365,7 +365,7 @@ TEST(CobsTest, abortWithAToSmallOutputBuffer)
         0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB,
     };
 
-    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::BoundedArray<uint8_t>(actual, 8));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::Slice<uint8_t>(actual, 8));
 
     ASSERT_EQ(8U, encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
@@ -377,7 +377,7 @@ TEST(CobsTest, shouldAbortDecodingWhenZeroBytesAreDetected)
         0, 0x04, 10, 11, 12, 0x03, 13, 14
     };
 
-    size_t encodedLength = Cobs::decode(outpost::toArray(input), input);
+    size_t encodedLength = Cobs::decode(outpost::asSlice(input), input);
 
     ASSERT_EQ(0U, encodedLength);
 }

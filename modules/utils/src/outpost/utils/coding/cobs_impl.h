@@ -26,7 +26,7 @@ namespace utils
 
 // ----------------------------------------------------------------------------
 template <uint8_t blockLength>
-CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(outpost::BoundedArray<const uint8_t> input) :
+CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(outpost::Slice<const uint8_t> input) :
     mData(&input[0]),
     mLength(input.getNumberOfElements()),
     mCurrentPosition(0),
@@ -128,8 +128,8 @@ CobsEncodingGeneratorBase<blockLength>::findNextBlock()
 // ----------------------------------------------------------------------------
 template <uint8_t blockLength>
 size_t
-CobsBase<blockLength>::encode(outpost::BoundedArray<const uint8_t> input,
-						      outpost::BoundedArray<uint8_t> output)
+CobsBase<blockLength>::encode(outpost::Slice<const uint8_t> input,
+						      outpost::Slice<uint8_t> output)
 {
 	const uint8_t* inputPtr = &input[0];
     const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
@@ -188,7 +188,7 @@ CobsBase<blockLength>::getMaximumSizeOfEncodedData(size_t inputLength)
 
 template <uint8_t blockLength>
 size_t
-CobsBase<blockLength>::decode(outpost::BoundedArray<const uint8_t> input,
+CobsBase<blockLength>::decode(outpost::Slice<const uint8_t> input,
 						      uint8_t* output)
 {
     size_t outputPosition = 0;

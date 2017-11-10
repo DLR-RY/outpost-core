@@ -58,7 +58,7 @@ TEST(Crc8CcittTest, bitwiseTest)
         crc = crc8_update_bitwise_msb_first(crc, d);
     }
 
-    EXPECT_EQ(crc, Crc8Ccitt::calculate(outpost::toArray(data)));
+    EXPECT_EQ(crc, Crc8Ccitt::calculate(outpost::asSlice(data)));
 }
 
 // ----------------------------------------------------------------------------
@@ -80,7 +80,7 @@ TEST(Crc8CcittReversedTest, rmapTestPattern1)
         0x05, 0x06, 0x07, 0x08
     };
 
-    EXPECT_EQ(0xB0U, Crc8CcittReversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0xB0U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -98,7 +98,7 @@ TEST(Crc8CcittReversedTest, rmapTestPattern2)
         0x75, 0x6C, 0x21, 0x21
     };
 
-    EXPECT_EQ(0x84U, Crc8CcittReversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x84U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -114,7 +114,7 @@ TEST(Crc8CcittReversedTest, rmapTestPattern3)
         0x32, 0xDE, 0x35, 0x7A
     };
 
-    EXPECT_EQ(0x18U, Crc8CcittReversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x18U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -130,7 +130,7 @@ TEST(Crc8CcittReversedTest, rmapTestPattern3Total)
         0x18
     };
 
-    EXPECT_EQ(0U, Crc8CcittReversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -152,8 +152,8 @@ TEST(Crc8CcittReversedTest, rmapCrcTestPattern1)
         0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17
     };
 
-    EXPECT_EQ(0x9FU, Crc8CcittReversed::calculate(outpost::toArray(header)));
-    EXPECT_EQ(0x56U, Crc8CcittReversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x9FU, Crc8CcittReversed::calculate(outpost::asSlice(header)));
+    EXPECT_EQ(0x56U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
 
 /**
@@ -172,7 +172,7 @@ TEST(Crc8CcittReversedTest, rmapCrcTestPatternCommand)
         0x00, 0x00, 0x10
     };
 
-    EXPECT_EQ(0xF7U, Crc8CcittReversed::calculate(outpost::toArray(header)));
+    EXPECT_EQ(0xF7U, Crc8CcittReversed::calculate(outpost::asSlice(header)));
 }
 
 
@@ -196,8 +196,8 @@ TEST(Crc8CcittReversedTest, rmapCrcTestPatternReply)
         0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF
     };
 
-    EXPECT_EQ(0x52U, Crc8CcittReversed::calculate(outpost::toArray(header)));
-    EXPECT_EQ(0xB4U, Crc8CcittReversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(0x52U, Crc8CcittReversed::calculate(outpost::asSlice(header)));
+    EXPECT_EQ(0xB4U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
 
 static uint8_t
@@ -232,5 +232,5 @@ TEST(Crc8CcittReversedTest, bitwiseTest)
         crc = crc8_update_bitwise(crc, d);
     }
 
-    EXPECT_EQ(crc, Crc8CcittReversed::calculate(outpost::toArray(data)));
+    EXPECT_EQ(crc, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }

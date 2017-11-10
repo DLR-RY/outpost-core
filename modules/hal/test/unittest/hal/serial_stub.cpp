@@ -46,7 +46,7 @@ SerialStub::getNumberOfBytesAvailable()
 }
 
 size_t
-SerialStub::read(outpost::BoundedArray<uint8_t> data,
+SerialStub::read(outpost::Slice<uint8_t> data,
                  outpost::time::Duration /*timeout*/)
 {
     size_t length = data.getNumberOfElements();
@@ -66,7 +66,7 @@ SerialStub::read(outpost::BoundedArray<uint8_t> data,
 }
 
 size_t
-SerialStub::write(outpost::BoundedArray<const uint8_t> data,
+SerialStub::write(outpost::Slice<const uint8_t> data,
                   outpost::time::Duration /*timeout*/)
 {
     mDataToTransmit.insert(mDataToTransmit.end(), data.begin(), data.end());

@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
 namespace outpost
 {
@@ -59,7 +59,7 @@ public:
      *     calculated checksum
      */
     static uint16_t
-    calculate(outpost::BoundedArray<const uint8_t> data);
+    calculate(outpost::Slice<const uint8_t> data);
 
     /**
      * Reset CRC calculation

@@ -38,8 +38,8 @@ l_cobs_encode(lua_State* L)
     luaL_Buffer b;
     uint8_t* dst = reinterpret_cast<uint8_t*>(luaL_buffinitsize(L, &b, maxiumLength));
 
-    size_t encodedLength = Cobs::encode(outpost::BoundedArray<const uint8_t>(str, length),
-                                        outpost::BoundedArray<uint8_t>(dst, maxiumLength));
+    size_t encodedLength = Cobs::encode(outpost::Slice<const uint8_t>(str, length),
+                                        outpost::Slice<uint8_t>(dst, maxiumLength));
     luaL_pushresultsize(&b, encodedLength);
 
     return 1;
@@ -54,7 +54,7 @@ l_cobs_decode(lua_State* L)
     luaL_Buffer b;
     uint8_t* dst = reinterpret_cast<uint8_t*>(luaL_buffinitsize(L, &b, length));
 
-    size_t encodedLength = Cobs::decode(outpost::BoundedArray<const uint8_t>(str, length), dst);
+    size_t encodedLength = Cobs::decode(outpost::Slice<const uint8_t>(str, length), dst);
     luaL_pushresultsize(&b, encodedLength);
 
     return 1;

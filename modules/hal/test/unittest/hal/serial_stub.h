@@ -49,11 +49,11 @@ public:
     getNumberOfBytesAvailable() override;
 
     virtual size_t
-    read(outpost::BoundedArray<uint8_t> data,
+    read(outpost::Slice<uint8_t> data,
          outpost::time::Duration timeout = outpost::time::Duration::maximum()) override;
 
     virtual size_t
-    write(outpost::BoundedArray<const uint8_t> data,
+    write(outpost::Slice<const uint8_t> data,
           outpost::time::Duration timeout = outpost::time::Duration::maximum()) override;
 
     /// Does nothing in this implementation

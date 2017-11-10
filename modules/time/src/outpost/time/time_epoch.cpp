@@ -16,7 +16,7 @@
 
 #include "time_epoch.h"
 
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
 using namespace outpost::time;
 
@@ -79,7 +79,7 @@ int64_t
 TimeEpochConverter<TaiEpoch, UnixEpoch>::getCorrectionFactorForLeapSeconds(int64_t seconds,
                                                                            LeapSecondCorrection::Type correction)
 {
-    outpost::BoundedArray<const int64_t> leapSeconds(leapSecondArray);
+    outpost::Slice<const int64_t> leapSeconds(leapSecondArray);
     int64_t correctionFactor = 0;
     for (size_t i = 0; (i < leapSeconds.getNumberOfElements())
                     && (correctionFactor == 0); ++i)

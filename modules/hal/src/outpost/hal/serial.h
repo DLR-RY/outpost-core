@@ -21,7 +21,7 @@
 #include <stdint.h>
 
 #include <outpost/time/duration.h>
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
 namespace outpost
 {
@@ -79,7 +79,7 @@ public:
      *      \p data.getNumberOfElements().
      */
     virtual size_t
-    read(outpost::BoundedArray<uint8_t> data,
+    read(outpost::Slice<uint8_t> data,
          outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
 
     /**
@@ -95,7 +95,7 @@ public:
      *      \p data.getNumberOfElements().
      */
     virtual size_t
-    write(outpost::BoundedArray<const uint8_t> data,
+    write(outpost::Slice<const uint8_t> data,
           outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
 
     /**

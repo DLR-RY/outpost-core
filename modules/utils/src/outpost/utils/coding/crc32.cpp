@@ -59,7 +59,7 @@ Crc32Reversed::update(uint8_t data)
 }
 
 uint32_t
-Crc32Reversed::calculate(outpost::BoundedArray<const uint8_t> data)
+Crc32Reversed::calculate(outpost::Slice<const uint8_t> data)
 {
     Crc32Reversed generator;
     for (size_t i = 0; i < data.getNumberOfElements(); ++i)

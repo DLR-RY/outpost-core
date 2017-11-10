@@ -59,7 +59,7 @@ Crc8Ccitt::update(uint8_t data)
 }
 
 uint8_t
-Crc8Ccitt::calculate(outpost::BoundedArray<const uint8_t> data)
+Crc8Ccitt::calculate(outpost::Slice<const uint8_t> data)
 {
     Crc8Ccitt generator;
     for (size_t i = 0; i < data.getNumberOfElements(); ++i)
@@ -115,7 +115,7 @@ Crc8CcittReversed::update(uint8_t data)
 }
 
 uint8_t
-Crc8CcittReversed::calculate(outpost::BoundedArray<const uint8_t> data)
+Crc8CcittReversed::calculate(outpost::Slice<const uint8_t> data)
 {
     Crc8CcittReversed generator;
     for (size_t i = 0; i < data.getNumberOfElements(); ++i)

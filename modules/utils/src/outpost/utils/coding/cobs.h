@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
 namespace outpost
 {
@@ -51,7 +51,7 @@ public:
      * \param data
      *     Input data field.
      */
-    CobsEncodingGeneratorBase(outpost::BoundedArray<const uint8_t> input);
+    CobsEncodingGeneratorBase(outpost::Slice<const uint8_t> input);
 
     ~CobsEncodingGeneratorBase();
 
@@ -114,8 +114,8 @@ public:
      *     will never be bigger than \p maximumOutputLength.
      */
     static size_t
-    encode(outpost::BoundedArray<const uint8_t> input,
-		   outpost::BoundedArray<uint8_t> output);
+    encode(outpost::Slice<const uint8_t> input,
+		   outpost::Slice<uint8_t> output);
 
     static size_t
     getMaximumSizeOfEncodedData(size_t inputLength);
@@ -135,7 +135,7 @@ public:
      *     be bigger than \p inputLength.
      */
     static size_t
-    decode(outpost::BoundedArray<const uint8_t> input,
+    decode(outpost::Slice<const uint8_t> input,
            uint8_t* output);
 };
 

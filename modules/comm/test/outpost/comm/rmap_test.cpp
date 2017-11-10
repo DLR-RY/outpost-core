@@ -15,7 +15,7 @@
 
 #include <outpost/comm/rmap/rmap_initiator.h>
 #include <unittest/hal/spacewire_stub.h>
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 #include <outpost/utils/storage/bit_access.h>
 #include <outpost/utils/coding/crc.h>
 #include <outpost/smpc/subscription.h>
@@ -60,7 +60,7 @@ public:
     bool
     sendPacket(RmapInitiator &init,
                RmapTransaction *trans,
-               outpost::BoundedArray<const uint8_t> data)
+               outpost::Slice<const uint8_t> data)
     {
         return init.sendPacket(trans, data);
     }
@@ -140,10 +140,10 @@ public:
         mSpaceWire.open();
         mSpaceWire.up(outpost::time::Duration::zero());
         mRmapTarget.setTargetSpaceWireAddress(
-                            outpost::BoundedArray<uint8_t>(targetSpwAddress,
+                            outpost::Slice<uint8_t>(targetSpwAddress,
                                     numberOfTargetSpwAddresses));
         mRmapTarget.setReplyAddress(
-                            outpost::BoundedArray<uint8_t>(replyAddress,
+                            outpost::Slice<uint8_t>(replyAddress,
                                     replyAddressLength));
     }
 
@@ -293,7 +293,7 @@ TEST_F(RmapTest, shouldBuildVerifyPacketHeaderCRC)
     // without SpW target fields
     uint8_t numberOfTargets = send.getTargetSpaceWireAddress().getNumberOfElements();
     uint8_t calculatedCrc = outpost::Crc8CcittReversed::calculate(
-        outpost::BoundedArray<uint8_t>(sendBuffer + numberOfTargets, send.getHeaderLength() - numberOfTargets));
+        outpost::Slice<uint8_t>(sendBuffer + numberOfTargets, send.getHeaderLength() - numberOfTargets));
 
     EXPECT_EQ(calculatedCrc, send.getHeaderCRC());
 }
@@ -325,7 +325,7 @@ TEST_F(RmapTest, shouldSendWriteCommandPacket)
 
     EXPECT_TRUE(
             mTestingRmap.sendPacket(mRmapInitiator, &transaction,
-                    outpost::BoundedArray<uint8_t>(buffer, 4)));
+                    outpost::Slice<uint8_t>(buffer, 4)));
 
     size_t expectedSize = 1;
 
@@ -337,7 +337,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfWriteCommandPacket)
 {
     // *** Constructing and sending write reply packet acc. to RMAP standard ***
     uint8_t reply[20];
-    outpost::Serialize stream { outpost::BoundedArray<uint8_t>(reply) };
+    outpost::Serialize stream { outpost::Slice<uint8_t>(reply) };
 
     // Construct packet that should be received
     RmapPacket::InstructionField instr;
@@ -353,7 +353,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfWriteCommandPacket)
     stream.store<uint16_t>(1);                          // Transaction ID
 
     uint8_t crc = outpost::Crc8CcittReversed::calculate(
-            outpost::BoundedArray<uint8_t>(stream.getPointer(),
+            outpost::Slice<uint8_t>(stream.getPointer(),
                     stream.getPosition()));
     stream.store<uint8_t>(crc);                         // Header CRC
 
@@ -397,7 +397,7 @@ TEST_F(RmapTest, shouldSendReadCommandPacket)
 
     EXPECT_TRUE(
             mTestingRmap.sendPacket(mRmapInitiator, &transaction,
-                    outpost::BoundedArray<uint8_t>::empty()));
+                    outpost::Slice<uint8_t>::empty()));
 
     size_t expectedSize = 1;
 
@@ -409,7 +409,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfReadCommandPacket)
 {
     uint8_t data[4] = { 0x01, 0x02, 0x03, 0x04 };
     uint8_t reply[20];
-    outpost::Serialize stream { outpost::BoundedArray<uint8_t>(reply) };
+    outpost::Serialize stream { outpost::Slice<uint8_t>(reply) };
 
     // Construct packet that should be received
     RmapPacket::InstructionField instr;
@@ -427,7 +427,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfReadCommandPacket)
     stream.store24(sizeof(data));                       // Transaction ID
 
     uint8_t crc = outpost::Crc8CcittReversed::calculate(
-            outpost::BoundedArray<uint8_t>(stream.getPointer(),
+            outpost::Slice<uint8_t>(stream.getPointer(),
                     stream.getPosition()));
     stream.store<uint8_t>(crc);                         // Header CRC
 
@@ -435,7 +435,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfReadCommandPacket)
     stream.storeBuffer(data, sizeof(data));             // Data bytes to be read
 
     crc = outpost::Crc8CcittReversed::calculate(
-            outpost::BoundedArray<uint8_t>(dataStart, sizeof(data)));
+            outpost::Slice<uint8_t>(dataStart, sizeof(data)));
 
     stream.store<uint8_t>(crc);                         // Data CRC
 
@@ -504,7 +504,7 @@ TEST_F(RmapTest, shouldSendHigherLevelWriteCommandPacket)
 
     EXPECT_TRUE(
             mRmapInitiator.write(targetName, 0x1000,
-                    outpost::BoundedArray<uint8_t>(dataToSend,
+                    outpost::Slice<uint8_t>(dataToSend,
                             sizeof(dataToSend))));
 
     size_t expectedSize = 1;

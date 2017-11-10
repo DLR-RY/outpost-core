@@ -21,7 +21,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
 #include "serialize_little_endian_traits.h"
 
@@ -41,7 +41,7 @@ class SerializeLittleEndian
 {
 public:
     explicit inline
-    SerializeLittleEndian(outpost::BoundedArray<uint8_t> array) :
+    SerializeLittleEndian(outpost::Slice<uint8_t> array) :
         mBuffer(&array[0]), mBegin(&array[0])
     {
     }
@@ -81,7 +81,7 @@ public:
     }
 
     inline void
-    store(outpost::BoundedArray<const uint8_t> array)
+    store(outpost::Slice<const uint8_t> array)
     {
         size_t length = array.getNumberOfElements();
         memcpy(mBuffer, &array[0], length);
@@ -214,7 +214,7 @@ public:
     }
 
     explicit inline
-    DeserializeLittleEndian(outpost::BoundedArray<const uint8_t> array) :
+    DeserializeLittleEndian(outpost::Slice<const uint8_t> array) :
         mBuffer(&array[0]),
         mBegin(&array[0])
     {

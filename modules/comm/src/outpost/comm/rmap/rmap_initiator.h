@@ -258,7 +258,7 @@ public:
     bool
     write(const char* targetNodeName,
           uint32_t memoryAddress,
-          outpost::BoundedArray<const uint8_t> data,
+          outpost::Slice<const uint8_t> data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
     /**
@@ -290,7 +290,7 @@ public:
     bool
     write(RmapTargetNode& targetNode,
           uint32_t memoryAddress,
-          outpost::BoundedArray<const uint8_t> data,
+          outpost::Slice<const uint8_t> data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
     /**
@@ -459,7 +459,7 @@ private:
 
     bool
     sendPacket(RmapTransaction* transaction,
-               outpost::BoundedArray<const uint8_t> data);
+               outpost::Slice<const uint8_t> data);
 
     bool
     receivePacket(RmapPacket* rxedPacket);
@@ -498,7 +498,7 @@ private:
     Buffer mRxData;
 };
 
-typedef outpost::BoundedArray<const uint8_t> NonRmapDataType;
+typedef outpost::Slice<const uint8_t> NonRmapDataType;
 extern outpost::smpc::Topic<NonRmapDataType> nonRmapPacketReceived;
 
 }

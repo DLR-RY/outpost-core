@@ -44,7 +44,7 @@ RmapInitiator::~RmapInitiator()
 bool
 RmapInitiator::write(const char* targetNodeName,
                      uint32_t memoryAddress,
-                     outpost::BoundedArray<const uint8_t> data,
+                     outpost::Slice<const uint8_t> data,
                      outpost::time::Duration timeout)
 {
     bool result = false;
@@ -66,7 +66,7 @@ RmapInitiator::write(const char* targetNodeName,
 bool
 RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                      uint32_t memoryAddress,
-                     outpost::BoundedArray<const uint8_t> data,
+                     outpost::Slice<const uint8_t> data,
                      outpost::time::Duration timeout)
 {
     // Guard operation against concurrent accesses
@@ -270,7 +270,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     cmd->setTargetInformation(rmapTargetNode);
     transaction->setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction->setTimeoutDuration(timeout);
-    outpost::BoundedArray<const uint8_t> empty { outpost::BoundedArray<const uint8_t>::empty() };
+    outpost::Slice<const uint8_t> empty { outpost::Slice<const uint8_t>::empty() };
 
     // Command is read, thus no data bytes available
     if (sendPacket(transaction, empty))
@@ -365,7 +365,7 @@ RmapInitiator::run()
 }
 
 bool
-RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::BoundedArray<const uint8_t> data)
+RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uint8_t> data)
 {
     RmapPacket* cmd = transaction->getCommandPacket();
     hal::SpaceWire::TransmitBuffer* txBuffer = 0;
@@ -402,7 +402,7 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::BoundedArray<co
             txBuffer->setEndMarker(outpost::hal::SpaceWire::eop);
 
 #ifdef DEBUG_EN
-            outpost::BoundedArray<uint8_t> txData = txBuffer->getData();
+            outpost::Slice<uint8_t> txData = txBuffer->getData();
             console_out("TX-Data length: %zu\n", txData.getNumberOfElements());
             for (uint16_t i = 0; i < txData.getNumberOfElements(); i++)
             {
@@ -437,7 +437,7 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket)
     {
         if (rxBuffer.getEndMarker() == hal::SpaceWire::eop)
         {
-            outpost::BoundedArray<const uint8_t> rxData = rxBuffer.getData();
+            outpost::Slice<const uint8_t> rxData = rxBuffer.getData();
 
 #ifdef DEBUG_EN
             console_out("RX-Data length: %zu\n", rxData.getNumberOfElements());

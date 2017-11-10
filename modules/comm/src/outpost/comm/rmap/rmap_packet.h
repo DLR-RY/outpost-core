@@ -16,7 +16,7 @@
 
 #include <string>
 #include <outpost/utils/storage/bit_access.h>
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 #include <outpost/utils/storage/serialize.h>
 
 #include <outpost/comm/rmap/rmap_node.h>
@@ -205,7 +205,7 @@ public:
 
     //--------------------------------------------------------------------------
     RmapPacket();
-    RmapPacket(outpost::BoundedArray<uint8_t> spwTargets,
+    RmapPacket(outpost::Slice<uint8_t> spwTargets,
                uint8_t targetLogicalAddress,
                InstructionField::ReplyAddressLength rplyAddrLen,
                uint8_t key,
@@ -240,7 +240,7 @@ public:
      *
      * \param data
      *      Reference to the user data for write commands, for read commands
-     *      this object will be outpost::BoundedArray<uint8_t>::empty() and will
+     *      this object will be outpost::Slice<uint8_t>::empty() and will
      *      be ignored
      *
      * \return
@@ -249,7 +249,7 @@ public:
      *
      * */
     bool
-    constructPacket(outpost::BoundedArray<uint8_t> buffer, outpost::BoundedArray<const uint8_t>& data);
+    constructPacket(outpost::Slice<uint8_t> buffer, outpost::Slice<const uint8_t>& data);
 
     /**
      * Extract the received RMAP packet according to the given standard by
@@ -268,7 +268,7 @@ public:
      *
      * */
     bool
-    extractPacket(outpost::BoundedArray<const uint8_t>& data, uint8_t initiatorLogicalAddress);
+    extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress);
 
     /**
      * Setting the RMAP target specific information into the packet, will be
@@ -289,22 +289,22 @@ public:
 
     //--------------------------------------------------------------------------
     inline void
-    setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
+    setTargetSpaceWireAddress(outpost::Slice<uint8_t> targetSpaceWireAddress)
     {
         memcpy(mSpwTargets, targetSpaceWireAddress.begin(), targetSpaceWireAddress.getNumberOfElements());
         mNumOfSpwTargets = targetSpaceWireAddress.getNumberOfElements();
     }
 
-    inline outpost::BoundedArray<uint8_t>
+    inline outpost::Slice<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::BoundedArray<uint8_t>(mSpwTargets, mNumOfSpwTargets);
+        return outpost::Slice<uint8_t>(mSpwTargets, mNumOfSpwTargets);
     }
 
-    inline outpost::BoundedArray<uint8_t>
+    inline outpost::Slice<uint8_t>
     getReplyAddress()
     {
-        return outpost::BoundedArray<uint8_t>(reinterpret_cast<uint8_t*>(mReplyAddress),
+        return outpost::Slice<uint8_t>(reinterpret_cast<uint8_t*>(mReplyAddress),
             mInstruction.getReplyAddressLength());
     }
 

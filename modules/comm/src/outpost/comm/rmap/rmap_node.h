@@ -16,7 +16,7 @@
 
 #include <string.h>
 #include <stdint.h>
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
 #include "rmap_common.h"
 
@@ -52,7 +52,7 @@ public:
      *
      * */
     bool
-    setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress);
+    setReplyAddress(outpost::Slice<uint8_t> replyAddress);
 
     /**
      * Sets the SpW target addresses to the given value
@@ -65,7 +65,7 @@ public:
      *
      * */
     bool
-    setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress);
+    setTargetSpaceWireAddress(outpost::Slice<uint8_t> targetSpaceWireAddress);
 
     //--------------------------------------------------------------------------
     inline uint8_t
@@ -74,10 +74,10 @@ public:
         return mKey;
     }
 
-    inline outpost::BoundedArray<uint8_t>
+    inline outpost::Slice<uint8_t>
     getReplyAddress()
     {
-        return outpost::BoundedArray<uint8_t>(mReplyAddress, mReplyAddressLength);
+        return outpost::Slice<uint8_t>(mReplyAddress, mReplyAddressLength);
     }
 
     inline uint8_t
@@ -86,10 +86,10 @@ public:
         return mTargetLogicalAddress;
     }
 
-    inline outpost::BoundedArray<uint8_t>
+    inline outpost::Slice<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::BoundedArray<uint8_t>(mTargetSpaceWireAddress, mTargetSpaceWireAddressLength);
+        return outpost::Slice<uint8_t>(mTargetSpaceWireAddress, mTargetSpaceWireAddressLength);
     }
 
     inline void
@@ -139,7 +139,7 @@ class RmapTargetsList
 {
 public:
     RmapTargetsList();
-    RmapTargetsList(outpost::BoundedArray<RmapTargetNode*> rmapTargetNodes);
+    RmapTargetsList(outpost::Slice<RmapTargetNode*> rmapTargetNodes);
     ~RmapTargetsList();
 
     /**
@@ -165,7 +165,7 @@ public:
      *      True: nodes added to the list. False: too many nodes supplied
      * */
     bool
-    addTargetNodes(outpost::BoundedArray<RmapTargetNode*> nodes);
+    addTargetNodes(outpost::Slice<RmapTargetNode*> nodes);
 
     /**
      * Get RMAP target node from the list
@@ -198,10 +198,10 @@ public:
         return mSize;
     }
 
-    inline outpost::BoundedArray<RmapTargetNode*>
+    inline outpost::Slice<RmapTargetNode*>
     getTargetNodes()
     {
-        return outpost::BoundedArray<RmapTargetNode*>(mNodes, mSize);
+        return outpost::Slice<RmapTargetNode*>(mNodes, mSize);
     }
 
 private:

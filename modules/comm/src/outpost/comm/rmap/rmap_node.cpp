@@ -61,7 +61,7 @@ RmapTargetNode::~RmapTargetNode()
 }
 
 bool
-RmapTargetNode::setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress)
+RmapTargetNode::setReplyAddress(outpost::Slice<uint8_t> replyAddress)
 {
     bool result = false;
     if (replyAddress.getNumberOfElements() <= sizeof(mReplyAddress))
@@ -73,7 +73,7 @@ RmapTargetNode::setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress)
 }
 
 bool
-RmapTargetNode::setTargetSpaceWireAddress(outpost::BoundedArray<uint8_t> targetSpaceWireAddress)
+RmapTargetNode::setTargetSpaceWireAddress(outpost::Slice<uint8_t> targetSpaceWireAddress)
 {
     bool result = false;
     if (targetSpaceWireAddress.getNumberOfElements() <= sizeof(mTargetSpaceWireAddress))
@@ -98,7 +98,7 @@ RmapTargetsList::~RmapTargetsList()
 
 }
 
-RmapTargetsList::RmapTargetsList(outpost::BoundedArray<RmapTargetNode*> rmapTargetNodes)
+RmapTargetsList::RmapTargetsList(outpost::Slice<RmapTargetNode*> rmapTargetNodes)
 {
     if (rmapTargetNodes.getNumberOfElements() <= rmap::maxAddressLength)
     {
@@ -121,7 +121,7 @@ RmapTargetsList::addTargetNode(RmapTargetNode* node)
 }
 
 bool
-RmapTargetsList::addTargetNodes(outpost::BoundedArray<RmapTargetNode*> nodes)
+RmapTargetsList::addTargetNodes(outpost::Slice<RmapTargetNode*> nodes)
 {
     bool result = false;
     size_t listElements = nodes.getNumberOfElements();

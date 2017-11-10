@@ -20,7 +20,7 @@
 
 #include <outpost/utils/meta.h>
 
-#include "bounded_array.h"
+#include "slice.h"
 
 namespace outpost
 {
@@ -58,7 +58,7 @@ public:
           size_t n);
 
     explicit
-    Deque(outpost::BoundedArray<T> backendBuffer);
+    Deque(outpost::Slice<T> backendBuffer);
 
     inline bool
     isEmpty() const;

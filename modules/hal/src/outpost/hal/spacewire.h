@@ -19,7 +19,7 @@
 #include <cstddef>
 
 #include <outpost/time/duration.h>
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
 namespace outpost
 {
@@ -67,7 +67,7 @@ public:
         }
 
         inline explicit
-        TransmitBuffer(outpost::BoundedArray<uint8_t> array) :
+        TransmitBuffer(outpost::Slice<uint8_t> array) :
             mData(array.begin()),
             mLength(array.getNumberOfElements()),
             mEnd(eop)
@@ -105,10 +105,10 @@ public:
             mLength = length;
         }
 
-        inline outpost::BoundedArray<uint8_t>
+        inline outpost::Slice<uint8_t>
         getData()
         {
-            outpost::BoundedArray<uint8_t> array(mData, mLength);
+            outpost::Slice<uint8_t> array(mData, mLength);
             return array;
         }
 
@@ -150,12 +150,12 @@ public:
     {
     public:
         ReceiveBuffer() :
-            mData(outpost::BoundedArray<const uint8_t>::empty()),
+            mData(outpost::Slice<const uint8_t>::empty()),
             mEnd(eop)
         {
         }
 
-        ReceiveBuffer(outpost::BoundedArray<const uint8_t> data,
+        ReceiveBuffer(outpost::Slice<const uint8_t> data,
                       EndMarker end) :
             mData(data),
             mEnd(end)
@@ -172,7 +172,7 @@ public:
             return *this;
         }
 
-        inline outpost::BoundedArray<const uint8_t>
+        inline outpost::Slice<const uint8_t>
         getData() const
         {
             return mData;
@@ -209,7 +209,7 @@ public:
         }
 
     private:
-        outpost::BoundedArray<const uint8_t> mData;
+        outpost::Slice<const uint8_t> mData;
         EndMarker mEnd;
     };
 

@@ -29,7 +29,7 @@ outpost::Deque<T>::Deque(T* backendBuffer,
 }
 
 template<typename T>
-outpost::Deque<T>::Deque(outpost::BoundedArray<T> backendBuffer) :
+outpost::Deque<T>::Deque(outpost::Slice<T> backendBuffer) :
     mBuffer(backendBuffer.begin()),
     mMaxSize(backendBuffer.getNumberOfElements()),
     mHead(0),

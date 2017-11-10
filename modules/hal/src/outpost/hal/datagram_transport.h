@@ -20,7 +20,7 @@
 #include <outpost/time/duration.h>
 
 #include <outpost/utils/container/fixed_size_array.h>
-#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 
 namespace outpost 
 {
@@ -229,7 +229,7 @@ public:
      *      Number of bytes which could be sent, maximal `data.getNumberOfElements`
      */
     virtual size_t
-    sendTo(outpost::BoundedArray<const uint8_t> data, 
+    sendTo(outpost::Slice<const uint8_t> data, 
            const Address& address,
            outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
 
@@ -255,7 +255,7 @@ public:
      *      Number of bytes written to data, maximal data.getNumberOfElements()
      */
     virtual size_t
-    receiveFrom(outpost::BoundedArray<uint8_t>& data, 
+    receiveFrom(outpost::Slice<uint8_t>& data, 
                 Address& address, 
                 outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
 
