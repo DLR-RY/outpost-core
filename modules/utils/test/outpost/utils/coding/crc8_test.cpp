@@ -21,7 +21,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <outpost/coding/crc8.h>
+#include <outpost/utils/coding/crc8.h>
 
 using outpost::Crc8CcittReversed;
 using outpost::Crc8Ccitt;

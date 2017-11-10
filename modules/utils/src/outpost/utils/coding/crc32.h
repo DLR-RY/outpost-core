@@ -12,38 +12,45 @@
  */
 // ----------------------------------------------------------------------------
 
-#ifndef OUTPOST_CRC16_H
-#define OUTPOST_CRC16_H
+#ifndef OUTPOST_CRC32_H
+#define OUTPOST_CRC32_H
 
 #include <stdint.h>
 #include <stddef.h>
 
-#include <outpost/container/bounded_array.h>
+#include <outpost/utils/container/bounded_array.h>
 
 namespace outpost
 {
 /**
- * CRC-16-CCITT calculation.
+ * CRC-32-CCITT calculation.
  *
- * Polynomial    : x^16 + x^12 + x^5 + 1 (0x1021, MSB first)
- * Initial value : 0xFFFF
+ * Polynomial    : X^32 + X^26 + X^23 + X^22 + X^16 + X^12 + X^11 +
+ *                 X^10 + X^8 + X^7 + X^5 + X^4 + X^2 + X + 1
+ *                 (0xEDB88320, LSB first)
+ * Initial value : 0xFFFFFFFF
+ * Final XOR     : 0xFFFFFFFF
  *
- * Used for space packet transfer frames.
+ * Used in IEEE 802.3 and PNG [2], see also ISO 3309 or ITU-T V.42, [1] and [3]
+ *
+ * [1] https://users.ece.cmu.edu/~koopman/crc/crc32.html
+ * [2] http://www.w3.org/TR/PNG/#D-CRCAppendix
+ * [3] http://www.greenend.org.uk/rjk/tech/crc.html
  *
  * \ingroup crc
  * \author  Fabian Greif
  */
-class Crc16Ccitt
+class Crc32Reversed
 {
 public:
     inline
-    Crc16Ccitt() :
+    Crc32Reversed() :
         mCrc(initialValue)
     {
     }
 
     inline
-    ~Crc16Ccitt()
+    ~Crc32Reversed()
     {
     }
 
@@ -58,7 +65,7 @@ public:
      * \retval crc
      *     calculated checksum
      */
-    static uint16_t
+    static uint32_t
     calculate(outpost::BoundedArray<const uint8_t> data);
 
     /**
@@ -82,28 +89,31 @@ public:
     /**
      * Get result of CRC calculation.
      */
-    inline uint16_t
+    inline uint32_t
     getValue() const
     {
-        return mCrc;
+        return mCrc ^ finalXor;
     }
 
 private:
     // disable copy constructor
-    Crc16Ccitt(const Crc16Ccitt&);
+    Crc32Reversed(const Crc32Reversed&);
 
     // disable copy-assignment operator
-    Crc16Ccitt&
-    operator=(const Crc16Ccitt&);
+    Crc32Reversed&
+    operator=(const Crc32Reversed&);
 
-    static const uint16_t initialValue = 0xFFFF;
+    static const uint32_t initialValue = 0xFFFFFFFF;
+    static const uint32_t finalXor     = 0xFFFFFFFF;
+
+
     static const int numberOfBitsPerByte = 8;
     static const int numberOfValuesPerByte = 256;
 
     /// Pre-calculated CRC table for one byte
-    static const uint16_t crcTable[numberOfValuesPerByte];
+    static const uint32_t crcTable[numberOfValuesPerByte];
 
-    uint16_t mCrc;
+    uint32_t mCrc;
 };
 }
 

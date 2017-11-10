@@ -12,7 +12,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <outpost/coding/crc16.h>
+#include <outpost/utils/coding/crc16.h>
 #include "crc16.h"
 
 #include <stdlib.h>

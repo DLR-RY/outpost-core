@@ -26,7 +26,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <outpost/coding/crc16.h>
+#include <outpost/utils/coding/crc16.h>
 
 using outpost::Crc16Ccitt;
 

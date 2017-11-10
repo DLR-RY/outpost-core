@@ -14,7 +14,7 @@
 
 #include <unittest/harness.h>
 
-#include <outpost/storage/bit_access.h>
+#include <outpost/utils/storage/bit_access.h>
 
 using outpost::BitAccess;
 

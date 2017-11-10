@@ -14,7 +14,7 @@
 
 #include <unittest/harness.h>
 
-#include <outpost/container/circular_singly_linked_list.h>
+#include <outpost/utils/container/circular_singly_linked_list.h>
 
 using namespace outpost;
 

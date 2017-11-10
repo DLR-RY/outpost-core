@@ -21,7 +21,7 @@
 #include <stdint.h>
 
 #include <outpost/time/duration.h>
-#include <outpost/container/bounded_array.h>
+#include <outpost/utils/container/bounded_array.h>
 
 namespace outpost
 {

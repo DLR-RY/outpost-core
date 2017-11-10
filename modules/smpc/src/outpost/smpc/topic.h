@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 #include <outpost/rtos/mutex.h>
-#include <outpost/container/implicit_list.h>
+#include <outpost/utils/container/implicit_list.h>
 #include <outpost/utils/meta.h>
 
 namespace outpost

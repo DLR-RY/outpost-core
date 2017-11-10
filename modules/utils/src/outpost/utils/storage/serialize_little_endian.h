@@ -21,7 +21,7 @@
 #include <string.h>
 #include <stdint.h>
 
-#include <outpost/container/bounded_array.h>
+#include <outpost/utils/container/bounded_array.h>
 
 #include "serialize_little_endian_traits.h"
 

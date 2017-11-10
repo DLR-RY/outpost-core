@@ -24,6 +24,7 @@ env = envGlobal.Clone()
 files  = env.Glob('unittest/*.cpp')
 files += env.Glob('unittest/*/*.cpp')
 files += env.Glob('unittest/*/*/*.cpp')
+files += env.Glob('unittest/*/*/*/*.cpp')
 
 objects = []
 for file in files:

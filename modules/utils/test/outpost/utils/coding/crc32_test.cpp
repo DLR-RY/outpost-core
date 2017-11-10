@@ -23,7 +23,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <outpost/coding/crc32.h>
+#include <outpost/utils/coding/crc32.h>
 
 using outpost::Crc32Reversed;
 

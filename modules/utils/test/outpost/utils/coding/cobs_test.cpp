@@ -12,93 +12,91 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <outpost/coding/cobs.h>
+#include <outpost/utils/coding/cobs.h>
 
 #include <unittest/harness.h>
 
 using ::testing::ElementsAreArray;
-using outpost::utils::CobsEncodingGenerator;
 
-static size_t
-getEncodedArray(CobsEncodingGenerator& generator,
-                uint8_t* data,
-                size_t maximumLength)
+using outpost::utils::Cobs;
+
+// ----------------------------------------------------------------------------
+TEST(CobsTest, determineMaximumOutputDataLength)
 {
-    size_t length = 0;
-    while (!generator.isFinished() && (length < maximumLength))
-    {
-        data[length] = generator.getNextByte();
-        ++length;
-    }
-
-    return length;
+    EXPECT_EQ(1U, Cobs::getMaximumSizeOfEncodedData(0));
+    EXPECT_EQ(2U, Cobs::getMaximumSizeOfEncodedData(1));
+    EXPECT_EQ(11U, Cobs::getMaximumSizeOfEncodedData(10));
+    EXPECT_EQ(101U, Cobs::getMaximumSizeOfEncodedData(100));
+    EXPECT_EQ(255U, Cobs::getMaximumSizeOfEncodedData(254));
+    EXPECT_EQ(257U, Cobs::getMaximumSizeOfEncodedData(255));
+    EXPECT_EQ(510U, Cobs::getMaximumSizeOfEncodedData(508));
+    EXPECT_EQ(512U, Cobs::getMaximumSizeOfEncodedData(509));
 }
 
-TEST(CobsGeneratorTest, emptyStringIsEncodedAsEmptyString)
+TEST(CobsTest, emptyStringIsEncodedAsEmptyString)
 {
-    CobsEncodingGenerator generator(outpost::BoundedArray<uint8_t>::empty());
+    uint8_t actual[128];
+    uint8_t expected[] = { 0x01 };
 
-    EXPECT_EQ(0x01, generator.getNextByte());
-    EXPECT_TRUE(generator.isFinished());
+    size_t encodedLength = Cobs::encode(outpost::BoundedArray<uint8_t>::empty(), outpost::toArray(actual));
+
+    ASSERT_EQ(sizeof(expected), encodedLength);
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST(CobsGeneratorTest, encodingOfSingleBlockWithoutZero)
+TEST(CobsTest, encodingOfSingleBlockWithoutZero)
 {
     uint8_t input[] = { 0x01 };
 
-    uint8_t actual[512];
+    uint8_t actual[128];
     uint8_t expected[] = { 0x02, 0x01 };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
-    EXPECT_ARRAY_EQ(uint8_t, expected, actual, sizeof(expected));
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST(CobsGeneratorTest, singleZeroEncoding)
+TEST(CobsTest, singleZeroEncoding)
 {
     uint8_t input[] = { 0 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01};
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
-    EXPECT_ARRAY_EQ(uint8_t, expected, actual, sizeof(expected));
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST(CobsGeneratorTest, doubleZeroEncoding)
+TEST(CobsTest, doubleZeroEncoding)
 {
     uint8_t input[] = { 0, 0 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01, 0x01 };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
-    EXPECT_ARRAY_EQ(uint8_t, expected, actual, sizeof(expected));
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST(CobsGeneratorTest, doubleBlockEncoding)
+TEST(CobsTest, doubleBlockEncoding)
 {
     uint8_t input[] = { 10, 11, 12, 0, 13, 14 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x04, 10, 11, 12, 0x03, 13, 14 };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
-    EXPECT_ARRAY_EQ(uint8_t, expected, actual, sizeof(expected));
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST(CobsGeneratorTest, exampleFromPaper)
+TEST(CobsTest, exampleFromPaper)
 {
     uint8_t input[] = {
         0x45, 0x00, 0x00, 0x2C, 0x4C, 0x79, 0x00, 0x00,
@@ -111,59 +109,43 @@ TEST(CobsGeneratorTest, exampleFromPaper)
         0x05, 0x40, 0x06, 0x4F, 0x37
     };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
-    EXPECT_ARRAY_EQ(uint8_t, expected, actual, sizeof(expected));
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
 
-TEST(CobsGeneratorTest, doubleZeroPrefix)
+TEST(CobsTest, doubleZeroPrefix)
 {
     uint8_t input[] = { 0, 0, 1 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x01, 0x02, 0x01 };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
-    EXPECT_EQ(sizeof(expected), encodedLength);
-    EXPECT_ARRAY_EQ(uint8_t, expected, actual, sizeof(expected));
+    ASSERT_EQ(sizeof(expected), encodedLength);
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST(CobsGeneratorTest, zeroPrefixEndingInZero)
+TEST(CobsTest, zeroPrefixEndingInZero)
 {
     uint8_t input[] = { 0, 1, 0 };
 
     uint8_t actual[128];
     uint8_t expected[] = { 0x01, 0x02, 0x01, 0x01 };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
-    EXPECT_EQ(sizeof(expected), encodedLength);
-    EXPECT_ARRAY_EQ(uint8_t, expected, actual, sizeof(expected));
+    ASSERT_EQ(sizeof(expected), encodedLength);
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-// ----------------------------------------------------------------------------
 /*
-# Python Code to generate the expected data.
-# Requires the installed cobs module, see https://pythonhosted.org/cobs/intro.html
-import sys
-import cobs.cobs
-
-t = [chr((x % 255) + 1) for x in range(0, 512)]
-s = cobs.cobs.encode(''.join(t))
-e = [ord(x) for x in s]
-
-for i, element in enumerate(e):
-    sys.stdout.write('0x%02x, ' % element)
-    if i % 16 == 15:
-        sys.stdout.write('\n')
-sys.stdout.write('\n')*/
-TEST(CobsGeneratorTest, blockOfDataWithoutZero)
+ * see TEST_F(CobsGeneratorTest, blockOfDataWithoutZero)
+ */
+TEST(CobsTest, blockOfDataWithoutZero)
 {
     uint8_t input[512];
 
@@ -172,7 +154,7 @@ TEST(CobsGeneratorTest, blockOfDataWithoutZero)
         input[i] = (i % 255) + 1;
     }
 
-    uint8_t actual[515];
+    uint8_t actual[1024];
     uint8_t expected[515] = {
         0xff, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
         0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
@@ -209,41 +191,16 @@ TEST(CobsGeneratorTest, blockOfDataWithoutZero)
         0xff, 0x01, 0x02,
     };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
-    EXPECT_THAT(actual, ElementsAreArray(expected));
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-// ----------------------------------------------------------------------------
 /*
-# Python Code to generate the input and expected data.
-# Requires the installed cobs module, see https://pythonhosted.org/cobs/intro.html
-
-import sys
-import cobs.cobs
-import random
-
-random.seed(10)
-t = [int(random.random() * 256) for x in range(0, 1024)]
-
-for i, element in enumerate(t):
-	sys.stdout.write('0x%02X, ' % element)
-	if i % 16 == 15:
-		sys.stdout.write('\n')
-sys.stdout.write('\n')
-
-s = cobs.cobs.encode(''.join([chr(x) for x in t]))
-e = [ord(x) for x in s]
-
-for i, element in enumerate(e):
-	sys.stdout.write('0x%02X, ' % element)
-	if i % 16 == 15:
-		sys.stdout.write('\n')
-sys.stdout.write('\n')
-*/
-TEST(CobsGeneratorTest, randomData)
+ * see TEST_F(CobsGeneratorTest, randomData)
+ */
+TEST(CobsTest, randomData)
 {
     uint8_t input[1024] = {
 		0x92, 0x6D, 0x93, 0x34, 0xD0, 0xD2, 0xA7, 0x29, 0x85, 0x53, 0x3F, 0xF3, 0xFF, 0x0B, 0xDC, 0x9A,
@@ -381,66 +338,46 @@ TEST(CobsGeneratorTest, randomData)
 		0x6E, 0x05, 0x9B
 	};
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
-    size_t encodedLength = getEncodedArray(generator, actual, sizeof(actual));
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::toArray(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
-    EXPECT_THAT(actual, ElementsAreArray(expected));
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
 // ----------------------------------------------------------------------------
 /*
- * The generator should be able to continue its work it it is being copied.
+ * Check that the processing is aborted if the end of the output buffer
+ * is reached.
  */
-TEST(CobsGeneratorTest, CopyDuringDoubleBlockEncoding)
+TEST(CobsTest, abortWithAToSmallOutputBuffer)
 {
-    uint8_t input[] = { 10, 11, 0, 13 };
-    // expected output: 0x03, 10, 11, 0x02, 13
+    uint8_t input[] = {
+        0x45, 0x00, 0x00, 0x2C, 0x4C, 0x79, 0x00, 0x00,
+        0x40, 0x06, 0x4F, 0x37
+    };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
+    uint8_t actual[16] = {
+        0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB,
+        0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB,
+    };
+    uint8_t expected[16] = {
+        0x02, 0x45, 0x01, 0x04, 0x2C, 0x4C, 0x79, 0x01,
+        0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB,
+    };
 
-    EXPECT_EQ(0x03, generator.getNextByte());
-    EXPECT_EQ(10, generator.getNextByte());
+    size_t encodedLength = Cobs::encode(outpost::toArray(input), outpost::BoundedArray<uint8_t>(actual, 8));
 
-    CobsEncodingGenerator generator2(generator);
-
-    EXPECT_FALSE(generator.isFinished());
-    EXPECT_EQ(11, generator.getNextByte());
-    EXPECT_EQ(0x02, generator.getNextByte());
-    EXPECT_EQ(13, generator.getNextByte());
-    EXPECT_TRUE(generator.isFinished());
-
-    // generator2 continues where generator was copied.
-    EXPECT_FALSE(generator2.isFinished());
-    EXPECT_EQ(11, generator2.getNextByte());
-    EXPECT_EQ(0x02, generator2.getNextByte());
-    EXPECT_EQ(13, generator2.getNextByte());
-    EXPECT_TRUE(generator2.isFinished());
+    ASSERT_EQ(8U, encodedLength);
+    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
 }
 
-TEST(CobsGeneratorTest, CopyAssignmentDuringDoubleBlockEncoding)
+TEST(CobsTest, shouldAbortDecodingWhenZeroBytesAreDetected)
 {
-    uint8_t input[] = { 10, 11, 0, 13 };
-    // expected output: 0x03, 10, 11, 0x02, 13
+    uint8_t input[] = {
+        0, 0x04, 10, 11, 12, 0x03, 13, 14
+    };
 
-    CobsEncodingGenerator generator(outpost::toArray(input));
+    size_t encodedLength = Cobs::decode(outpost::toArray(input), input);
 
-    EXPECT_EQ(0x03, generator.getNextByte());
-    EXPECT_EQ(10, generator.getNextByte());
-
-    CobsEncodingGenerator generator2(generator);
-
-    EXPECT_FALSE(generator.isFinished());
-    EXPECT_EQ(11, generator.getNextByte());
-    EXPECT_EQ(0x02, generator.getNextByte());
-
-    generator2 = generator;
-
-    EXPECT_EQ(13, generator.getNextByte());
-    EXPECT_TRUE(generator.isFinished());
-
-    // generator2 continues where is was assigned from generator.
-    EXPECT_FALSE(generator2.isFinished());
-    EXPECT_EQ(13, generator2.getNextByte());
-    EXPECT_TRUE(generator2.isFinished());
+    ASSERT_EQ(0U, encodedLength);
 }

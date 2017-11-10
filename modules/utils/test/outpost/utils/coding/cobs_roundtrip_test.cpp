@@ -12,7 +12,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <outpost/coding/cobs.h>
+#include <outpost/utils/coding/cobs.h>
 
 #include <string.h>     // for memset
 #include <unittest/harness.h>

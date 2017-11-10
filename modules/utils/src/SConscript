@@ -20,7 +20,9 @@ envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 
 env = envGlobal.Clone()
 
-files = env.Glob('outpost/*/*.cpp')
+files  = env.Glob('outpost/*/*.cpp')
+files += env.Glob('outpost/*/*/*.cpp')
+files += env.Glob('outpost/*/*/*/*.cpp')
 
 objects = []
 for file in files:

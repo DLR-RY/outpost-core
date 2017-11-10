@@ -14,7 +14,7 @@
 
 #include <unittest/harness.h>
 
-#include <outpost/storage/bitfield.h>
+#include <outpost/utils/storage/bitfield.h>
 
 using outpost::Bitfield;
 

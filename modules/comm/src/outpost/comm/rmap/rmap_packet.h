@@ -15,9 +15,9 @@
 #define OUTPOST_COMM_RMAP_PACKET_H_
 
 #include <string>
-#include <outpost/storage/bit_access.h>
-#include <outpost/container/bounded_array.h>
-#include <outpost/storage/serialize.h>
+#include <outpost/utils/storage/bit_access.h>
+#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/storage/serialize.h>
 
 #include <outpost/comm/rmap/rmap_node.h>
 #include <outpost/comm/rmap/rmap_status.h>

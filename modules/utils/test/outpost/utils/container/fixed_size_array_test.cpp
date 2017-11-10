@@ -13,7 +13,7 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
-#include <outpost/container/fixed_size_array.h>
+#include <outpost/utils/container/fixed_size_array.h>
 
 using outpost::FixedSizeArray;
 using outpost::FixedSizeArrayView;

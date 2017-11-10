@@ -21,8 +21,8 @@
 #include <string.h>
 #include <stdint.h>
 
-#include <outpost/container/bounded_array.h>
-#include <outpost/container/fixed_size_array.h>
+#include <outpost/utils/container/bounded_array.h>
+#include <outpost/utils/container/fixed_size_array.h>
 
 #include "serialize_traits.h"
 #include "serialize_storage_traits.h"

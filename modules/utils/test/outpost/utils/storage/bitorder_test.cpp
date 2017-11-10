@@ -14,7 +14,7 @@
 
 #include <unittest/harness.h>
 
-#include <outpost/storage/bitorder.h>
+#include <outpost/utils/storage/bitorder.h>
 
 using outpost::BitorderMsb0ToLsb0;
 

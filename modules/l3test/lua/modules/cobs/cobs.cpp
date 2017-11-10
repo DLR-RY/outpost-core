@@ -21,7 +21,7 @@
 #include <limits.h>
 #include <stdint.h>
 
-#include <outpost/coding/cobs.h>
+#include <outpost/utils/coding/cobs.h>
 
 using outpost::utils::Cobs;
 

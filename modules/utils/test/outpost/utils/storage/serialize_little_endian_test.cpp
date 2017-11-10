@@ -12,7 +12,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <outpost/storage/serialize_little_endian.h>
+#include <outpost/utils/storage/serialize_little_endian.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

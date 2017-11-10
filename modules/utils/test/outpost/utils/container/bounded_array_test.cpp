@@ -13,7 +13,7 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
-#include <outpost/container/bounded_array.h>
+#include <outpost/utils/container/bounded_array.h>
 
 using outpost::BoundedArray;
 

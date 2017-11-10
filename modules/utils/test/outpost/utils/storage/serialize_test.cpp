@@ -12,7 +12,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <outpost/storage/serialize.h>
+#include <outpost/utils/storage/serialize.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

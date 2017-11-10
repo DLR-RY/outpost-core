@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <outpost/container/bounded_array.h>
+#include <outpost/utils/container/bounded_array.h>
 
 namespace outpost
 {

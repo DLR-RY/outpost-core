@@ -14,7 +14,7 @@
 
 #include <unittest/harness.h>
 
-#include <outpost/container/fixed_ordered_map.h>
+#include <outpost/utils/container/fixed_ordered_map.h>
 
 using namespace outpost;
 

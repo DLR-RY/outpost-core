@@ -16,7 +16,7 @@
 #define OUTPOST_HAL_REGISTER_H
 
 #include <stdint.h>
-#include <outpost/storage/bit_access.h>
+#include <outpost/utils/storage/bit_access.h>
 
 namespace outpost
 {

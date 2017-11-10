@@ -14,7 +14,7 @@
 
 #include <unittest/harness.h>
 
-#include <outpost/container/list.h>
+#include <outpost/utils/container/list.h>
 
 using namespace outpost;
 

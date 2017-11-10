@@ -14,7 +14,7 @@
 
 #include <unittest/harness.h>
 
-#include <outpost/container/member_function_store.h>
+#include <outpost/utils/container/member_function_store.h>
 
 using namespace outpost;
 

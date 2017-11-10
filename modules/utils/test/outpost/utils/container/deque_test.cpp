@@ -13,7 +13,7 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
-#include <outpost/container/deque.h>
+#include <outpost/utils/container/deque.h>
 
 TEST(DequeTest, forward)
 {
