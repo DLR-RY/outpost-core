@@ -36,7 +36,7 @@ public:
     roundtrip(outpost::Slice<uint8_t> input)
     {
         size_t encodedLength = Cobs::encode(input, outpost::asSlice(encoded));
-        size_t decodedLength = Cobs::decode(outpost::Slice<uint8_t>(encoded, encodedLength), actual);
+        size_t decodedLength = Cobs::decode(outpost::asSlice(encoded).first(encodedLength), actual);
 
         return decodedLength;
     }
@@ -98,7 +98,7 @@ TEST_F(CobsRoundtriptTest, inPlaceDecodingOfBlockOfDataWithoutZero)
     }
 
     size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(encoded));
-    size_t decodedLength = Cobs::decode(outpost::Slice<uint8_t>(encoded, encodedLength), encoded);
+    size_t decodedLength = Cobs::decode(outpost::asSlice(encoded).first(encodedLength), encoded);
 
     EXPECT_EQ(sizeof(input), decodedLength);
     EXPECT_THAT(input, ElementsAreArray(encoded, sizeof(input)));
@@ -109,7 +109,7 @@ TEST_F(CobsRoundtriptTest, inPlaceDecodingOfZeroPrefixAndSuffix)
     uint8_t input[3] = { 0, 1, 0 };
 
     size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(encoded));
-    size_t decodedLength = Cobs::decode(outpost::Slice<uint8_t>(encoded, encodedLength), encoded);
+    size_t decodedLength = Cobs::decode(outpost::asSlice(encoded).first(encodedLength), encoded);
 
     EXPECT_EQ(sizeof(input), decodedLength);
     EXPECT_THAT(input, ElementsAreArray(encoded, sizeof(input)));
@@ -119,9 +119,9 @@ RC_GTEST_FIXTURE_PROP(CobsRoundtriptTest, shouldPerformRoundTripWithRandomData, 
 {
 	const auto input = *rc::gen::resize(200, rc::gen::arbitrary<std::vector<uint8_t>>());
 
-	outpost::Slice<const uint8_t> inputArray(&input[0], input.size());
+	outpost::Slice<const uint8_t> inputArray(input);
 	size_t encodedLength = outpost::utils::CobsBase<32>::encode(inputArray, outpost::asSlice(encoded));
-	size_t decodedLength = outpost::utils::CobsBase<32>::decode(outpost::Slice<uint8_t>(encoded, encodedLength), encoded);
+	size_t decodedLength = outpost::utils::CobsBase<32>::decode(outpost::asSlice(encoded).first(encodedLength), encoded);
 
 	RC_ASSERT(input.size() == decodedLength);
 	RC_ASSERT(input == std::vector<uint8_t>(encoded, &encoded[decodedLength]));

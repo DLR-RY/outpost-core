@@ -41,7 +41,7 @@ TEST(Crc32Test, randomTest1a)
     // Ignore the appended zero-byte
     size_t length = sizeof(data) - 1;
 
-    EXPECT_EQ(0x414FA339U, Crc32Reversed::calculate(outpost::Slice<const uint8_t>(data, length)));
+    EXPECT_EQ(0x414FA339U, Crc32Reversed::calculate(outpost::asSlice(data).first(length)));
 }
 
 TEST(Crc32Test, randomTest1b)

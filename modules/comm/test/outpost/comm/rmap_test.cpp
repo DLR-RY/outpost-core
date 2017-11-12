@@ -129,8 +129,10 @@ public:
     RmapTest() :
             mSpaceWire(100),
             mRmapTarget(targetName, 1, targetLogicalAddress, key),
-            mTargetNodes(), mRmapInitiator(mSpaceWire, &mTargetNodes, 100, 4096),
-            mTestingRmap(), mNonRmapReceiver()
+            mTargetNodes(),
+            mRmapInitiator(mSpaceWire, &mTargetNodes, 100, 4096),
+            mTestingRmap(),
+            mNonRmapReceiver()
     {
     }
 
@@ -139,12 +141,8 @@ public:
     {
         mSpaceWire.open();
         mSpaceWire.up(outpost::time::Duration::zero());
-        mRmapTarget.setTargetSpaceWireAddress(
-                            outpost::Slice<uint8_t>(targetSpwAddress,
-                                    numberOfTargetSpwAddresses));
-        mRmapTarget.setReplyAddress(
-                            outpost::Slice<uint8_t>(replyAddress,
-                                    replyAddressLength));
+        mRmapTarget.setTargetSpaceWireAddress(outpost::asSlice(targetSpwAddress));
+        mRmapTarget.setReplyAddress(outpost::asSlice(replyAddress));
     }
 
     virtual void
@@ -293,7 +291,7 @@ TEST_F(RmapTest, shouldBuildVerifyPacketHeaderCRC)
     // without SpW target fields
     uint8_t numberOfTargets = send.getTargetSpaceWireAddress().getNumberOfElements();
     uint8_t calculatedCrc = outpost::Crc8CcittReversed::calculate(
-        outpost::Slice<uint8_t>(sendBuffer + numberOfTargets, send.getHeaderLength() - numberOfTargets));
+        outpost::Slice<uint8_t>::unsafe(sendBuffer + numberOfTargets, send.getHeaderLength() - numberOfTargets));
 
     EXPECT_EQ(calculatedCrc, send.getHeaderCRC());
 }
@@ -325,7 +323,7 @@ TEST_F(RmapTest, shouldSendWriteCommandPacket)
 
     EXPECT_TRUE(
             mTestingRmap.sendPacket(mRmapInitiator, &transaction,
-                    outpost::Slice<uint8_t>(buffer, 4)));
+                    outpost::asSlice(buffer)));
 
     size_t expectedSize = 1;
 
@@ -337,7 +335,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfWriteCommandPacket)
 {
     // *** Constructing and sending write reply packet acc. to RMAP standard ***
     uint8_t reply[20];
-    outpost::Serialize stream { outpost::Slice<uint8_t>(reply) };
+    outpost::Serialize stream { outpost::asSlice(reply) };
 
     // Construct packet that should be received
     RmapPacket::InstructionField instr;
@@ -353,7 +351,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfWriteCommandPacket)
     stream.store<uint16_t>(1);                          // Transaction ID
 
     uint8_t crc = outpost::Crc8CcittReversed::calculate(
-            outpost::Slice<uint8_t>(stream.getPointer(),
+            outpost::Slice<uint8_t>::unsafe(stream.getPointer(),
                     stream.getPosition()));
     stream.store<uint8_t>(crc);                         // Header CRC
 
@@ -427,15 +425,15 @@ TEST_F(RmapTest, shouldReceiveReplyOfReadCommandPacket)
     stream.store24(sizeof(data));                       // Transaction ID
 
     uint8_t crc = outpost::Crc8CcittReversed::calculate(
-            outpost::Slice<uint8_t>(stream.getPointer(),
+            outpost::Slice<uint8_t>::unsafe(stream.getPointer(),
                     stream.getPosition()));
     stream.store<uint8_t>(crc);                         // Header CRC
 
     uint8_t *dataStart = stream.getPointerToCurrentPosition();
-    stream.storeBuffer(data, sizeof(data));             // Data bytes to be read
+    stream.store(outpost::asSlice(data));             // Data bytes to be read
 
     crc = outpost::Crc8CcittReversed::calculate(
-            outpost::Slice<uint8_t>(dataStart, sizeof(data)));
+            outpost::Slice<uint8_t>::unsafe(dataStart, sizeof(data)));
 
     stream.store<uint8_t>(crc);                         // Data CRC
 
@@ -502,10 +500,7 @@ TEST_F(RmapTest, shouldSendHigherLevelWriteCommandPacket)
     mRmapInitiator.unsetVerifyMode();
     mRmapInitiator.unsetReplyMode();
 
-    EXPECT_TRUE(
-            mRmapInitiator.write(targetName, 0x1000,
-                    outpost::Slice<uint8_t>(dataToSend,
-                            sizeof(dataToSend))));
+    EXPECT_TRUE(mRmapInitiator.write(targetName, 0x1000, outpost::asSlice(dataToSend)));
 
     size_t expectedSize = 1;
 

@@ -212,7 +212,7 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             packetHeaderCRC = stream.read<uint8_t>();
 
             calculatedHeaderCRC = outpost::Crc8CcittReversed::calculate(
-                outpost::Slice<uint8_t>(const_cast<uint8_t*>(stream.getPointer()),
+                outpost::Slice<uint8_t>::unsafe(const_cast<uint8_t*>(stream.getPointer()),
                     static_cast<size_t>(currentStreamPos)));
 
             if (calculatedHeaderCRC != packetHeaderCRC)
@@ -236,7 +236,7 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             packetHeaderCRC = stream.read<uint8_t>();
 
             calculatedHeaderCRC = outpost::Crc8CcittReversed::calculate(
-                outpost::Slice<uint8_t>(const_cast<uint8_t*>(stream.getPointer()),
+                outpost::Slice<uint8_t>::unsafe(const_cast<uint8_t*>(stream.getPointer()),
                     static_cast<size_t>(currentStreamPos)));
 
             if (calculatedHeaderCRC != packetHeaderCRC)
@@ -261,7 +261,7 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             packetDataCRC = stream.read<uint8_t>();
 
             calculatedDataCRC = outpost::Crc8CcittReversed::calculate(
-                outpost::Slice<uint8_t>(dataStartPointer, mDataLength));
+                outpost::Slice<uint8_t>::unsafe(dataStartPointer, mDataLength));
             if (packetDataCRC != calculatedDataCRC)
             {
                 console_out("RMAP-Packet: Invalid packet data CRC\n");
@@ -353,6 +353,7 @@ RmapPacket::constructHeader(outpost::Serialize& stream)
     mHeaderLength = stream.getPosition();
 
     mHeaderCRC = outpost::Crc8CcittReversed::calculate(
-        outpost::Slice<uint8_t>(stream.getPointer() + mNumOfSpwTargets, stream.getPosition() - mNumOfSpwTargets));
+        outpost::Slice<uint8_t>::unsafe(stream.getPointer() + mNumOfSpwTargets,
+                                        stream.getPosition() - mNumOfSpwTargets));
     stream.store<uint8_t>(mHeaderCRC);
 }

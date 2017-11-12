@@ -35,13 +35,13 @@ TEST(CobsTest, determineMaximumOutputDataLength)
 
 TEST(CobsTest, emptyStringIsEncodedAsEmptyString)
 {
-    uint8_t actual[128];
+    std::array<uint8_t, 128> actual;
     uint8_t expected[] = { 0x01 };
 
     size_t encodedLength = Cobs::encode(outpost::Slice<uint8_t>::empty(), outpost::asSlice(actual));
 
     ASSERT_EQ(sizeof(expected), encodedLength);
-    EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));
+    EXPECT_THAT(expected, ElementsAreArray(&actual[0], sizeof(expected)));
 }
 
 TEST(CobsTest, encodingOfSingleBlockWithoutZero)
@@ -365,7 +365,7 @@ TEST(CobsTest, abortWithAToSmallOutputBuffer)
         0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB, 0xAB,
     };
 
-    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::Slice<uint8_t>(actual, 8));
+    size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(actual).first(8));
 
     ASSERT_EQ(8U, encodedLength);
     EXPECT_THAT(expected, ElementsAreArray(actual, sizeof(expected)));

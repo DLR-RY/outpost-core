@@ -298,13 +298,13 @@ public:
     inline outpost::Slice<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::Slice<uint8_t>(mSpwTargets, mNumOfSpwTargets);
+        return outpost::Slice<uint8_t>::unsafe(mSpwTargets, mNumOfSpwTargets);
     }
 
     inline outpost::Slice<uint8_t>
     getReplyAddress()
     {
-        return outpost::Slice<uint8_t>(reinterpret_cast<uint8_t*>(mReplyAddress),
+        return outpost::Slice<uint8_t>::unsafe(reinterpret_cast<uint8_t*>(mReplyAddress),
             mInstruction.getReplyAddressLength());
     }
 

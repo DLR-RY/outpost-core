@@ -135,7 +135,7 @@ private:
         inline
         TransmitBufferEntry(size_t maximumLength) :
             buffer(maximumLength, 0),
-            header(outpost::Slice<uint8_t>(&buffer.front(), maximumLength))
+            header(outpost::asSlice(buffer))
         {
         }
 
@@ -147,7 +147,7 @@ private:
     {
         ReceiveBufferEntry(std::vector<uint8_t>&& input, EndMarker end) :
             buffer(std::move(input)),
-            header(outpost::Slice<const uint8_t>(&buffer.front(), buffer.size()), end)
+            header(outpost::asSlice(buffer), end)
         {
         }
 

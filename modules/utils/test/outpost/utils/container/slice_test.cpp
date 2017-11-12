@@ -45,7 +45,7 @@ TEST(SliceTest, createWithExplicitSize)
 {
     uint8_t data[6];
 
-    Slice<uint8_t> array(data, 4);
+    auto array = Slice<uint8_t>::unsafe(data, 4);
 
     EXPECT_EQ(4U, array.getNumberOfElements());
 }

@@ -49,7 +49,7 @@ public:
 
     inline
     Slice(gsl::span<T> span) :
-        mData(&span[0]),
+        mData(span.data()),
         mNumberOfElements(span.size())
     {
     }
@@ -70,17 +70,22 @@ public:
     static inline Slice
     empty()
     {
-        Slice array(0, 0);
-        return array;
+        return Slice(nullptr, 0);
     }
 
     /**
      * Initialize from a pointer to an array.
      *
+     * \warning
+     *      This operation is unsafe and should be avoided if possible. Create
+     *      a Slice directly from the original array and pass that around
+     *      instead. The slice can be split into smaller chunks by using
+     *      first() and last().
+     *
      * Example:
      * \code
-     * uint8_t array[7];
-     * Slice<uint8_t> wrappedArray(&array[0], 7);
+     * uint8_t* ptr = ...;
+     * auto slice = Slice<uint8_t>::unsafe(ptr, 7);
      * \endcode
      *
      * \param array
@@ -88,11 +93,10 @@ public:
      * \param numberOfElements
      *      Number of elements in the array.
      */
-    inline
-    Slice(T* array, size_t numberOfElements) :
-        mData(array),
-        mNumberOfElements(numberOfElements)
+    static inline Slice
+    unsafe(T* array, size_t numberOfElements)
     {
+        return Slice(array, numberOfElements);
     }
 
     /**
@@ -140,7 +144,7 @@ public:
     /**
      * Create a sub-slice from the beginning of the slice.
      */
-    Slice
+    inline Slice
     first(size_t firstElements)
     {
         if (firstElements > mNumberOfElements)
@@ -158,7 +162,7 @@ public:
     /**
      * Create a sub-slice from the end of the slice.
      */
-    Slice
+    inline Slice
     last(size_t lastElements)
     {
         if (lastElements > mNumberOfElements)
@@ -181,7 +185,12 @@ public:
     }
 
 private:
-
+    inline
+    Slice(T* array, size_t numberOfElements) :
+        mData(array),
+        mNumberOfElements(numberOfElements)
+    {
+    }
 
     /// Pointer to the array
     T* mData;
@@ -201,9 +210,9 @@ private:
  */
 template <class ElementType>
 Slice<ElementType>
-asSlice(ElementType* ptr, typename Slice<ElementType>::index_type count)
+asUnsafeSlice(ElementType* ptr, typename Slice<ElementType>::index_type count)
 {
-    return Slice<ElementType>(ptr, count);
+    return Slice<ElementType>::unsafe(ptr, count);
 }
 
 template <class ElementType>

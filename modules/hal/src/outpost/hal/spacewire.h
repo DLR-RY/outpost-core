@@ -60,16 +60,14 @@ public:
     public:
         inline
         TransmitBuffer() :
-            mData(0),
-            mLength(),
+            mData(Slice<uint8_t>::empty()),
             mEnd(eop)
         {
         }
 
         inline explicit
         TransmitBuffer(outpost::Slice<uint8_t> array) :
-            mData(array.begin()),
-            mLength(array.getNumberOfElements()),
+            mData(array),
             mEnd(eop)
         {
         }
@@ -77,7 +75,6 @@ public:
         inline
         TransmitBuffer(const TransmitBuffer& other) :
             mData(other.mData),
-            mLength(other.mLength),
             mEnd(other.mEnd)
         {
         }
@@ -86,9 +83,8 @@ public:
         operator=(const TransmitBuffer& other)
         {
             // This handles self assignment
-            mData   = other.mData;
-            mLength = other.mLength;
-            mEnd    = other.mEnd;
+            mData = other.mData;
+            mEnd  = other.mEnd;
 
             return *this;
         }
@@ -96,20 +92,19 @@ public:
         inline size_t
         getLength() const
         {
-            return mLength;
+            return mData.getNumberOfElements();
         }
 
         inline void
         setLength(size_t length)
         {
-            mLength = length;
+            mData = Slice<uint8_t>::unsafe(&mData[0], length);
         }
 
         inline outpost::Slice<uint8_t>
         getData()
         {
-            outpost::Slice<uint8_t> array(mData, mLength);
-            return array;
+            return mData;
         }
 
         inline EndMarker
@@ -141,8 +136,7 @@ public:
          * Points to preallocated memory section.
          * Maximum size is implementation specific.
          */
-        uint8_t* mData;
-        size_t mLength;
+        Slice<uint8_t> mData;
         EndMarker mEnd;
     };
 

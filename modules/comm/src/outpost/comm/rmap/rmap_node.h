@@ -77,7 +77,7 @@ public:
     inline outpost::Slice<uint8_t>
     getReplyAddress()
     {
-        return outpost::Slice<uint8_t>(mReplyAddress, mReplyAddressLength);
+        return outpost::Slice<uint8_t>::unsafe(mReplyAddress, mReplyAddressLength);
     }
 
     inline uint8_t
@@ -89,7 +89,7 @@ public:
     inline outpost::Slice<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::Slice<uint8_t>(mTargetSpaceWireAddress, mTargetSpaceWireAddressLength);
+        return outpost::Slice<uint8_t>::unsafe(mTargetSpaceWireAddress, mTargetSpaceWireAddressLength);
     }
 
     inline void
@@ -117,8 +117,10 @@ public:
     }
 
 private:
+    // TODO Replace with bounded array
     uint8_t mTargetSpaceWireAddressLength;
     uint8_t mTargetSpaceWireAddress[rmap::maxAddressLength];
+    // TODO Replace with bounded array
     uint8_t mReplyAddressLength;
     uint8_t mReplyAddress[rmap::maxAddressLength];
     uint8_t mTargetLogicalAddress;
@@ -201,10 +203,11 @@ public:
     inline outpost::Slice<RmapTargetNode*>
     getTargetNodes()
     {
-        return outpost::Slice<RmapTargetNode*>(mNodes, mSize);
+        return outpost::Slice<RmapTargetNode*>::unsafe(mNodes, mSize);
     }
 
 private:
+    // TODO Replace with bounded array
     RmapTargetNode* mNodes[rmap::maxAddressLength];
     uint8_t mSize;
 };
