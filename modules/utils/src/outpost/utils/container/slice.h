@@ -37,18 +37,24 @@ namespace outpost
  *
  * \author  Fabian Greif
  */
-template <typename T>
+template <typename ElementType>
 class Slice
 {
 public:
-    typedef typename outpost::remove_const<T>::type NonConstType;
-    typedef const NonConstType ConstType;
+    using IndexType = std::size_t;
 
-    friend class Slice<NonConstType>;
-    friend class Slice<ConstType>;
+    // constants and types for compatibility with STL/GSL
+    using value_type = ElementType;
+    using pointer = ElementType*;
+    using reference = ElementType&;
+
+    using ReverseIterator = std::reverse_iterator<pointer>;
+
+    friend Slice<typename std::remove_const<ElementType>::type>;
+    friend Slice<const ElementType>;
 
     inline
-    Slice(gsl::span<T> span) :
+    Slice(gsl::span<ElementType> span) :
         mData(span.data()),
         mNumberOfElements(span.size())
     {
@@ -94,7 +100,7 @@ public:
      *      Number of elements in the array.
      */
     static inline Slice
-    unsafe(T* array, size_t numberOfElements)
+    unsafe(ElementType* array, IndexType numberOfElements)
     {
         return Slice(array, numberOfElements);
     }
@@ -123,29 +129,41 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline T&
-    operator[](size_t index) const
+    inline ElementType&
+    operator[](IndexType index) const
     {
         return mData[index];
     }
 
-    inline T*
+    inline ElementType*
     begin() const
     {
         return &mData[0];
     }
 
-    inline T*
+    inline ElementType*
     end() const
     {
         return &mData[mNumberOfElements];
+    }
+
+    inline ReverseIterator
+    rbegin() const
+    {
+        return ReverseIterator(end());
+    }
+
+    inline ReverseIterator
+    rend() const
+    {
+        return ReverseIterator(begin());
     }
 
     /**
      * Create a sub-slice from the beginning of the slice.
      */
     inline Slice
-    first(size_t firstElements)
+    first(IndexType firstElements)
     {
         if (firstElements > mNumberOfElements)
         {
@@ -163,7 +181,7 @@ public:
      * Create a sub-slice from the end of the slice.
      */
     inline Slice
-    last(size_t lastElements)
+    last(IndexType lastElements)
     {
         if (lastElements > mNumberOfElements)
         {
@@ -179,24 +197,30 @@ public:
     }
 
     inline
-    operator Slice<const T>() const
+    operator Slice<const ElementType>() const
     {
-        return Slice<const T>(mData, mNumberOfElements);
+        return Slice<const ElementType>(mData, mNumberOfElements);
+    }
+
+    inline gsl::span<ElementType>
+    asSpan()
+    {
+        return gsl::span<ElementType>(mData, mNumberOfElements);
     }
 
 private:
     inline
-    Slice(T* array, size_t numberOfElements) :
+    Slice(ElementType* array, size_t numberOfElements) :
         mData(array),
         mNumberOfElements(numberOfElements)
     {
     }
 
     /// Pointer to the array
-    T* mData;
+    ElementType* mData;
 
     /// Size of array
-    size_t mNumberOfElements;
+    IndexType mNumberOfElements;
 };
 
 /**
@@ -210,18 +234,24 @@ private:
  */
 template <class ElementType>
 Slice<ElementType>
-asUnsafeSlice(ElementType* ptr, typename Slice<ElementType>::index_type count)
+asSliceUnsafe(ElementType* ptr, typename Slice<ElementType>::IndexType count)
 {
     return Slice<ElementType>::unsafe(ptr, count);
 }
 
+/**
+ * Create a slice from an iterator pair.
+ */
 template <class ElementType>
 Slice<ElementType>
 asSlice(ElementType* firstElem, ElementType* lastElem)
 {
-    return Slice<ElementType>(firstElem, lastElem);
+    return Slice<ElementType>::unsafe(firstElem, lastElem);
 }
 
+/**
+ * Create slice from a C-style array.
+ */
 template <class ElementType, size_t N>
 Slice<ElementType>
 asSlice(ElementType (&arr)[N])
@@ -229,27 +259,29 @@ asSlice(ElementType (&arr)[N])
     return Slice<ElementType>(arr);
 }
 
+/**
+ * Create slice from a STL compatible container.
+ */
 template <class Container>
 Slice<typename Container::value_type>
-asSlice(Container &cont)
+asSlice(Container& cont)
 {
     return Slice<typename Container::value_type>(cont);
 }
 
+/**
+ * Create slice from a constant STL compatible container.
+ */
 template <class Container>
 Slice<const typename Container::value_type>
-asSlice(const Container &cont)
+asSlice(const Container& cont)
 {
     return Slice<const typename Container::value_type>(cont);
 }
 
-template <class Ptr>
-Slice<typename Ptr::element_type>
-asSlice(Ptr& cont, std::ptrdiff_t count)
-{
-    return Slice<typename Ptr::element_type>(cont, count);
-}
-
+/**
+ * Create slice from a gsl::span.
+ */
 template <class Ptr>
 Slice<typename Ptr::element_type>
 asSlice(Ptr& cont)

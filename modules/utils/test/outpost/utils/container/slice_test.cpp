@@ -78,14 +78,14 @@ TEST(SliceTest, shouldBeConstructableFromStdArray)
 {
     std::array<uint8_t, 10> array;
     auto slice = Slice<uint8_t>(array);
-    EXPECT_EQ(10U, slice.getNumberOfElements());
+    EXPECT_EQ(array.size(), slice.getNumberOfElements());
 }
 
 TEST(SliceTest, shouldBeConstructableFromStdVector)
 {
     std::vector<uint8_t> vector(5);
     auto slice = Slice<uint8_t>(vector);
-    EXPECT_EQ(5U, slice.getNumberOfElements());
+    EXPECT_EQ(vector.size(), slice.getNumberOfElements());
 }
 
 TEST(SliceTest, shouldCreateSubSlicesFromBeginning)
@@ -128,4 +128,70 @@ TEST(SliceTest, shouldCreateNestedSubSlices)
     EXPECT_EQ(3U, subslice[0]);
     EXPECT_EQ(4U, subslice[1]);
     EXPECT_EQ(5U, subslice[2]);
+}
+
+TEST(SliceTest, shouldBeCompatibleWithGslSpan)
+{
+    std::array<uint8_t, 10> array;
+    auto span = gsl::make_span(array);
+
+    // Create from gsl::span
+    auto slice = outpost::asSlice(span);
+    EXPECT_EQ(array.size(), slice.getNumberOfElements());
+
+    // Convert back to gsl::span
+    auto span2 = slice.asSpan();
+    EXPECT_EQ(array.size(), static_cast<std::size_t>(span2.size()));
+}
+
+TEST(SliceTest, shouldConvertToConstSlice)
+{
+    std::array<uint8_t, 10> array;
+    outpost::Slice<uint8_t> slice(array);
+
+    outpost::Slice<const uint8_t> constSlice(slice);
+
+    EXPECT_EQ(array.size(), constSlice.getNumberOfElements());
+}
+
+TEST(SliceTest, shouldProvideIteratorInterface)
+{
+    std::array<uint8_t, 4> array = {{ 1, 4, 5, 7 }};
+    outpost::Slice<uint8_t> slice(array);
+
+    size_t index = 0;
+    for (uint8_t data : slice)
+    {
+        EXPECT_EQ(array[index], data);
+        index++;
+    }
+    EXPECT_EQ(array.size(), index);
+}
+
+TEST(SliceTest, shouldProvideConstIteratorInterface)
+{
+    std::array<uint8_t, 4> array = {{ 1, 4, 5, 7 }};
+    const outpost::Slice<uint8_t> slice(array);
+
+    size_t index = 0;
+    for (uint8_t data : slice)
+    {
+        EXPECT_EQ(array[index], data);
+        index++;
+    }
+    EXPECT_EQ(array.size(), index);
+}
+
+TEST(SliceTest, shouldProvideReverseIterator)
+{
+    std::array<uint8_t, 4> array = {{ 1, 4, 5, 7 }};
+    outpost::Slice<uint8_t> slice(array);
+
+    size_t index = 0;
+    for (auto it = slice.rbegin(); it != slice.rend(); ++it)
+    {
+        EXPECT_EQ(array[array.size() - index - 1], *it);
+        index++;
+    }
+    EXPECT_EQ(array.size(), index);
 }
