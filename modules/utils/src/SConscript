@@ -16,11 +16,13 @@ import os
 
 Import('envGlobal')
 
+envGlobal.SConscript('../../../ext/SConscript.gsl', exports='envGlobal')
+
 envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 
 env = envGlobal.Clone()
 
-files  = env.Glob('outpost/*/*.cpp')
+files = env.Glob('outpost/*/*.cpp')
 files += env.Glob('outpost/*/*/*.cpp')
 files += env.Glob('outpost/*/*/*/*.cpp')
 

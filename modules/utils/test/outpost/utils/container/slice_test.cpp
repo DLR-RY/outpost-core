@@ -12,16 +12,15 @@
  */
 // ----------------------------------------------------------------------------
 
+#include <array>
+
 #include <unittest/harness.h>
 #include <outpost/utils/container/slice.h>
 
 using outpost::Slice;
 
-class SliceTest : public testing::Test
-{
-};
 
-TEST_F(SliceTest, createFromCStyleArray)
+TEST(SliceTest, createFromCStyleArray)
 {
     uint8_t data[7];
 
@@ -30,7 +29,7 @@ TEST_F(SliceTest, createFromCStyleArray)
     EXPECT_EQ(7U, array.getNumberOfElements());
 }
 
-TEST_F(SliceTest, dataAccessWithCStyleArray)
+TEST(SliceTest, dataAccessWithCStyleArray)
 {
     uint8_t data[6] = { 6, 5, 4, 3, 2, 1 };
 
@@ -42,7 +41,7 @@ TEST_F(SliceTest, dataAccessWithCStyleArray)
     EXPECT_EQ(2, array[4]);
 }
 
-TEST_F(SliceTest, createWithExplicitSize)
+TEST(SliceTest, createWithExplicitSize)
 {
     uint8_t data[6];
 
@@ -51,7 +50,7 @@ TEST_F(SliceTest, createWithExplicitSize)
     EXPECT_EQ(4U, array.getNumberOfElements());
 }
 
-TEST_F(SliceTest, createArrayOfPointers)
+TEST(SliceTest, createArrayOfPointers)
 {
     class TestClass
     {
@@ -73,4 +72,18 @@ TEST_F(SliceTest, createArrayOfPointers)
 
     EXPECT_EQ(&testClass1, array[0]);
     EXPECT_EQ(&testClass2, array[1]);
+}
+
+TEST(SliceTest, shouldBeConstructableFromStdArray)
+{
+    std::array<uint8_t, 10> array;
+    auto slice = Slice<uint8_t>(array);
+    EXPECT_EQ(10U, slice.getNumberOfElements());
+}
+
+TEST(SliceTest, shouldBeConstructableFromStdVector)
+{
+    std::vector<uint8_t> vector(5);
+    auto slice = Slice<uint8_t>(vector);
+    EXPECT_EQ(5U, slice.getNumberOfElements());
 }

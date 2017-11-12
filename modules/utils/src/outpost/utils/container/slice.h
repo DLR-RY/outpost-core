@@ -17,6 +17,8 @@
 
 #include <stddef.h>
 
+#include <gsl/span>
+
 #include <outpost/utils/meta.h>
 
 namespace outpost
@@ -45,43 +47,22 @@ public:
     friend class Slice<NonConstType>;
     friend class Slice<ConstType>;
 
-    /**
-     * Initialize directly from a C style array.
-     *
-     * The array needs to still have all the type information attached and
-     * must not have degraded to a pointer type.
-     *
-     * Example:
-     * \code
-     * uint8_t array[7];
-     * Slice<uint8_t> wrappedArray(array);
-     * \endcode
-     *
-     * \param array
-     *      Array with should be wrapped.
-     */
-    template <size_t N>
-    explicit inline
-    Slice(T (&array)[N]) :
-        mData(array),
-        mNumberOfElements(N)
-    {
-    }
-
     inline
-    Slice(const Slice& rhs) :
-        mData(rhs.mData),
-        mNumberOfElements(rhs.mNumberOfElements)
+    Slice(gsl::span<T> span) :
+        mData(&span[0]),
+        mNumberOfElements(span.size())
     {
     }
 
-    inline Slice&
-    operator=(const Slice& rhs)
-    {
-        mData = rhs.mData;
-        mNumberOfElements = rhs.mNumberOfElements;
-        return *this;
-    }
+    Slice(const Slice& rhs) = default;
+
+    Slice(Slice&& rhs) = default;
+
+    Slice&
+    operator=(const Slice& rhs) = default;
+
+    Slice&
+    operator=(Slice&& rhs) = default;
 
     /**
      * Generate an empty array.
@@ -92,7 +73,6 @@ public:
         Slice array(0, 0);
         return array;
     }
-
 
     /**
      * Initialize from a pointer to an array.
@@ -171,12 +151,62 @@ private:
     size_t mNumberOfElements;
 };
 
-template <typename T, size_t N>
-static inline outpost::Slice<T>
-asSlice(T (&array)[N])
+/**
+ * Initialize from a pointer to an array.
+ *
+ * \warning
+ *      This operation is unsafe and should be avoided if possible. Create
+ *      a Slice directly from the original array and pass that around
+ *      instead. The slice can be split into smaller chunks by using
+ *      first() and last().
+ */
+template <class ElementType>
+Slice<ElementType>
+asSlice(ElementType* ptr, typename Slice<ElementType>::index_type count)
 {
-    outpost::Slice<T> a(array);
-    return a;
+    return Slice<ElementType>(ptr, count);
+}
+
+template <class ElementType>
+Slice<ElementType>
+asSlice(ElementType* firstElem, ElementType* lastElem)
+{
+    return Slice<ElementType>(firstElem, lastElem);
+}
+
+template <class ElementType, size_t N>
+Slice<ElementType>
+asSlice(ElementType (&arr)[N])
+{
+    return Slice<ElementType>(arr);
+}
+
+template <class Container>
+Slice<typename Container::value_type>
+asSlice(Container &cont)
+{
+    return Slice<typename Container::value_type>(cont);
+}
+
+template <class Container>
+Slice<const typename Container::value_type>
+asSlice(const Container &cont)
+{
+    return Slice<const typename Container::value_type>(cont);
+}
+
+template <class Ptr>
+Slice<typename Ptr::element_type>
+asSlice(Ptr& cont, std::ptrdiff_t count)
+{
+    return Slice<typename Ptr::element_type>(cont, count);
+}
+
+template <class Ptr>
+Slice<typename Ptr::element_type>
+asSlice(Ptr& cont)
+{
+    return Slice<typename Ptr::element_type>(cont);
 }
 
 }
