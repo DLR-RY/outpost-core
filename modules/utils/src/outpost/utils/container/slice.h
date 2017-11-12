@@ -137,6 +137,43 @@ public:
         return &mData[mNumberOfElements];
     }
 
+    /**
+     * Create a sub-slice from the beginning of the slice.
+     */
+    Slice
+    first(size_t firstElements)
+    {
+        if (firstElements > mNumberOfElements)
+        {
+            // Limit to available number of elements
+            // TODO this should be an error!
+            return Slice(mData, mNumberOfElements);
+        }
+        else
+        {
+            return Slice(mData, firstElements);
+        }
+    }
+
+    /**
+     * Create a sub-slice from the end of the slice.
+     */
+    Slice
+    last(size_t lastElements)
+    {
+        if (lastElements > mNumberOfElements)
+        {
+            // Limit to available number of elements
+            // TODO this should be an error!
+            return Slice(mData, mNumberOfElements);
+        }
+        else
+        {
+            return Slice(mData + (mNumberOfElements - lastElements),
+                         lastElements);
+        }
+    }
+
     inline
     operator Slice<const T>() const
     {
@@ -144,6 +181,8 @@ public:
     }
 
 private:
+
+
     /// Pointer to the array
     T* mData;
 

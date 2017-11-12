@@ -87,3 +87,45 @@ TEST(SliceTest, shouldBeConstructableFromStdVector)
     auto slice = Slice<uint8_t>(vector);
     EXPECT_EQ(5U, slice.getNumberOfElements());
 }
+
+TEST(SliceTest, shouldCreateSubSlicesFromBeginning)
+{
+    std::array<uint8_t, 10> array = {{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }};
+    auto slice = outpost::asSlice(array);
+
+    auto subslice = slice.first(3);
+
+    ASSERT_EQ(3U, subslice.getNumberOfElements());
+
+    EXPECT_EQ(0U, subslice[0]);
+    EXPECT_EQ(1U, subslice[1]);
+    EXPECT_EQ(2U, subslice[2]);
+}
+
+TEST(SliceTest, shouldCreateSubSlicesFromEnd)
+{
+    std::array<uint8_t, 10> array = {{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }};
+    auto slice = outpost::asSlice(array);
+
+    auto subslice = slice.last(3);
+
+    ASSERT_EQ(3U, subslice.getNumberOfElements());
+
+    EXPECT_EQ(7U, subslice[0]);
+    EXPECT_EQ(8U, subslice[1]);
+    EXPECT_EQ(9U, subslice[2]);
+}
+
+TEST(SliceTest, shouldCreateNestedSubSlices)
+{
+    std::array<uint8_t, 10> array = {{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }};
+    auto slice = outpost::asSlice(array);
+
+    auto subslice = slice.first(6).last(3);
+
+    ASSERT_EQ(3U, subslice.getNumberOfElements());
+
+    EXPECT_EQ(3U, subslice[0]);
+    EXPECT_EQ(4U, subslice[1]);
+    EXPECT_EQ(5U, subslice[2]);
+}
