@@ -22,10 +22,10 @@ COLORS := $(shell tput colors 2> /dev/null)
 
 ifeq ($(COLORS),)
 # The terminal doesn't support colors, don't output anything
-CINFO  = 
-COK    = 
-CERROR = 
-CEND   = 
+CINFO  =
+COK    =
+CERROR =
+CEND   =
 else
 # Color definitions (e.g. for bash 'tput colors' returns '8')
 CINFO  = \033[;0;33m
@@ -74,12 +74,10 @@ cloc-source:
 	done
 	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
 
-test-full:
-	@for m in $(MODULES_HW) $(MODULES_GLOBAL) $(MODULES_TEST); do \
-		printf "\n$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
-		make -C modules/$$m test --no-print-directory || return 1 ; \
-	done
-	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
+test-full: test
+	echo "\n$(CINFO)Run compilation tests:$(CEND)\n"
+	$(MAKE) -C test/sparc_rtems --no-print-directory
+	@printf "\n$(COK)[PASS] All tests passed!$(CEND)\n"
 
 coverage:
 	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
