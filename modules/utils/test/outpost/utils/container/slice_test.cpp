@@ -195,3 +195,12 @@ TEST(SliceTest, shouldProvideReverseIterator)
     }
     EXPECT_EQ(array.size(), index);
 }
+
+TEST(SliceTest, shouldCreateSliceFromIteratorPair)
+{
+    std::array<uint8_t, 4> array = {{ 1, 4, 5, 7 }};
+
+    auto slice = outpost::Slice<uint8_t>(array.begin(), array.end());
+
+    EXPECT_EQ(array.size(), slice.getNumberOfElements());
+}

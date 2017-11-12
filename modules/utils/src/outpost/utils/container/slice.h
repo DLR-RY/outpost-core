@@ -48,15 +48,32 @@ public:
     using pointer = ElementType*;
     using reference = ElementType&;
 
+    using Iterator = pointer;
     using ReverseIterator = std::reverse_iterator<pointer>;
 
     friend Slice<typename std::remove_const<ElementType>::type>;
     friend Slice<const ElementType>;
 
+    /**
+     * Create from a gsl::span.
+     *
+     * This allows creation from e.g. STL standard containers and C style
+     * arrays.
+     */
     inline
     Slice(gsl::span<ElementType> span) :
         mData(span.data()),
         mNumberOfElements(span.size())
+    {
+    }
+
+    /**
+     * Create from an iterator pair.
+     */
+    inline
+    Slice(Iterator firstElement, Iterator lastElement) :
+        mData(firstElement),
+        mNumberOfElements(std::distance(firstElement, lastElement))
     {
     }
 
@@ -76,7 +93,7 @@ public:
     static inline Slice
     empty()
     {
-        return Slice(nullptr, 0);
+        return Slice(nullptr, IndexType(0));
     }
 
     /**
@@ -135,16 +152,16 @@ public:
         return mData[index];
     }
 
-    inline ElementType*
+    inline Iterator
     begin() const
     {
-        return &mData[0];
+        return Iterator(&mData[0]);
     }
 
-    inline ElementType*
+    inline Iterator
     end() const
     {
-        return &mData[mNumberOfElements];
+        return Iterator(&mData[mNumberOfElements]);
     }
 
     inline ReverseIterator
@@ -223,6 +240,7 @@ private:
     IndexType mNumberOfElements;
 };
 
+
 /**
  * Initialize from a pointer to an array.
  *
@@ -244,9 +262,9 @@ asSliceUnsafe(ElementType* ptr, typename Slice<ElementType>::IndexType count)
  */
 template <class ElementType>
 Slice<ElementType>
-asSlice(ElementType* firstElem, ElementType* lastElem)
+asSlice(ElementType* firstElement, ElementType* lastElement)
 {
-    return Slice<ElementType>::unsafe(firstElem, lastElem);
+    return Slice<ElementType>(firstElement, lastElement);
 }
 
 /**
