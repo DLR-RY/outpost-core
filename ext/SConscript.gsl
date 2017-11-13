@@ -16,5 +16,5 @@ import os
 Import('envGlobal')
 
 envGlobal.Append(CPPPATH=[
-    os.path.abspath('gsl11'),
+    os.path.abspath('gsl'),
 ])
