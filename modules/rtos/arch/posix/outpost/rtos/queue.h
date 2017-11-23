@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <type_traits>
 
 #include <pthread.h>
 
@@ -33,12 +34,18 @@ namespace rtos
  *
  * Can be used to exchange data between different threads.
  *
+ * \warning
+ *      Limited to POD types (see http://en.cppreference.com/w/cpp/concept/PODType)
+ *      for compatibility with the FreeRTOS and RTEMS implementations.
+ *
  * \author  Fabian Greif
  * \ingroup rtos
  */
 template <typename T>
 class Queue
 {
+    static_assert(std::is_pod<T>::value, "T must be POD");
+
 public:
     /**
      * Create a Queue.
