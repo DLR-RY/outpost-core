@@ -204,3 +204,25 @@ TEST(SliceTest, shouldCreateSliceFromIteratorPair)
 
     EXPECT_EQ(array.size(), slice.getNumberOfElements());
 }
+
+TEST(SliceTest, shouldCreateSubSliceFromIndexAndLength)
+{
+    std::array<uint8_t, 4> array = {{ 1, 2, 3, 4 }};
+    auto slice = outpost::asSlice(array);
+
+    auto slice1 = slice.subSlice(1, 2);
+    EXPECT_EQ(2U, slice1.getNumberOfElements());
+    EXPECT_EQ(2U, slice1[0]);
+    EXPECT_EQ(3U, slice1[1]);
+}
+
+TEST(SliceTest, shouldCreateSubSliceFromTwoIndicies)
+{
+    std::array<uint8_t, 4> array = {{ 1, 2, 3, 4 }};
+    auto slice = outpost::asSlice(array);
+
+    auto slice1 = slice.subSliceIndex(1, 2);
+    EXPECT_EQ(2U, slice1.getNumberOfElements());
+    EXPECT_EQ(2U, slice1[0]);
+    EXPECT_EQ(3U, slice1[1]);
+}

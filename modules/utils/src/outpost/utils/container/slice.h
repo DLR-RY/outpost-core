@@ -42,6 +42,7 @@ class Slice
 {
 public:
     using IndexType = std::size_t;
+    using LengthType = std::size_t;
 
     // constants and types for compatibility with STL/GSL
     using value_type = ElementType;
@@ -117,7 +118,7 @@ public:
      *      Number of elements in the array.
      */
     static inline Slice
-    unsafe(ElementType* array, IndexType numberOfElements)
+    unsafe(ElementType* array, LengthType numberOfElements)
     {
         return Slice(array, numberOfElements);
     }
@@ -125,7 +126,7 @@ public:
     /**
      * Get number of elements in the array.
      */
-    inline size_t
+    inline LengthType
     getNumberOfElements() const
     {
         return mNumberOfElements;
@@ -180,7 +181,7 @@ public:
      * Create a sub-slice from the beginning of the slice.
      */
     inline Slice
-    first(IndexType firstElements)
+    first(LengthType firstElements)
     {
         if (firstElements > mNumberOfElements)
         {
@@ -198,7 +199,7 @@ public:
      * Create a sub-slice from the end of the slice.
      */
     inline Slice
-    last(IndexType lastElements)
+    last(LengthType lastElements)
     {
         if (lastElements > mNumberOfElements)
         {
@@ -211,6 +212,32 @@ public:
             return Slice(mData + (mNumberOfElements - lastElements),
                          lastElements);
         }
+    }
+
+    /**
+     * Create a sub-slice from a starting index and a length.
+     */
+    inline Slice
+    subSlice(IndexType offset, LengthType length)
+    {
+        return first(offset + length).last(length);
+    }
+
+    /**
+     * Create a sub-slice from two indices.
+     *
+     * Both indices **are included** in the sub-slice.
+     *
+     * \param   start
+     *      First index which is included.
+     * \param   end
+     *      Last index which **is included**.
+     */
+    inline Slice
+    subSliceIndex(IndexType start, IndexType end)
+    {
+        // TODO check that end is larger than start.
+        return first(end + 1).last((end + 1) - start);
     }
 
     inline
