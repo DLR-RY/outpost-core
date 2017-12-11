@@ -221,7 +221,7 @@ TEST(SliceTest, shouldCreateSubSliceFromTwoIndicies)
     std::array<uint8_t, 4> array = {{ 1, 2, 3, 4 }};
     auto slice = outpost::asSlice(array);
 
-    auto slice1 = slice.subSliceIndex(1, 2);
+    auto slice1 = slice.subRange(1, 3);
     EXPECT_EQ(2U, slice1.getNumberOfElements());
     EXPECT_EQ(2U, slice1[0]);
     EXPECT_EQ(3U, slice1[1]);

@@ -226,18 +226,16 @@ public:
     /**
      * Create a sub-slice from two indices.
      *
-     * Both indices **are included** in the sub-slice.
-     *
      * \param   start
      *      First index which is included.
      * \param   end
-     *      Last index which **is included**.
+     *      Last index which **is not included**.
      */
     inline Slice
-    subSliceIndex(IndexType start, IndexType end)
+    subRange(IndexType start, IndexType end)
     {
         // TODO check that end is larger than start.
-        return first(end + 1).last((end + 1) - start);
+        return subSlice(start, end - start);
     }
 
     inline
