@@ -257,6 +257,16 @@ public:
         return SerializeLittleEndianTraits<T>::read(mBuffer);
     }
 
+    template <typename U>
+    inline void
+    read(outpost::BoundedArray<U> array)
+    {
+        for (size_t i = 0; i < array.getNumberOfElements(); ++i)
+        {
+            array[i] = SerializeLittleEndianTraits<U>::read(mBuffer);
+        }
+    }
+
     /**
      * Read two 12 bit values from a three byte array.
      *

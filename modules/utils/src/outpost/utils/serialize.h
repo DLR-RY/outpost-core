@@ -17,6 +17,8 @@
 #ifndef OUTPOST_UTILS_SERIALIZE_H
 #define OUTPOST_UTILS_SERIALIZE_H
 
+#include <type_traits>
+
 #include <stddef.h>
 #include <string.h>
 #include <stdint.h>
@@ -91,7 +93,18 @@ public:
     static inline size_t
     getTypeSize()
     {
-        return SerializeBigEndianTraits<T>::size();
+        // Removes the const and/or volatile qualification from the given type
+        // to avoid problems with e.g. SerializeBigEndianTraits<T> and
+        // SerializeBigEndianTraits<const T> requiring different traits.
+        return SerializeBigEndianTraits<typename std::remove_cv<T>::type>::size();
+    }
+
+    template <typename U>
+    static inline size_t
+    getTypeSize(outpost::BoundedArray<U> array)
+    {
+        return SerializeBigEndianTraits<typename std::remove_cv<U>::type>::size()
+                * array.getNumberOfElements();
     }
 
     template<typename T>
@@ -307,6 +320,16 @@ public:
         size_t length = array.getNumberOfElements();
         memcpy(&array[0], mBuffer, length);
         mBuffer += length;
+    }
+
+    template <typename U>
+    inline void
+    read(outpost::BoundedArray<U> array)
+    {
+        for (size_t i = 0; i < array.getNumberOfElements(); ++i)
+        {
+            array[i] = SerializeBigEndianTraits<U>::read(mBuffer);
+        }
     }
 
     inline uint32_t
