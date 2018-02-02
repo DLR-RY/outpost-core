@@ -115,6 +115,20 @@ metric:
 		sloccount --duplicates --wide modules/$$m/test ; \
 	done
 
+CLANG_FORMAT_CONTAINER=docker run --rm -it -v "$(PWD):/build" \
+	-e BUILDER_UID=$(shell id -u) -e BUILDER_GID=$(shell id -g) \
+	-e BUILDER_USER=$(shell id -un) -e BUILDER_GROUP=$(shell id -gn) \
+	dlravs/clang-format
+
+CLANG_FORMAT=$(CLANG_FORMAT_CONTAINER) "/usr/bin/clang-format-7"
+
+SOURCE_FILES = $(shell find modules/*/src/ modules/*/test/ -type f -name '*.cpp')
+HEADER_FILES = $(shell find modules/*/src/ modules/*/test/ -type f -name '*.h')
+
+format:
+	@$(CLANG_FORMAT) -i $(SOURCE_FILES)
+	@$(CLANG_FORMAT) -i $(HEADER_FILES)
+
 clean :
 	@for m in $(MODULES); do \
 		printf "\n$(CINFO)Clean module \"$$m\":$(CEND)\n" ; \
