@@ -17,6 +17,7 @@
 #include <string.h>     // for memset
 #include <unittest/harness.h>
 
+#include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
 
 using outpost::utils::Cobs;

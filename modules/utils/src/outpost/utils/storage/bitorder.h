@@ -15,6 +15,8 @@
 #ifndef OUTPOST_UTILS_BITORDER_H
 #define OUTPOST_UTILS_BITORDER_H
 
+#include <stddef.h>
+
 namespace outpost
 {
 

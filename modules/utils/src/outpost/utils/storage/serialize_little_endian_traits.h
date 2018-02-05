@@ -17,6 +17,8 @@
 #define OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_TRAITS_H
 
 #include <stdint.h>
+#include <stddef.h>
+#include <string.h>
 
 namespace outpost
 {
