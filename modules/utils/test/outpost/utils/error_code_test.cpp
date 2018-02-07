@@ -18,8 +18,9 @@
  *
  * \author  Fabian Greif
  */
-#include <unittest/harness.h>
 #include <outpost/utils/error_code.h>
+
+#include <unittest/harness.h>
 
 TEST(ErrorCode, success)
 {
@@ -63,7 +64,7 @@ TEST(ErrorCode, errorCode)
 
 TEST(ErrorCode, equality)
 {
-    outpost::ErrorCode result  = outpost::ErrorCode::error(-3);
+    outpost::ErrorCode result = outpost::ErrorCode::error(-3);
     outpost::ErrorCode result2 = outpost::ErrorCode::error(-2);
 
     EXPECT_TRUE(result != result2);
@@ -106,8 +107,7 @@ public:
     }
 
 protected:
-    SomeErrorCode(int16_t code) :
-        outpost::ErrorCode(code)
+    SomeErrorCode(int16_t code) : outpost::ErrorCode(code)
     {
     }
 };

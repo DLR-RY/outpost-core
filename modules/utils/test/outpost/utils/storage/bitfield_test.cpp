@@ -12,17 +12,16 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <outpost/utils/storage/bitfield.h>
+
+#include <unittest/harness.h>
 
 using outpost::Bitfield;
 
 class BitfieldTest : public testing::Test
 {
 public:
-    BitfieldTest() :
-        data { 0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xBC, 0xDE }
+    BitfieldTest() : data{0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xBC, 0xDE}
     {
     }
 
@@ -96,7 +95,7 @@ TEST_F(BitfieldTest, readTwoBytesWithOffset)
 
 TEST_F(BitfieldTest, readTwoBytesWithOffset2)
 {
-    uint8_t reference[4] = { 0xFF, 0x00, 0x00, 0xFF };
+    uint8_t reference[4] = {0xFF, 0x00, 0x00, 0xFF};
 
     uint16_t value = Bitfield::read<8, 23>(reference);
     EXPECT_EQ(0x0000U, value);
@@ -149,7 +148,7 @@ TEST_F(BitfieldTest, writeTwoBytesWithOffset)
 
 TEST_F(BitfieldTest, writeTwoBytesWithOffset2)
 {
-    uint8_t buffer[4] = { 0xFF, 0xFF, 0xFF, 0xFF };
+    uint8_t buffer[4] = {0xFF, 0xFF, 0xFF, 0xFF};
 
     Bitfield::write<8, 23>(buffer, 0);
     EXPECT_EQ(0xFFU, buffer[0]);

@@ -19,8 +19,7 @@
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::CircularSinglyLinkedList() :
-    mHead(0)
+outpost::CircularSinglyLinkedList<T>::CircularSinglyLinkedList() : mHead(0)
 {
 }
 
@@ -201,7 +200,7 @@ outpost::CircularSinglyLinkedList<T>::removeNode(T* node)
     if (mHead != 0)
     {
         T* previous = 0;
-        T* current  = mHead;
+        T* current = mHead;
 
         // Iterate trough the list until the node is found
         T* result = 0;
@@ -246,7 +245,7 @@ outpost::CircularSinglyLinkedList<T>::remove(Condition condition)
     if (mHead != 0)
     {
         T* previous = 0;
-        T* current  = mHead;
+        T* current = mHead;
 
         // Iterate trough the list until the node is found
         do
@@ -287,16 +286,16 @@ outpost::CircularSinglyLinkedList<T>::removeAll(Condition condition)
     if (mHead != 0)
     {
         T* previous = 0;
-        T* current  = 0;
+        T* current = 0;
 
         T* nextPrevious = mHead;
-        T* nextCurrent  = mHead->mNext;
+        T* nextCurrent = mHead->mNext;
 
         // Iterate trough the list until the node is found
         do
         {
             previous = nextPrevious;
-            current  = nextCurrent;
+            current = nextCurrent;
             if (condition(*current))
             {
                 // End of list reached
@@ -338,16 +337,16 @@ outpost::CircularSinglyLinkedList<T>::removeAll(Condition condition, PostConditi
     if (mHead != 0)
     {
         T* previous = 0;
-        T* current  = 0;
+        T* current = 0;
 
         T* nextPrevious = mHead;
-        T* nextCurrent  = mHead->mNext;
+        T* nextCurrent = mHead->mNext;
 
         // Iterate trough the list until the node is found
         do
         {
             previous = nextPrevious;
-            current  = nextCurrent;
+            current = nextCurrent;
             if (condition(*current))
             {
                 // End of list reached
@@ -405,7 +404,7 @@ outpost::CircularSinglyLinkedList<T>::removeFirst()
 }
 
 // ----------------------------------------------------------------------------
-template<typename T>
+template <typename T>
 size_t
 outpost::CircularSinglyLinkedList<T>::size() const
 {
@@ -424,9 +423,7 @@ outpost::CircularSinglyLinkedList<T>::size() const
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::Iterator::Iterator() :
-    mNode(0),
-    mLastNode(0)
+outpost::CircularSinglyLinkedList<T>::Iterator::Iterator() : mNode(0), mLastNode(0)
 {
 }
 
@@ -484,24 +481,20 @@ outpost::CircularSinglyLinkedList<T>::Iterator::operator!=(const Iterator& other
 }
 
 template <typename T>
-T&
-outpost::CircularSinglyLinkedList<T>::Iterator::operator*()
+T& outpost::CircularSinglyLinkedList<T>::Iterator::operator*()
 {
     return *this->mNode;
 }
 
 template <typename T>
-T*
-outpost::CircularSinglyLinkedList<T>::Iterator::operator->()
+T* outpost::CircularSinglyLinkedList<T>::Iterator::operator->()
 {
     return this->mNode;
 }
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator() :
-    mNode(0),
-    mLastNode(0)
+outpost::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator() : mNode(0), mLastNode(0)
 {
 }
 
@@ -566,15 +559,13 @@ outpost::CircularSinglyLinkedList<T>::ConstIterator::operator!=(const ConstItera
 }
 
 template <typename T>
-const T&
-outpost::CircularSinglyLinkedList<T>::ConstIterator::operator*() const
+const T& outpost::CircularSinglyLinkedList<T>::ConstIterator::operator*() const
 {
     return *this->mNode;
 }
 
 template <typename T>
-const T*
-outpost::CircularSinglyLinkedList<T>::ConstIterator::operator->() const
+const T* outpost::CircularSinglyLinkedList<T>::ConstIterator::operator->() const
 {
     return this->mNode;
 }

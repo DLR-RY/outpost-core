@@ -15,10 +15,10 @@
 #ifndef OUTPOST_CRC8_H
 #define OUTPOST_CRC8_H
 
-#include <stdint.h>
-#include <stddef.h>
-
 #include <outpost/utils/container/slice.h>
+
+#include <stddef.h>
+#include <stdint.h>
 
 namespace outpost
 {
@@ -34,14 +34,11 @@ namespace outpost
 class Crc8Ccitt
 {
 public:
-    inline
-    Crc8Ccitt() :
-        mCrc(initialValue)
+    inline Crc8Ccitt() : mCrc(initialValue)
     {
     }
 
-    inline
-    ~Crc8Ccitt()
+    inline ~Crc8Ccitt()
     {
     }
 
@@ -117,14 +114,11 @@ private:
 class Crc8CcittReversed
 {
 public:
-    inline
-    Crc8CcittReversed() :
-        mCrc(initialValue)
+    inline Crc8CcittReversed() : mCrc(initialValue)
     {
     }
 
-    inline
-    ~Crc8CcittReversed()
+    inline ~Crc8CcittReversed()
     {
     }
 
@@ -185,6 +179,6 @@ private:
 
     uint8_t mCrc;
 };
-}
+}  // namespace outpost
 
 #endif

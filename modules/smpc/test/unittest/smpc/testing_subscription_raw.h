@@ -21,7 +21,6 @@ namespace unittest
 {
 namespace smpc
 {
-
 class TestingSubscriptionRaw : public outpost::smpc::SubscriptionRaw
 {
 public:
@@ -29,7 +28,7 @@ public:
     using SubscriptionRaw::releaseAllSubscriptions;
 };
 
-}
-}
+}  // namespace smpc
+}  // namespace unittest
 
-#endif // UNITTEST_SMPC_TESTING_SUBSCRIPTION_RAW_H
+#endif  // UNITTEST_SMPC_TESTING_SUBSCRIPTION_RAW_H

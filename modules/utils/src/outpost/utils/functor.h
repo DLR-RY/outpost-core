@@ -19,24 +19,23 @@
 
 namespace outpost
 {
-
-template<typename FnType>
+template <typename FnType>
 struct FunctionSignature;
 
-template<typename R>
+template <typename R>
 struct FunctionSignature<R()>
 {
     typedef R ReturnType;
 };
 
-template<typename R, typename P1>
+template <typename R, typename P1>
 struct FunctionSignature<R(P1)>
 {
     typedef R ReturnType;
     typedef P1 Parameter1Type;
 };
 
-template<typename R, typename P1, typename P2>
+template <typename R, typename P1, typename P2>
 struct FunctionSignature<R(P1, P2)>
 {
     typedef R ReturnType;
@@ -60,10 +59,7 @@ public:
         typedef ReturnType (U::*Type)(Parameter1Type);
     };
 
-    inline
-    Functor1() :
-        mObject(0),
-        mFunction(0)
+    inline Functor1() : mObject(0), mFunction(0)
     {
     }
 
@@ -76,10 +72,8 @@ public:
      *      Member function pointer of the subscribing class.
      */
     template <typename U>
-    inline
-    Functor1(U& object,
-             typename FunctionType<U>::Type function) :
-        mObject(reinterpret_cast<Callable *>(&object)),
+    inline Functor1(U& object, typename FunctionType<U>::Type function) :
+        mObject(reinterpret_cast<Callable*>(&object)),
         mFunction(reinterpret_cast<FunctionBaseType>(function))
     {
     }
@@ -124,18 +118,13 @@ public:
         typedef ReturnType (U::*Type)();
     };
 
-    inline
-    Functor0() :
-        mObject(0),
-        mFunction(0)
+    inline Functor0() : mObject(0), mFunction(0)
     {
     }
 
     template <typename U>
-    inline
-    Functor0(U& object,
-             typename FunctionType<U>::Type function) :
-        mObject(reinterpret_cast<Callable *>(&object)),
+    inline Functor0(U& object, typename FunctionType<U>::Type function) :
+        mObject(reinterpret_cast<Callable*>(&object)),
         mFunction(reinterpret_cast<FunctionBaseType>(function))
     {
     }
@@ -176,18 +165,13 @@ public:
         typedef ReturnType (U::*Type)(Parameter1Type, Parameter2Type);
     };
 
-    inline
-    Functor2() :
-        mObject(0),
-        mFunction(0)
+    inline Functor2() : mObject(0), mFunction(0)
     {
     }
 
     template <typename U>
-    inline
-    Functor2(U& object,
-             typename FunctionType<U>::Type function) :
-        mObject(reinterpret_cast<Callable *>(&object)),
+    inline Functor2(U& object, typename FunctionType<U>::Type function) :
+        mObject(reinterpret_cast<Callable*>(&object)),
         mFunction(reinterpret_cast<FunctionBaseType>(function))
     {
     }
@@ -211,6 +195,6 @@ private:
     FunctionBaseType mFunction;
 };
 
-}
+}  // namespace outpost
 
 #endif

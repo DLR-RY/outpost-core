@@ -19,7 +19,6 @@ namespace outpost
 {
 namespace smpc
 {
-
 /**
  * Empty base class for every class that should receive data from
  * a topic.
@@ -37,7 +36,7 @@ class Subscriber
 {
 };
 
-}
-}
+}  // namespace smpc
+}  // namespace outpost
 
 #endif

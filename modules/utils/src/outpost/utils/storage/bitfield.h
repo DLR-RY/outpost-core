@@ -19,7 +19,6 @@
 
 namespace outpost
 {
-
 /**
  * Set and get multiple bits from a byte array.
  *
@@ -118,7 +117,7 @@ private:
     static const int numberOfBitsPerByte = 8;
 };
 
-}
+}  // namespace outpost
 
 #include "bitfield_impl.h"
 

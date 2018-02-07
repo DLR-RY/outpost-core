@@ -15,14 +15,13 @@
 #ifndef OUTPOST_FIXED_SIZE_ARRAY_H
 #define OUTPOST_FIXED_SIZE_ARRAY_H
 
-#include <stddef.h>
-#include <string.h>     // for memcpy
-
 #include <outpost/utils/meta.h>
+
+#include <stddef.h>
+#include <string.h>  // for memcpy
 
 namespace outpost
 {
-
 /**
  * Wrapper for C style arrays with a fixed length.
  *
@@ -40,15 +39,12 @@ public:
 
     friend class FixedSizeArray<const T, N>;
 
-    constexpr
-    FixedSizeArray()
+    constexpr FixedSizeArray()
     {
     }
 
     template <typename... U>
-    explicit constexpr
-    FixedSizeArray(const U... ts) :
-        mData { ts... }
+    explicit constexpr FixedSizeArray(const U... ts) : mData{ts...}
     {
     }
 
@@ -67,16 +63,14 @@ public:
      * \param array
      *      Array with should be wrapped.
      */
-    explicit inline
-    FixedSizeArray(T (&array)[N])
+    explicit inline FixedSizeArray(T (&array)[N])
     {
         memcpy(mData, array, sizeof(mData));
     }
 
     // This constructor is non-explicit to allow for a conversion from
     // const to non-const
-    inline
-    FixedSizeArray(const FixedSizeArray<NonConstType, N>& rhs)
+    inline FixedSizeArray(const FixedSizeArray<NonConstType, N>& rhs)
     {
         memcpy(mData, rhs.mData, sizeof(mData));
     }
@@ -87,8 +81,8 @@ public:
      * Example:
      * \code
      * uint8_t array[7];
-     * FixedSizeArray<uint8_t, 4> wrappedArray = FixedSizeArray<uint8_t, 4>::fromArray(array);
-     * \endcode
+     * FixedSizeArray<uint8_t, 4> wrappedArray = FixedSizeArray<uint8_t,
+     * 4>::fromArray(array); \endcode
      *
      * \param array
      *      Pointer to the first element of the array.
@@ -135,8 +129,7 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline T&
-    operator[](size_t index)
+    inline T& operator[](size_t index)
     {
         return mData[index];
     }
@@ -147,8 +140,7 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline const T&
-    operator[](size_t index) const
+    inline const T& operator[](size_t index) const
     {
         return mData[index];
     }
@@ -171,8 +163,7 @@ public:
 
     friend class FixedSizeArrayView<const T, N>;
 
-    FixedSizeArrayView(T* array, size_t offset) :
-        mData(&array[offset])
+    FixedSizeArrayView(T* array, size_t offset) : mData(&array[offset])
     {
     }
 
@@ -191,17 +182,13 @@ public:
      * \param array
      *      Array with should be wrapped.
      */
-    explicit inline
-    FixedSizeArrayView(T (&array)[N]) :
-        mData(array)
+    explicit inline FixedSizeArrayView(T (&array)[N]) : mData(array)
     {
     }
 
     // This constructor is non-explicit to allow for a conversion from
     // const to non-const
-    inline
-    FixedSizeArrayView(const FixedSizeArray<T, N>& rhs) :
-        mData(rhs.mData)
+    inline FixedSizeArrayView(const FixedSizeArray<T, N>& rhs) : mData(rhs.mData)
     {
     }
 
@@ -229,8 +216,7 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline T&
-    operator[](size_t index)
+    inline T& operator[](size_t index)
     {
         return mData[index];
     }
@@ -241,14 +227,12 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline const T&
-    operator[](size_t index) const
+    inline const T& operator[](size_t index) const
     {
         return mData[index];
     }
 
-    inline
-    operator FixedSizeArrayView<const T, N>() const
+    inline operator FixedSizeArrayView<const T, N>() const
     {
         return FixedSizeArrayView<const T, N>(mData, 0);
     }
@@ -269,6 +253,6 @@ private:
     T* mData;
 };
 
-}
+}  // namespace outpost
 
 #endif

@@ -15,16 +15,15 @@
 #ifndef OUTPOST_UTILS_FIXED_ORDERED_MAP_H
 #define OUTPOST_UTILS_FIXED_ORDERED_MAP_H
 
-#include <stdint.h>
-#include <stddef.h>
-
 #include "slice.h"
 
 #include <outpost/utils/iterator.h>
 
+#include <stddef.h>
+#include <stdint.h>
+
 namespace outpost
 {
-
 /**
  * Performs a binary search over the ID of all stored functions.
  *
@@ -55,10 +54,7 @@ public:
      *      C style array of entries.
      */
     template <size_t N>
-    explicit inline
-    FixedOrderedMap(Entry (&entries)[N]) :
-        mEntries(entries),
-        mNumberOfEntries(N)
+    explicit inline FixedOrderedMap(Entry (&entries)[N]) : mEntries(entries), mNumberOfEntries(N)
     {
     }
 
@@ -72,11 +68,9 @@ public:
      *      Number of entries in the list. The number of entries must be
      *      greater than zero!
      */
-    FixedOrderedMap(Entry* entries,
-                    size_t numberOfEntries);
+    FixedOrderedMap(Entry* entries, size_t numberOfEntries);
 
-    explicit inline
-    FixedOrderedMap(Slice<Entry> array) :
+    explicit inline FixedOrderedMap(Slice<Entry> array) :
         mEntries(&array[0]),
         mNumberOfEntries(array.getNumberOfElements())
     {
@@ -152,7 +146,7 @@ private:
     const size_t mNumberOfEntries;
 };
 
-}
+}  // namespace outpost
 
 #include "fixed_ordered_map_impl.h"
 

@@ -26,7 +26,6 @@ namespace unittest
 {
 namespace smpc
 {
-
 template <typename T>
 class TopicLogger
 {
@@ -55,8 +54,8 @@ private:
     std::list<NonConstType> mItems;
 };
 
-}
-}
+}  // namespace smpc
+}  // namespace unittest
 
 #include "topic_logger_impl.h"
 

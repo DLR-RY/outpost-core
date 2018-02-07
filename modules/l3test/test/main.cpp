@@ -12,11 +12,10 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <unittest/configurable_event_listener.h>
-
 #include <unittest/l3test/lua_path.h>
 
 int

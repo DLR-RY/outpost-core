@@ -186,15 +186,12 @@ public:
         bool
         operator!=(const Iterator& other) const;
 
-        T&
-        operator*();
+        T& operator*();
 
-        T*
-        operator->();
+        T* operator->();
 
     private:
-        explicit
-        Iterator(T* node);
+        explicit Iterator(T* node);
 
         /// Pointer to the current node. Set to NULL if end of list.
         T* mNode;
@@ -223,15 +220,12 @@ public:
         bool
         operator!=(const ConstIterator& other) const;
 
-        const T&
-        operator*() const;
+        const T& operator*() const;
 
-        const T*
-        operator->() const;
+        const T* operator->() const;
 
     private:
-        explicit
-        ConstIterator(T* node);
+        explicit ConstIterator(T* node);
 
         /// Pointer to the current node. Set to NULL if end of list.
         T* mNode;
@@ -259,7 +253,7 @@ private:
     List&
     operator=(const List&);
 };
-}
+}  // namespace outpost
 
 #include "list_impl.h"
 

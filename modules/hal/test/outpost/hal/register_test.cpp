@@ -12,9 +12,9 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <outpost/hal/register.h>
+
+#include <unittest/harness.h>
 
 struct TestRegister
 {
@@ -53,8 +53,8 @@ TEST(RegisterTest, shouldCompile)
         Register::write<TestRegister::General::Prescaler>(100);
 
         // Writing multiple values in one access
-        value = Register::getValue<TestRegister::General::Prescaler>(100) |
-                Register::getValue<TestRegister::General::Enable>(1);
+        value = Register::getValue<TestRegister::General::Prescaler>(100)
+                | Register::getValue<TestRegister::General::Enable>(1);
         Register::write<TestRegister::General::All>(value);
 
         // Bit operator access
@@ -91,6 +91,7 @@ TEST(RegisterTest, shouldAccessMemory)
 TEST(RegisterTest, shouldCastToPointer)
 {
     volatile uint32_t* expected = reinterpret_cast<volatile uint32_t*>(0xE0000010);
-    volatile uint32_t* output = Register::getPointer<volatile uint32_t>(TestRegister::General::address + 4*sizeof(uint32_t));
+    volatile uint32_t* output = Register::getPointer<volatile uint32_t>(
+            TestRegister::General::address + 4 * sizeof(uint32_t));
     EXPECT_EQ(expected, output);
 }

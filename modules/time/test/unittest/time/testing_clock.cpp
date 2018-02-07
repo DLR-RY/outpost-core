@@ -16,8 +16,7 @@
 
 using namespace unittest::time;
 
-TestingClock::TestingClock() :
-	currentTime(outpost::time::SpacecraftElapsedTime::startOfEpoch())
+TestingClock::TestingClock() : currentTime(outpost::time::SpacecraftElapsedTime::startOfEpoch())
 {
 }
 

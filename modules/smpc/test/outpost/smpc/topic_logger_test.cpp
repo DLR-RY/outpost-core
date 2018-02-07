@@ -13,9 +13,8 @@
 // ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
-
-#include <unittest/smpc/topic_logger.h>
 #include <unittest/smpc/testing_subscription.h>
+#include <unittest/smpc/topic_logger.h>
 
 using namespace outpost::smpc;
 
@@ -29,8 +28,7 @@ static Topic<Data> topic;
 class TopicLoggerTest : public testing::Test
 {
 public:
-    TopicLoggerTest() :
-        mLogger(topic)
+    TopicLoggerTest() : mLogger(topic)
     {
     }
 
@@ -53,7 +51,7 @@ public:
 
 TEST_F(TopicLoggerTest, shouldReceiveSingleItem)
 {
-    Data data = { 1 };
+    Data data = {1};
     topic.publish(data);
 
     ASSERT_FALSE(mLogger.isEmpty());
@@ -66,10 +64,10 @@ TEST_F(TopicLoggerTest, shouldReceiveSingleItem)
 
 TEST_F(TopicLoggerTest, shouldReceiveMultiple)
 {
-    Data data1 = { 1 };
-    Data data2 = { 2 };
-    Data data3 = { 3 };
-    Data data4 = { 4 };
+    Data data1 = {1};
+    Data data2 = {2};
+    Data data3 = {3};
+    Data data4 = {4};
 
     topic.publish(data1);
     topic.publish(data2);

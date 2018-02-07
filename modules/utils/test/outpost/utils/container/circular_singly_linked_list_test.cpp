@@ -12,9 +12,9 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <outpost/utils/container/circular_singly_linked_list.h>
+
+#include <unittest/harness.h>
 
 using namespace outpost;
 
@@ -52,9 +52,9 @@ TEST(CircularSinglyLinkedListTest, shouldAppendNodesToTheEnd)
 
     EXPECT_TRUE(list.isEmpty());
 
-    CircularSinglyLinkedListNode node1 = { 1, 0 };
-    CircularSinglyLinkedListNode node2 = { 3, 0 };
-    CircularSinglyLinkedListNode node3 = { 5, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {3, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
 
     list.append(&node1);
     list.append(&node2);
@@ -69,8 +69,7 @@ TEST(CircularSinglyLinkedListTest, get)
     class Condition
     {
     public:
-        Condition(uint8_t value) :
-            mValue(value)
+        Condition(uint8_t value) : mValue(value)
         {
         }
 
@@ -87,9 +86,9 @@ TEST(CircularSinglyLinkedListTest, get)
 
     EXPECT_EQ(0, list.get(Condition(2)));
 
-    CircularSinglyLinkedListNode node1 = { 1, 0 };
-    CircularSinglyLinkedListNode node2 = { 3, 0 };
-    CircularSinglyLinkedListNode node3 = { 5, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {3, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -152,9 +151,9 @@ TEST(CircularSinglyLinkedListTest, removeWithFunctor)
 {
     CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
 
-    CircularSinglyLinkedListNode node1 = { 1, 0 };
-    CircularSinglyLinkedListNode node2 = { 3, 0 };
-    CircularSinglyLinkedListNode node3 = { 5, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {3, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -163,8 +162,7 @@ TEST(CircularSinglyLinkedListTest, removeWithFunctor)
     class Condition
     {
     public:
-        Condition(uint8_t value) :
-            mValue(value)
+        Condition(uint8_t value) : mValue(value)
         {
         }
 
@@ -198,9 +196,9 @@ TEST(CircularSinglyLinkedListTest, removeWithConditionFunction)
 {
     CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
 
-    CircularSinglyLinkedListNode node1 = { 1, 0 };
-    CircularSinglyLinkedListNode node2 = { 3, 0 };
-    CircularSinglyLinkedListNode node3 = { 5, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {3, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
 
     list.append(&node1);
     list.append(&node2);
@@ -223,10 +221,10 @@ TEST(CircularSinglyLinkedListTest, removeAllWithConditionFunction)
 {
     CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
 
-    CircularSinglyLinkedListNode node1 = { 1, 0 };
-    CircularSinglyLinkedListNode node2 = { 3, 0 };
-    CircularSinglyLinkedListNode node3 = { 5, 0 };
-    CircularSinglyLinkedListNode node4 = { 3, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {3, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
+    CircularSinglyLinkedListNode node4 = {3, 0};
 
     list.append(&node1);
     list.append(&node2);
@@ -253,10 +251,10 @@ TEST(CircularSinglyLinkedListTest, shouldRemoveAll)
 {
     CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
 
-    CircularSinglyLinkedListNode node1 = { 1, 0 };
-    CircularSinglyLinkedListNode node2 = { 3, 0 };
-    CircularSinglyLinkedListNode node3 = { 5, 0 };
-    CircularSinglyLinkedListNode node4 = { 3, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {3, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
+    CircularSinglyLinkedListNode node4 = {3, 0};
 
     list.append(&node1);
     list.append(&node2);
@@ -270,38 +268,38 @@ TEST(CircularSinglyLinkedListTest, shouldRemoveAll)
 
 TEST(CircularSinglyLinkedListTest, shouldIterateOverPrependedElements)
 {
-	CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
+    CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
 
-	CircularSinglyLinkedListNode node1 = { 1, 0 };
-	CircularSinglyLinkedListNode node2 = { 3, 0 };
-	CircularSinglyLinkedListNode node3 = { 5, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {3, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
 
-	list.prepend(&node3);
-	list.prepend(&node2);
-	list.prepend(&node1);
+    list.prepend(&node3);
+    list.prepend(&node2);
+    list.prepend(&node1);
 
-	CircularSinglyLinkedList<CircularSinglyLinkedListNode>::Iterator it = list.begin();
+    CircularSinglyLinkedList<CircularSinglyLinkedListNode>::Iterator it = list.begin();
 
-	ASSERT_TRUE(it != list.end());
-	EXPECT_EQ(it->mValue, 1);
-	++it;
-	ASSERT_TRUE(it != list.end());
-	EXPECT_EQ(it->mValue, 3);
-	++it;
-	ASSERT_TRUE(it != list.end());
-	EXPECT_EQ(it->mValue, 5);
-	++it;
+    ASSERT_TRUE(it != list.end());
+    EXPECT_EQ(it->mValue, 1);
+    ++it;
+    ASSERT_TRUE(it != list.end());
+    EXPECT_EQ(it->mValue, 3);
+    ++it;
+    ASSERT_TRUE(it != list.end());
+    EXPECT_EQ(it->mValue, 5);
+    ++it;
 
-	ASSERT_FALSE(it != list.end());
+    ASSERT_FALSE(it != list.end());
 }
 
 TEST(CircularSinglyLinkedListTest, shouldIterateOverAppendedElements)
 {
     CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
 
-    CircularSinglyLinkedListNode node1 = { 1, 0 };
-    CircularSinglyLinkedListNode node2 = { 3, 0 };
-    CircularSinglyLinkedListNode node3 = { 5, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {3, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
 
     list.append(&node3);
     list.prepend(&node2);
@@ -326,11 +324,11 @@ TEST(CircularSinglyLinkedListTest, shouldIterateOverInsertedElements)
 {
     CircularSinglyLinkedList<CircularSinglyLinkedListNode> list;
 
-    CircularSinglyLinkedListNode node1 = { 1, 0 };
-    CircularSinglyLinkedListNode node2 = { 7, 0 };
-    CircularSinglyLinkedListNode node3 = { 5, 0 };
-    CircularSinglyLinkedListNode node4 = { 10, 0 };
-    CircularSinglyLinkedListNode node5 = { 2, 0 };
+    CircularSinglyLinkedListNode node1 = {1, 0};
+    CircularSinglyLinkedListNode node2 = {7, 0};
+    CircularSinglyLinkedListNode node3 = {5, 0};
+    CircularSinglyLinkedListNode node4 = {10, 0};
+    CircularSinglyLinkedListNode node5 = {2, 0};
 
     list.insert(&node1);
     list.insert(&node2);

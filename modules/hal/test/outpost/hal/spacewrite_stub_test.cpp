@@ -12,17 +12,15 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <unittest/hal/spacewire_stub.h>
+#include <unittest/harness.h>
 
 using outpost::hal::SpaceWire;
 
 class SpaceWireStubTest : public testing::Test
 {
 public:
-    SpaceWireStubTest() :
-        mSpaceWire(100)
+    SpaceWireStubTest() : mSpaceWire(100)
     {
     }
 
@@ -95,7 +93,8 @@ TEST(SpaceWireStubConnectionTest, shouldNotBringLinkUpOnClosedChannel)
 TEST_F(SpaceWireStubTest, shouldProvideTransmitBuffer)
 {
     SpaceWire::TransmitBuffer* buffer = nullptr;
-    ASSERT_EQ(SpaceWire::Result::success, mSpaceWire.requestBuffer(buffer, outpost::time::Duration::zero()));
+    ASSERT_EQ(SpaceWire::Result::success,
+              mSpaceWire.requestBuffer(buffer, outpost::time::Duration::zero()));
 
     ASSERT_NE(nullptr, buffer);
     EXPECT_FALSE(mSpaceWire.noUsedTransmitBuffers());
@@ -112,9 +111,7 @@ TEST_F(SpaceWireStubTest, shouldReleaseTransmitBuffer)
 
 TEST_F(SpaceWireStubTest, shouldTransmitData)
 {
-    std::vector<uint8_t> expectedData = {
-        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xAB, 0xCD
-    };
+    std::vector<uint8_t> expectedData = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xAB, 0xCD};
 
     SpaceWire::TransmitBuffer* buffer = nullptr;
     mSpaceWire.requestBuffer(buffer, outpost::time::Duration::zero());
@@ -134,18 +131,19 @@ TEST_F(SpaceWireStubTest, shouldTransmitData)
 
 TEST_F(SpaceWireStubTest, shouldReceiveData)
 {
-    std::vector<uint8_t> expectedData = {
-        0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xAB, 0xCD
-    };
+    std::vector<uint8_t> expectedData = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xAB, 0xCD};
 
-    mSpaceWire.mPacketsToReceive.emplace_back(unittest::hal::SpaceWireStub::Packet { expectedData, SpaceWire::eep });
+    mSpaceWire.mPacketsToReceive.emplace_back(
+            unittest::hal::SpaceWireStub::Packet{expectedData, SpaceWire::eep});
 
     SpaceWire::ReceiveBuffer buffer;
-    ASSERT_EQ(SpaceWire::Result::success, mSpaceWire.receive(buffer, outpost::time::Duration::zero()));
+    ASSERT_EQ(SpaceWire::Result::success,
+              mSpaceWire.receive(buffer, outpost::time::Duration::zero()));
 
     EXPECT_EQ(expectedData.size(), buffer.getLength());
     EXPECT_EQ(SpaceWire::eep, buffer.getEndMarker());
-    ASSERT_THAT(expectedData, testing::ElementsAreArray(buffer.getData().begin(), buffer.getLength()));
+    ASSERT_THAT(expectedData,
+                testing::ElementsAreArray(buffer.getData().begin(), buffer.getLength()));
 
     mSpaceWire.releaseBuffer(buffer);
 

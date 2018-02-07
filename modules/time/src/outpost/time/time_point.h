@@ -21,7 +21,6 @@ namespace outpost
 {
 namespace time
 {
-
 // forward declaration
 template <typename From, typename To>
 class TimeEpochConverter;
@@ -54,26 +53,21 @@ class TimeEpochConverter;
  * \ingroup time
  * \author  Fabian Greif
  */
-template<typename ReferenceEpoch>
+template <typename ReferenceEpoch>
 class TimePoint
 {
 public:
     typedef ReferenceEpoch Epoch;
 
-    inline constexpr
-    TimePoint() :
-        mDuration(Seconds(0))
+    inline constexpr TimePoint() : mDuration(Seconds(0))
     {
     }
 
-    inline constexpr
-    TimePoint(const TimePoint& other) :
-        mDuration(other.mDuration)
+    inline constexpr TimePoint(const TimePoint& other) : mDuration(other.mDuration)
     {
     }
 
-    inline
-    ~TimePoint() = default;
+    inline ~TimePoint() = default;
 
     inline constexpr Duration
     operator-(TimePoint other) const
@@ -189,9 +183,7 @@ public:
     }
 
 protected:
-    explicit inline constexpr
-    TimePoint(const Duration duration) :
-            mDuration(duration)
+    explicit inline constexpr TimePoint(const Duration duration) : mDuration(duration)
     {
     }
 
@@ -199,8 +191,8 @@ private:
     Duration mDuration;
 };
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #include "time_epoch.h"
 

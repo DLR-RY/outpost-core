@@ -21,7 +21,6 @@ namespace outpost
 {
 namespace time
 {
-
 // ----------------------------------------------------------------------------
 template <>
 class TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>
@@ -32,8 +31,7 @@ public:
     static inline TimePoint<GpsEpoch>
     convert(TimePoint<SpacecraftElapsedTimeEpoch> from)
     {
-        return TimePoint<GpsEpoch>::afterEpoch(from.timeSinceEpoch()
-                + offsetToGpsTime);
+        return TimePoint<GpsEpoch>::afterEpoch(from.timeSinceEpoch() + offsetToGpsTime);
     }
 
     static inline void
@@ -59,7 +57,8 @@ public:
     static inline TimePoint<SpacecraftElapsedTimeEpoch>
     convert(TimePoint<GpsEpoch> from)
     {
-        return TimePoint<SpacecraftElapsedTimeEpoch>::afterEpoch(from.timeSinceEpoch()
+        return TimePoint<SpacecraftElapsedTimeEpoch>::afterEpoch(
+                from.timeSinceEpoch()
                 - TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::offsetToGpsTime);
     }
 };
@@ -72,8 +71,8 @@ public:
     static const int64_t offsetDaysFromTaiToUnix = 4383;
     static const int64_t leapSecondsAtUnixEpoch = 10;
 
-    static const int64_t initialOffsetInSeconds = offsetDaysFromTaiToUnix * Duration::secondsPerDay
-                                                + leapSecondsAtUnixEpoch;
+    static const int64_t initialOffsetInSeconds =
+            offsetDaysFromTaiToUnix * Duration::secondsPerDay + leapSecondsAtUnixEpoch;
 
     struct LeapSecondCorrection
     {
@@ -85,8 +84,7 @@ public:
     };
 
     static int64_t
-    getCorrectionFactorForLeapSeconds(int64_t seconds,
-                                      LeapSecondCorrection::Type correction);
+    getCorrectionFactorForLeapSeconds(int64_t seconds, LeapSecondCorrection::Type correction);
 
     static TimePoint<UnixEpoch>
     convert(TimePoint<TaiEpoch> from);
@@ -96,7 +94,8 @@ template <>
 class TimeEpochConverter<UnixEpoch, TaiEpoch>
 {
 public:
-    static const int64_t initialOffsetInSeconds = TimeEpochConverter<TaiEpoch, UnixEpoch>::initialOffsetInSeconds;
+    static const int64_t initialOffsetInSeconds =
+            TimeEpochConverter<TaiEpoch, UnixEpoch>::initialOffsetInSeconds;
 
     static TimePoint<TaiEpoch>
     convert(TimePoint<UnixEpoch> from);
@@ -110,8 +109,8 @@ public:
     static const int64_t offsetDaysTaiToGps = 8040;
     static const int64_t offsetLeapSecondsTaiToGps = 19;
 
-    static const int64_t offsetInSeconds = offsetDaysTaiToGps * Duration::secondsPerDay
-                                         + offsetLeapSecondsTaiToGps;
+    static const int64_t offsetInSeconds =
+            offsetDaysTaiToGps * Duration::secondsPerDay + offsetLeapSecondsTaiToGps;
 
     static inline TimePoint<TaiEpoch>
     convert(TimePoint<GpsEpoch> from)
@@ -141,7 +140,7 @@ public:
     static inline TimePoint<UnixEpoch>
     convert(TimePoint<GpsEpoch> from)
     {
-        return from.convertTo<TimePoint<TaiEpoch> >().convertTo<TimePoint<UnixEpoch> >();
+        return from.convertTo<TimePoint<TaiEpoch>>().convertTo<TimePoint<UnixEpoch>>();
     }
 };
 
@@ -152,11 +151,11 @@ public:
     static inline TimePoint<GpsEpoch>
     convert(TimePoint<UnixEpoch> from)
     {
-        return from.convertTo<TimePoint<TaiEpoch> >().convertTo<TimePoint<GpsEpoch> >();
+        return from.convertTo<TimePoint<TaiEpoch>>().convertTo<TimePoint<GpsEpoch>>();
     }
 };
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #endif

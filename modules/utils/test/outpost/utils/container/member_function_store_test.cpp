@@ -12,20 +12,15 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <outpost/utils/container/member_function_store.h>
+
+#include <unittest/harness.h>
 
 using namespace outpost;
 
 struct TestClass
 {
-    TestClass() :
-        called1(0),
-        called2(0),
-        called3(0),
-        called4(0),
-        called5(0)
+    TestClass() : called1(0), called2(0), called3(0), called4(0), called5(0)
     {
     }
 

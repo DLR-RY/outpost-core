@@ -12,15 +12,15 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <stdint.h>
-
-#include <outpost/smpc/topic.h>
 #include <outpost/smpc/subscription.h>
+#include <outpost/smpc/topic.h>
 
+#include <unittest/harness.h>
 #include <unittest/smpc/testing_subscription.h>
 
+#include <stdint.h>
+
 #include <cstring>
-#include <unittest/harness.h>
 
 struct Data
 {
@@ -31,8 +31,7 @@ struct Data
 static bool
 operator==(Data const& lhs, Data const& rhs)
 {
-    return ((lhs.foo == rhs.foo) &&
-            (lhs.bar == rhs.bar));
+    return ((lhs.foo == rhs.foo) && (lhs.bar == rhs.bar));
 }
 
 class Component : public outpost::smpc::Subscriber
@@ -66,10 +65,7 @@ TEST(CommunicationTest, receiveSingle)
 
     outpost::smpc::Subscription::connectSubscriptionsToTopics();
 
-    Data data = {
-        0x12345678,
-        0x9876
-    };
+    Data data = {0x12345678, 0x9876};
 
     topic.publish(data);
 

@@ -15,10 +15,10 @@
 #ifndef OUTPOST_CRC16_H
 #define OUTPOST_CRC16_H
 
-#include <stdint.h>
-#include <stddef.h>
-
 #include <outpost/utils/container/slice.h>
+
+#include <stddef.h>
+#include <stdint.h>
 
 namespace outpost
 {
@@ -36,14 +36,11 @@ namespace outpost
 class Crc16Ccitt
 {
 public:
-    inline
-    Crc16Ccitt() :
-        mCrc(initialValue)
+    inline Crc16Ccitt() : mCrc(initialValue)
     {
     }
 
-    inline
-    ~Crc16Ccitt()
+    inline ~Crc16Ccitt()
     {
     }
 
@@ -105,6 +102,6 @@ private:
 
     uint16_t mCrc;
 };
-}
+}  // namespace outpost
 
 #endif

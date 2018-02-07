@@ -15,11 +15,10 @@
 #ifndef OUTPOST_UTILS_BITFIELD_IMPL_H
 #define OUTPOST_UTILS_BITFIELD_IMPL_H
 
-#include "bitfield.h"
-
 #include "bit_access.h"
-#include "serialize.h"
+#include "bitfield.h"
 #include "bitorder.h"
+#include "serialize.h"
 
 template <int offset>
 bool
@@ -75,17 +74,17 @@ outpost::Bitfield::write(uint8_t* byteArray, uint16_t value)
     const uint16_t numberOfBits = (end - start) + 1;
 
     // pos of bits to set (in 16-bit word)
-    int bitpos    = 16 - (pos + numberOfBits);
+    int bitpos = 16 - (pos + numberOfBits);
 
     // bitmask for number of bits to set
     uint16_t mask = static_cast<uint16_t>(((1 << numberOfBits) - 1) << bitpos);
 
     // shift value to desired position
-    value         = static_cast<uint16_t>(value << bitpos);
+    value = static_cast<uint16_t>(value << bitpos);
 
     // make sure to load the bytes in big endian order
-    uint16_t word = (static_cast<uint16_t>(byteArray[index]) << numberOfBitsPerByte) |
-                     static_cast<uint16_t>(byteArray[index + 1]);
+    uint16_t word = (static_cast<uint16_t>(byteArray[index]) << numberOfBitsPerByte)
+                    | static_cast<uint16_t>(byteArray[index + 1]);
 
     // clear bit field
     word = static_cast<uint16_t>(word & ~mask);
@@ -95,7 +94,7 @@ outpost::Bitfield::write(uint8_t* byteArray, uint16_t value)
 
     // make sure to store the bytes in big-endian order
     // most significant first
-    byteArray[index]     = static_cast<uint8_t>(word >> numberOfBitsPerByte);
+    byteArray[index] = static_cast<uint8_t>(word >> numberOfBitsPerByte);
     byteArray[index + 1] = static_cast<uint8_t>(word);
 }
 

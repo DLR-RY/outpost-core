@@ -19,7 +19,7 @@
 //#define DEBUG_EN
 #ifdef DEBUG_EN
 #include <stdio.h>
-#define console_out   printf
+#define console_out printf
 #else
 #define console_out(...)
 #endif
@@ -51,7 +51,7 @@ public:
     static void
     replyStatus(uint8_t status);
 };
-}
-}
+}  // namespace comm
+}  // namespace outpost
 
 #endif /* MODULES_HAL_PROTOCOL_RMAP_RMAP_STATUS_H_ */

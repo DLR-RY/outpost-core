@@ -12,9 +12,9 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <outpost/utils/storage/bit_access.h>
+
+#include <unittest/harness.h>
 
 using outpost::BitAccess;
 

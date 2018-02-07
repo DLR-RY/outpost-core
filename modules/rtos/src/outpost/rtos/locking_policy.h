@@ -23,7 +23,6 @@ namespace rtos
 {
 namespace locking_policy
 {
-
 /**
  * No locking.
  */
@@ -33,13 +32,11 @@ public:
     class Lock
     {
     public:
-        explicit inline
-        Lock(const SingleThreaded&)
+        explicit inline Lock(const SingleThreaded&)
         {
         }
 
-        inline
-        ~Lock()
+        inline ~Lock()
         {
         }
 
@@ -61,15 +58,12 @@ public:
     class Lock
     {
     public:
-        explicit inline
-        Lock(const MutexLock& parent) :
-            mMutex(parent.mMutex)
+        explicit inline Lock(const MutexLock& parent) : mMutex(parent.mMutex)
         {
             mMutex.acquire();
         }
 
-        inline
-        ~Lock()
+        inline ~Lock()
         {
             mMutex.release();
         }
@@ -100,14 +94,12 @@ public:
     class Lock
     {
     public:
-        explicit inline
-        Lock(const SharedMutexLock&)
+        explicit inline Lock(const SharedMutexLock&)
         {
             mutex.acquire();
         }
 
-        inline
-        ~Lock()
+        inline ~Lock()
         {
             mutex.release();
         }
@@ -124,8 +116,8 @@ private:
     friend class Lock;
 };
 
-}
-}
-}
+}  // namespace locking_policy
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

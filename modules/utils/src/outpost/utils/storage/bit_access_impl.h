@@ -45,13 +45,14 @@ class ValueType<uint32_t>
 public:
     static const int width = 32;
 };
-}
+}  // namespace outpost
 
 template <typename T, int offset>
 bool
 outpost::BitAccess::get(const T& data)
 {
-    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
+    static_assert(offset <= (ValueType<T>::width - 1),
+                  "Access out of the range of the register width!");
 
     bool value = data & (1 << offset);
     return value;
@@ -76,7 +77,8 @@ template <typename T, int offset>
 void
 outpost::BitAccess::set(T& data, bool value)
 {
-    static_assert(offset <= (ValueType<T>::width - 1), "Access out of the range of the register width!");
+    static_assert(offset <= (ValueType<T>::width - 1),
+                  "Access out of the range of the register width!");
 
     T reg = data;
     T mask = 1 << offset;
@@ -151,6 +153,6 @@ BitAccess::set<uint32_t, 31, 24>(uint32_t& data, uint32_t value)
 
     data = (reg & maskClear) | ((value << 24) & maskValue);
 }
-}
+}  // namespace outpost
 
 #endif

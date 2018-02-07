@@ -17,11 +17,12 @@
 #ifndef OUTPOST_HAL_SERIAL_H
 #define OUTPOST_HAL_SERIAL_H
 
-#include <cstddef>
-#include <stdint.h>
-
 #include <outpost/time/duration.h>
 #include <outpost/utils/container/slice.h>
+
+#include <stdint.h>
+
+#include <cstddef>
 
 namespace outpost
 {
@@ -35,8 +36,7 @@ namespace hal
 class Serial
 {
 public:
-    virtual
-    ~Serial() = 0;
+    virtual ~Serial() = 0;
 
     /**
      * Close the UART device
@@ -115,7 +115,7 @@ public:
     flushTransmitter() = 0;
 };
 
-}
-}
+}  // namespace hal
+}  // namespace outpost
 
 #endif

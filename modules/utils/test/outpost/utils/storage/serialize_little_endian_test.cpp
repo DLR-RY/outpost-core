@@ -21,7 +21,9 @@ using namespace outpost;
 
 TEST(SerialzeLittleEndianTest, store)
 {
-    uint8_t data[16] = { 0, };
+    uint8_t data[16] = {
+            0,
+    };
 
     EXPECT_EQ(0, data[0]);
 
@@ -52,7 +54,9 @@ TEST(SerialzeLittleEndianTest, store)
 
 TEST(SerializeLittleEndianTest, shouldStorePackedData)
 {
-    uint8_t data[6] = { 0, };
+    uint8_t data[6] = {
+            0,
+    };
 
     SerializeLittleEndian payload(data);
 
@@ -70,7 +74,9 @@ TEST(SerializeLittleEndianTest, shouldStorePackedData)
 
 TEST(SerialzeLittleEndianTest, storeTemplateExplicit)
 {
-    uint8_t data[20] = { 0, };
+    uint8_t data[20] = {
+            0,
+    };
 
     EXPECT_EQ(0, data[0]);
 
@@ -117,7 +123,9 @@ TEST(SerialzeLittleEndianTest, storeTemplateExplicit)
 
 TEST(SerialzeLittleEndianTest, storeTemplateImplicit)
 {
-    uint8_t data[20] = { 0, };
+    uint8_t data[20] = {
+            0,
+    };
 
     EXPECT_EQ(0, data[0]);
 

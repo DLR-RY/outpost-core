@@ -203,15 +203,12 @@ public:
         bool
         operator!=(const Iterator& other) const;
 
-        T&
-        operator*();
+        T& operator*();
 
-        T*
-        operator->();
+        T* operator->();
 
     private:
-        explicit
-        Iterator(T* node, T* lastNode);
+        explicit Iterator(T* node, T* lastNode);
 
         /// Pointer to the current node.
         T* mNode;
@@ -219,43 +216,40 @@ public:
     };
 
     class ConstIterator
-	{
-	public:
-		friend class CircularSinglyLinkedList;
+    {
+    public:
+        friend class CircularSinglyLinkedList;
 
-		ConstIterator();
+        ConstIterator();
 
-		/// Conversion from Iterator to ConstIterator
-		ConstIterator(const Iterator& other);
+        /// Conversion from Iterator to ConstIterator
+        ConstIterator(const Iterator& other);
 
-		ConstIterator(const ConstIterator& other);
+        ConstIterator(const ConstIterator& other);
 
-		ConstIterator&
-		operator=(const ConstIterator& other);
+        ConstIterator&
+        operator=(const ConstIterator& other);
 
-		ConstIterator&
-		operator++();
+        ConstIterator&
+        operator++();
 
-		bool
-		operator==(const ConstIterator& other) const;
+        bool
+        operator==(const ConstIterator& other) const;
 
-		bool
-		operator!=(const ConstIterator& other) const;
+        bool
+        operator!=(const ConstIterator& other) const;
 
-		const T&
-		operator*() const;
+        const T& operator*() const;
 
-		const T*
-		operator->() const;
+        const T* operator->() const;
 
-	private:
-		explicit
-		ConstIterator(T* node, T* lastNode);
+    private:
+        explicit ConstIterator(T* node, T* lastNode);
 
-		/// Pointer to the current node.
-		T* mNode;
-		T* mLastNode;
-	};
+        /// Pointer to the current node.
+        T* mNode;
+        T* mLastNode;
+    };
 
     Iterator
     begin();
@@ -264,10 +258,10 @@ public:
     end();
 
     ConstIterator
-	begin() const;
+    begin() const;
 
     ConstIterator
-	end() const;
+    end() const;
 
 private:
     /// Points to the last element in the list
@@ -280,7 +274,7 @@ private:
     CircularSinglyLinkedList&
     operator=(const CircularSinglyLinkedList&);
 };
-}
+}  // namespace outpost
 
 #include "circular_singly_linked_list_impl.h"
 

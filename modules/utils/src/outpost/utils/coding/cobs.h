@@ -15,16 +15,15 @@
 #ifndef OUTPOST_UTILS_COBS_H
 #define OUTPOST_UTILS_COBS_H
 
-#include <stdint.h>
-#include <stddef.h>
-
 #include <outpost/utils/container/slice.h>
+
+#include <stddef.h>
+#include <stdint.h>
 
 namespace outpost
 {
 namespace utils
 {
-
 /**
  * COBS (Consistent Overhead Byte Stuffing) encoding.
  *
@@ -58,7 +57,7 @@ public:
     CobsEncodingGeneratorBase(const CobsEncodingGeneratorBase& other);
 
     CobsEncodingGeneratorBase&
-    operator =(const CobsEncodingGeneratorBase& other);
+    operator=(const CobsEncodingGeneratorBase& other);
 
     inline bool
     isFinished()
@@ -114,8 +113,7 @@ public:
      *     will never be bigger than \p maximumOutputLength.
      */
     static size_t
-    encode(outpost::Slice<const uint8_t> input,
-		   outpost::Slice<uint8_t> output);
+    encode(outpost::Slice<const uint8_t> input, outpost::Slice<uint8_t> output);
 
     static size_t
     getMaximumSizeOfEncodedData(size_t inputLength);
@@ -135,15 +133,14 @@ public:
      *     be bigger than \p inputLength.
      */
     static size_t
-    decode(outpost::Slice<const uint8_t> input,
-           uint8_t* output);
+    decode(outpost::Slice<const uint8_t> input, uint8_t* output);
 };
 
 typedef CobsEncodingGeneratorBase<254> CobsEncodingGenerator;
 typedef CobsBase<254> Cobs;
 
-}
-}
+}  // namespace utils
+}  // namespace outpost
 
 #include "cobs_impl.h"
 

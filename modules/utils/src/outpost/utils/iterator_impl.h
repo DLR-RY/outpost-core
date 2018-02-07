@@ -21,14 +21,12 @@ namespace outpost
 {
 // Implementation of inline functions
 template <typename T>
-ArrayIterator<T>::ArrayIterator(T* parameters) :
-    mPos(parameters)
+ArrayIterator<T>::ArrayIterator(T* parameters) : mPos(parameters)
 {
 }
 
 template <typename T>
-ArrayIterator<T>::ArrayIterator(const ArrayIterator& other) :
-    mPos(other.mPos)
+ArrayIterator<T>::ArrayIterator(const ArrayIterator& other) : mPos(other.mPos)
 {
 }
 
@@ -72,41 +70,35 @@ ArrayIterator<T>::operator!=(ArrayIterator other) const
 
 // ----------------------------------------------------------------------------
 template <typename T>
-DefaultArrayIterator<T>::DefaultArrayIterator(T* parameters) :
-    ArrayIterator<T>(parameters)
+DefaultArrayIterator<T>::DefaultArrayIterator(T* parameters) : ArrayIterator<T>(parameters)
 {
 }
 
 template <typename T>
-T&
-DefaultArrayIterator<T>::operator*()
+T& DefaultArrayIterator<T>::operator*()
 {
     return *this->mPos;
 }
 
 template <typename T>
-T*
-DefaultArrayIterator<T>::operator->()
+T* DefaultArrayIterator<T>::operator->()
 {
     return this->mPos;
 }
 
 // ----------------------------------------------------------------------------
 template <typename T>
-ConstArrayIterator<T>::ConstArrayIterator(const T* parameters) :
-    mPos(parameters)
+ConstArrayIterator<T>::ConstArrayIterator(const T* parameters) : mPos(parameters)
 {
 }
 
 template <typename T>
-ConstArrayIterator<T>::ConstArrayIterator(const ArrayIterator<T>& other) :
-    mPos(other.mPos)
+ConstArrayIterator<T>::ConstArrayIterator(const ArrayIterator<T>& other) : mPos(other.mPos)
 {
 }
 
 template <typename T>
-ConstArrayIterator<T>::ConstArrayIterator(const ConstArrayIterator& other) :
-    mPos(other.mPos)
+ConstArrayIterator<T>::ConstArrayIterator(const ConstArrayIterator& other) : mPos(other.mPos)
 {
 }
 
@@ -162,19 +154,17 @@ DefaultConstArrayIterator<T>::DefaultConstArrayIterator(const DefaultArrayIterat
 }
 
 template <typename T>
-const T&
-DefaultConstArrayIterator<T>::operator*() const
+const T& DefaultConstArrayIterator<T>::operator*() const
 {
     return *this->mPos;
 }
 
 template <typename T>
-const T*
-DefaultConstArrayIterator<T>::operator->() const
+const T* DefaultConstArrayIterator<T>::operator->() const
 {
     return this->mPos;
 }
 
-}
+}  // namespace outpost
 
 #endif

@@ -18,13 +18,13 @@
  *
  * \author  Fabian Greif
  */
+#include <outpost/utils/coding/crc8.h>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <outpost/utils/coding/crc8.h>
-
-using outpost::Crc8CcittReversed;
 using outpost::Crc8Ccitt;
+using outpost::Crc8CcittReversed;
 
 static uint8_t
 crc8_update_bitwise_msb_first(uint8_t crc, uint8_t data)
@@ -46,11 +46,22 @@ crc8_update_bitwise_msb_first(uint8_t crc, uint8_t data)
 
 TEST(Crc8CcittTest, bitwiseTest)
 {
-    uint8_t data[] =
-    {
-        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
-        0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF
-    };
+    uint8_t data[] = {0xA0,
+                      0xA1,
+                      0xA2,
+                      0xA3,
+                      0xA4,
+                      0xA5,
+                      0xA6,
+                      0xA7,
+                      0xA8,
+                      0xA9,
+                      0xAA,
+                      0xAB,
+                      0xAC,
+                      0xAD,
+                      0xAE,
+                      0xAF};
 
     uint8_t crc = 0;
     for (auto d : data)
@@ -75,10 +86,7 @@ TEST(Crc8CcittReversedTest, initialValue)
  */
 TEST(Crc8CcittReversedTest, rmapTestPattern1)
 {
-    uint8_t data[] = {
-        0x01, 0x02, 0x03, 0x04,
-        0x05, 0x06, 0x07, 0x08
-    };
+    uint8_t data[] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
 
     EXPECT_EQ(0xB0U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
@@ -89,14 +97,8 @@ TEST(Crc8CcittReversedTest, rmapTestPattern1)
  */
 TEST(Crc8CcittReversedTest, rmapTestPattern2)
 {
-    uint8_t data[] = {
-        0x53, 0x70, 0x61, 0x63,
-        0x65, 0x57, 0x69, 0x72,
-        0x65, 0x20, 0x69, 0x73,
-        0x20, 0x62, 0x65, 0x61,
-        0x75, 0x74, 0x69, 0x66,
-        0x75, 0x6C, 0x21, 0x21
-    };
+    uint8_t data[] = {0x53, 0x70, 0x61, 0x63, 0x65, 0x57, 0x69, 0x72, 0x65, 0x20, 0x69, 0x73,
+                      0x20, 0x62, 0x65, 0x61, 0x75, 0x74, 0x69, 0x66, 0x75, 0x6C, 0x21, 0x21};
 
     EXPECT_EQ(0x84U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
@@ -107,12 +109,22 @@ TEST(Crc8CcittReversedTest, rmapTestPattern2)
  */
 TEST(Crc8CcittReversedTest, rmapTestPattern3)
 {
-    uint8_t data[] = {
-        0x10, 0x56, 0xC3, 0x95,
-        0xA5, 0x75, 0x38, 0x63,
-        0x2F, 0x86, 0x7B, 0x01,
-        0x32, 0xDE, 0x35, 0x7A
-    };
+    uint8_t data[] = {0x10,
+                      0x56,
+                      0xC3,
+                      0x95,
+                      0xA5,
+                      0x75,
+                      0x38,
+                      0x63,
+                      0x2F,
+                      0x86,
+                      0x7B,
+                      0x01,
+                      0x32,
+                      0xDE,
+                      0x35,
+                      0x7A};
 
     EXPECT_EQ(0x18U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
@@ -122,13 +134,23 @@ TEST(Crc8CcittReversedTest, rmapTestPattern3)
  */
 TEST(Crc8CcittReversedTest, rmapTestPattern3Total)
 {
-    uint8_t data[] = {
-        0x10, 0x56, 0xC3, 0x95,
-        0xA5, 0x75, 0x38, 0x63,
-        0x2F, 0x86, 0x7B, 0x01,
-        0x32, 0xDE, 0x35, 0x7A,
-        0x18
-    };
+    uint8_t data[] = {0x10,
+                      0x56,
+                      0xC3,
+                      0x95,
+                      0xA5,
+                      0x75,
+                      0x38,
+                      0x63,
+                      0x2F,
+                      0x86,
+                      0x7B,
+                      0x01,
+                      0x32,
+                      0xDE,
+                      0x35,
+                      0x7A,
+                      0x18};
 
     EXPECT_EQ(0U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
 }
@@ -138,19 +160,38 @@ TEST(Crc8CcittReversedTest, rmapTestPattern3Total)
  */
 TEST(Crc8CcittReversedTest, rmapCrcTestPattern1)
 {
-    uint8_t header[] = {
-        0xFE, 0x01, 0x6C, 0x00,
-        0x67,
-        0x00, 0x00,
-        0x00,
-        0xA0, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x10
-    };
+    uint8_t header[] = {0xFE,
+                        0x01,
+                        0x6C,
+                        0x00,
+                        0x67,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0xA0,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x00,
+                        0x10};
 
-    uint8_t data[] = {
-        0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF,
-        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17
-    };
+    uint8_t data[] = {0x01,
+                      0x23,
+                      0x45,
+                      0x67,
+                      0x89,
+                      0xAB,
+                      0xCD,
+                      0xEF,
+                      0x10,
+                      0x11,
+                      0x12,
+                      0x13,
+                      0x14,
+                      0x15,
+                      0x16,
+                      0x17};
 
     EXPECT_EQ(0x9FU, Crc8CcittReversed::calculate(outpost::asSlice(header)));
     EXPECT_EQ(0x56U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
@@ -163,18 +204,28 @@ TEST(Crc8CcittReversedTest, rmapCrcTestPattern1)
  */
 TEST(Crc8CcittReversedTest, rmapCrcTestPatternCommand)
 {
-    uint8_t header[] = {
-        0xFE, 0x01, 0x4D, 0x00,
-        0x99, 0xAA, 0xBB, 0xCC, 0x67,
-        0x00, 0x03,
-        0x00,
-        0xA0, 0x00, 0x00, 0x10,
-        0x00, 0x00, 0x10
-    };
+    uint8_t header[] = {0xFE,
+                        0x01,
+                        0x4D,
+                        0x00,
+                        0x99,
+                        0xAA,
+                        0xBB,
+                        0xCC,
+                        0x67,
+                        0x00,
+                        0x03,
+                        0x00,
+                        0xA0,
+                        0x00,
+                        0x00,
+                        0x10,
+                        0x00,
+                        0x00,
+                        0x10};
 
     EXPECT_EQ(0xF7U, Crc8CcittReversed::calculate(outpost::asSlice(header)));
 }
-
 
 /**
  * see ECSS‐E‐ST‐50‐52C Appendix A.4 (February 2010)
@@ -183,18 +234,24 @@ TEST(Crc8CcittReversedTest, rmapCrcTestPatternCommand)
  */
 TEST(Crc8CcittReversedTest, rmapCrcTestPatternReply)
 {
-    uint8_t header[] = {
-        0x67, 0x01, 0x0D, 0x00,
-        0xFE,
-        0x00, 0x03,
-        0x00,
-        0x00, 0x00, 0x10
-    };
+    uint8_t header[] = {0x67, 0x01, 0x0D, 0x00, 0xFE, 0x00, 0x03, 0x00, 0x00, 0x00, 0x10};
 
-    uint8_t data[] = {
-        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
-        0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF
-    };
+    uint8_t data[] = {0xA0,
+                      0xA1,
+                      0xA2,
+                      0xA3,
+                      0xA4,
+                      0xA5,
+                      0xA6,
+                      0xA7,
+                      0xA8,
+                      0xA9,
+                      0xAA,
+                      0xAB,
+                      0xAC,
+                      0xAD,
+                      0xAE,
+                      0xAF};
 
     EXPECT_EQ(0x52U, Crc8CcittReversed::calculate(outpost::asSlice(header)));
     EXPECT_EQ(0xB4U, Crc8CcittReversed::calculate(outpost::asSlice(data)));
@@ -220,11 +277,22 @@ crc8_update_bitwise(uint8_t crc, uint8_t data)
 
 TEST(Crc8CcittReversedTest, bitwiseTest)
 {
-    uint8_t data[] =
-    {
-        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
-        0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF
-    };
+    uint8_t data[] = {0xA0,
+                      0xA1,
+                      0xA2,
+                      0xA3,
+                      0xA4,
+                      0xA5,
+                      0xA6,
+                      0xA7,
+                      0xA8,
+                      0xA9,
+                      0xAA,
+                      0xAB,
+                      0xAC,
+                      0xAD,
+                      0xAE,
+                      0xAF};
 
     uint8_t crc = 0;
     for (auto d : data)

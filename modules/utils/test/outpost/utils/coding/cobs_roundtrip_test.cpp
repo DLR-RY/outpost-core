@@ -14,11 +14,12 @@
 
 #include <outpost/utils/coding/cobs.h>
 
-#include <string.h>     // for memset
-#include <unittest/harness.h>
-
 #include <gtest/gtest.h>
 #include <rapidcheck/gtest.h>
+
+#include <unittest/harness.h>
+
+#include <string.h>  // for memset
 
 using outpost::utils::Cobs;
 using ::testing::ElementsAreArray;
@@ -30,7 +31,7 @@ public:
     SetUp()
     {
         memset(encoded, 0xAB, sizeof(encoded));
-        memset(actual,  0xAB, sizeof(actual));
+        memset(actual, 0xAB, sizeof(actual));
     }
 
     size_t
@@ -49,9 +50,9 @@ public:
 // ----------------------------------------------------------------------------
 TEST_F(CobsRoundtriptTest, singleZeroByte)
 {
-    uint8_t input[1] = { 0 };
+    uint8_t input[1] = {0};
 
-    uint8_t expected[3] = { 0, 0xAB, 0xAB };
+    uint8_t expected[3] = {0, 0xAB, 0xAB};
 
     size_t decodedLength = roundtrip(outpost::asSlice(input));
 
@@ -61,9 +62,9 @@ TEST_F(CobsRoundtriptTest, singleZeroByte)
 
 TEST_F(CobsRoundtriptTest, zeroPrefixAndSuffix)
 {
-    uint8_t input[3] = { 0, 1, 0 };
+    uint8_t input[3] = {0, 1, 0};
 
-    uint8_t expected[5] = { 0, 1, 0, 0xAB, 0xAB };
+    uint8_t expected[5] = {0, 1, 0, 0xAB, 0xAB};
 
     size_t decodedLength = roundtrip(outpost::asSlice(input));
 
@@ -107,7 +108,7 @@ TEST_F(CobsRoundtriptTest, inPlaceDecodingOfBlockOfDataWithoutZero)
 
 TEST_F(CobsRoundtriptTest, inPlaceDecodingOfZeroPrefixAndSuffix)
 {
-    uint8_t input[3] = { 0, 1, 0 };
+    uint8_t input[3] = {0, 1, 0};
 
     size_t encodedLength = Cobs::encode(outpost::asSlice(input), outpost::asSlice(encoded));
     size_t decodedLength = Cobs::decode(outpost::asSlice(encoded).first(encodedLength), encoded);
@@ -118,12 +119,14 @@ TEST_F(CobsRoundtriptTest, inPlaceDecodingOfZeroPrefixAndSuffix)
 
 RC_GTEST_FIXTURE_PROP(CobsRoundtriptTest, shouldPerformRoundTripWithRandomData, ())
 {
-	const auto input = *rc::gen::resize(200, rc::gen::arbitrary<std::vector<uint8_t>>());
+    const auto input = *rc::gen::resize(200, rc::gen::arbitrary<std::vector<uint8_t>>());
 
-	outpost::Slice<const uint8_t> inputArray(input);
-	size_t encodedLength = outpost::utils::CobsBase<32>::encode(inputArray, outpost::asSlice(encoded));
-	size_t decodedLength = outpost::utils::CobsBase<32>::decode(outpost::asSlice(encoded).first(encodedLength), encoded);
+    outpost::Slice<const uint8_t> inputArray(input);
+    size_t encodedLength =
+            outpost::utils::CobsBase<32>::encode(inputArray, outpost::asSlice(encoded));
+    size_t decodedLength = outpost::utils::CobsBase<32>::decode(
+            outpost::asSlice(encoded).first(encodedLength), encoded);
 
-	RC_ASSERT(input.size() == decodedLength);
-	RC_ASSERT(input == std::vector<uint8_t>(encoded, &encoded[decodedLength]));
+    RC_ASSERT(input.size() == decodedLength);
+    RC_ASSERT(input == std::vector<uint8_t>(encoded, &encoded[decodedLength]));
 }

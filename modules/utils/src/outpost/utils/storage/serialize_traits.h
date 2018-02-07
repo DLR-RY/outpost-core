@@ -16,13 +16,12 @@
 #ifndef OUTPOST_UTILS_SERIALIZE_TRAITS_H
 #define OUTPOST_UTILS_SERIALIZE_TRAITS_H
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 namespace outpost
 {
-
 template <typename T>
 struct SerializeBigEndianTraits
 {
@@ -349,7 +348,7 @@ struct SerializeBigEndianTraits<float>
     static inline void
     store(uint8_t*& buffer, float data)
     {
-        const uint32_t* ptr = reinterpret_cast<const uint32_t *>(&data);
+        const uint32_t* ptr = reinterpret_cast<const uint32_t*>(&data);
         SerializeBigEndianTraits<uint32_t>::store(buffer, *ptr);
     }
 
@@ -386,7 +385,7 @@ struct SerializeBigEndianTraits<double>
     static inline void
     store(uint8_t*& buffer, double data)
     {
-        const uint64_t* ptr = reinterpret_cast<const uint64_t *>(&data);
+        const uint64_t* ptr = reinterpret_cast<const uint64_t*>(&data);
         SerializeBigEndianTraits<uint64_t>::store(buffer, *ptr);
     }
 
@@ -417,6 +416,6 @@ struct SerializeBigEndianTraits<double>
     }
 };
 
-}
+}  // namespace outpost
 
 #endif

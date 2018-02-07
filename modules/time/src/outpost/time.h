@@ -34,17 +34,17 @@
  */
 
 #include "time/duration.h"
-#include "time/time_point.h"
 #include "time/time_epoch.h"
+#include "time/time_point.h"
 
 namespace outpost
 {
-    /**
-     * \ingroup    time
-     */
-    namespace time
-    {
-    }
+/**
+ * \ingroup    time
+ */
+namespace time
+{
 }
+}  // namespace outpost
 
 #endif

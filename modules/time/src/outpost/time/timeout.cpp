@@ -16,9 +16,7 @@
 
 using outpost::time::Timeout;
 
-Timeout::Timeout() :
-    mEndtime(),
-    mState(stopped)
+Timeout::Timeout() : mEndtime(), mState(stopped)
 {
 }
 

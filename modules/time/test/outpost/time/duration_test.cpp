@@ -13,22 +13,23 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
 #include <outpost/time/duration.h>
+
+#include <unittest/harness.h>
 
 using namespace outpost::time;
 
 TEST(DurationTest, shouldAddTwoDurations)
 {
-	Duration d1 = Milliseconds(100);
-	Duration d2 = Microseconds(23456);
+    Duration d1 = Milliseconds(100);
+    Duration d2 = Microseconds(23456);
 
-	Duration d3 = d1 + d2;
+    Duration d3 = d1 + d2;
 
-	EXPECT_EQ(Microseconds(123456), d3);
+    EXPECT_EQ(Microseconds(123456), d3);
 
-	EXPECT_EQ(Milliseconds(100), d1);
-	EXPECT_EQ(Microseconds(23456), d2);
+    EXPECT_EQ(Milliseconds(100), d1);
+    EXPECT_EQ(Microseconds(23456), d2);
 }
 
 TEST(DurationTest, derivedTypes)

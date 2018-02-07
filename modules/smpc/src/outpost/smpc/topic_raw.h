@@ -15,12 +15,12 @@
 #ifndef OUTPOST_SMPC_TOPIC_RAW_H
 #define OUTPOST_SMPC_TOPIC_RAW_H
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <outpost/rtos/mutex.h>
 #include <outpost/utils/container/implicit_list.h>
 #include <outpost/utils/meta.h>
+
+#include <stddef.h>
+#include <stdint.h>
 
 namespace outpost
 {
@@ -99,7 +99,7 @@ private:
     SubscriptionRaw* mSubscriptions;
 };
 
-}
-}
+}  // namespace smpc
+}  // namespace outpost
 
 #endif

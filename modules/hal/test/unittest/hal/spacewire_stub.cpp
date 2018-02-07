@@ -47,8 +47,7 @@ SpaceWireStub::close()
     mUp = false;
 }
 
-bool
-SpaceWireStub::up(outpost::time::Duration /*timeout*/)
+bool SpaceWireStub::up(outpost::time::Duration /*timeout*/)
 {
     if (mOpen)
     {
@@ -57,8 +56,7 @@ SpaceWireStub::up(outpost::time::Duration /*timeout*/)
     return mUp;
 }
 
-void
-SpaceWireStub::down(outpost::time::Duration /*timeout*/)
+void SpaceWireStub::down(outpost::time::Duration /*timeout*/)
 {
     mUp = false;
 }
@@ -69,10 +67,8 @@ SpaceWireStub::isUp()
     return mUp;
 }
 
-
 SpaceWireStub::Result::Type
-SpaceWireStub::requestBuffer(TransmitBuffer*& buffer,
-                             outpost::time::Duration /*timeout*/)
+SpaceWireStub::requestBuffer(TransmitBuffer*& buffer, outpost::time::Duration /*timeout*/)
 {
     Result::Type result = Result::success;
 
@@ -92,9 +88,10 @@ SpaceWireStub::send(TransmitBuffer* buffer, outpost::time::Duration /*timeout*/)
         try
         {
             std::unique_ptr<TransmitBufferEntry>& entry = mTransmitBuffers.at(buffer);
-            mSentPackets.emplace_back(Packet { std::vector<uint8_t>(&entry->buffer.front(),
-                                                                    &entry->buffer.front() + entry->header.getLength()),
-                                               entry->header.getEndMarker() });
+            mSentPackets.emplace_back(
+                    Packet{std::vector<uint8_t>(&entry->buffer.front(),
+                                                &entry->buffer.front() + entry->header.getLength()),
+                           entry->header.getEndMarker()});
             mTransmitBuffers.erase(buffer);
         }
         catch (std::out_of_range&)
@@ -111,14 +108,13 @@ SpaceWireStub::send(TransmitBuffer* buffer, outpost::time::Duration /*timeout*/)
 }
 
 SpaceWireStub::Result::Type
-SpaceWireStub::receive(ReceiveBuffer& buffer,
-                       outpost::time::Duration /*timeout*/)
+SpaceWireStub::receive(ReceiveBuffer& buffer, outpost::time::Duration /*timeout*/)
 {
     Result::Type result = Result::success;
     if (mUp)
     {
-        std::unique_ptr<ReceiveBufferEntry> entry(new ReceiveBufferEntry(std::move(mPacketsToReceive.front().data),
-                                                                         mPacketsToReceive.front().end));
+        std::unique_ptr<ReceiveBufferEntry> entry(new ReceiveBufferEntry(
+                std::move(mPacketsToReceive.front().data), mPacketsToReceive.front().end));
         buffer = entry->header;
         mReceiveBuffers.emplace(make_pair(entry->header.getData().begin(), std::move(entry)));
         mPacketsToReceive.pop_front();

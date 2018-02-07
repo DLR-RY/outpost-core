@@ -17,9 +17,8 @@
 
 #include "deque.h"
 
-template<typename T>
-outpost::Deque<T>::Deque(T* backendBuffer,
-                      size_t n) :
+template <typename T>
+outpost::Deque<T>::Deque(T* backendBuffer, size_t n) :
     mBuffer(backendBuffer),
     mMaxSize(n),
     mHead(0),
@@ -28,7 +27,7 @@ outpost::Deque<T>::Deque(T* backendBuffer,
 {
 }
 
-template<typename T>
+template <typename T>
 outpost::Deque<T>::Deque(outpost::Slice<T> backendBuffer) :
     mBuffer(backendBuffer.begin()),
     mMaxSize(backendBuffer.getNumberOfElements()),
@@ -39,35 +38,35 @@ outpost::Deque<T>::Deque(outpost::Slice<T> backendBuffer) :
 }
 
 // ----------------------------------------------------------------------------
-template<typename T>
+template <typename T>
 bool
 outpost::Deque<T>::isEmpty() const
 {
     return (mSize == 0);
 }
 
-template<typename T>
+template <typename T>
 bool
 outpost::Deque<T>::isFull() const
 {
     return (mSize == mMaxSize);
 }
 
-template<typename T>
+template <typename T>
 typename outpost::Deque<T>::Size
 outpost::Deque<T>::getSize() const
 {
     return mSize;
 }
 
-template<typename T>
+template <typename T>
 typename outpost::Deque<T>::Size
 outpost::Deque<T>::getMaxSize() const
 {
     return mMaxSize;
 }
 
-template<typename T>
+template <typename T>
 typename outpost::Deque<T>::Size
 outpost::Deque<T>::getAvailableSpace() const
 {
@@ -75,7 +74,7 @@ outpost::Deque<T>::getAvailableSpace() const
 }
 
 // ----------------------------------------------------------------------------
-template<typename T>
+template <typename T>
 void
 outpost::Deque<T>::clear()
 {
@@ -85,15 +84,14 @@ outpost::Deque<T>::clear()
 }
 
 // ----------------------------------------------------------------------------
-template<typename T>
+template <typename T>
 T&
 outpost::Deque<T>::getFront()
 {
     return mBuffer[mTail];
 }
 
-
-template<typename T>
+template <typename T>
 const T&
 outpost::Deque<T>::getFront() const
 {
@@ -101,14 +99,14 @@ outpost::Deque<T>::getFront() const
 }
 
 // ----------------------------------------------------------------------------
-template<typename T>
+template <typename T>
 T&
 outpost::Deque<T>::getBack()
 {
     return mBuffer[mHead];
 }
 
-template<typename T>
+template <typename T>
 const T&
 outpost::Deque<T>::getBack() const
 {
@@ -116,7 +114,7 @@ outpost::Deque<T>::getBack() const
 }
 
 // ----------------------------------------------------------------------------
-template<typename T>
+template <typename T>
 bool
 outpost::Deque<T>::append(const T& value)
 {
@@ -141,7 +139,7 @@ outpost::Deque<T>::append(const T& value)
     return result;
 }
 
-template<typename T>
+template <typename T>
 void
 outpost::Deque<T>::removeBack()
 {
@@ -157,7 +155,7 @@ outpost::Deque<T>::removeBack()
 }
 
 // ----------------------------------------------------------------------------
-template<typename T>
+template <typename T>
 bool
 outpost::Deque<T>::prepend(const T& value)
 {
@@ -182,7 +180,7 @@ outpost::Deque<T>::prepend(const T& value)
     return result;
 }
 
-template<typename T>
+template <typename T>
 void
 outpost::Deque<T>::removeFront()
 {

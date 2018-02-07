@@ -22,6 +22,6 @@
  * [1] https://en.wikipedia.org/wiki/Cyclic_redundancy_check#Standards_and_common_use
  */
 
-#include "crc8.h"
 #include "crc16.h"
 #include "crc32.h"
+#include "crc8.h"

@@ -15,17 +15,17 @@
 #ifndef OUTPOST_HAL_SPACEWIRE_H
 #define OUTPOST_HAL_SPACEWIRE_H
 
-#include <stdint.h>
-#include <cstddef>
-
 #include <outpost/time/duration.h>
 #include <outpost/utils/container/slice.h>
+
+#include <stdint.h>
+
+#include <cstddef>
 
 namespace outpost
 {
 namespace hal
 {
-
 /**
  * SpaceWire Interface
  *
@@ -34,12 +34,11 @@ namespace hal
 class SpaceWire
 {
 public:
-
     enum EndMarker
     {
-        partial = 0,    ///< Leave packet open to add additional data later
-        eop = 1,        ///< End of packet
-        eep = 2         ///< Error end of packet
+        partial = 0,  ///< Leave packet open to add additional data later
+        eop = 1,      ///< End of packet
+        eep = 2       ///< Error end of packet
     };
 
     struct Result
@@ -58,24 +57,15 @@ public:
     class TransmitBuffer
     {
     public:
-        inline
-        TransmitBuffer() :
-            mData(Slice<uint8_t>::empty()),
-            mEnd(eop)
+        inline TransmitBuffer() : mData(Slice<uint8_t>::empty()), mEnd(eop)
         {
         }
 
-        inline explicit
-        TransmitBuffer(outpost::Slice<uint8_t> array) :
-            mData(array),
-            mEnd(eop)
+        inline explicit TransmitBuffer(outpost::Slice<uint8_t> array) : mData(array), mEnd(eop)
         {
         }
 
-        inline
-        TransmitBuffer(const TransmitBuffer& other) :
-            mData(other.mData),
-            mEnd(other.mEnd)
+        inline TransmitBuffer(const TransmitBuffer& other) : mData(other.mData), mEnd(other.mEnd)
         {
         }
 
@@ -84,7 +74,7 @@ public:
         {
             // This handles self assignment
             mData = other.mData;
-            mEnd  = other.mEnd;
+            mEnd = other.mEnd;
 
             return *this;
         }
@@ -125,8 +115,7 @@ public:
          * \warning
          *      No out-of-bound error checking is performed.
          */
-        inline uint8_t&
-        operator[](size_t index)
+        inline uint8_t& operator[](size_t index)
         {
             return mData[index];
         }
@@ -143,16 +132,11 @@ public:
     class ReceiveBuffer
     {
     public:
-        ReceiveBuffer() :
-            mData(outpost::Slice<const uint8_t>::empty()),
-            mEnd(eop)
+        ReceiveBuffer() : mData(outpost::Slice<const uint8_t>::empty()), mEnd(eop)
         {
         }
 
-        ReceiveBuffer(outpost::Slice<const uint8_t> data,
-                      EndMarker end) :
-            mData(data),
-            mEnd(end)
+        ReceiveBuffer(outpost::Slice<const uint8_t> data, EndMarker end) : mData(data), mEnd(end)
         {
         }
 
@@ -196,8 +180,7 @@ public:
          * \warning
          *      No out-of-bound error checking is performed.
          */
-        inline const uint8_t&
-        operator[](size_t index) const
+        inline const uint8_t& operator[](size_t index) const
         {
             return mData[index];
         }
@@ -207,8 +190,7 @@ public:
         EndMarker mEnd;
     };
 
-    virtual
-    ~SpaceWire();
+    virtual ~SpaceWire();
 
     /**
      * Get the maximum length of a SpaceWire packet.
@@ -237,7 +219,6 @@ public:
     virtual bool
     isUp() = 0;
 
-
     /**
      * Request a send buffer.
      *
@@ -250,8 +231,7 @@ public:
      *      Time to wait for a free transmit buffer.
      */
     virtual Result::Type
-    requestBuffer(TransmitBuffer*& buffer,
-                  outpost::time::Duration timeout) = 0;
+    requestBuffer(TransmitBuffer*& buffer, outpost::time::Duration timeout) = 0;
 
     /**
      * Send a configured buffer.
@@ -278,8 +258,7 @@ public:
      *      Time to wait for a SpaceWire message to arrive.
      */
     virtual Result::Type
-    receive(ReceiveBuffer& buffer,
-            outpost::time::Duration timeout) = 0;
+    receive(ReceiveBuffer& buffer, outpost::time::Duration timeout) = 0;
 
     /**
      * Release receive buffer.
@@ -298,7 +277,7 @@ public:
     flushReceiveBuffer() = 0;
 };
 
-}
-}
+}  // namespace hal
+}  // namespace outpost
 
 #endif

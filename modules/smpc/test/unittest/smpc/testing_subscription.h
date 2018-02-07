@@ -21,7 +21,6 @@ namespace unittest
 {
 namespace smpc
 {
-
 class TestingSubscription : public outpost::smpc::Subscription
 {
 public:
@@ -29,7 +28,7 @@ public:
     using Subscription::releaseAllSubscriptions;
 };
 
-}
-}
+}  // namespace smpc
+}  // namespace unittest
 
-#endif // UNITTEST_SMPC_TESTING_SUBSCRIPTION_H
+#endif  // UNITTEST_SMPC_TESTING_SUBSCRIPTION_H

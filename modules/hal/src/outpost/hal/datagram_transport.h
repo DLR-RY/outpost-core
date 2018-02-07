@@ -15,24 +15,22 @@
 #ifndef OUTPOST_HAL_DATAGRAM_TRANSPORT_H
 #define OUTPOST_HAL_DATAGRAM_TRANSPORT_H
 
-#include <array>
-
 #include <outpost/time/duration.h>
-
 #include <outpost/utils/container/fixed_size_array.h>
 #include <outpost/utils/container/slice.h>
 
-namespace outpost 
+#include <array>
+
+namespace outpost
 {
 namespace hal
 {
-
-/* 
+/*
  * Interface class for datagram based IP communication (e.g. UDP)
  *
  * This class provides a generic interface for network communication
  * using the internet protocol (ATM only version 4). It corresponds to
- * the Transport Layer (Layer 4) of the OSI model with the focus on 
+ * the Transport Layer (Layer 4) of the OSI model with the focus on
  * a packet/datagram style of communication (e.g. UDP).
  *
  */
@@ -47,9 +45,7 @@ public:
          *
          * Set the Ip address to zero.
          */
-        constexpr
-        IpAddress() :
-            mIpAddress {{ 0, 0, 0, 0 }}
+        constexpr IpAddress() : mIpAddress{{0, 0, 0, 0}}
         {
         }
 
@@ -58,9 +54,7 @@ public:
          *
          * \param ipAddress IPv4 Address provided in host-byte-order
          */
-        constexpr
-        IpAddress(std::array<uint8_t, 4> ipAddress) :
-            mIpAddress(ipAddress)
+        constexpr IpAddress(std::array<uint8_t, 4> ipAddress) : mIpAddress(ipAddress)
         {
         }
 
@@ -77,13 +71,9 @@ public:
          * \param byte3 Third byte of an IPv4 Address
          * \param byte4 Fourth byte (right most) of an IPv4 Address
          */
-        constexpr
-        IpAddress(uint8_t byte1,
-                  uint8_t byte2,
-                  uint8_t byte3,
-                  uint8_t byte4) :
-           // store the IP address in network-byte-order
-           mIpAddress {{ byte1, byte2, byte3, byte4 }}
+        constexpr IpAddress(uint8_t byte1, uint8_t byte2, uint8_t byte3, uint8_t byte4) :
+            // store the IP address in network-byte-order
+            mIpAddress{{byte1, byte2, byte3, byte4}}
         {
         }
 
@@ -99,8 +89,7 @@ public:
             return mIpAddress;
         }
 
-        inline constexpr uint8_t
-        operator[](size_t index) const
+        inline constexpr uint8_t operator[](size_t index) const
         {
             return mIpAddress[index];
         }
@@ -118,17 +107,11 @@ public:
         /**
          * Constructor
          */
-        constexpr
-        Address() :
-            mIpAddress(),
-            mPort(0)
+        constexpr Address() : mIpAddress(), mPort(0)
         {
         }
 
-        inline constexpr
-        Address(IpAddress ip, uint16_t port) :
-            mIpAddress(ip),
-            mPort(port)
+        inline constexpr Address(IpAddress ip, uint16_t port) : mIpAddress(ip), mPort(port)
         {
         }
 
@@ -146,7 +129,7 @@ public:
         {
             return mIpAddress;
         }
-        
+
     protected:
         IpAddress mIpAddress;
         uint16_t mPort;
@@ -155,25 +138,24 @@ public:
     /**
      * Destructor
      */
-    virtual 
-    ~DatagramTransport();
+    virtual ~DatagramTransport();
 
     /**
      * Set up the connection for sending and receiving
      */
     virtual bool
     connect() = 0;
-    
-    /** 
+
+    /**
      * Close the Ethernet device
-     */                
-    virtual void 
+     */
+    virtual void
     close() = 0;
 
-    /** 
+    /**
      * Return the address of the device
-     */ 
-    virtual Address 
+     */
+    virtual Address
     getAddress() const = 0;
 
     /**
@@ -189,34 +171,34 @@ public:
     virtual void
     setAddress(const Address& newAddress) = 0;
 
-    /**      
+    /**
      * Check if a new datagram is available
-     *      
-     * \retval true   Data is available and can be read via receiveFrom(...).      
-     * \retval false  No data available.      
+     *
+     * \retval true   Data is available and can be read via receiveFrom(...).
+     * \retval false  No data available.
      */
     virtual bool
     isAvailable() = 0;
 
-    /**      
-     * Returns the number of bytes of the next available datagram, if any.      
-     * \return  Number of bytes in the buffer     
-     */         
+    /**
+     * Returns the number of bytes of the next available datagram, if any.
+     * \return  Number of bytes in the buffer
+     */
     virtual size_t
     getNumberOfBytesAvailable() = 0;
 
     /**
      *    Returns the maximum number of bytes which can be send in one datagram
-     *  
-     *  Trying to send a larger amount of data in one \ref sendTo command might 
+     *
+     *  Trying to send a larger amount of data in one \ref sendTo command might
      *  cause data loss.
      */
     virtual size_t
     getMaximumDatagramSize() const = 0;
-    
-    /**      
+
+    /**
      * Send a datagram with \p data to \p address
-     *      
+     *
      * \param data
      *      Buffer containing the data to send. Should not exceed
      *      \ref getMaximumDatagramSize.
@@ -229,7 +211,7 @@ public:
      *      Number of bytes which could be sent, maximal `data.getNumberOfElements`
      */
     virtual size_t
-    sendTo(outpost::Slice<const uint8_t> data, 
+    sendTo(outpost::Slice<const uint8_t> data,
            const Address& address,
            outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
 
@@ -242,7 +224,7 @@ public:
      * the remaining information of the datagram will be lost. Use
      * \ref getNumberOfBytesAvailable to check how long the next datagram
      * will be and make sure to supply a sufficient data buffer.
-     *  
+     *
      * \param data
      *      Buffer to write the received data to.
      * \param address
@@ -255,19 +237,18 @@ public:
      *      Number of bytes written to data, maximal data.getNumberOfElements()
      */
     virtual size_t
-    receiveFrom(outpost::Slice<uint8_t>& data, 
-                Address& address, 
+    receiveFrom(outpost::Slice<uint8_t>& data,
+                Address& address,
                 outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
 
-    /** 
+    /**
      * Drop all datagrams which are currently in the receive buffer
      */
     virtual void
     clearReceiveBuffer() = 0;
 };
 
-} 
-}
+}  // namespace hal
+}  // namespace outpost
 
-#endif // OUTPOST_HAL_DATAGRAM_TRANSPORT_H
-
+#endif  // OUTPOST_HAL_DATAGRAM_TRANSPORT_H

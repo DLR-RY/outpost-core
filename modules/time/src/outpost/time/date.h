@@ -21,7 +21,6 @@ namespace outpost
 {
 namespace time
 {
-
 // forward declaration
 struct Date;
 
@@ -66,12 +65,8 @@ struct Date
     constexpr bool
     operator==(const Date& other) const
     {
-        return ((year == other.year)
-                && (month == other.month)
-                && (day == other.day)
-                && (hour == other.hour)
-                && (minute == other.minute)
-                && (second == other.second));
+        return ((year == other.year) && (month == other.month) && (day == other.day)
+                && (hour == other.hour) && (minute == other.minute) && (second == other.second));
     }
 
     constexpr bool
@@ -99,7 +94,6 @@ struct GpsDate
     static GpsTime
     toGpsTime(GpsDate date);
 
-
     // Week number (WN)
     uint16_t weekNumber;
 
@@ -111,7 +105,7 @@ struct GpsDate
     uint32_t timeOfWeek;
 };
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #endif

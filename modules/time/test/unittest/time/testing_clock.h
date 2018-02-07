@@ -21,7 +21,6 @@ namespace unittest
 {
 namespace time
 {
-
 /**
  * Clock interface.
  *
@@ -32,20 +31,18 @@ class TestingClock : public outpost::time::Clock
 public:
     TestingClock();
 
-    virtual
-    ~TestingClock();
+    virtual ~TestingClock();
 
     virtual outpost::time::SpacecraftElapsedTime
     now() const;
 
-    void
-    setTime(outpost::time::SpacecraftElapsedTime);
+    void setTime(outpost::time::SpacecraftElapsedTime);
 
 private:
     outpost::time::SpacecraftElapsedTime currentTime;
 };
 
-}
-}
+}  // namespace time
+}  // namespace unittest
 
-#endif // UNITTEST_TIME_TESTING_CLOCK_H
+#endif  // UNITTEST_TIME_TESTING_CLOCK_H

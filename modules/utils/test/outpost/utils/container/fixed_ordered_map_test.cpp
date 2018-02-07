@@ -12,9 +12,9 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <outpost/utils/container/fixed_ordered_map.h>
+
+#include <unittest/harness.h>
 
 using namespace outpost;
 
@@ -27,8 +27,8 @@ struct Entry
 TEST(FixedOrderedMapTest, createList)
 {
     Entry entries[] = {
-        Entry( { 1235,  0 } ),
-        Entry( { 1236, 10 } ),
+            Entry({1235, 0}),
+            Entry({1236, 10}),
     };
 
     FixedOrderedMap<Entry, uint16_t> list(entries, 2);
@@ -39,10 +39,10 @@ TEST(FixedOrderedMapTest, createList)
 TEST(FixedOrderedMapTest, createMapFromArrayWithoutExplicitSize)
 {
     Entry entries[] = {
-        Entry( {  1, 0 } ),
-        Entry( {  3, 1 } ),
-        Entry( {  5, 2 } ),
-        Entry( { 17, 3 } ),
+            Entry({1, 0}),
+            Entry({3, 1}),
+            Entry({5, 2}),
+            Entry({17, 3}),
     };
 
     FixedOrderedMap<Entry, uint16_t> list(entries);
@@ -50,14 +50,13 @@ TEST(FixedOrderedMapTest, createMapFromArrayWithoutExplicitSize)
     EXPECT_EQ(4U, list.getNumberOfElements());
 }
 
-
 TEST(FixedOrderedMapTest, availableEntriesShouldBeReturnedByPointer)
 {
     Entry entries[] = {
-        Entry( {  1, 0 } ),
-        Entry( {  3, 1 } ),
-        Entry( {  5, 2 } ),
-        Entry( { 17, 3 } ),
+            Entry({1, 0}),
+            Entry({3, 1}),
+            Entry({5, 2}),
+            Entry({17, 3}),
     };
 
     FixedOrderedMap<Entry, uint16_t> list(entries);
@@ -71,10 +70,10 @@ TEST(FixedOrderedMapTest, availableEntriesShouldBeReturnedByPointer)
 TEST(FixedOrderedMapTest, missingEntriesShouldReturnANullPointer)
 {
     Entry entries[] = {
-        Entry( {  1, 0 } ),
-        Entry( {  3, 1 } ),
-        Entry( {  5, 2 } ),
-        Entry( { 17, 3 } ),
+            Entry({1, 0}),
+            Entry({3, 1}),
+            Entry({5, 2}),
+            Entry({17, 3}),
     };
 
     FixedOrderedMap<Entry, uint16_t> list(entries);

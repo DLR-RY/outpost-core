@@ -15,15 +15,14 @@
 #ifndef UNITTEST_HAL_SERIAL_STUB_H
 #define UNITTEST_HAL_SERIAL_STUB_H
 
-#include <vector>
-
 #include <outpost/hal/serial.h>
+
+#include <vector>
 
 namespace unittest
 {
 namespace hal
 {
-
 /**
  * Serial interface stub.
  *
@@ -36,8 +35,7 @@ class SerialStub : public outpost::hal::Serial
 public:
     SerialStub();
 
-    virtual
-    ~SerialStub();
+    virtual ~SerialStub();
 
     virtual void
     close() override;
@@ -71,7 +69,7 @@ public:
     std::vector<uint8_t> mDataToTransmit;
 };
 
-}
-}
+}  // namespace hal
+}  // namespace unittest
 
 #endif

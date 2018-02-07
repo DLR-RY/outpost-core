@@ -14,16 +14,15 @@
 #ifndef OUTPOST_COMM_RMAP_TRANSACTION_H_
 #define OUTPOST_COMM_RMAP_TRANSACTION_H_
 
+#include "rmap_packet.h"
+
 #include <outpost/rtos.h>
 #include <outpost/time/duration.h>
-
-#include "rmap_packet.h"
 
 namespace outpost
 {
 namespace comm
 {
-
 /**
  * RMAP transaction.
  *
@@ -37,13 +36,15 @@ class RmapTransaction
 public:
     enum State : uint8_t
     {
-            notInitiated = 0x00, initiated = 0x01, commandSent = 0x02, replyReceived = 0x03, timeout = 0x04
+        notInitiated = 0x00,
+        initiated = 0x01,
+        commandSent = 0x02,
+        replyReceived = 0x03,
+        timeout = 0x04
     };
 
     RmapTransaction();
     ~RmapTransaction();
-
-
 
     /**
      * Reset or clear the contents of the transaction.
@@ -205,7 +206,7 @@ private:
     RmapPacket mCommandPacket;
     outpost::rtos::BinarySemaphore mReplyLock;
 };
-}
-}
+}  // namespace comm
+}  // namespace outpost
 
 #endif

@@ -19,7 +19,6 @@ namespace outpost
 {
 namespace utils
 {
-
 /**
  * Used to implement the EBCO (Empty Base Class Optimization) pattern.
  *
@@ -31,13 +30,11 @@ namespace utils
  *
  * \author  Fabian Greif
  */
-template<typename Base, typename Member>
+template <typename Base, typename Member>
 class BaseMemberPair : private Base
 {
 public:
-    BaseMemberPair(Base const & b, Member const & m) :
-        Base(b),
-        mMember(m)
+    BaseMemberPair(Base const& b, Member const& m) : Base(b), mMember(m)
     {
     }
 
@@ -69,7 +66,7 @@ private:
     Member mMember;
 };
 
-}
-}
+}  // namespace utils
+}  // namespace outpost
 
 #endif

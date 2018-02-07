@@ -12,13 +12,13 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <array>
-
-#include <unittest/harness.h>
 #include <outpost/utils/container/slice.h>
 
-using outpost::Slice;
+#include <unittest/harness.h>
 
+#include <array>
+
+using outpost::Slice;
 
 TEST(SliceTest, createFromCStyleArray)
 {
@@ -31,7 +31,7 @@ TEST(SliceTest, createFromCStyleArray)
 
 TEST(SliceTest, dataAccessWithCStyleArray)
 {
-    uint8_t data[6] = { 6, 5, 4, 3, 2, 1 };
+    uint8_t data[6] = {6, 5, 4, 3, 2, 1};
 
     Slice<uint8_t> array(data);
 
@@ -60,11 +60,7 @@ TEST(SliceTest, createArrayOfPointers)
     TestClass testClass2;
     TestClass testClass3;
 
-    TestClass* data[3] = {
-        &testClass1,
-        &testClass2,
-        &testClass3
-    };
+    TestClass* data[3] = {&testClass1, &testClass2, &testClass3};
 
     Slice<TestClass*> array(data);
 
@@ -90,7 +86,7 @@ TEST(SliceTest, shouldBeConstructableFromStdVector)
 
 TEST(SliceTest, shouldCreateSubSlicesFromBeginning)
 {
-    std::array<uint8_t, 10> array = {{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }};
+    std::array<uint8_t, 10> array = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}};
     auto slice = outpost::asSlice(array);
 
     auto subslice = slice.first(3);
@@ -104,7 +100,7 @@ TEST(SliceTest, shouldCreateSubSlicesFromBeginning)
 
 TEST(SliceTest, shouldCreateSubSlicesFromEnd)
 {
-    std::array<uint8_t, 10> array = {{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }};
+    std::array<uint8_t, 10> array = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}};
     auto slice = outpost::asSlice(array);
 
     auto subslice = slice.last(3);
@@ -118,7 +114,7 @@ TEST(SliceTest, shouldCreateSubSlicesFromEnd)
 
 TEST(SliceTest, shouldCreateNestedSubSlices)
 {
-    std::array<uint8_t, 10> array = {{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }};
+    std::array<uint8_t, 10> array = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}};
     auto slice = outpost::asSlice(array);
 
     auto subslice = slice.first(6).last(3);
@@ -156,7 +152,7 @@ TEST(SliceTest, shouldConvertToConstSlice)
 
 TEST(SliceTest, shouldProvideIteratorInterface)
 {
-    std::array<uint8_t, 4> array = {{ 1, 4, 5, 7 }};
+    std::array<uint8_t, 4> array = {{1, 4, 5, 7}};
     outpost::Slice<uint8_t> slice(array);
 
     size_t index = 0;
@@ -170,7 +166,7 @@ TEST(SliceTest, shouldProvideIteratorInterface)
 
 TEST(SliceTest, shouldProvideConstIteratorInterface)
 {
-    std::array<uint8_t, 4> array = {{ 1, 4, 5, 7 }};
+    std::array<uint8_t, 4> array = {{1, 4, 5, 7}};
     const outpost::Slice<uint8_t> slice(array);
 
     size_t index = 0;
@@ -184,7 +180,7 @@ TEST(SliceTest, shouldProvideConstIteratorInterface)
 
 TEST(SliceTest, shouldProvideReverseIterator)
 {
-    std::array<uint8_t, 4> array = {{ 1, 4, 5, 7 }};
+    std::array<uint8_t, 4> array = {{1, 4, 5, 7}};
     outpost::Slice<uint8_t> slice(array);
 
     size_t index = 0;
@@ -198,7 +194,7 @@ TEST(SliceTest, shouldProvideReverseIterator)
 
 TEST(SliceTest, shouldCreateSliceFromIteratorPair)
 {
-    std::array<uint8_t, 4> array = {{ 1, 4, 5, 7 }};
+    std::array<uint8_t, 4> array = {{1, 4, 5, 7}};
 
     auto slice = outpost::Slice<uint8_t>(array.begin(), array.end());
 
@@ -207,7 +203,7 @@ TEST(SliceTest, shouldCreateSliceFromIteratorPair)
 
 TEST(SliceTest, shouldCreateSubSliceFromIndexAndLength)
 {
-    std::array<uint8_t, 4> array = {{ 1, 2, 3, 4 }};
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
     auto slice = outpost::asSlice(array);
 
     auto slice1 = slice.subSlice(1, 2);
@@ -218,7 +214,7 @@ TEST(SliceTest, shouldCreateSubSliceFromIndexAndLength)
 
 TEST(SliceTest, shouldCreateSubSliceFromTwoIndicies)
 {
-    std::array<uint8_t, 4> array = {{ 1, 2, 3, 4 }};
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
     auto slice = outpost::asSlice(array);
 
     auto slice1 = slice.subRange(1, 3);

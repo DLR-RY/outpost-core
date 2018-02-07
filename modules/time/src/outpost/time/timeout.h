@@ -22,7 +22,6 @@ namespace outpost
 {
 namespace time
 {
-
 /**
  * Polling based timeout class.
  *
@@ -50,12 +49,10 @@ public:
     /**
      * Create a new timeout and start it immediately.
      */
-    Timeout(const outpost::time::Clock& clock,
-            outpost::time::Duration time);
+    Timeout(const outpost::time::Clock& clock, outpost::time::Duration time);
 
     void
-    restart(const outpost::time::Clock& clock,
-            outpost::time::Duration time);
+    restart(const outpost::time::Clock& clock, outpost::time::Duration time);
 
     /**
      * Stop the timeout.
@@ -94,7 +91,7 @@ private:
     State mState;
 };
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #endif

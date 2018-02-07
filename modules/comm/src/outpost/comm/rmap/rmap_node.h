@@ -14,11 +14,12 @@
 #ifndef OUTPOST_COMM_RMAP_NODE_H_
 #define OUTPOST_COMM_RMAP_NODE_H_
 
-#include <string.h>
-#include <stdint.h>
+#include "rmap_common.h"
+
 #include <outpost/utils/container/slice.h>
 
-#include "rmap_common.h"
+#include <stdint.h>
+#include <string.h>
 
 namespace outpost
 {
@@ -35,10 +36,7 @@ class RmapTargetNode
 {
 public:
     RmapTargetNode();
-    RmapTargetNode(const char* name,
-                   uint8_t id,
-                   uint8_t targetLogicalAddress,
-                   uint8_t key);
+    RmapTargetNode(const char* name, uint8_t id, uint8_t targetLogicalAddress, uint8_t key);
     ~RmapTargetNode();
 
     /**
@@ -89,7 +87,8 @@ public:
     inline outpost::Slice<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::Slice<uint8_t>::unsafe(mTargetSpaceWireAddress, mTargetSpaceWireAddressLength);
+        return outpost::Slice<uint8_t>::unsafe(mTargetSpaceWireAddress,
+                                               mTargetSpaceWireAddressLength);
     }
 
     inline void
@@ -211,7 +210,7 @@ private:
     RmapTargetNode* mNodes[rmap::maxAddressLength];
     uint8_t mSize;
 };
-}
-}
+}  // namespace comm
+}  // namespace outpost
 
 #endif /* OUTPOST_COMM_RMAP_NODE_H_ */

@@ -19,7 +19,6 @@
 
 namespace outpost
 {
-
 /**
  * Conversion from MSB0 to LSB0 bit-ordering
  *
@@ -37,7 +36,8 @@ class BitorderMsb0ToLsb0
 {
 protected:
     // static assert only possible in C++11 :(
-    //static_assert(startIn < endIn, "Invalid bitfield definition! 'startIn' must be smaller than 'endIn'");
+    // static_assert(startIn < endIn, "Invalid bitfield definition! 'startIn' must be
+    // smaller than 'endIn'");
 
     static const int numberOfBitsPerByte = 8;
     static const int msb = sizeof(T) * numberOfBitsPerByte - 1;
@@ -64,6 +64,6 @@ public:
     static const int end = msb - (endIn - (byteIndex * numberOfBitsPerByte));
 };
 
-}
+}  // namespace outpost
 
 #endif

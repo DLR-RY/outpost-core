@@ -15,10 +15,10 @@
 #ifndef OUTPOST_CRC32_H
 #define OUTPOST_CRC32_H
 
-#include <stdint.h>
-#include <stddef.h>
-
 #include <outpost/utils/container/slice.h>
+
+#include <stddef.h>
+#include <stdint.h>
 
 namespace outpost
 {
@@ -43,14 +43,11 @@ namespace outpost
 class Crc32Reversed
 {
 public:
-    inline
-    Crc32Reversed() :
-        mCrc(initialValue)
+    inline Crc32Reversed() : mCrc(initialValue)
     {
     }
 
-    inline
-    ~Crc32Reversed()
+    inline ~Crc32Reversed()
     {
     }
 
@@ -104,8 +101,7 @@ private:
     operator=(const Crc32Reversed&);
 
     static const uint32_t initialValue = 0xFFFFFFFF;
-    static const uint32_t finalXor     = 0xFFFFFFFF;
-
+    static const uint32_t finalXor = 0xFFFFFFFF;
 
     static const int numberOfBitsPerByte = 8;
     static const int numberOfValuesPerByte = 256;
@@ -115,6 +111,6 @@ private:
 
     uint32_t mCrc;
 };
-}
+}  // namespace outpost
 
 #endif

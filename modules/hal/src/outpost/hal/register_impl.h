@@ -49,7 +49,8 @@ outpost::hal::Register::readWithOffset(size_t offset)
 {
     const uint32_t address = T::address + (offset * sizeof(typename T::Type));
     typename T::Type registerValue = access<typename T::Type>(address);
-    typename T::Type value = outpost::BitAccess::get<typename T::Type, T::start, T::end>(registerValue);
+    typename T::Type value =
+            outpost::BitAccess::get<typename T::Type, T::start, T::end>(registerValue);
     return value;
 }
 

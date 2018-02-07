@@ -15,13 +15,12 @@
 #ifndef OUTPOST_UTILS_SERIALIZE_STORAGE_TRAITS_H
 #define OUTPOST_UTILS_SERIALIZE_STORAGE_TRAITS_H
 
-#include <stdint.h>
-
 #include "serialize_traits.h"
+
+#include <stdint.h>
 
 namespace outpost
 {
-
 /**
  * Base class to define the storage type a by converting it to another type.
  *
@@ -65,7 +64,7 @@ namespace outpost
  */
 template <typename InputType,
           typename StorageType,
-          typename Traits = SerializeBigEndianTraits<StorageType> >
+          typename Traits = SerializeBigEndianTraits<StorageType>>
 struct SerializeStorageTraits
 {
     static void
@@ -95,6 +94,6 @@ struct SerializeStorageTraits
     }
 };
 
-}
+}  // namespace outpost
 
 #endif

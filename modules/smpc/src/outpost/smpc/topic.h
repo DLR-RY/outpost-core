@@ -15,10 +15,11 @@
 #ifndef OUTPOST_SMPC_TOPIC_H
 #define OUTPOST_SMPC_TOPIC_H
 
-#include <stdint.h>
 #include <outpost/rtos/mutex.h>
 #include <outpost/utils/container/implicit_list.h>
 #include <outpost/utils/meta.h>
+
+#include <stdint.h>
 
 namespace outpost
 {
@@ -126,9 +127,7 @@ public:
     /**
      * Constructor.
      */
-    inline
-    Topic() :
-        TopicBase()
+    inline Topic() : TopicBase()
     {
     }
 
@@ -142,8 +141,7 @@ public:
      *      it is necessary to hold all other threads which
      *      might also create or destroy topics and/or subscriptions.
      */
-    inline
-    ~Topic()
+    inline ~Topic()
     {
     }
 
@@ -174,7 +172,7 @@ public:
     }
 };
 
-}
-}
+}  // namespace smpc
+}  // namespace outpost
 
 #endif

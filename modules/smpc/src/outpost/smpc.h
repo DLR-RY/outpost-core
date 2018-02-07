@@ -23,11 +23,9 @@
  */
 
 #include "smpc/subscriber.h"
-
-#include "smpc/subscription_raw.h"
-#include "smpc/topic_raw.h"
-
 #include "smpc/subscription.h"
+#include "smpc/subscription_raw.h"
 #include "smpc/topic.h"
+#include "smpc/topic_raw.h"
 
 #endif

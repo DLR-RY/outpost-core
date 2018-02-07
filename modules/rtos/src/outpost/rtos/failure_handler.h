@@ -28,7 +28,6 @@ namespace outpost
 {
 namespace rtos
 {
-
 struct Resource
 {
     enum Type
@@ -53,8 +52,7 @@ public:
     inline static FailureCode
     resourceAllocationFailed(Resource::Type resource = Resource::other)
     {
-        FailureCode code = FailureCode(0xF0010000 |
-                                       static_cast<uint32_t>(resource));
+        FailureCode code = FailureCode(0xF0010000 | static_cast<uint32_t>(resource));
         return code;
     }
 
@@ -68,8 +66,7 @@ public:
     inline static FailureCode
     genericRuntimeError(Resource::Type resource = Resource::other)
     {
-        FailureCode code = FailureCode(0xF0030000 |
-                                       static_cast<uint32_t>(resource));
+        FailureCode code = FailureCode(0xF0030000 | static_cast<uint32_t>(resource));
         return code;
     }
 
@@ -87,9 +84,7 @@ public:
     }
 
 protected:
-    explicit inline
-    FailureCode(uint32_t code) :
-        mCode(code)
+    explicit inline FailureCode(uint32_t code) : mCode(code)
     {
     }
 
@@ -131,7 +126,7 @@ protected:
     static Handler handler;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

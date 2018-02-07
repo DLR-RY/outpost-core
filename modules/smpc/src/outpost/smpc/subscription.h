@@ -16,16 +16,15 @@
 #ifndef OUTPOST_SMPC_SUBSCRIPTION_H
 #define OUTPOST_SMPC_SUBSCRIPTION_H
 
-#include <outpost/utils/functor.h>
-
 #include "subscriber.h"
 #include "topic.h"
+
+#include <outpost/utils/functor.h>
 
 namespace outpost
 {
 namespace smpc
 {
-
 /**
  * Subscription to a topic.
  *
@@ -68,9 +67,7 @@ public:
      *         Member function pointer of the subscribing class.
      */
     template <typename T, typename S>
-    Subscription(Topic<T>& topic,
-                 S* subscriber,
-                 typename SubscriberFunction<T, S>::Type function);
+    Subscription(Topic<T>& topic, S* subscriber, typename SubscriberFunction<T, S>::Type function);
 
     /**
      * Destroy the subscription
@@ -147,13 +144,13 @@ private:
      * safe as only member functions with a correct signature can
      * be bound to a topic.
      */
-    typedef void (Subscriber::*Function)(void *);
+    typedef void (Subscriber::*Function)(void*);
 
     const Functor1<void(void*)> mFunctor;
 };
 
-}
-}
+}  // namespace smpc
+}  // namespace outpost
 
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
@@ -164,8 +161,7 @@ outpost::smpc::Subscription::Subscription(Topic<T>& topic,
     ImplicitList<Subscription>(listOfAllSubscriptions, this),
     mTopic(&topic),
     mNextTopicSubscription(0),
-    mFunctor(*reinterpret_cast<Subscriber*>(subscriber),
-             reinterpret_cast<Function>(function))
+    mFunctor(*reinterpret_cast<Subscriber*>(subscriber), reinterpret_cast<Function>(function))
 {
 }
 

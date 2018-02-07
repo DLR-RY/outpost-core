@@ -17,19 +17,18 @@
 #ifndef OUTPOST_UTILS_SERIALIZE_H
 #define OUTPOST_UTILS_SERIALIZE_H
 
-#include <stddef.h>
-#include <string.h>
-#include <stdint.h>
-
-#include <outpost/utils/container/slice.h>
-#include <outpost/utils/container/fixed_size_array.h>
-
-#include "serialize_traits.h"
 #include "serialize_storage_traits.h"
+#include "serialize_traits.h"
+
+#include <outpost/utils/container/fixed_size_array.h>
+#include <outpost/utils/container/slice.h>
+
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
 
 namespace outpost
 {
-
 struct uint24_t
 {
     static const int byteLength = 3;
@@ -47,33 +46,26 @@ struct uint24_t
 class Serialize
 {
 public:
-    explicit inline
-    Serialize(outpost::Slice<uint8_t> array) :
-            mBuffer(&array[0]), mBegin(&array[0])
+    explicit inline Serialize(outpost::Slice<uint8_t> array) : mBuffer(&array[0]), mBegin(&array[0])
     {
     }
 
     template <size_t N>
-    explicit inline
-    Serialize(outpost::FixedSizeArrayView<uint8_t, N> array) :
-            mBuffer(&array[0]), mBegin(&array[0])
+    explicit inline Serialize(outpost::FixedSizeArrayView<uint8_t, N> array) :
+        mBuffer(&array[0]),
+        mBegin(&array[0])
     {
     }
 
-    explicit inline
-    Serialize(uint8_t* outputBuffer) :
-            mBuffer(outputBuffer), mBegin(outputBuffer)
+    explicit inline Serialize(uint8_t* outputBuffer) : mBuffer(outputBuffer), mBegin(outputBuffer)
     {
     }
 
-    inline
-    ~Serialize()
+    inline ~Serialize()
     {
     }
 
-    inline
-    Serialize(const Serialize& other) :
-            mBuffer(other.mBuffer), mBegin(other.mBegin)
+    inline Serialize(const Serialize& other) : mBuffer(other.mBuffer), mBegin(other.mBegin)
     {
     }
 
@@ -87,21 +79,21 @@ public:
         mBuffer = mBegin;
     }
 
-    template<typename T>
+    template <typename T>
     static inline size_t
     getTypeSize()
     {
         return SerializeBigEndianTraits<T>::size();
     }
 
-    template<typename T>
+    template <typename T>
     inline void
     store(T data)
     {
         SerializeBigEndianTraits<T>::store(mBuffer, data);
     }
 
-    template<typename T>
+    template <typename T>
     inline void
     storeObject(const T& data)
     {
@@ -187,7 +179,7 @@ public:
         mBuffer += bytes;
     }
 
-    template<typename T>
+    template <typename T>
     inline void
     skip()
     {
@@ -213,7 +205,7 @@ public:
         return mBuffer;
     }
 
-    template<typename T>
+    template <typename T>
     inline Serialize&
     operator<<(const T& data)
     {
@@ -236,44 +228,40 @@ private:
 /**
  * Deserialize the application data of a SPP/PUS packet.
  *
- * The read<uint8_t>(), read<uint16_t>() and read<uint32_t>() functions read the number of bits
- * from the current location and move the data pointer forward
- * correspondingly. The peek8(), peek16() and peek32() read a value
- * n bytes in front of the current location and *don't* move the
- * data pointer.
+ * The read<uint8_t>(), read<uint16_t>() and read<uint32_t>() functions read the number of
+ * bits from the current location and move the data pointer forward correspondingly. The
+ * peek8(), peek16() and peek32() read a value n bytes in front of the current location
+ * and *don't* move the data pointer.
  *
  * \author Fabian Greif
  */
 class Deserialize
 {
 public:
-    explicit inline
-    Deserialize(const uint8_t* inputBuffer) :
-            mBuffer(inputBuffer), mBegin(inputBuffer)
+    explicit inline Deserialize(const uint8_t* inputBuffer) :
+        mBuffer(inputBuffer),
+        mBegin(inputBuffer)
     {
     }
 
-    explicit inline
-    Deserialize(outpost::Slice<const uint8_t> array) :
-            mBuffer(&array[0]), mBegin(&array[0])
+    explicit inline Deserialize(outpost::Slice<const uint8_t> array) :
+        mBuffer(&array[0]),
+        mBegin(&array[0])
     {
     }
 
     template <size_t N>
-    explicit inline
-    Deserialize(outpost::FixedSizeArrayView<const uint8_t, N> array) :
-            mBuffer(&array[0]), mBegin(&array[0])
+    explicit inline Deserialize(outpost::FixedSizeArrayView<const uint8_t, N> array) :
+        mBuffer(&array[0]),
+        mBegin(&array[0])
     {
     }
 
-    inline
-    ~Deserialize()
+    inline ~Deserialize()
     {
     }
 
-    inline
-    Deserialize(const Deserialize& other) :
-            mBuffer(other.mBuffer), mBegin(other.mBegin)
+    inline Deserialize(const Deserialize& other) : mBuffer(other.mBuffer), mBegin(other.mBegin)
     {
     }
 
@@ -287,14 +275,14 @@ public:
         mBuffer = mBegin;
     }
 
-    template<typename T>
+    template <typename T>
     inline T
     peek(const size_t n) const
     {
         return SerializeBigEndianTraits<T>::peek(mBuffer, n);
     }
 
-    template<typename T>
+    template <typename T>
     inline T
     read()
     {
@@ -354,10 +342,10 @@ public:
     inline void
     readPacked12(uint16_t& first, uint16_t& second)
     {
-        first  = static_cast<uint32_t>(mBuffer[0]) << 4;
+        first = static_cast<uint32_t>(mBuffer[0]) << 4;
         first |= static_cast<uint32_t>(mBuffer[1]) >> 4;
 
-        second  = static_cast<uint32_t>(mBuffer[1] & 0x0F) << 8;
+        second = static_cast<uint32_t>(mBuffer[1] & 0x0F) << 8;
         second |= static_cast<uint32_t>(mBuffer[2]);
         mBuffer += 3;
     }
@@ -365,10 +353,10 @@ public:
     inline void
     peekPacked12(const size_t n, uint16_t& first, uint16_t& second)
     {
-        first  = static_cast<uint32_t>(mBuffer[n + 0]) << 4;
+        first = static_cast<uint32_t>(mBuffer[n + 0]) << 4;
         first |= static_cast<uint32_t>(mBuffer[n + 1]) >> 4;
 
-        second  = static_cast<uint32_t>(mBuffer[n + 1] & 0x0F) << 8;
+        second = static_cast<uint32_t>(mBuffer[n + 1] & 0x0F) << 8;
         second |= static_cast<uint32_t>(mBuffer[n + 2]);
     }
 
@@ -384,14 +372,14 @@ public:
         mBuffer += bytes;
     }
 
-    template<typename T>
+    template <typename T>
     inline void
     skip()
     {
         mBuffer += SerializeBigEndianTraits<T>::size();
     }
 
-    template<typename T>
+    template <typename T>
     inline Deserialize&
     operator>>(T& data)
     {
@@ -420,7 +408,7 @@ public:
         return (mBuffer - mBegin);
     }
 
-    template<typename T>
+    template <typename T>
     inline T
     getPosition() const
     {
@@ -435,6 +423,6 @@ private:
     const uint8_t* mBuffer;
     const uint8_t* const mBegin;
 };
-}
+}  // namespace outpost
 
 #endif

@@ -15,15 +15,14 @@
 #ifndef OUTPOST_SLICE_H
 #define OUTPOST_SLICE_H
 
+#include <outpost/utils/meta.h>
+
 #include <stddef.h>
 
 #include <gsl/span>
 
-#include <outpost/utils/meta.h>
-
 namespace outpost
 {
-
 /**
  * Slices are a dynamically-sized view into a contiguous sequence of memory.
  *
@@ -61,18 +60,14 @@ public:
      * This allows creation from e.g. STL standard containers and C style
      * arrays.
      */
-    inline
-    Slice(gsl::span<ElementType> span) :
-        mData(span.data()),
-        mNumberOfElements(span.size())
+    inline Slice(gsl::span<ElementType> span) : mData(span.data()), mNumberOfElements(span.size())
     {
     }
 
     /**
      * Create from an iterator pair.
      */
-    inline
-    Slice(Iterator firstElement, Iterator lastElement) :
+    inline Slice(Iterator firstElement, Iterator lastElement) :
         mData(firstElement),
         mNumberOfElements(std::distance(firstElement, lastElement))
     {
@@ -147,8 +142,7 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline ElementType&
-    operator[](IndexType index) const
+    inline ElementType& operator[](IndexType index) const
     {
         return mData[index];
     }
@@ -209,8 +203,7 @@ public:
         }
         else
         {
-            return Slice(mData + (mNumberOfElements - lastElements),
-                         lastElements);
+            return Slice(mData + (mNumberOfElements - lastElements), lastElements);
         }
     }
 
@@ -238,8 +231,7 @@ public:
         return subSlice(start, end - start);
     }
 
-    inline
-    operator Slice<const ElementType>() const
+    inline operator Slice<const ElementType>() const
     {
         return Slice<const ElementType>(mData, mNumberOfElements);
     }
@@ -251,8 +243,7 @@ public:
     }
 
 private:
-    inline
-    Slice(ElementType* array, size_t numberOfElements) :
+    inline Slice(ElementType* array, size_t numberOfElements) :
         mData(array),
         mNumberOfElements(numberOfElements)
     {
@@ -264,7 +255,6 @@ private:
     /// Size of array
     IndexType mNumberOfElements;
 };
-
 
 /**
  * Initialize from a pointer to an array.
@@ -296,8 +286,7 @@ asSlice(ElementType* firstElement, ElementType* lastElement)
  * Create slice from a C-style array.
  */
 template <class ElementType, size_t N>
-Slice<ElementType>
-asSlice(ElementType (&arr)[N])
+Slice<ElementType> asSlice(ElementType (&arr)[N])
 {
     return Slice<ElementType>(arr);
 }
@@ -332,6 +321,6 @@ asSlice(Ptr& cont)
     return Slice<typename Ptr::element_type>(cont);
 }
 
-}
+}  // namespace outpost
 
 #endif

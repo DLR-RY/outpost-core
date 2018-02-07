@@ -16,13 +16,12 @@
 #ifndef OUTPOST_UTILS_MEMBER_FUNCTION_STORE_H
 #define OUTPOST_UTILS_MEMBER_FUNCTION_STORE_H
 
-#include <stddef.h>
-
 #include <outpost/utils/callable.h>
+
+#include <stddef.h>
 
 namespace outpost
 {
-
 template <typename Signature>
 class MemberFunctionSignature;
 
@@ -92,9 +91,10 @@ public:
      */
     template <typename C>
     inline void
-    registerFunction(size_t index,
-                     C* object,
-                     typename MemberFunctionSignature<Signature>::template MemberFunction<C>::Type function)
+    registerFunction(
+            size_t index,
+            C* object,
+            typename MemberFunctionSignature<Signature>::template MemberFunction<C>::Type function)
     {
         mObjects[index] = reinterpret_cast<Callable*>(object);
         mFunctions[index] = reinterpret_cast<RawFunctionType>(function);
@@ -114,8 +114,7 @@ public:
 
     template <typename T>
     inline typename MemberFunctionSignature<Signature>::ReturnType
-    callFunction(size_t index,
-                 typename MemberFunctionSignature<T>::Arg1Type arg1)
+    callFunction(size_t index, typename MemberFunctionSignature<T>::Arg1Type arg1)
     {
         return (mObjects[index]->*mFunctions[index])(arg1);
     }
@@ -134,6 +133,6 @@ private:
     RawFunctionType mFunctions[N];
 };
 
-}
+}  // namespace outpost
 
 #endif

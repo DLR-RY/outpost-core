@@ -12,18 +12,18 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <stdint.h>
+#include <outpost/utils/pow.h>
 
 #include <unittest/harness.h>
 
-#include <outpost/utils/pow.h>
+#include <stdint.h>
 
 using namespace outpost;
 
 TEST(PowerOfTwoTest, test)
 {
     EXPECT_EQ(8, outpost::PowerOfTwo<3>::value);
-    EXPECT_EQ(256*256*256, outpost::PowerOfTwo<24>::value);
+    EXPECT_EQ(256 * 256 * 256, outpost::PowerOfTwo<24>::value);
 }
 
 TEST(PowTest, test)

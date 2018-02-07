@@ -21,7 +21,9 @@ using namespace outpost;
 
 TEST(SerialzeTest, store)
 {
-    uint8_t data[16] = { 0, };
+    uint8_t data[16] = {
+            0,
+    };
 
     EXPECT_EQ(0, data[0]);
 
@@ -52,7 +54,9 @@ TEST(SerialzeTest, store)
 
 TEST(SerializeTest, shouldStorePackedData)
 {
-    uint8_t data[6] = { 0, };
+    uint8_t data[6] = {
+            0,
+    };
 
     Serialize payload(data);
 
@@ -70,7 +74,9 @@ TEST(SerializeTest, shouldStorePackedData)
 
 TEST(SerialzeTest, storeTemplateExplicit)
 {
-    uint8_t data[20] = { 0, };
+    uint8_t data[20] = {
+            0,
+    };
 
     EXPECT_EQ(0, data[0]);
 
@@ -117,7 +123,9 @@ TEST(SerialzeTest, storeTemplateExplicit)
 
 TEST(SerialzeTest, storeTemplateImplicit)
 {
-    uint8_t data[20] = { 0, };
+    uint8_t data[20] = {
+            0,
+    };
 
     EXPECT_EQ(0, data[0]);
 

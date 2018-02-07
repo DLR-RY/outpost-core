@@ -16,9 +16,8 @@
 
 namespace outpost
 {
-
 SerializableObject::~SerializableObject()
 {
 }
 
-}
+}  // namespace outpost

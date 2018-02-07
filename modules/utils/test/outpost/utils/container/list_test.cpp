@@ -12,9 +12,9 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <outpost/utils/container/list.h>
+
+#include <unittest/harness.h>
 
 using namespace outpost;
 
@@ -45,8 +45,7 @@ TEST(ListTest, get)
     class Condition
     {
     public:
-        Condition(uint8_t value) :
-            mValue(value)
+        Condition(uint8_t value) : mValue(value)
         {
         }
 
@@ -63,9 +62,9 @@ TEST(ListTest, get)
 
     EXPECT_EQ(0, list.get(Condition(2)));
 
-    ListNode node1 = { 1, 0 };
-    ListNode node2 = { 3, 0 };
-    ListNode node3 = { 5, 0 };
+    ListNode node1 = {1, 0};
+    ListNode node2 = {3, 0};
+    ListNode node3 = {5, 0};
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -107,9 +106,9 @@ TEST(ListTest, removeWithFunctor)
 {
     List<ListNode> list;
 
-    ListNode node1 = { 1, 0 };
-    ListNode node2 = { 3, 0 };
-    ListNode node3 = { 5, 0 };
+    ListNode node1 = {1, 0};
+    ListNode node2 = {3, 0};
+    ListNode node3 = {5, 0};
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -118,8 +117,7 @@ TEST(ListTest, removeWithFunctor)
     class Condition
     {
     public:
-        Condition(uint8_t value) :
-            mValue(value)
+        Condition(uint8_t value) : mValue(value)
         {
         }
 
@@ -153,9 +151,9 @@ TEST(ListTest, removeWithFunction)
 {
     List<ListNode> list;
 
-    ListNode node1 = { 1, 0 };
-    ListNode node2 = { 3, 0 };
-    ListNode node3 = { 5, 0 };
+    ListNode node1 = {1, 0};
+    ListNode node2 = {3, 0};
+    ListNode node3 = {5, 0};
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -178,10 +176,10 @@ TEST(ListTest, removeAll)
 {
     List<ListNode> list;
 
-    ListNode node1 = { 1, 0 };
-    ListNode node2 = { 3, 0 };
-    ListNode node3 = { 5, 0 };
-    ListNode node4 = { 3, 0 };
+    ListNode node1 = {1, 0};
+    ListNode node2 = {3, 0};
+    ListNode node3 = {5, 0};
+    ListNode node4 = {3, 0};
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -200,27 +198,27 @@ TEST(ListTest, removeAll)
 
 TEST(ListTest, shouldIterateOverElements)
 {
-	List<ListNode> list;
+    List<ListNode> list;
 
-	ListNode node1 = { 1, 0 };
-	ListNode node2 = { 3, 0 };
-	ListNode node3 = { 5, 0 };
+    ListNode node1 = {1, 0};
+    ListNode node2 = {3, 0};
+    ListNode node3 = {5, 0};
 
-	list.prepend(&node3);
-	list.prepend(&node2);
-	list.prepend(&node1);
+    list.prepend(&node3);
+    list.prepend(&node2);
+    list.prepend(&node1);
 
-	List<ListNode>::Iterator it = list.begin();
+    List<ListNode>::Iterator it = list.begin();
 
-	ASSERT_TRUE(it != list.end());
-	EXPECT_EQ(it->mValue, 1);
-	++it;
-	ASSERT_TRUE(it != list.end());
-	EXPECT_EQ(it->mValue, 3);
-	++it;
-	ASSERT_TRUE(it != list.end());
-	EXPECT_EQ(it->mValue, 5);
-	++it;
+    ASSERT_TRUE(it != list.end());
+    EXPECT_EQ(it->mValue, 1);
+    ++it;
+    ASSERT_TRUE(it != list.end());
+    EXPECT_EQ(it->mValue, 3);
+    ++it;
+    ASSERT_TRUE(it != list.end());
+    EXPECT_EQ(it->mValue, 5);
+    ++it;
 
-	ASSERT_FALSE(it != list.end());
+    ASSERT_FALSE(it != list.end());
 }

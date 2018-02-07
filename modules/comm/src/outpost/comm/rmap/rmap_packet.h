@@ -14,19 +14,18 @@
 #ifndef OUTPOST_COMM_RMAP_PACKET_H_
 #define OUTPOST_COMM_RMAP_PACKET_H_
 
-#include <string>
-#include <outpost/utils/storage/bit_access.h>
-#include <outpost/utils/container/slice.h>
-#include <outpost/utils/storage/serialize.h>
-
 #include <outpost/comm/rmap/rmap_node.h>
 #include <outpost/comm/rmap/rmap_status.h>
+#include <outpost/utils/container/slice.h>
+#include <outpost/utils/storage/bit_access.h>
+#include <outpost/utils/storage/serialize.h>
+
+#include <string>
 
 namespace outpost
 {
 namespace comm
 {
-
 /**
  * RMAP packet.
  *
@@ -38,8 +37,8 @@ namespace comm
 class RmapPacket
 {
     friend class TestingRmap;
-public:
 
+public:
     /**
      * RMAP packet instruction field, for reference
      * (see ECSS-E-ST-50-52C pg. 17)
@@ -49,22 +48,25 @@ public:
     {
         enum PacketType : uint8_t
         {
-            replyPacket = 0, commandPacket = 1
+            replyPacket = 0,
+            commandPacket = 1
         };
 
         enum Operation : uint8_t
         {
-            read = 0, write = 1
+            read = 0,
+            write = 1
         };
 
         enum ReplyAddressLength : uint8_t
         {
-            zeroBytes = 0, fourBytes = 1, eigthBytes = 2, twelveBytes = 3
+            zeroBytes = 0,
+            fourBytes = 1,
+            eigthBytes = 2,
+            twelveBytes = 3
         };
 
-        constexpr
-        InstructionField() :
-            mField(0)
+        constexpr InstructionField() : mField(0)
         {
         }
 
@@ -291,7 +293,9 @@ public:
     inline void
     setTargetSpaceWireAddress(outpost::Slice<uint8_t> targetSpaceWireAddress)
     {
-        memcpy(mSpwTargets, targetSpaceWireAddress.begin(), targetSpaceWireAddress.getNumberOfElements());
+        memcpy(mSpwTargets,
+               targetSpaceWireAddress.begin(),
+               targetSpaceWireAddress.getNumberOfElements());
         mNumOfSpwTargets = targetSpaceWireAddress.getNumberOfElements();
     }
 
@@ -305,7 +309,7 @@ public:
     getReplyAddress()
     {
         return outpost::Slice<uint8_t>::unsafe(reinterpret_cast<uint8_t*>(mReplyAddress),
-            mInstruction.getReplyAddressLength());
+                                               mInstruction.getReplyAddressLength());
     }
 
     inline void
@@ -549,7 +553,6 @@ public:
     }
 
 private:
-
     /**
      * Construct RMAP packet header.
      *
@@ -579,7 +582,7 @@ private:
     uint8_t mHeaderCRC;
     uint8_t mDataCRC;
 };
-}
-}
+}  // namespace comm
+}  // namespace outpost
 
 #endif

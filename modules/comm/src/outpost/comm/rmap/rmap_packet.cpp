@@ -11,9 +11,9 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-#include <outpost/utils/coding/crc.h>
-
 #include "rmap_packet.h"
+
+#include <outpost/utils/coding/crc.h>
 
 using namespace outpost::comm;
 
@@ -98,7 +98,6 @@ RmapPacket::RmapPacket(uint8_t targetLogicalAddress,
 
 RmapPacket::~RmapPacket()
 {
-
 }
 
 void
@@ -117,10 +116,11 @@ RmapPacket::constructPacket(outpost::Slice<uint8_t> buffer, outpost::Slice<const
     constructHeader(stream);
 
     // Data length must be less then total buffer length supported by SpW driver
-    if ((buffer.getNumberOfElements() - 4) < static_cast<size_t>(stream.getPosition() + mDataLength))
+    if ((buffer.getNumberOfElements() - 4)
+        < static_cast<size_t>(stream.getPosition() + mDataLength))
     {
-        console_out(
-            "RMAP-Packet: Trying to send larger packet than available buffer space\n");
+        console_out("RMAP-Packet: Trying to send larger packet than available buffer "
+                    "space\n");
         return false;
     }
 
@@ -140,7 +140,6 @@ RmapPacket::constructPacket(outpost::Slice<uint8_t> buffer, outpost::Slice<const
 bool
 RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress)
 {
-
     if (data.getNumberOfElements() < rmap::minimumReplySize)
     {
         console_out("RMAP-Packet: packet size less then minimum\n");
@@ -212,8 +211,8 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             packetHeaderCRC = stream.read<uint8_t>();
 
             calculatedHeaderCRC = outpost::Crc8CcittReversed::calculate(
-                outpost::Slice<uint8_t>::unsafe(const_cast<uint8_t*>(stream.getPointer()),
-                    static_cast<size_t>(currentStreamPos)));
+                    outpost::Slice<uint8_t>::unsafe(const_cast<uint8_t*>(stream.getPointer()),
+                                                    static_cast<size_t>(currentStreamPos)));
 
             if (calculatedHeaderCRC != packetHeaderCRC)
             {
@@ -236,8 +235,8 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             packetHeaderCRC = stream.read<uint8_t>();
 
             calculatedHeaderCRC = outpost::Crc8CcittReversed::calculate(
-                outpost::Slice<uint8_t>::unsafe(const_cast<uint8_t*>(stream.getPointer()),
-                    static_cast<size_t>(currentStreamPos)));
+                    outpost::Slice<uint8_t>::unsafe(const_cast<uint8_t*>(stream.getPointer()),
+                                                    static_cast<size_t>(currentStreamPos)));
 
             if (calculatedHeaderCRC != packetHeaderCRC)
             {
@@ -249,7 +248,8 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             dataStartPointer = const_cast<uint8_t*>(stream.getPointerToCurrentPosition());
 
             // Check data length
-            if (static_cast<size_t>(stream.getPosition() + mDataLength + 1) != data.getNumberOfElements())
+            if (static_cast<size_t>(stream.getPosition() + mDataLength + 1)
+                != data.getNumberOfElements())
             {
                 console_out("RMAP-Packet: data length mismatch\n");
                 return false;
@@ -261,7 +261,7 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             packetDataCRC = stream.read<uint8_t>();
 
             calculatedDataCRC = outpost::Crc8CcittReversed::calculate(
-                outpost::Slice<uint8_t>::unsafe(dataStartPointer, mDataLength));
+                    outpost::Slice<uint8_t>::unsafe(dataStartPointer, mDataLength));
             if (packetDataCRC != calculatedDataCRC)
             {
                 console_out("RMAP-Packet: Invalid packet data CRC\n");
@@ -285,7 +285,7 @@ RmapPacket::setTargetInformation(RmapTargetNode& rmapTargetNode)
     outpost::Slice<uint8_t> rplyAddr = rmapTargetNode.getReplyAddress();
     memcpy(mReplyAddress, &rplyAddr[0], rplyAddr.getNumberOfElements());
     mInstruction.setReplyAddressLength(
-        static_cast<InstructionField::ReplyAddressLength>(rplyAddr.getNumberOfElements() / 4));
+            static_cast<InstructionField::ReplyAddressLength>(rplyAddr.getNumberOfElements() / 4));
 
     // Set packet target path SpW address field according to the RMAP target node
     setTargetSpaceWireAddress(rmapTargetNode.getTargetSpaceWireAddress());
@@ -325,7 +325,6 @@ RmapPacket::constructHeader(outpost::Serialize& stream)
     // Only handling command packets
     if (isCommandPacket())
     {
-
         for (uint8_t i = 0; i < mNumOfSpwTargets; i++)
         {
             stream.store<uint8_t>(mSpwTargets[i]);
@@ -352,8 +351,7 @@ RmapPacket::constructHeader(outpost::Serialize& stream)
 
     mHeaderLength = stream.getPosition();
 
-    mHeaderCRC = outpost::Crc8CcittReversed::calculate(
-        outpost::Slice<uint8_t>::unsafe(stream.getPointer() + mNumOfSpwTargets,
-                                        stream.getPosition() - mNumOfSpwTargets));
+    mHeaderCRC = outpost::Crc8CcittReversed::calculate(outpost::Slice<uint8_t>::unsafe(
+            stream.getPointer() + mNumOfSpwTargets, stream.getPosition() - mNumOfSpwTargets));
     stream.store<uint8_t>(mHeaderCRC);
 }

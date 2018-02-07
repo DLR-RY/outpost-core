@@ -69,12 +69,10 @@ class SpacecraftElapsedTimeEpoch
 {
 };
 
-
 typedef TimePoint<SpacecraftElapsedTimeEpoch> SpacecraftElapsedTime;
 typedef TimePoint<GpsEpoch> GpsTime;
 typedef TimePoint<TaiEpoch> AtomicTime;
 typedef TimePoint<UnixEpoch> UnixTime;
-
 
 // forward declaration
 template <typename Epoch>
@@ -97,8 +95,8 @@ public:
 void
 setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gps);
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #include "time_epoch_impl.h"
 

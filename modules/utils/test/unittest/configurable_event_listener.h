@@ -16,6 +16,7 @@
 #define UNITTEST_CONFIGURABLE_EVENT_LISTENER_H
 
 #include <gtest/gtest.h>
+
 #include <stdio.h>
 
 // exported from gtest.cc to provide colored output
@@ -25,23 +26,23 @@ namespace internal
 {
 enum GTestColor
 {
-  COLOR_DEFAULT,
-  COLOR_RED,
-  COLOR_GREEN,
-  COLOR_YELLOW
+    COLOR_DEFAULT,
+    COLOR_RED,
+    COLOR_GREEN,
+    COLOR_YELLOW
 };
 
-void ColoredPrintf(GTestColor color, const char* fmt, ...);
-}
-}
+void
+ColoredPrintf(GTestColor color, const char* fmt, ...);
+}  // namespace internal
+}  // namespace testing
 
 namespace unittest
 {
 class ConfigurableEventListener : public testing::TestEventListener
 {
 public:
-    inline explicit
-    ConfigurableEventListener(TestEventListener* theEventListener) :
+    inline explicit ConfigurableEventListener(TestEventListener* theEventListener) :
         showTestCases(false),
         showTestNames(false),
         showSuccesses(false),
@@ -51,8 +52,7 @@ public:
     {
     }
 
-    virtual
-    ~ConfigurableEventListener()
+    virtual ~ConfigurableEventListener()
     {
     }
 
@@ -177,7 +177,8 @@ public:
      */
     bool showSuccesses;
     /**
-     * Show each failure as it occurs. You will also see it at the bottom after the full suite is run.
+     * Show each failure as it occurs. You will also see it at the bottom after the full
+     * suite is run.
      */
     bool showInlineFailures;
     /**
@@ -192,6 +193,6 @@ protected:
 ConfigurableEventListener*
 registerConfigurableEventListener();
 
-}
+}  // namespace unittest
 
-#endif // UNITTEST_CONFIGURABLE_EVENT_LISTENER_H
+#endif  // UNITTEST_CONFIGURABLE_EVENT_LISTENER_H

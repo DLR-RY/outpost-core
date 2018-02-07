@@ -31,9 +31,7 @@ outpost::smpc::Subscription::connectSubscriptionsToTopics()
     // Reset the lists in the topics
     TopicBase::clearSubscriptions();
 
-    for (Subscription* it = Subscription::listOfAllSubscriptions;
-            it != 0;
-            it = it->getNext())
+    for (Subscription* it = Subscription::listOfAllSubscriptions; it != 0; it = it->getNext())
     {
         it->mNextTopicSubscription = it->mTopic->mSubscriptions;
         it->mTopic->mSubscriptions = it;
@@ -43,9 +41,7 @@ outpost::smpc::Subscription::connectSubscriptionsToTopics()
 void
 outpost::smpc::Subscription::releaseAllSubscriptions()
 {
-    for (Subscription* it = Subscription::listOfAllSubscriptions;
-            it != 0;
-            it = it->getNext())
+    for (Subscription* it = Subscription::listOfAllSubscriptions; it != 0; it = it->getNext())
     {
         it->mNextTopicSubscription = 0;
     }

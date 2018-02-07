@@ -18,13 +18,11 @@
 #include "fixed_ordered_map.h"
 
 template <typename Entry, typename Key>
-outpost::FixedOrderedMap<Entry, Key>::FixedOrderedMap(Entry* entries,
-                                                   size_t numberOfEntries) :
+outpost::FixedOrderedMap<Entry, Key>::FixedOrderedMap(Entry* entries, size_t numberOfEntries) :
     mEntries(entries),
     mNumberOfEntries(numberOfEntries)
 {
 }
-
 
 template <typename Entry, typename Key>
 const Entry*

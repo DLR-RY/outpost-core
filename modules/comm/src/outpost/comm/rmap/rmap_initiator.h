@@ -15,20 +15,19 @@
 #ifndef OUTPOST_COMM_RMAP_INITIATOR_H_
 #define OUTPOST_COMM_RMAP_INITIATOR_H_
 
-#include <outpost/rtos.h>
-#include <outpost/time/duration.h>
-#include <outpost/smpc.h>
-#include <outpost/hal/spacewire.h>
-
 #include "rmap_packet.h"
-#include "rmap_transaction.h"
 #include "rmap_status.h"
+#include "rmap_transaction.h"
+
+#include <outpost/hal/spacewire.h>
+#include <outpost/rtos.h>
+#include <outpost/smpc.h>
+#include <outpost/time/duration.h>
 
 namespace outpost
 {
 namespace comm
 {
-
 /**
  * RMAP initiator.
  *
@@ -48,19 +47,20 @@ class RmapInitiator : public outpost::rtos::Thread
     friend class TestingRmap;
 
 public:
-
     enum Operation
     {
-        operationRead = 0x01, operationWrite = 0x02
+        operationRead = 0x01,
+        operationWrite = 0x02
     };
 
     struct ErrorCounters
     {
         ErrorCounters() :
-                mDiscardedReceivedPackets(0), mNonRmapPacketReceived(0),
-                mErrorneousReplyPackets(0), mErrorInStoringReplyPacket(0)
+            mDiscardedReceivedPackets(0),
+            mNonRmapPacketReceived(0),
+            mErrorneousReplyPackets(0),
+            mErrorInStoringReplyPacket(0)
         {
-
         }
 
         size_t mDiscardedReceivedPackets;
@@ -78,8 +78,7 @@ public:
      * */
     struct Buffer
     {
-        Buffer() :
-                mLength(0)
+        Buffer() : mLength(0)
         {
             memset(mData, 0, sizeof(mData));
         }
@@ -99,7 +98,7 @@ public:
         }
 
         void
-        getData(uint8_t *buffer)
+        getData(uint8_t* buffer)
         {
             memcpy(buffer, mData, mLength);
             memset(mData, 0, sizeof(mData));
@@ -113,15 +112,12 @@ public:
 
     struct TransactionsList
     {
-
-        TransactionsList() :
-                mTransactions(), mIndex(0)
+        TransactionsList() : mTransactions(), mIndex(0)
         {
         }
 
         ~TransactionsList()
         {
-
         }
 
         uint8_t
@@ -143,8 +139,7 @@ public:
         addTransaction(RmapTransaction* trans)
         {
             mTransactions[mIndex] = *trans;
-            mIndex =
-                    (mIndex == (rmap::maxConcurrentTransactions - 1) ? 0 : mIndex + 1);
+            mIndex = (mIndex == (rmap::maxConcurrentTransactions - 1) ? 0 : mIndex + 1);
         }
 
         void
@@ -208,8 +203,7 @@ public:
         {
             for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
             {
-                if (mTransactions[i].getState()
-                        == RmapTransaction::notInitiated)
+                if (mTransactions[i].getState() == RmapTransaction::notInitiated)
                 {
                     return &mTransactions[i];
                 }
@@ -222,10 +216,7 @@ public:
     };
 
     //--------------------------------------------------------------------------
-    RmapInitiator(hal::SpaceWire& spw,
-                  RmapTargetsList* list,
-                  uint8_t priority,
-                  size_t stackSize);
+    RmapInitiator(hal::SpaceWire& spw, RmapTargetsList* list, uint8_t priority, size_t stackSize);
     ~RmapInitiator();
 
     /**
@@ -458,8 +449,7 @@ private:
     }
 
     bool
-    sendPacket(RmapTransaction* transaction,
-               outpost::Slice<const uint8_t> data);
+    sendPacket(RmapTransaction* transaction, outpost::Slice<const uint8_t> data);
 
     bool
     receivePacket(RmapPacket* rxedPacket);
@@ -501,7 +491,7 @@ private:
 typedef outpost::Slice<const uint8_t> NonRmapDataType;
 extern outpost::smpc::Topic<NonRmapDataType> nonRmapPacketReceived;
 
-}
-}
+}  // namespace comm
+}  // namespace outpost
 
 #endif /* OUTPOST_COMM_RMAP_INITIATOR_H_ */

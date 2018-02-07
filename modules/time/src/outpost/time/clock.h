@@ -21,7 +21,6 @@ namespace outpost
 {
 namespace time
 {
-
 /**
  * Clock interface.
  *
@@ -31,20 +30,19 @@ class Clock
 {
 public:
     Clock();
-    
+
     Clock(const Clock&) = delete;
 
     Clock&
     operator=(const Clock&) = delete;
 
-    virtual
-    ~Clock();
+    virtual ~Clock();
 
     virtual SpacecraftElapsedTime
     now() const = 0;
 };
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #endif

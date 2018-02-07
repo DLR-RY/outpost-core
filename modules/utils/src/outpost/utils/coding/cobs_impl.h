@@ -17,16 +17,16 @@
 
 #include "cobs.h"
 
-#include <string.h>     // for memcpy
+#include <string.h>  // for memcpy
 
 namespace outpost
 {
 namespace utils
 {
-
 // ----------------------------------------------------------------------------
 template <uint8_t blockLength>
-CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(outpost::Slice<const uint8_t> input) :
+CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(
+        outpost::Slice<const uint8_t> input) :
     mData(&input[0]),
     mLength(input.getNumberOfElements()),
     mCurrentPosition(0),
@@ -41,14 +41,14 @@ CobsEncodingGeneratorBase<blockLength>::~CobsEncodingGeneratorBase()
 }
 
 template <uint8_t blockLength>
-CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(const CobsEncodingGeneratorBase& other) :
+CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(
+        const CobsEncodingGeneratorBase& other) :
     mData(other.mData),
     mLength(other.mLength),
     mCurrentPosition(other.mCurrentPosition),
     mNextBlock(other.mNextBlock),
     mZeroElementSkip(other.mZeroElementSkip)
 {
-
 }
 
 template <uint8_t blockLength>
@@ -114,9 +114,7 @@ CobsEncodingGeneratorBase<blockLength>::findNextBlock()
     // - A zero is found which determines the block length
     // - No zero is found for 254 consecutive bytes
     // - The end of the input array is reached.
-    while ((mData[position] != 0) &&
-           (blockSize < blockLength) &&
-           (position < mLength))
+    while ((mData[position] != 0) && (blockSize < blockLength) && (position < mLength))
     {
         position++;
         blockSize++;
@@ -128,10 +126,9 @@ CobsEncodingGeneratorBase<blockLength>::findNextBlock()
 // ----------------------------------------------------------------------------
 template <uint8_t blockLength>
 size_t
-CobsBase<blockLength>::encode(outpost::Slice<const uint8_t> input,
-						      outpost::Slice<uint8_t> output)
+CobsBase<blockLength>::encode(outpost::Slice<const uint8_t> input, outpost::Slice<uint8_t> output)
 {
-	const uint8_t* inputPtr = &input[0];
+    const uint8_t* inputPtr = &input[0];
     const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
     uint8_t* outputPtr = &output[0];
 
@@ -188,12 +185,11 @@ CobsBase<blockLength>::getMaximumSizeOfEncodedData(size_t inputLength)
 
 template <uint8_t blockLength>
 size_t
-CobsBase<blockLength>::decode(outpost::Slice<const uint8_t> input,
-						      uint8_t* output)
+CobsBase<blockLength>::decode(outpost::Slice<const uint8_t> input, uint8_t* output)
 {
     size_t outputPosition = 0;
     const uint8_t* inputPtr = &input[0];
-	const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
+    const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
 
     while (inputPtr < inputEnd)
     {
@@ -228,7 +224,7 @@ CobsBase<blockLength>::decode(outpost::Slice<const uint8_t> input,
     return outputPosition;
 }
 
-}
-}
+}  // namespace utils
+}  // namespace outpost
 
 #endif

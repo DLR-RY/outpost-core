@@ -15,14 +15,14 @@
 #ifndef OUTPOST_HAL_REGISTER_H
 #define OUTPOST_HAL_REGISTER_H
 
-#include <stdint.h>
 #include <outpost/utils/storage/bit_access.h>
+
+#include <stdint.h>
 
 namespace outpost
 {
 namespace hal
 {
-
 /**
  * Register access.
  *
@@ -132,8 +132,8 @@ private:
     operator=(const Register&);
 };
 
-}
-}
+}  // namespace hal
+}  // namespace outpost
 
 #include "register_impl.h"
 

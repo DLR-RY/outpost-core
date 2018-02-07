@@ -82,13 +82,24 @@ TEST(DeserialzeTest, skipPositions)
 
 TEST(DeserialzeTest, shouldReadData)
 {
-    uint8_t data[18] = {
-        0xAB,
-        0xEF, 0x12,
-        0xA6, 0xC0, 0x1A,
-        0x61, 0xA9, 0xF5, 0x1E,
-        0xAE, 0x5F, 0xA2, 0xB0, 0x00, 0x7D, 0x32, 0xC2
-    };
+    uint8_t data[18] = {0xAB,
+                        0xEF,
+                        0x12,
+                        0xA6,
+                        0xC0,
+                        0x1A,
+                        0x61,
+                        0xA9,
+                        0xF5,
+                        0x1E,
+                        0xAE,
+                        0x5F,
+                        0xA2,
+                        0xB0,
+                        0x00,
+                        0x7D,
+                        0x32,
+                        0xC2};
 
     Deserialize payload(data);
 
@@ -115,7 +126,7 @@ TEST(DeserialzeTest, shouldReadData)
 
 TEST(DeserializeTest, shouldReadPackedData)
 {
-    uint8_t data[6] = { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC };
+    uint8_t data[6] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC};
 
     Deserialize payload(data);
 
@@ -136,7 +147,7 @@ TEST(DeserializeTest, shouldReadPackedData)
 
 TEST(DeserializeTest, shouldPeekPackedData)
 {
-    uint8_t data[6] = { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC };
+    uint8_t data[6] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC};
 
     Deserialize payload(data);
 
@@ -151,9 +162,7 @@ TEST(DeserializeTest, shouldPeekPackedData)
 
 TEST(DeserialzeTest, peekFloat)
 {
-    uint8_t data[4] = {
-        0x40, 0x49, 0x0F, 0xD0
-    };
+    uint8_t data[4] = {0x40, 0x49, 0x0F, 0xD0};
 
     Deserialize payload(data);
 
@@ -165,9 +174,7 @@ TEST(DeserialzeTest, peekFloat)
 
 TEST(DeserialzeTest, peekDouble)
 {
-    uint8_t data[8] = {
-        0x40, 0x09, 0x21, 0xFB, 0x54, 0x44, 0x2D, 0x18
-    };
+    uint8_t data[8] = {0x40, 0x09, 0x21, 0xFB, 0x54, 0x44, 0x2D, 0x18};
 
     Deserialize payload(data);
 
@@ -179,9 +186,7 @@ TEST(DeserialzeTest, peekDouble)
 
 TEST(DeserialzeTest, readFloat)
 {
-    uint8_t data[4] = {
-        0x40, 0x49, 0x0F, 0xD0
-    };
+    uint8_t data[4] = {0x40, 0x49, 0x0F, 0xD0};
 
     Deserialize payload(data);
 
@@ -193,9 +198,7 @@ TEST(DeserialzeTest, readFloat)
 
 TEST(DeserialzeTest, readDouble)
 {
-    uint8_t data[8] = {
-        0x40, 0x09, 0x21, 0xFB, 0x54, 0x44, 0x2D, 0x18
-    };
+    uint8_t data[8] = {0x40, 0x09, 0x21, 0xFB, 0x54, 0x44, 0x2D, 0x18};
 
     Deserialize payload(data);
 
@@ -207,13 +210,24 @@ TEST(DeserialzeTest, readDouble)
 
 TEST(DeserialzeTest, peekTemplate)
 {
-    uint8_t data[18] = {
-        0xAB,
-        0xEF, 0x12,
-        0xA6, 0xC0, 0x1A,
-        0x61, 0xA9, 0xF5, 0x1E,
-        0xAE, 0x5F, 0xA2, 0xB0, 0x00, 0x7D, 0x32, 0xC2
-    };
+    uint8_t data[18] = {0xAB,
+                        0xEF,
+                        0x12,
+                        0xA6,
+                        0xC0,
+                        0x1A,
+                        0x61,
+                        0xA9,
+                        0xF5,
+                        0x1E,
+                        0xAE,
+                        0x5F,
+                        0xA2,
+                        0xB0,
+                        0x00,
+                        0x7D,
+                        0x32,
+                        0xC2};
 
     Deserialize payload(data);
 
@@ -235,12 +249,21 @@ TEST(DeserialzeTest, peekTemplate)
 
 TEST(DeserialzeTest, readTemplate)
 {
-    uint8_t data[18] = {
-        0xAB,
-        0xEF, 0x12,
-        0x61, 0xA9, 0xF5, 0x1E,
-        0xAE, 0x5F, 0xA2, 0xB0, 0x00, 0x7D, 0x32, 0xC2
-    };
+    uint8_t data[18] = {0xAB,
+                        0xEF,
+                        0x12,
+                        0x61,
+                        0xA9,
+                        0xF5,
+                        0x1E,
+                        0xAE,
+                        0x5F,
+                        0xA2,
+                        0xB0,
+                        0x00,
+                        0x7D,
+                        0x32,
+                        0xC2};
 
     Deserialize payload(data);
 

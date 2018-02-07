@@ -12,15 +12,15 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <stdint.h>
-
-#include <outpost/smpc/topic.h>
 #include <outpost/smpc/subscription.h>
+#include <outpost/smpc/topic.h>
 
+#include <unittest/harness.h>
 #include <unittest/smpc/testing_subscription.h>
 
+#include <stdint.h>
+
 #include <cstring>
-#include <unittest/harness.h>
 
 struct Data
 {
@@ -31,8 +31,7 @@ struct Data
 class Component : public outpost::smpc::Subscriber
 {
 public:
-    Component() :
-        received()
+    Component() : received()
     {
         reset();
     }
@@ -76,17 +75,18 @@ public:
 class SubscriptionTest : public ::testing::Test
 {
 public:
-    SubscriptionTest() :
-        data({ 0x12345678, 0x9876 })
+    SubscriptionTest() : data({0x12345678, 0x9876})
     {
     }
 
-    virtual void SetUp()
+    virtual void
+    SetUp()
     {
         component.reset();
     }
 
-    virtual void TearDown()
+    virtual void
+    TearDown()
     {
         unittest::smpc::TestingSubscription::releaseAllSubscriptions();
     }
@@ -115,8 +115,10 @@ TEST_F(SubscriptionTest, receiveNone)
 
 TEST_F(SubscriptionTest, receiveTwo)
 {
-    outpost::smpc::Subscription* subscription0 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData0);
-    outpost::smpc::Subscription* subscription1 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData1);
+    outpost::smpc::Subscription* subscription0 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData0);
+    outpost::smpc::Subscription* subscription1 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData1);
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
@@ -132,10 +134,14 @@ TEST_F(SubscriptionTest, receiveTwo)
 
 TEST_F(SubscriptionTest, receiveFour)
 {
-    outpost::smpc::Subscription* subscription0 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData0);
-    outpost::smpc::Subscription* subscription1 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData1);
-    outpost::smpc::Subscription* subscription2 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData2);
-    outpost::smpc::Subscription* subscription3 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData3);
+    outpost::smpc::Subscription* subscription0 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData0);
+    outpost::smpc::Subscription* subscription1 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData1);
+    outpost::smpc::Subscription* subscription2 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData2);
+    outpost::smpc::Subscription* subscription3 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
@@ -153,10 +159,14 @@ TEST_F(SubscriptionTest, receiveFour)
 
 TEST_F(SubscriptionTest, receiveFourWithDelete)
 {
-    outpost::smpc::Subscription* subscription0 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData0);
-    outpost::smpc::Subscription* subscription1 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData1);
-    outpost::smpc::Subscription* subscription2 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData2);
-    outpost::smpc::Subscription* subscription3 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData3);
+    outpost::smpc::Subscription* subscription0 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData0);
+    outpost::smpc::Subscription* subscription1 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData1);
+    outpost::smpc::Subscription* subscription2 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData2);
+    outpost::smpc::Subscription* subscription3 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
@@ -175,10 +185,14 @@ TEST_F(SubscriptionTest, receiveFourWithDelete)
 
 TEST_F(SubscriptionTest, receiveFourWithDelete2)
 {
-    outpost::smpc::Subscription* subscription0 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData0);
-    outpost::smpc::Subscription* subscription1 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData1);
-    outpost::smpc::Subscription* subscription2 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData2);
-    outpost::smpc::Subscription* subscription3 = new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData3);
+    outpost::smpc::Subscription* subscription0 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData0);
+    outpost::smpc::Subscription* subscription1 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData1);
+    outpost::smpc::Subscription* subscription2 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData2);
+    outpost::smpc::Subscription* subscription3 =
+            new outpost::smpc::Subscription(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 

@@ -13,6 +13,7 @@
 // ----------------------------------------------------------------------------
 
 #include "topic_raw.h"
+
 #include "subscription_raw.h"
 
 #include <outpost/rtos/mutex_guard.h>
@@ -35,9 +36,8 @@ outpost::smpc::TopicRaw::publish(const void* message, size_t length)
 {
     rtos::MutexGuard lock(mMutex);
 
-    for (SubscriptionRaw* subscription = mSubscriptions;
-            subscription != 0;
-            subscription = subscription->mNextTopicSubscription)
+    for (SubscriptionRaw* subscription = mSubscriptions; subscription != 0;
+         subscription = subscription->mNextTopicSubscription)
     {
         subscription->execute(message, length);
     }
@@ -46,9 +46,7 @@ outpost::smpc::TopicRaw::publish(const void* message, size_t length)
 void
 outpost::smpc::TopicRaw::clearSubscriptions()
 {
-    for (TopicRaw* it = listOfAllTopics;
-            it != 0;
-            it = it->getNext())
+    for (TopicRaw* it = listOfAllTopics; it != 0; it = it->getNext())
     {
         it->mSubscriptions = 0;
     }

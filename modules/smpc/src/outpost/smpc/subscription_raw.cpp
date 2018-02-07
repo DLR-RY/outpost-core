@@ -29,9 +29,7 @@ outpost::smpc::SubscriptionRaw::connectSubscriptionsToTopics()
 {
     TopicRaw::clearSubscriptions();
 
-    for (SubscriptionRaw* it = listOfAllSubscriptions;
-            it != 0;
-            it = it->getNext())
+    for (SubscriptionRaw* it = listOfAllSubscriptions; it != 0; it = it->getNext())
     {
         it->mNextTopicSubscription = it->mTopic->mSubscriptions;
         it->mTopic->mSubscriptions = it;
@@ -41,9 +39,7 @@ outpost::smpc::SubscriptionRaw::connectSubscriptionsToTopics()
 void
 outpost::smpc::SubscriptionRaw::releaseAllSubscriptions()
 {
-    for (SubscriptionRaw* it = listOfAllSubscriptions;
-            it != 0;
-            it = it->getNext())
+    for (SubscriptionRaw* it = listOfAllSubscriptions; it != 0; it = it->getNext())
     {
         it->mNextTopicSubscription = 0;
     }

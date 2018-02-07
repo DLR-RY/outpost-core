@@ -23,7 +23,6 @@ namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Checkpoint at which threads can be suspended or resumed.
  *
@@ -90,7 +89,7 @@ public:
 
     /**
      * Pass the checkpoint.
-     * 
+     *
      * Blocks if the thread should be suspended or passes through directly
      * otherwise. Switches to the 'suspended' state if blocked.
      */
@@ -103,7 +102,7 @@ private:
     State mState;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

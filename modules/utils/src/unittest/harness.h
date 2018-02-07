@@ -22,8 +22,8 @@
 #ifndef OUTPOST_HARNESS_H
 #define OUTPOST_HARNESS_H
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 /**
  * Compare two arrays.
@@ -34,15 +34,17 @@
  *   ...
  *   EXPECT_ARRAY_EQ(uint8_t, expect, result, 16);
  */
-#define EXPECT_ARRAY_EQ(type, reference, actual, element_count)             \
-    do {                                                                    \
-        const type* reference_ = static_cast<const type *> (reference);        \
-        const type* actual_ = static_cast<const type *> (actual);            \
-        for (size_t i = 0; i < element_count; ++i ) {                    \
-            EXPECT_EQ(reference_[i], actual_[i]);                            \
-        }                                                                    \
+#define EXPECT_ARRAY_EQ(type, reference, actual, element_count)       \
+    do                                                                \
+    {                                                                 \
+        const type* reference_ = static_cast<const type*>(reference); \
+        const type* actual_ = static_cast<const type*>(actual);       \
+        for (size_t i = 0; i < element_count; ++i)                    \
+        {                                                             \
+            EXPECT_EQ(reference_[i], actual_[i]);                     \
+        }                                                             \
     } while (0)
 
-#define ARRAY_SIZE(a)    (sizeof(a)/sizeof(a[0]))
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 #endif

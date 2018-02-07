@@ -20,7 +20,6 @@
 
 namespace outpost
 {
-
 /**
  * Bit field access.
  *
@@ -125,7 +124,7 @@ private:
     static const int numberOfBitsPerByte = 8;
 };
 
-}
+}  // namespace outpost
 
 #include "bit_access_impl.h"
 

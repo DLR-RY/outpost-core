@@ -15,12 +15,12 @@
 #ifndef OUTPOST_SMPC_SUBSCRIPTION_RAW_H
 #define OUTPOST_SMPC_SUBSCRIPTION_RAW_H
 
-#include <stddef.h>
+#include "subscriber.h"
+#include "topic_raw.h"
 
 #include <outpost/utils/functor.h>
 
-#include "subscriber.h"
-#include "topic_raw.h"
+#include <stddef.h>
 
 namespace outpost
 {
@@ -60,9 +60,7 @@ public:
      *         Member function pointer of the subscribing class.
      */
     template <typename S>
-    SubscriptionRaw(TopicRaw& topic,
-                    S* subscriber,
-                    typename FunctionType<S>::Type function);
+    SubscriptionRaw(TopicRaw& topic, S* subscriber, typename FunctionType<S>::Type function);
 
     /**
      * Destroy the subscription
@@ -131,7 +129,7 @@ SubscriptionRaw::SubscriptionRaw(TopicRaw& topic,
 {
 }
 
-}
-}
+}  // namespace smpc
+}  // namespace outpost
 
 #endif

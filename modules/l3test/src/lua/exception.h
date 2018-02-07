@@ -34,31 +34,30 @@
 
 namespace lua
 {
-	/**
-	 * Lua error exception.
-	 *
-	 * Thrown when an unhandled Lua error is raised.
-	 *
-	 * Keep in mind that the actual C++ exception is only thrown if Lua doesn't
-	 * know what to do with one of its errors (Lua panic). This means that all
-	 * cases of lua::Error being thrown (as referenced in documentation) can,
-	 * and will, be caught by protected Lua calls before being propagated as
-	 * this exception.
-	 */
-	class Exception : public std::runtime_error
-	{
-	public:
-		/**
-		 * Standard constructor.
-		 *
-		 * \param message
-		 *     Error message
-		 */
-		explicit Exception(const std::string& message) :
-				std::runtime_error(message)
-		{
-		}
-	};
-}
+/**
+ * Lua error exception.
+ *
+ * Thrown when an unhandled Lua error is raised.
+ *
+ * Keep in mind that the actual C++ exception is only thrown if Lua doesn't
+ * know what to do with one of its errors (Lua panic). This means that all
+ * cases of lua::Error being thrown (as referenced in documentation) can,
+ * and will, be caught by protected Lua calls before being propagated as
+ * this exception.
+ */
+class Exception : public std::runtime_error
+{
+public:
+    /**
+     * Standard constructor.
+     *
+     * \param message
+     *     Error message
+     */
+    explicit Exception(const std::string& message) : std::runtime_error(message)
+    {
+    }
+};
+}  // namespace lua
 
-#endif // LUA_EXCEPTION_H
+#endif  // LUA_EXCEPTION_H

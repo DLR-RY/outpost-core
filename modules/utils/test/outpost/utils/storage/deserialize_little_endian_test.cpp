@@ -82,13 +82,24 @@ TEST(DeserialzeLittleEndianTest, skipPositions)
 
 TEST(DeserialzeLittleEndianTest, shouldReadData)
 {
-    uint8_t data[18] = {
-        0xAB,
-        0xEF, 0x12,
-        0xA6, 0xC0, 0x1A,
-        0x61, 0xA9, 0xF5, 0x1E,
-        0xAE, 0x5F, 0xA2, 0xB0, 0x00, 0x7D, 0x32, 0xC2
-    };
+    uint8_t data[18] = {0xAB,
+                        0xEF,
+                        0x12,
+                        0xA6,
+                        0xC0,
+                        0x1A,
+                        0x61,
+                        0xA9,
+                        0xF5,
+                        0x1E,
+                        0xAE,
+                        0x5F,
+                        0xA2,
+                        0xB0,
+                        0x00,
+                        0x7D,
+                        0x32,
+                        0xC2};
 
     DeserializeLittleEndian payload(data);
 
@@ -115,7 +126,7 @@ TEST(DeserialzeLittleEndianTest, shouldReadData)
 
 TEST(DeserializeLittleEndianTest, shouldReadPackedData)
 {
-    uint8_t data[6] = { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC };
+    uint8_t data[6] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC};
 
     DeserializeLittleEndian payload(data);
 
@@ -136,7 +147,7 @@ TEST(DeserializeLittleEndianTest, shouldReadPackedData)
 
 TEST(DeserializeLittleEndianTest, shouldPeekPackedData)
 {
-    uint8_t data[6] = { 0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC };
+    uint8_t data[6] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC};
 
     DeserializeLittleEndian payload(data);
 
@@ -151,9 +162,7 @@ TEST(DeserializeLittleEndianTest, shouldPeekPackedData)
 
 TEST(DeserialzeLittleEndianTest, peekFloat)
 {
-    uint8_t data[4] = {
-        0xD0, 0x0F, 0x49, 0x40
-    };
+    uint8_t data[4] = {0xD0, 0x0F, 0x49, 0x40};
 
     DeserializeLittleEndian payload(data);
 
@@ -166,7 +175,14 @@ TEST(DeserialzeLittleEndianTest, peekFloat)
 TEST(DeserialzeLittleEndianTest, peekDouble)
 {
     uint8_t data[8] = {
-         0x18, 0x2D, 0x44, 0x54, 0xFB, 0x21, 0x09, 0x40,
+            0x18,
+            0x2D,
+            0x44,
+            0x54,
+            0xFB,
+            0x21,
+            0x09,
+            0x40,
     };
 
     DeserializeLittleEndian payload(data);
@@ -179,9 +195,7 @@ TEST(DeserialzeLittleEndianTest, peekDouble)
 
 TEST(DeserialzeLittleEndianTest, readFloat)
 {
-    uint8_t data[4] = {
-        0xD0, 0x0F, 0x49, 0x40
-    };
+    uint8_t data[4] = {0xD0, 0x0F, 0x49, 0x40};
 
     DeserializeLittleEndian payload(data);
 
@@ -194,7 +208,14 @@ TEST(DeserialzeLittleEndianTest, readFloat)
 TEST(DeserialzeLittleEndianTest, readDouble)
 {
     uint8_t data[8] = {
-        0x18, 0x2D, 0x44, 0x54, 0xFB, 0x21, 0x09, 0x40,
+            0x18,
+            0x2D,
+            0x44,
+            0x54,
+            0xFB,
+            0x21,
+            0x09,
+            0x40,
     };
 
     DeserializeLittleEndian payload(data);
@@ -207,13 +228,24 @@ TEST(DeserialzeLittleEndianTest, readDouble)
 
 TEST(DeserialzeLittleEndianTest, peekTemplate)
 {
-    uint8_t data[18] = {
-        0xAB,
-        0xEF, 0x12,
-        0xA6, 0xC0, 0x1A,
-        0x61, 0xA9, 0xF5, 0x1E,
-        0xAE, 0x5F, 0xA2, 0xB0, 0x00, 0x7D, 0x32, 0xC2
-    };
+    uint8_t data[18] = {0xAB,
+                        0xEF,
+                        0x12,
+                        0xA6,
+                        0xC0,
+                        0x1A,
+                        0x61,
+                        0xA9,
+                        0xF5,
+                        0x1E,
+                        0xAE,
+                        0x5F,
+                        0xA2,
+                        0xB0,
+                        0x00,
+                        0x7D,
+                        0x32,
+                        0xC2};
 
     DeserializeLittleEndian payload(data);
 
@@ -235,12 +267,21 @@ TEST(DeserialzeLittleEndianTest, peekTemplate)
 
 TEST(DeserialzeLittleEndianTest, readTemplate)
 {
-    uint8_t data[18] = {
-        0xAB,
-        0xEF, 0x12,
-        0x61, 0xA9, 0xF5, 0x1E,
-        0xAE, 0x5F, 0xA2, 0xB0, 0x00, 0x7D, 0x32, 0xC2
-    };
+    uint8_t data[18] = {0xAB,
+                        0xEF,
+                        0x12,
+                        0x61,
+                        0xA9,
+                        0xF5,
+                        0x1E,
+                        0xAE,
+                        0x5F,
+                        0xA2,
+                        0xB0,
+                        0x00,
+                        0x7D,
+                        0x32,
+                        0xC2};
 
     DeserializeLittleEndian payload(data);
 

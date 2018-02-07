@@ -15,8 +15,8 @@
 #ifndef OUTPOST_TIME_PRINTER_H
 #define OUTPOST_TIME_PRINTER_H
 
-#include <outpost/time/duration.h>
 #include <outpost/time/date.h>
+#include <outpost/time/duration.h>
 
 #include <ostream>
 
@@ -24,7 +24,6 @@ namespace outpost
 {
 namespace time
 {
-
 ::std::ostream&
 operator<<(::std::ostream& os, const outpost::time::Duration& duration);
 
@@ -37,7 +36,7 @@ operator<<(::std::ostream& os, const outpost::time::SpacecraftElapsedTime& time)
 ::std::ostream&
 operator<<(::std::ostream& os, const outpost::time::Date& date);
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #endif

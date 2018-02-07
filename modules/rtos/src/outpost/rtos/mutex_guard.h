@@ -21,7 +21,6 @@ namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Implements a RAII-style locking.
  *
@@ -53,9 +52,7 @@ public:
      * \param m
      *      The mutex to acquire.
      */
-    explicit inline
-    Guard(T& m) :
-        mLock(m)
+    explicit inline Guard(T& m) : mLock(m)
     {
         mLock.acquire();
     }
@@ -63,8 +60,7 @@ public:
     /**
      * Release the mutex.
      */
-    inline
-    ~Guard()
+    inline ~Guard()
     {
         mLock.release();
     }
@@ -85,7 +81,7 @@ private:
  */
 typedef Guard<Mutex> MutexGuard;
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

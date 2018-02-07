@@ -17,7 +17,6 @@
 
 namespace outpost
 {
-
 /**
  * Empty class used as dummy
  */
@@ -40,43 +39,42 @@ struct Select<false, T, U>
     typedef U Result;
 };
 
-
-template<typename T>
+template <typename T>
 struct remove_const
 {
     typedef T type;
 };
 
-template<typename T>
+template <typename T>
 struct remove_const<T const volatile>
 {
     typedef typename remove_const<T>::type volatile type;
 };
 
-template<typename T>
+template <typename T>
 struct remove_const<T volatile>
 {
     typedef typename remove_const<T>::type volatile type;
 };
 
-template<typename T>
+template <typename T>
 struct remove_const<T const>
 {
     typedef typename remove_const<T>::type type;
 };
 
-template<typename T>
+template <typename T>
 struct remove_const<T&>
 {
     typedef typename remove_const<T>::type& type;
 };
 
-template<typename T>
+template <typename T>
 struct remove_const<T*>
 {
     typedef typename remove_const<T>::type* type;
 };
 
-}
+}  // namespace outpost
 
 #endif

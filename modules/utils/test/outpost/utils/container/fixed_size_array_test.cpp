@@ -12,8 +12,9 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
 #include <outpost/utils/container/fixed_size_array.h>
+
+#include <unittest/harness.h>
 
 using outpost::FixedSizeArray;
 using outpost::FixedSizeArrayView;
@@ -34,7 +35,7 @@ TEST_F(FixedSizeArrayTest, createFromCStyleArray)
 
 TEST_F(FixedSizeArrayTest, dataAccessWithCStyleArray)
 {
-    uint8_t data[6] = { 6, 5, 4, 3, 2, 1 };
+    uint8_t data[6] = {6, 5, 4, 3, 2, 1};
 
     FixedSizeArray<uint8_t, 6> array(data);
 
@@ -63,11 +64,7 @@ TEST_F(FixedSizeArrayTest, createArrayOfPointers)
     TestClass testClass2;
     TestClass testClass3;
 
-    TestClass* data[3] = {
-        &testClass1,
-        &testClass2,
-        &testClass3
-    };
+    TestClass* data[3] = {&testClass1, &testClass2, &testClass3};
 
     FixedSizeArray<TestClass*, 3> array(data);
 
@@ -93,7 +90,7 @@ TEST_F(FixedSizeArrayViewTest, createFromCStyleArray)
 
 TEST_F(FixedSizeArrayViewTest, dataAccessWithCStyleArray)
 {
-    uint8_t data[6] = { 6, 5, 4, 3, 2, 1 };
+    uint8_t data[6] = {6, 5, 4, 3, 2, 1};
 
     FixedSizeArrayView<uint8_t, 6> array(data);
 
@@ -105,7 +102,7 @@ TEST_F(FixedSizeArrayViewTest, dataAccessWithCStyleArray)
 
 TEST_F(FixedSizeArrayViewTest, createWithExplicitSizeAndOffset)
 {
-    uint8_t data[6] = { 1, 2, 3, 4, 5, 6 };
+    uint8_t data[6] = {1, 2, 3, 4, 5, 6};
 
     FixedSizeArrayView<uint8_t, 4> array = FixedSizeArrayView<uint8_t, 4>(data, 2);
 
@@ -125,11 +122,7 @@ TEST_F(FixedSizeArrayViewTest, createArrayOfPointers)
     TestClass testClass2;
     TestClass testClass3;
 
-    TestClass* data[3] = {
-        &testClass1,
-        &testClass2,
-        &testClass3
-    };
+    TestClass* data[3] = {&testClass1, &testClass2, &testClass3};
 
     FixedSizeArrayView<TestClass*, 3> array(data);
 

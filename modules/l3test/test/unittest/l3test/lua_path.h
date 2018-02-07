@@ -21,7 +21,6 @@ namespace outpost
 {
 namespace l3test
 {
-
 /**
  * Global setting for the Lua path prefix used during unit-tests.
  *
@@ -44,7 +43,7 @@ private:
     static std::string defaultPrefix;
 };
 
-}
-}
+}  // namespace l3test
+}  // namespace outpost
 
 #endif

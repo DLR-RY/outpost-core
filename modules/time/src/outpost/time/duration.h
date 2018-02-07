@@ -23,7 +23,6 @@ namespace outpost
 {
 namespace time
 {
-
 /**
  * A length of time unattached to any point on the time continuum.
  *
@@ -55,15 +54,12 @@ public:
 
     static constexpr int64_t secondsPerDay = 86400;
 
-    inline
-    ~Duration() = default;
+    inline ~Duration() = default;
 
     /**
      * Copy constructor
      */
-    inline constexpr
-    Duration(const Duration& other) :
-        mTicks(other.mTicks)
+    inline constexpr Duration(const Duration& other) : mTicks(other.mTicks)
     {
     }
 
@@ -83,10 +79,9 @@ public:
     inline constexpr int64_t
     hours() const
     {
-        return mTicks / (microsecondsPerMillisecond *
-                        millisecondsPerSecond *
-                        secondsPerMinute *
-                        minutesPerHour);
+        return mTicks
+               / (microsecondsPerMillisecond * millisecondsPerSecond * secondsPerMinute
+                  * minutesPerHour);
     }
 
     /**
@@ -97,9 +92,7 @@ public:
     inline constexpr int64_t
     minutes() const
     {
-        return mTicks / (microsecondsPerMillisecond *
-                        millisecondsPerSecond *
-                        secondsPerMinute);
+        return mTicks / (microsecondsPerMillisecond * millisecondsPerSecond * secondsPerMinute);
     }
 
     /**
@@ -110,8 +103,7 @@ public:
     inline constexpr int64_t
     seconds() const
     {
-        return mTicks / (microsecondsPerMillisecond *
-                        millisecondsPerSecond);
+        return mTicks / (microsecondsPerMillisecond * millisecondsPerSecond);
     }
 
     /**
@@ -174,8 +166,7 @@ public:
         return Duration(mTicks + other.mTicks);
     }
 
-    inline constexpr Duration
-    operator*(Duration other) const
+    inline constexpr Duration operator*(Duration other) const
     {
         return Duration(mTicks + other.mTicks);
     }
@@ -207,8 +198,7 @@ public:
         return Duration(mTicks);
     }
 
-    inline constexpr Duration
-    operator*(int rhs) const
+    inline constexpr Duration operator*(int rhs) const
     {
         return Duration(mTicks * rhs);
     }
@@ -221,37 +211,37 @@ public:
     }
 
     inline constexpr bool
-    operator<(Duration rhs)  const
+    operator<(Duration rhs) const
     {
         return mTicks < rhs.mTicks;
     }
 
     inline constexpr bool
-    operator>(Duration rhs)  const
+    operator>(Duration rhs) const
     {
         return mTicks > rhs.mTicks;
     }
 
     inline constexpr bool
-    operator<=(Duration rhs)  const
+    operator<=(Duration rhs) const
     {
         return mTicks <= rhs.mTicks;
     }
 
     inline constexpr bool
-    operator>=(Duration rhs)  const
+    operator>=(Duration rhs) const
     {
         return mTicks >= rhs.mTicks;
     }
 
     inline constexpr bool
-    operator==(Duration rhs)  const
+    operator==(Duration rhs) const
     {
         return mTicks == rhs.mTicks;
     }
 
     inline constexpr bool
-    operator!=(Duration rhs)  const
+    operator!=(Duration rhs) const
     {
         return mTicks != rhs.mTicks;
     }
@@ -263,9 +253,7 @@ public:
     }
 
 protected:
-    explicit constexpr inline
-    Duration(int64_t numberOfTicks) :
-        mTicks(numberOfTicks)
+    explicit constexpr inline Duration(int64_t numberOfTicks) : mTicks(numberOfTicks)
     {
     }
 
@@ -282,12 +270,9 @@ private:
 class Hours : public Duration
 {
 public:
-    explicit inline constexpr
-    Hours(int64_t value) :
-        Duration(value * minutesPerHour *
-                         secondsPerMinute *
-                         millisecondsPerSecond *
-                         microsecondsPerMillisecond)
+    explicit inline constexpr Hours(int64_t value) :
+        Duration(value * minutesPerHour * secondsPerMinute * millisecondsPerSecond
+                 * microsecondsPerMillisecond)
     {
     }
 };
@@ -295,11 +280,8 @@ public:
 class Minutes : public Duration
 {
 public:
-    explicit inline constexpr
-    Minutes(int64_t value) :
-        Duration(value * secondsPerMinute *
-                         millisecondsPerSecond *
-                         microsecondsPerMillisecond)
+    explicit inline constexpr Minutes(int64_t value) :
+        Duration(value * secondsPerMinute * millisecondsPerSecond * microsecondsPerMillisecond)
     {
     }
 };
@@ -312,10 +294,8 @@ public:
 class Seconds : public Duration
 {
 public:
-    explicit inline constexpr
-    Seconds(int64_t value) :
-        Duration(value * millisecondsPerSecond *
-                         microsecondsPerMillisecond)
+    explicit inline constexpr Seconds(int64_t value) :
+        Duration(value * millisecondsPerSecond * microsecondsPerMillisecond)
     {
     }
 };
@@ -328,8 +308,7 @@ public:
 class Milliseconds : public Duration
 {
 public:
-    explicit inline constexpr
-    Milliseconds(int64_t value) :
+    explicit inline constexpr Milliseconds(int64_t value) :
         Duration(value * microsecondsPerMillisecond)
     {
     }
@@ -343,14 +322,12 @@ public:
 class Microseconds : public Duration
 {
 public:
-    explicit inline constexpr
-    Microseconds(int64_t value) :
-        Duration(value)
+    explicit inline constexpr Microseconds(int64_t value) : Duration(value)
     {
     }
 };
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #endif

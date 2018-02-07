@@ -12,9 +12,9 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <l3test/script/engine.h>
+
+#include <unittest/harness.h>
 
 using namespace l3test::script;
 
@@ -23,7 +23,7 @@ using namespace l3test::script;
  */
 TEST(EngineTest, creation)
 {
-	Engine engine;
+    Engine engine;
 }
 
 /*
@@ -31,11 +31,11 @@ TEST(EngineTest, creation)
  */
 TEST(EngineTest, channelRegistration)
 {
-	Engine engine;
-	Channel::Ptr channel(new Channel);
+    Engine engine;
+    Channel::Ptr channel(new Channel);
 
-	EXPECT_TRUE(engine.registerChannel(channel, "test"));
-	EXPECT_TRUE(engine.registerChannel(channel, "test2"));
+    EXPECT_TRUE(engine.registerChannel(channel, "test"));
+    EXPECT_TRUE(engine.registerChannel(channel, "test2"));
 }
 
 /*
@@ -43,12 +43,12 @@ TEST(EngineTest, channelRegistration)
  */
 TEST(EngineTest, channelRegistrationClash)
 {
-	Engine engine;
-	Channel::Ptr channel(new Channel);
-	Channel::Ptr channel2(new Channel);
+    Engine engine;
+    Channel::Ptr channel(new Channel);
+    Channel::Ptr channel2(new Channel);
 
-	EXPECT_TRUE(engine.registerChannel(channel, "test"));
-	EXPECT_FALSE(engine.registerChannel(channel2, "test"));
+    EXPECT_TRUE(engine.registerChannel(channel, "test"));
+    EXPECT_FALSE(engine.registerChannel(channel2, "test"));
 }
 
 /*
@@ -110,23 +110,23 @@ output.tm.extended:append(1)
  */
 TEST(EngineTest, sendDataFromLua)
 {
-	Engine engine;
-	Channel::Ptr channel(new Channel);
+    Engine engine;
+    Channel::Ptr channel(new Channel);
 
-	engine.registerChannel(channel, "tm");
+    engine.registerChannel(channel, "tm");
 
-	engine.execute(R"--(
+    engine.execute(R"--(
 data = { 1, 2, 3, 4, 5, 6 }
 tm:send(data)
 )--");
 
-	ASSERT_TRUE(channel->hasPacket());
-	EXPECT_EQ(6U, channel->getPacketLength());
+    ASSERT_TRUE(channel->hasPacket());
+    EXPECT_EQ(6U, channel->getPacketLength());
 
-	auto packet = channel->getPacket();
+    auto packet = channel->getPacket();
 
-	uint8_t data[6] = { 1, 2, 3, 4, 5, 6 };
-	EXPECT_ARRAY_EQ(uint8_t, data, packet.data(), 6);
+    uint8_t data[6] = {1, 2, 3, 4, 5, 6};
+    EXPECT_ARRAY_EQ(uint8_t, data, packet.data(), 6);
 }
 
 /*
@@ -142,7 +142,7 @@ TEST(EngineTest, sendDataToLua)
 
     engine.registerChannel(channel, "tc");
 
-    uint8_t data[6] = { 1, 2, 6, 5, 4, 3 };
+    uint8_t data[6] = {1, 2, 6, 5, 4, 3};
 
     channel->append(data, sizeof(data));
     channel->finishPacket();

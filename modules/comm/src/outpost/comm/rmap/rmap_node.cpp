@@ -11,9 +11,10 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-#include "rmap_status.h"
-#include "rmap_packet.h"
 #include "rmap_node.h"
+
+#include "rmap_packet.h"
+#include "rmap_status.h"
 
 using namespace outpost::comm;
 
@@ -57,7 +58,6 @@ RmapTargetNode::RmapTargetNode(const char* name,
 
 RmapTargetNode::~RmapTargetNode()
 {
-
 }
 
 bool
@@ -78,7 +78,9 @@ RmapTargetNode::setTargetSpaceWireAddress(outpost::Slice<uint8_t> targetSpaceWir
     bool result = false;
     if (targetSpaceWireAddress.getNumberOfElements() <= sizeof(mTargetSpaceWireAddress))
     {
-        memcpy(mTargetSpaceWireAddress, targetSpaceWireAddress.begin(), targetSpaceWireAddress.getNumberOfElements());
+        memcpy(mTargetSpaceWireAddress,
+               targetSpaceWireAddress.begin(),
+               targetSpaceWireAddress.getNumberOfElements());
         mTargetSpaceWireAddressLength = targetSpaceWireAddress.getNumberOfElements();
         result = true;
     }
@@ -86,16 +88,12 @@ RmapTargetNode::setTargetSpaceWireAddress(outpost::Slice<uint8_t> targetSpaceWir
 }
 
 //------------------------------------------------------------------------------
-RmapTargetsList::RmapTargetsList() :
-    mNodes(),
-    mSize(0)
+RmapTargetsList::RmapTargetsList() : mNodes(), mSize(0)
 {
-
 }
 
 RmapTargetsList::~RmapTargetsList()
 {
-
 }
 
 RmapTargetsList::RmapTargetsList(outpost::Slice<RmapTargetNode*> rmapTargetNodes)

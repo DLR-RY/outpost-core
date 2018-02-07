@@ -12,13 +12,13 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <unittest/harness.h>
-
 #include <outpost/hal/datagram_transport.h>
+
+#include <unittest/harness.h>
 
 using outpost::hal::DatagramTransport;
 
 TEST(DatagramTransportTest, shouldAllowToComposeAddressConstants)
 {
-    constexpr DatagramTransport::Address address(DatagramTransport::IpAddress(127, 0, 0 , 1), 8080);
+    constexpr DatagramTransport::Address address(DatagramTransport::IpAddress(127, 0, 0, 1), 8080);
 }

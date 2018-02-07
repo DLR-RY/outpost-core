@@ -17,7 +17,6 @@
 
 namespace outpost
 {
-
 /**
  * \author  Fabian Greif
  */
@@ -98,6 +97,6 @@ struct Pow<Base, -1>
     };
 };
 
-}
+}  // namespace outpost
 
 #endif

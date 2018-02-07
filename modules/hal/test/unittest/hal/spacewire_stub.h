@@ -15,18 +15,17 @@
 #ifndef UNITTEST_HAL_SPACEWIRE_STUB_H
 #define UNITTEST_HAL_SPACEWIRE_STUB_H
 
-#include <vector>
+#include <outpost/hal/spacewire.h>
+
+#include <list>
 #include <map>
 #include <memory>
-#include <list>
-
-#include <outpost/hal/spacewire.h>
+#include <vector>
 
 namespace unittest
 {
 namespace hal
 {
-
 /**
  * SpaceWire interface stub.
  *
@@ -54,8 +53,7 @@ public:
      */
     SpaceWireStub(size_t maximumLength);
 
-    virtual
-    ~SpaceWireStub();
+    virtual ~SpaceWireStub();
 
     virtual size_t
     getMaximumPacketLength() const;
@@ -75,17 +73,14 @@ public:
     virtual bool
     isUp();
 
-
     virtual Result::Type
-    requestBuffer(TransmitBuffer*& buffer,
-                  outpost::time::Duration timeout);
+    requestBuffer(TransmitBuffer*& buffer, outpost::time::Duration timeout);
 
     virtual Result::Type
     send(TransmitBuffer* buffer, outpost::time::Duration timeout);
 
     virtual Result::Type
-    receive(ReceiveBuffer& buffer,
-            outpost::time::Duration timeout);
+    receive(ReceiveBuffer& buffer, outpost::time::Duration timeout);
 
     virtual void
     releaseBuffer(const ReceiveBuffer& buffer);
@@ -93,7 +88,6 @@ public:
     // Ignored in this implementation.
     virtual void
     flushReceiveBuffer();
-
 
     /**
      * Check that no transmit buffers are currently used.
@@ -132,8 +126,7 @@ public:
 private:
     struct TransmitBufferEntry
     {
-        inline
-        TransmitBufferEntry(size_t maximumLength) :
+        inline TransmitBufferEntry(size_t maximumLength) :
             buffer(maximumLength, 0),
             header(outpost::asSlice(buffer))
         {
@@ -163,11 +156,11 @@ private:
      * Mapping between the transmit buffer given to the user and its storage
      * location.
      */
-    std::map<TransmitBuffer*, std::unique_ptr<TransmitBufferEntry> > mTransmitBuffers;
-    std::map<const uint8_t*, std::unique_ptr<ReceiveBufferEntry> > mReceiveBuffers;
+    std::map<TransmitBuffer*, std::unique_ptr<TransmitBufferEntry>> mTransmitBuffers;
+    std::map<const uint8_t*, std::unique_ptr<ReceiveBufferEntry>> mReceiveBuffers;
 };
 
-}
-}
+}  // namespace hal
+}  // namespace unittest
 
 #endif

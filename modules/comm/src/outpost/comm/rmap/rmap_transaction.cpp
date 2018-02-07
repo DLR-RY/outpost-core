@@ -30,7 +30,6 @@ RmapTransaction::RmapTransaction() :
 
 RmapTransaction::~RmapTransaction()
 {
-
 }
 
 void

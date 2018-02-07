@@ -19,7 +19,6 @@
 
 namespace outpost
 {
-
 template <typename T>
 struct Limits
 {
@@ -81,6 +80,6 @@ struct Limits<uint64_t>
     static const uint64_t max = 18446744073709551615ULL;
 };
 
-}
+}  // namespace outpost
 
 #endif

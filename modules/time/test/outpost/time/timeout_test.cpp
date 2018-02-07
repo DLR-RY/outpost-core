@@ -12,10 +12,10 @@
  */
 // ----------------------------------------------------------------------------
 
+#include <outpost/time/timeout.h>
+
 #include <unittest/harness.h>
 #include <unittest/time/testing_clock.h>
-
-#include <outpost/time/timeout.h>
 
 using namespace outpost::time;
 
@@ -27,10 +27,10 @@ public:
 
 TEST_F(TimeoutTest, shouldBeStoppedAfterDefaultConstruction)
 {
-	Timeout timeout;
+    Timeout timeout;
 
-	EXPECT_TRUE(timeout.isStopped());
-	EXPECT_EQ(Timeout::stopped, timeout.getState(mClock));
+    EXPECT_TRUE(timeout.isStopped());
+    EXPECT_EQ(Timeout::stopped, timeout.getState(mClock));
 }
 
 TEST_F(TimeoutTest, shouldBeArmedAfterConstructionWithTime)

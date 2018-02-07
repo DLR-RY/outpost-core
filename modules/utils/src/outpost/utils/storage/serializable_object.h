@@ -15,15 +15,14 @@
 #ifndef OUTPOST_UTILS_SERIALIZABLE_OBJECT_H
 #define OUTPOST_UTILS_SERIALIZABLE_OBJECT_H
 
-#include <stddef.h>
-#include <string.h>
-#include <stdint.h>
-
 #include "serialize.h"
+
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
 
 namespace outpost
 {
-
 /**
  * Abstract base class for objects than can be serialized.
  *
@@ -32,8 +31,7 @@ namespace outpost
 class SerializableObject
 {
 public:
-    virtual
-    ~SerializableObject();
+    virtual ~SerializableObject();
 
     /**
      * Get the size of the parameter.
@@ -64,7 +62,6 @@ public:
     deserialize(Deserialize& stream) = 0;
 };
 
-
-}
+}  // namespace outpost
 
 #endif

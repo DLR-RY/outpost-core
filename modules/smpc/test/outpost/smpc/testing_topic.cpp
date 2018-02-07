@@ -12,16 +12,15 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <stdio.h>
-
-#include <outpost/smpc/topic.h>
 #include <outpost/smpc/subscription.h>
+#include <outpost/smpc/topic.h>
+
+#include <stdio.h>
 
 namespace outpost
 {
 namespace smpc
 {
-
 class TestingTopicBase
 {
 public:
@@ -34,15 +33,14 @@ using namespace outpost::smpc;
 void
 TestingTopicBase::dumpConnectedSubscriptions(outpost::smpc::TopicBase& base)
 {
-    printf("topic %p\n", reinterpret_cast<void *>(this));
+    printf("topic %p\n", reinterpret_cast<void*>(this));
 
-    for (Subscription* topic = base.mSubscriptions;
-            topic != 0;
-            topic = topic->mNextTopicSubscription)
+    for (Subscription* topic = base.mSubscriptions; topic != 0;
+         topic = topic->mNextTopicSubscription)
     {
-        printf("- %p\n", reinterpret_cast<void *>(topic));
+        printf("- %p\n", reinterpret_cast<void*>(topic));
     }
 }
 
-}
-}
+}  // namespace smpc
+}  // namespace outpost

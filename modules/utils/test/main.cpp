@@ -13,10 +13,11 @@
 // ----------------------------------------------------------------------------
 
 #include <gtest/gtest.h>
+
 #include <unittest/configurable_event_listener.h>
 
 int
-main(int argc, char **argv)
+main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
     unittest::registerConfigurableEventListener();

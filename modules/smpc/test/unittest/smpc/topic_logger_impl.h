@@ -17,41 +17,41 @@
 
 #include "topic_logger.h"
 
-template<typename T>
+template <typename T>
 unittest::smpc::TopicLogger<T>::TopicLogger(outpost::smpc::Topic<T>& topic) :
     mSubscription(topic, this, &TopicLogger::onReceive)
 {
 }
 
-template<typename T>
+template <typename T>
 void
 unittest::smpc::TopicLogger<T>::clear()
 {
     mItems.clear();
 }
 
-template<typename T>
+template <typename T>
 const T&
 unittest::smpc::TopicLogger<T>::getNext() const
 {
     return mItems.front();
 }
 
-template<typename T>
+template <typename T>
 void
 unittest::smpc::TopicLogger<T>::dropNext()
 {
     mItems.pop_front();
 }
 
-template<typename T>
+template <typename T>
 bool
 unittest::smpc::TopicLogger<T>::isEmpty() const
 {
     return mItems.empty();
 }
 
-template<typename T>
+template <typename T>
 void
 unittest::smpc::TopicLogger<T>::onReceive(T* item)
 {

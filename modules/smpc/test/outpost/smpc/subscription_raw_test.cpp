@@ -12,15 +12,15 @@
  */
 // ----------------------------------------------------------------------------
 
-#include <stdint.h>
-
-#include <outpost/smpc/topic_raw.h>
 #include <outpost/smpc/subscription_raw.h>
+#include <outpost/smpc/topic_raw.h>
 
+#include <unittest/harness.h>
 #include <unittest/smpc/testing_subscription_raw.h>
 
+#include <stdint.h>
+
 #include <cstring>
-#include <unittest/harness.h>
 
 using namespace outpost::smpc;
 
@@ -33,32 +33,31 @@ struct Data
 class Component : public Subscriber
 {
 public:
-    Component() :
-        received{ false, false, false, false }
+    Component() : received{false, false, false, false}
     {
         reset();
     }
 
     void
-    onReceiveData0(const void *, size_t)
+    onReceiveData0(const void*, size_t)
     {
         received[0] = true;
     }
 
     void
-    onReceiveData1(const void *, size_t)
+    onReceiveData1(const void*, size_t)
     {
         received[1] = true;
     }
 
     void
-    onReceiveData2(const void *, size_t)
+    onReceiveData2(const void*, size_t)
     {
         received[2] = true;
     }
 
     void
-    onReceiveData3(const void *, size_t)
+    onReceiveData3(const void*, size_t)
     {
         received[3] = true;
     }
@@ -78,8 +77,7 @@ public:
 class SubscriptionRawTest : public ::testing::Test
 {
 public:
-    SubscriptionRawTest() :
-        data({ 0x12345678, 0x9876 })
+    SubscriptionRawTest() : data({0x12345678, 0x9876})
     {
     }
 
@@ -103,22 +101,26 @@ public:
 TEST_F(SubscriptionRawTest, receiveNone)
 {
     topic.publish(&data, sizeof(data));
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         EXPECT_FALSE(component.received[i]);
     }
 
     unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
 
     topic.publish(&data, sizeof(data));
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 4; ++i)
+    {
         EXPECT_FALSE(component.received[i]);
     }
 }
 
 TEST_F(SubscriptionRawTest, receiveTwo)
 {
-    SubscriptionRaw* subscription0 = new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
-    SubscriptionRaw* subscription1 = new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
+    SubscriptionRaw* subscription0 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
+    SubscriptionRaw* subscription1 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
 
     unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
 
@@ -134,10 +136,14 @@ TEST_F(SubscriptionRawTest, receiveTwo)
 
 TEST_F(SubscriptionRawTest, receiveFour)
 {
-    SubscriptionRaw* subscription0 = new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
-    SubscriptionRaw* subscription1 = new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
-    SubscriptionRaw* subscription2 = new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
-    SubscriptionRaw* subscription3 = new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
+    SubscriptionRaw* subscription0 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
+    SubscriptionRaw* subscription1 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
+    SubscriptionRaw* subscription2 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
+    SubscriptionRaw* subscription3 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
 
@@ -155,10 +161,14 @@ TEST_F(SubscriptionRawTest, receiveFour)
 
 TEST_F(SubscriptionRawTest, receiveFourWithDelete)
 {
-    SubscriptionRaw* subscription0 = new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
-    SubscriptionRaw* subscription1 = new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
-    SubscriptionRaw* subscription2 = new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
-    SubscriptionRaw* subscription3 = new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
+    SubscriptionRaw* subscription0 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
+    SubscriptionRaw* subscription1 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
+    SubscriptionRaw* subscription2 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
+    SubscriptionRaw* subscription3 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
 
@@ -177,10 +187,14 @@ TEST_F(SubscriptionRawTest, receiveFourWithDelete)
 
 TEST_F(SubscriptionRawTest, receiveFourWithDelete2)
 {
-    SubscriptionRaw* subscription0 = new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
-    SubscriptionRaw* subscription1 = new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
-    SubscriptionRaw* subscription2 = new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
-    SubscriptionRaw* subscription3 = new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
+    SubscriptionRaw* subscription0 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
+    SubscriptionRaw* subscription1 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
+    SubscriptionRaw* subscription2 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
+    SubscriptionRaw* subscription3 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
 
     unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
 

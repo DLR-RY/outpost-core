@@ -17,7 +17,6 @@
 
 namespace outpost
 {
-
 /**
  * Empty Base class for classes with member function callbacks.
  */
@@ -25,6 +24,6 @@ class Callable
 {
 };
 
-}
+}  // namespace outpost
 
 #endif

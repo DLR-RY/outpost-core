@@ -16,13 +16,12 @@
 #ifndef OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_TRAITS_H
 #define OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_TRAITS_H
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 namespace outpost
 {
-
 template <typename T>
 struct SerializeLittleEndianTraits
 {
@@ -272,7 +271,8 @@ struct SerializeLittleEndianTraits<int16_t>
     static inline int16_t
     peek(const uint8_t* const& buffer, size_t n)
     {
-        int16_t value = static_cast<int16_t>(SerializeLittleEndianTraits<uint16_t>::peek(buffer, n));
+        int16_t value =
+                static_cast<int16_t>(SerializeLittleEndianTraits<uint16_t>::peek(buffer, n));
         return value;
     }
 
@@ -302,7 +302,8 @@ struct SerializeLittleEndianTraits<int32_t>
     static inline int32_t
     peek(const uint8_t* const& buffer, size_t n)
     {
-        int32_t value = static_cast<int32_t>(SerializeLittleEndianTraits<uint32_t>::peek(buffer, n));
+        int32_t value =
+                static_cast<int32_t>(SerializeLittleEndianTraits<uint32_t>::peek(buffer, n));
         return value;
     }
 
@@ -332,7 +333,8 @@ struct SerializeLittleEndianTraits<int64_t>
     static inline int64_t
     peek(const uint8_t* const& buffer, size_t n)
     {
-        int64_t value = static_cast<int64_t>(SerializeLittleEndianTraits<uint64_t>::peek(buffer, n));
+        int64_t value =
+                static_cast<int64_t>(SerializeLittleEndianTraits<uint64_t>::peek(buffer, n));
         return value;
     }
 
@@ -349,7 +351,7 @@ struct SerializeLittleEndianTraits<float>
     static inline void
     store(uint8_t*& buffer, float data)
     {
-        const uint32_t* ptr = reinterpret_cast<const uint32_t *>(&data);
+        const uint32_t* ptr = reinterpret_cast<const uint32_t*>(&data);
         SerializeLittleEndianTraits<uint32_t>::store(buffer, *ptr);
     }
 
@@ -386,7 +388,7 @@ struct SerializeLittleEndianTraits<double>
     static inline void
     store(uint8_t*& buffer, double data)
     {
-        const uint64_t* ptr = reinterpret_cast<const uint64_t *>(&data);
+        const uint64_t* ptr = reinterpret_cast<const uint64_t*>(&data);
         SerializeLittleEndianTraits<uint64_t>::store(buffer, *ptr);
     }
 
@@ -417,6 +419,6 @@ struct SerializeLittleEndianTraits<double>
     }
 };
 
-}
+}  // namespace outpost
 
 #endif

@@ -11,15 +11,19 @@
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
-#include "rmap_common.h"
 #include "rmap_initiator.h"
+
+#include "rmap_common.h"
 
 using namespace outpost::comm;
 
 outpost::smpc::Topic<outpost::comm::NonRmapDataType> outpost::comm::nonRmapPacketReceived;
 
 //-----------------------------------------------------------------------------
-RmapInitiator::RmapInitiator(hal::SpaceWire& spw, RmapTargetsList* list, uint8_t priority, size_t stackSize) :
+RmapInitiator::RmapInitiator(hal::SpaceWire& spw,
+                             RmapTargetsList* list,
+                             uint8_t priority,
+                             size_t stackSize) :
     outpost::rtos::Thread(priority, stackSize, "RMEN"),
     mSpW(spw),
     mTargetNodes(list),
@@ -137,9 +141,9 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
             // Command sent but no reply
             if (transaction->getState() == RmapTransaction::commandSent)
             {
-                console_out(
-                    "RMAP-Initiator: command sent but no reply received for the transaction %u\n",
-                    transaction->getTransactionID());
+                console_out("RMAP-Initiator: command sent but no reply received for the "
+                            "transaction %u\n",
+                            transaction->getTransactionID());
 
                 result = false;
             }
@@ -158,7 +162,8 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                 {
                     console_out("RMAP-Initiator: reply received with failure\n");
 
-                    RmapReplyStatus::replyStatus(static_cast<RmapReplyStatus::ErrorStatusCodes>(rply->getStatus()));
+                    RmapReplyStatus::replyStatus(
+                            static_cast<RmapReplyStatus::ErrorStatusCodes>(rply->getStatus()));
 
                     result = false;
                 }
@@ -258,7 +263,6 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     else
     {
         cmd->unsetVerifyFlag();
-
     }
 
     cmd->setReplyFlag();
@@ -270,7 +274,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     cmd->setTargetInformation(rmapTargetNode);
     transaction->setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction->setTimeoutDuration(timeout);
-    outpost::Slice<const uint8_t> empty { outpost::Slice<const uint8_t>::empty() };
+    outpost::Slice<const uint8_t> empty{outpost::Slice<const uint8_t>::empty()};
 
     // Command is read, thus no data bytes available
     if (sendPacket(transaction, empty))
@@ -278,13 +282,12 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
         transaction->setState(RmapTransaction::commandSent);
 
         console_out("RMAP-Initiator: Command sent %u, waiting for reply\n",
-            transaction->getState());
+                    transaction->getState());
 
         // Wait for the RMAP reply
         transaction->blockTransaction(timeout);
 
-        console_out("RMAP-Initiator: Notified with state: %u\n",
-            transaction->getState());
+        console_out("RMAP-Initiator: Notified with state: %u\n", transaction->getState());
 
         if (transaction->getState() == RmapTransaction::replyReceived)
         {
@@ -293,17 +296,14 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
 
             if (replyStatus != RmapReplyStatus::commandExecutedSuccessfully)
             {
-                console_out(
-                    "RMAP-Initiator: Command not executed successfully: %u\n",
-                    replyStatus);
+                console_out("RMAP-Initiator: Command not executed successfully: %u\n", replyStatus);
                 result = false;
             }
             else
             {
                 if (length < rply->getDataLength())
                 {
-                    console_out(
-                        "RMAP-Initiator: Read reply with insufficient data\n");
+                    console_out("RMAP-Initiator: Read reply with insufficient data\n");
                     result = false;
                 }
                 else
@@ -382,7 +382,8 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uin
     // therefore transmit can directly begin
 
     // Request TX buffer
-    if (mSpW.requestBuffer(txBuffer, transaction->getTimeoutDuration()) == hal::SpaceWire::Result::success)
+    if (mSpW.requestBuffer(txBuffer, transaction->getTimeoutDuration())
+        == hal::SpaceWire::Result::success)
     {
         // Serialize the packet content to the SpW buffer
         if (cmd->constructPacket(txBuffer->getData(), data))
@@ -415,7 +416,8 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uin
             console_out("\n");
 #endif
 
-            if (mSpW.send(txBuffer, transaction->getTimeoutDuration()) == hal::SpaceWire::Result::success)
+            if (mSpW.send(txBuffer, transaction->getTimeoutDuration())
+                == hal::SpaceWire::Result::success)
             {
                 transaction->setState(RmapTransaction::initiated);
 
@@ -433,7 +435,8 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket)
     bool result = false;
 
     // Receive response
-    if (mSpW.receive(rxBuffer, outpost::time::Duration::maximum()) == hal::SpaceWire::Result::success)
+    if (mSpW.receive(rxBuffer, outpost::time::Duration::maximum())
+        == hal::SpaceWire::Result::success)
     {
         if (rxBuffer.getEndMarker() == hal::SpaceWire::eop)
         {
@@ -468,8 +471,9 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket)
             }
             else
             {
-                console_out("RMAP-Initiator: packet interpretation failed, could be non-rmap"
-                    "packet\n");
+                console_out("RMAP-Initiator: packet interpretation failed, could be "
+                            "non-rmap"
+                            "packet\n");
                 nonRmapPacketReceived.publish(rxData);
                 mCounters.mNonRmapPacketReceived++;
                 mSpW.releaseBuffer(rxBuffer);
@@ -498,7 +502,8 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
         mCounters.mDiscardedReceivedPackets++;
         mDiscardedPacket = packet;
         console_out("RMAP Reply packet (dataLength %lu bytes) was received but "
-            "no corresponding transaction was found.\n", packet->getDataLength());
+                    "no corresponding transaction was found.\n",
+                    packet->getDataLength());
     }
     else
     {
@@ -508,13 +513,13 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
         // Update transaction state
         transaction->setState(RmapTransaction::replyReceived);
 
-        console_out(
-            "RMAP-Initiator: Reply received, thus notifying blocking thread\n");
+        console_out("RMAP-Initiator: Reply received, thus notifying blocking thread\n");
 
         if (transaction->isBlockingMode())
         {
-            console_out(
-                        "RMAP-Initiator: Transaction with TID %u is blocking, thus releasing lock...\n", transaction->getTransactionID());
+            console_out("RMAP-Initiator: Transaction with TID %u is blocking, thus "
+                        "releasing lock...\n",
+                        transaction->getTransactionID());
             transaction->releaseTransaction();
         }
     }

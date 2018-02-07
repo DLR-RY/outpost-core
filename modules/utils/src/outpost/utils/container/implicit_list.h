@@ -17,7 +17,6 @@
 
 namespace outpost
 {
-
 /**
  * Static single linked list.
  *
@@ -55,10 +54,7 @@ public:
      * \param element
      *         Element to add to the list (mostly \c this).
      */
-    inline
-    ImplicitList(T*& list,
-                 T* element) :
-        mNext(list)
+    inline ImplicitList(T*& list, T* element) : mNext(list)
     {
         list = element;
     }
@@ -83,8 +79,7 @@ public:
      *         Element to remove.
      */
     static inline void
-    removeFromList(T** head,
-                   T* element)
+    removeFromList(T** head, T* element)
     {
         if (*head != 0)
         {
@@ -108,7 +103,6 @@ public:
         }
     }
 
-
 private:
     // disable copy constructor
     ImplicitList(const ImplicitList&);
@@ -121,6 +115,6 @@ private:
     T* mNext;
 };
 
-}
+}  // namespace outpost
 
 #endif

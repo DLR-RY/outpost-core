@@ -93,8 +93,7 @@ public:
         return ErrorCode(errorCode);
     }
 
-    ErrorCode(const ErrorCode& other) :
-        mErrorCode(other.mErrorCode)
+    ErrorCode(const ErrorCode& other) : mErrorCode(other.mErrorCode)
     {
     }
 
@@ -160,21 +159,19 @@ public:
         return (mErrorCode != other.mErrorCode);
     }
 
-    inline bool
-    operator!() const
+    inline bool operator!() const
     {
         return !isSuccess();
     }
 
 protected:
-    explicit ErrorCode(int16_t code) :
-        mErrorCode(code)
+    explicit ErrorCode(int16_t code) : mErrorCode(code)
     {
     }
 
 private:
     int16_t mErrorCode;
 };
-}
+}  // namespace outpost
 
-#endif // ERROR_CODE_H
+#endif  // ERROR_CODE_H

@@ -22,7 +22,6 @@ namespace comm
 {
 namespace rmap
 {
-
 static constexpr uint32_t maxTransactionIds = 65536;
 static constexpr uint8_t maxConcurrentTransactions = 10;
 static constexpr uint8_t minimumReplySize = 8;
@@ -38,8 +37,8 @@ static constexpr uint8_t maxPhysicalRouterOutputPorts = 32;
 static const uint8_t maxAddressLength = 12;
 static const uint8_t maxNodeNameLength = 20;
 
-}
-}
-}
+}  // namespace rmap
+}  // namespace comm
+}  // namespace outpost
 
 #endif /* OUTPOST_COMM_RMAP_COMMON_H_ */

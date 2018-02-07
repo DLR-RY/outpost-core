@@ -21,8 +21,7 @@
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::List<T>::List() :
-    mHead(0)
+outpost::List<T>::List() : mHead(0)
 {
 }
 
@@ -147,7 +146,7 @@ outpost::List<T>::removeNode(T* node)
         else
         {
             T* previous = mHead;
-            T* current  = mHead->mNext;
+            T* current = mHead->mNext;
 
             // Iterate trough the list until the node is found
             while ((current != 0) && (current != node))
@@ -186,7 +185,7 @@ outpost::List<T>::remove(Condition condition)
         else
         {
             T* previous = mHead;
-            node        = mHead->mNext;
+            node = mHead->mNext;
 
             // Iterate trough the list until the node is found
             while ((node != 0) && !condition(*node))
@@ -215,7 +214,7 @@ outpost::List<T>::removeAll(Condition condition)
     {
         // List is not empty
         T* previous = mHead;
-        T* current  = mHead->mNext;
+        T* current = mHead->mNext;
 
         // Iterate trough the list and check all nodes. Iteration is started
         // at the entry after the first one as the first entry needs a special
@@ -250,7 +249,7 @@ outpost::List<T>::removeAll(Condition condition, PostCondition postCondition)
     {
         // List is not empty
         T* previous = mHead;
-        T* current  = mHead->mNext;
+        T* current = mHead->mNext;
 
         // Iterate trough the list and check all nodes. Iteration is started
         // at the entry after the first one as the first entry needs a special
@@ -297,7 +296,7 @@ outpost::List<T>::removeFirst()
 }
 
 // ----------------------------------------------------------------------------
-template<typename T>
+template <typename T>
 size_t
 outpost::List<T>::size() const
 {
@@ -313,20 +312,17 @@ outpost::List<T>::size() const
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::List<T>::Iterator::Iterator() :
-    mNode(0)
+outpost::List<T>::Iterator::Iterator() : mNode(0)
 {
 }
 
 template <typename T>
-outpost::List<T>::Iterator::Iterator(T* node) :
-    mNode(node)
+outpost::List<T>::Iterator::Iterator(T* node) : mNode(node)
 {
 }
 
 template <typename T>
-outpost::List<T>::Iterator::Iterator(const Iterator& other) :
-    mNode(other.mNode)
+outpost::List<T>::Iterator::Iterator(const Iterator& other) : mNode(other.mNode)
 {
 }
 
@@ -362,41 +358,35 @@ outpost::List<T>::Iterator::operator!=(const Iterator& other) const
 }
 
 template <typename T>
-T&
-outpost::List<T>::Iterator::operator*()
+T& outpost::List<T>::Iterator::operator*()
 {
     return *this->mNode;
 }
 
 template <typename T>
-T*
-outpost::List<T>::Iterator::operator->()
+T* outpost::List<T>::Iterator::operator->()
 {
     return this->mNode;
 }
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::List<T>::ConstIterator::ConstIterator() :
-    mNode(0)
+outpost::List<T>::ConstIterator::ConstIterator() : mNode(0)
 {
 }
 
 template <typename T>
-outpost::List<T>::ConstIterator::ConstIterator(T* node) :
-    mNode(node)
+outpost::List<T>::ConstIterator::ConstIterator(T* node) : mNode(node)
 {
 }
 
 template <typename T>
-outpost::List<T>::ConstIterator::ConstIterator(const ConstIterator& other) :
-    mNode(other.mNode)
+outpost::List<T>::ConstIterator::ConstIterator(const ConstIterator& other) : mNode(other.mNode)
 {
 }
 
 template <typename T>
-outpost::List<T>::ConstIterator::ConstIterator(const Iterator& other) :
-    mNode(other.mNode)
+outpost::List<T>::ConstIterator::ConstIterator(const Iterator& other) : mNode(other.mNode)
 {
 }
 
@@ -432,15 +422,13 @@ outpost::List<T>::ConstIterator::operator!=(const ConstIterator& other) const
 }
 
 template <typename T>
-const T&
-outpost::List<T>::ConstIterator::operator*() const
+const T& outpost::List<T>::ConstIterator::operator*() const
 {
     return *this->mNode;
 }
 
 template <typename T>
-const T*
-outpost::List<T>::ConstIterator::operator->() const
+const T* outpost::List<T>::ConstIterator::operator->() const
 {
     return this->mNode;
 }

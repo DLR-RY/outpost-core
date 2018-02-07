@@ -13,6 +13,7 @@
 // ----------------------------------------------------------------------------
 
 #include "topic.h"
+
 #include "subscription.h"
 
 #include <outpost/rtos/mutex_guard.h>
@@ -35,9 +36,8 @@ outpost::smpc::TopicBase::publishTypeUnsafe(void* message)
 {
     rtos::MutexGuard lock(mMutex);
 
-    for (Subscription* subscription = mSubscriptions;
-            subscription != 0;
-            subscription = subscription->mNextTopicSubscription)
+    for (Subscription* subscription = mSubscriptions; subscription != 0;
+         subscription = subscription->mNextTopicSubscription)
     {
         subscription->execute(message);
     }
@@ -46,9 +46,7 @@ outpost::smpc::TopicBase::publishTypeUnsafe(void* message)
 void
 outpost::smpc::TopicBase::clearSubscriptions()
 {
-    for (TopicBase* it = listOfAllTopics;
-            it != 0;
-            it = it->getNext())
+    for (TopicBase* it = listOfAllTopics; it != 0; it = it->getNext())
     {
         it->mSubscriptions = 0;
     }

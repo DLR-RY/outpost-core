@@ -34,26 +34,18 @@ stackDump(lua_State* L)
         int t = lua_type(L, i);
         switch (t)
         {
-            case LUA_TSTRING:
-                printf("'%s'", lua_tostring(L, i));
-                break;
+            case LUA_TSTRING: printf("'%s'", lua_tostring(L, i)); break;
 
-            case LUA_TBOOLEAN:
-                printf("%s", lua_toboolean(L, i) ? "true" : "false");
-                break;
+            case LUA_TBOOLEAN: printf("%s", lua_toboolean(L, i) ? "true" : "false"); break;
 
-            case LUA_TNUMBER:
-                printf("%g", lua_tonumber(L, i));
-                break;
+            case LUA_TNUMBER: printf("%g", lua_tonumber(L, i)); break;
 
-            default:
-                printf("%s", lua_typename(L, t));
-                break;
+            default: printf("%s", lua_typename(L, t)); break;
         }
         printf(" ");
     }
     printf("\n");
 }
-}
+}  // namespace lua
 
-#endif // LUA_STACKDUMP_H
+#endif  // LUA_STACKDUMP_H

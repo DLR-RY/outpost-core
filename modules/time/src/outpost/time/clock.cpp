@@ -18,7 +18,6 @@ namespace outpost
 {
 namespace time
 {
-
 Clock::Clock()
 {
 }
@@ -27,5 +26,5 @@ Clock::~Clock()
 {
 }
 
-}
-}
+}  // namespace time
+}  // namespace outpost

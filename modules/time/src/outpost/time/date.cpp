@@ -19,8 +19,8 @@
 using namespace outpost::time;
 
 static const int secondsPerMinute = 60;
-static const int secondsPerHour = 60 * secondsPerMinute;    //  3600
-static const int secondsPerDay = 24 * secondsPerHour;        // 86400
+static const int secondsPerHour = 60 * secondsPerMinute;  //  3600
+static const int secondsPerDay = 24 * secondsPerHour;     // 86400
 
 static const int64_t secondsPerWeek = 7 * secondsPerDay;
 
@@ -173,11 +173,7 @@ Date::toUnixTime(const Date& date)
     // Calculate the number of days from the beginning of the Unix epoch
     int64_t days = DateUtils::getDay(date) - unixEpochStartDayCount;
 
-    int64_t seconds =
-            date.second
-            + 60 * (date.minute
-                    + 60 * (date.hour
-                            + 24 * days));
+    int64_t seconds = date.second + 60 * (date.minute + 60 * (date.hour + 24 * days));
 
     return UnixTime::afterEpoch(Seconds(seconds));
 }
@@ -187,7 +183,7 @@ Date::fromUnixTime(UnixTime time)
 {
     const int64_t secondsSinceEpoch = time.timeSinceEpoch().seconds();
 
-    int64_t days    = secondsSinceEpoch / secondsPerDay;
+    int64_t days = secondsSinceEpoch / secondsPerDay;
     int64_t seconds = secondsSinceEpoch - days * secondsPerDay;
 
     // Calculate the date without the time
@@ -208,10 +204,7 @@ isLeapYear(int year)
     return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));
 }
 
-static constexpr int daysPerMonth[12] =
-{
-    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
-};
+static constexpr int daysPerMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 bool
 Date::isValid() const
@@ -222,9 +215,8 @@ Date::isValid() const
     {
         valid = false;
     }
-    else if ((day == 0)
-        || (isLeapYear(year) && (month == 2) && (day > 29))
-        || (!isLeapYear(year) && (month != 2) && (day > daysPerMonth[month - 1])))
+    else if ((day == 0) || (isLeapYear(year) && (month == 2) && (day > 29))
+             || (!isLeapYear(year) && (month != 2) && (day > daysPerMonth[month - 1])))
     {
         valid = false;
     }

@@ -15,12 +15,12 @@
 #ifndef OUTPOST_DEQUE_H
 #define OUTPOST_DEQUE_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include "slice.h"
 
 #include <outpost/utils/meta.h>
 
-#include "slice.h"
+#include <stddef.h>
+#include <stdint.h>
 
 namespace outpost
 {
@@ -46,7 +46,7 @@ namespace outpost
  *
  * \author  Fabian Greif
  */
-template<typename T>
+template <typename T>
 class Deque
 {
 public:
@@ -54,11 +54,9 @@ public:
     typedef Index Size;
 
 public:
-    Deque(T* backendBuffer,
-          size_t n);
+    Deque(T* backendBuffer, size_t n);
 
-    explicit
-    Deque(outpost::Slice<T> backendBuffer);
+    explicit Deque(outpost::Slice<T> backendBuffer);
 
     inline bool
     isEmpty() const;
@@ -83,7 +81,6 @@ public:
     void
     clear();
 
-
     inline T&
     getFront();
 
@@ -95,7 +92,6 @@ public:
 
     inline const T&
     getBack() const;
-
 
     bool
     append(const T& value);
@@ -124,7 +120,7 @@ private:
     Index mTail;
     Size mSize;
 };
-}
+}  // namespace outpost
 
 #include "deque_impl.h"
 
