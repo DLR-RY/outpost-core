@@ -67,6 +67,7 @@ RmapTargetNode::setReplyAddress(outpost::BoundedArray<uint8_t> replyAddress)
     if (replyAddress.getNumberOfElements() <= sizeof(mReplyAddress))
     {
         memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
+        mReplyAddressLength = replyAddress.getNumberOfElements();
         result = true;
     }
     return result;
