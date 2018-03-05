@@ -17,13 +17,22 @@
 #include <rtems.h>
 
 void
-defaultHandler(outpost::rtos::FailureCode code);
+defaultFatalHandler(outpost::rtos::FailureCode code);
 
 void
-defaultHandler(outpost::rtos::FailureCode code)
+defaultFatalHandler(outpost::rtos::FailureCode code)
 {
     rtems_fatal_error_occurred(code.getCode());
 }
 
-outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::handler = &defaultHandler;
+void
+defaultCleanupHandler(outpost::rtos::FailureCode code);
+
+void
+defaultCleanupHandler(outpost::rtos::FailureCode /*code*/)
+{
+}
+
+outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::handler = &defaultFatalHandler;
+outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::cleanup = &defaultCleanupHandler;
 

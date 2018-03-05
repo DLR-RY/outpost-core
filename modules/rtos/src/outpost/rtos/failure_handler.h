@@ -127,8 +127,21 @@ public:
     static void
     setFailureHandlerFunction(Handler newHandler);
 
+    /**
+     * Set a new clean up handler
+     *
+     * The handler will be called before the fatal error handler is called.
+     * It can be used to e.g. save some critical system states into non-volatile
+     * memory before the system is halted and eventually rebooted.
+     *
+     * \param newHandler
+     */
+    static void
+    setCleanupHandlerFunction(Handler newHandler);
+
 protected:
     static Handler handler;
+    static Handler cleanup;
 };
 
 }

@@ -18,6 +18,7 @@ void
 outpost::rtos::FailureHandler::fatal(FailureCode code)
 {
     // forward call to handler function
+    cleanup(code);
     handler(code);
 }
 
@@ -25,4 +26,10 @@ void
 outpost::rtos::FailureHandler::setFailureHandlerFunction(Handler newHandler)
 {
     handler = newHandler;
+}
+
+void
+outpost::rtos::FailureHandler::setCleanupHandlerFunction(Handler newHandler)
+{
+    cleanup = newHandler;
 }
