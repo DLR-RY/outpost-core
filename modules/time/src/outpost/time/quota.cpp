@@ -18,6 +18,8 @@ namespace outpost
 namespace time
 {
 
+UnlimitedQuota DefaultQuota;
+
 NonDeterministicIntervalQuota::NonDeterministicIntervalQuota(
         outpost::time::Duration interval,
         size_t numberOfResources) :

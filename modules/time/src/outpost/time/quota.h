@@ -125,6 +125,35 @@ private:
     size_t mUsedResources = 0;
 };
 
+/**
+ * Quota which will always return true when asked
+ */
+class UnlimitedQuota : public Quota
+{
+public:
+    UnlimitedQuota()
+    {
+    }
+
+    void
+    setTimeInterval(outpost::time::Duration /*interval*/) final
+    {
+    }
+
+    bool
+    access(outpost::time::SpacecraftElapsedTime /*now*/) final
+    {
+        return true;
+    }
+
+    void
+    reset() final
+    {
+    }
+
+};
+extern UnlimitedQuota DefaultQuota;
+
 }
 }
 
