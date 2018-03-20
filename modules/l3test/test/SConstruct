@@ -54,6 +54,7 @@ env.AppendUnique(LIBS=[
     'outpost_smpc',
     'outpost_time',
     'outpost_utils',
+    'outpost_rtos',
 ])
 
 files  = env.Glob('*.cpp')

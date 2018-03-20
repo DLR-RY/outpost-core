@@ -12,7 +12,11 @@
 MODULE=rtos
 
 LCOV_REMOVE_PATTERN = \
-	"utils/*" "time/*"
+	"utils/*" "time/*" \
+	"src/outpost/rtos/checkpoint.*" \
+	"src/outpost/rtos/failure_handler.*" \
+	"src/outpost/rtos/failure_handler_common.*" \
+	"arch/*"
 
 # Slash at the end is important!
 LIBCOBC_HW_PATH = /home/user/development/ry-avs-outpost/lib/sw/outpost-hw/
