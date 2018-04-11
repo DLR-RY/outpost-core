@@ -41,7 +41,7 @@ namespace utils
 	}
 
 	bool
-	SmartPointer<SmartBuffer>::getChild(ChildSmartPointer& ptr, uint16_t type, size_t pOffset, size_t length) const
+	SmartBufferPointer::getChild(ChildSmartPointer& ptr, uint16_t type, size_t pOffset, size_t length) const
 	{
 		bool res = false;
 		if (isValid())

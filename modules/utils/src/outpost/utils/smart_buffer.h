@@ -80,7 +80,7 @@ public:
 	}
 
 private:
-	template <typename T> friend class SmartPointer;
+	friend class SmartBufferPointer;
 
 	SmartBuffer(const SmartBuffer&);
 	const SmartBuffer& operator=(SmartBuffer&);
@@ -120,106 +120,17 @@ private:
 	size_t mNumElements;
 };
 
-template<typename T>
-class SmartPointer
-{
-public:
-
-	SmartPointer() : mPtr(nullptr)
-	{
-	}
-
-	SmartPointer(T* pT) : mPtr(pT)
-	{
-		incrementCount();
-	}
-
-	SmartPointer(const SmartPointer<T> &other) : mPtr (other.mPtr)
-	{
-		incrementCount();
-	}
-
-	~SmartPointer()
-	{
-		decrementCount();
-	}
-
-	const SmartPointer<T>& operator=(const SmartPointer<T> &other)
-	{
-		if ( &other != this )
-		{
-			decrementCount();
-			mPtr = other.mPtr;
-			incrementCount();
-		}
-		return *this;
-	}
-
-	inline bool isChild()
-	{
-		return false;
-	}
-
-	T* operator->() const
-	{
-		return mPtr;
-	}
-
-	//T& operator*() const { return *mPtr ; }
-
-	bool operator==(const SmartPointer<T> &other)
-	{
-		return mPtr == other.mPtr;
-	}
-
-	bool operator==(const void *other)
-	{
-		return mPtr == other;
-	}
-
-	bool operator!=(const SmartPointer<T> &other)
-	{
-		return mPtr != other.mPtr;
-	}
-
-	bool operator!=(const void* other)
-	{
-		return mPtr != other;
-	}
-
-private:
-	void incrementCount() const
-	{
-		if (mPtr)
-		{
-			mPtr->incrementCount();
-		}
-	}
-
-	void decrementCount() const
-	{
-		if (mPtr)
-		{
-			mPtr->decrementCount();
-		}
-	}
-protected:
-
-	T* mPtr;
-};
-
 class ChildSmartPointer;
 
-template<>
-class SmartPointer<SmartBuffer>
+class SmartBufferPointer
 {
 public:
 
-	SmartPointer() : mPtr(nullptr), mType(0), mOffset(0), mLength(0)
+	SmartBufferPointer() : mPtr(nullptr), mType(0), mOffset(0), mLength(0)
 	{
 	}
 
-	SmartPointer(SmartBuffer* pT) :
+	SmartBufferPointer(SmartBuffer* pT) :
 		mPtr(pT),
 		mType(0),
 		mOffset(0),
@@ -236,12 +147,12 @@ public:
 		incrementCount();
 	}
 
-	static inline SmartPointer empty()
+	static inline SmartBufferPointer empty()
 	{
-		return SmartPointer();
+		return SmartBufferPointer();
 	}
 
-	SmartPointer(const SmartPointer<SmartBuffer> &other) :
+	SmartBufferPointer(const SmartBufferPointer &other) :
 		mPtr (other.mPtr),
 		mType(other.mType),
 		mOffset(other.mOffset),
@@ -250,7 +161,7 @@ public:
 		incrementCount();
 	}
 
-	SmartPointer(const SmartPointer<SmartBuffer> &&other) :
+	SmartBufferPointer(const SmartBufferPointer &&other) :
 		mPtr (other.mPtr),
 		mType(other.mType),
 		mOffset(other.mOffset),
@@ -259,12 +170,12 @@ public:
 		incrementCount();
 	}
 
-	~SmartPointer()
+	~SmartBufferPointer()
 	{
 		decrementCount();
 	}
 
-	const SmartPointer<SmartBuffer>& operator=(const SmartPointer<SmartBuffer>& other)
+	const SmartBufferPointer& operator=(const SmartBufferPointer& other)
 	{
 		if ( &other != this )
 		{
@@ -278,7 +189,7 @@ public:
 		return *this;
 	}
 
-	const SmartPointer<SmartBuffer>& operator=(const SmartPointer<SmartBuffer>&& other)
+	const SmartBufferPointer& operator=(const SmartBufferPointer&& other)
 	{
 		if ( &other != this )
 		{
@@ -314,7 +225,7 @@ public:
 		return *mPtr;
 	}
 
-	inline bool operator==(const SmartPointer<SmartBuffer> &other)
+	inline bool operator==(const SmartBufferPointer &other)
 	{
 		return mPtr == other.mPtr;
 	}
@@ -324,7 +235,7 @@ public:
 		return mPtr == other;
 	}
 
-	inline bool operator!=(const SmartPointer<SmartBuffer> &other)
+	inline bool operator!=(const SmartBufferPointer &other)
 	{
 		return mPtr != other.mPtr;
 	}
@@ -411,31 +322,29 @@ protected:
 	size_t mLength;
 };
 
-typedef SmartPointer<SmartBuffer> SmartBufferPointer;
-
-class ChildSmartPointer : public SmartPointer<SmartBuffer>
+class ChildSmartPointer : public SmartBufferPointer
 {
 public:
 	friend SmartBufferPointer;
 
-	ChildSmartPointer() : SmartPointer(), mParent(nullptr)
+	ChildSmartPointer() : SmartBufferPointer(), mParent(nullptr)
 	{
 	}
 
-	ChildSmartPointer(SmartBuffer* pT, const SmartPointer<SmartBuffer>& parent) :
-		SmartPointer<SmartBuffer>(pT),
+	ChildSmartPointer(SmartBuffer* pT, const SmartBufferPointer& parent) :
+		SmartBufferPointer(pT),
 		mParent(parent)
 	{
 	}
 
 	ChildSmartPointer(const ChildSmartPointer& other) :
-		SmartPointer<SmartBuffer>(other),
+		SmartBufferPointer(other),
 		mParent(other.mParent)
 	{
 	}
 
 	ChildSmartPointer(const ChildSmartPointer&& other) :
-		SmartPointer<SmartBuffer>(other),
+		SmartBufferPointer(other),
 		mParent(other.mParent)
 	{
 	}
@@ -504,12 +413,12 @@ public:
 	{
 	}
 
-	SmartPointer<SmartBuffer> getParent() const
+	SmartBufferPointer getParent() const
 	{
 		return mParent;
 	}
 
-	SmartPointer<SmartBuffer> getOrigin() const
+	SmartBufferPointer getOrigin() const
 	{
 		return SmartBufferPointer(mPtr);
 	}
@@ -519,7 +428,7 @@ public:
 		return mParent.isValid();
 	}
 private:
-	SmartPointer<SmartBuffer> mParent;
+	SmartBufferPointer mParent;
 };
 
 }
