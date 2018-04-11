@@ -114,12 +114,15 @@ CobsEncodingGeneratorBase<blockLength>::findNextBlock()
     // - A zero is found which determines the block length
     // - No zero is found for 254 consecutive bytes
     // - The end of the input array is reached.
-    while ((mData[position] != 0) &&
-           (blockSize < blockLength) &&
-           (position < mLength))
+    if (mData != nullptr)
     {
-        position++;
-        blockSize++;
+		while ((mData[position] != 0) &&
+			   (blockSize < blockLength) &&
+			   (position < mLength))
+		{
+			position++;
+			blockSize++;
+		}
     }
 
     return blockSize;
