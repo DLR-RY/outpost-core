@@ -116,13 +116,13 @@ CobsEncodingGeneratorBase<blockLength>::findNextBlock()
     // - The end of the input array is reached.
     if (mData != nullptr)
     {
-		while ((mData[position] != 0) &&
-			   (blockSize < blockLength) &&
-			   (position < mLength))
-		{
-			position++;
-			blockSize++;
-		}
+        while ((mData[position] != 0) &&
+               (blockSize < blockLength) &&
+               (position < mLength))
+        {
+            position++;
+            blockSize++;
+        }
     }
 
     return blockSize;
