@@ -77,12 +77,13 @@ public:
 	isFull()
 	{
 		outpost::rtos::MutexGuard lock(mMutex);
-		for (size_t i = 0; i < N; i++)
+		/*for (size_t i = 0; i < N; i++)
 		{
 			if(!isUsed[i])
 				return false;
 		}
-		return true;
+		return true;*/
+		return itemsInQueue == N;
 	}
 
     virtual bool
