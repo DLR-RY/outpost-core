@@ -131,9 +131,7 @@ private:
 class UnlimitedQuota : public Quota
 {
 public:
-    UnlimitedQuota()
-    {
-    }
+    UnlimitedQuota() = default;
 
     void
     setTimeInterval(outpost::time::Duration /*interval*/) final
