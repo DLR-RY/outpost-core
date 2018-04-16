@@ -31,7 +31,7 @@ outpost::smpc::TopicBase::~TopicBase()
 }
 
 void
-outpost::smpc::TopicBase::publishTypeUnsafe(void* message)
+outpost::smpc::TopicBase::publishTypeUnsafe(void* message) const
 {
     rtos::MutexGuard lock(mMutex);
 

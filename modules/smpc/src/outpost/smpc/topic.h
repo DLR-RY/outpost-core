@@ -69,7 +69,7 @@ public:
      * function is thread safe.
      */
     void
-    publishTypeUnsafe(void* message);
+    publishTypeUnsafe(void* message) const;
 
 protected:
     /// List of all topics currently active.
@@ -87,7 +87,7 @@ private:
     clearSubscriptions();
 
     /// Used to protect the publish() method
-    rtos::Mutex mMutex;
+    mutable rtos::Mutex mMutex;
 
     /// Pointer to the list of subscriptions
     Subscription* mSubscriptions;
@@ -160,7 +160,7 @@ public:
      * function is thread safe.
      */
     inline void
-    publish(T& message)
+    publish(T& message) const
     {
         // This cast may remove any const qualifiers from the
         // type. This is no problem because they are enforced
