@@ -38,7 +38,8 @@ public:
     {
         partial = 0,  ///< Leave packet open to add additional data later
         eop = 1,      ///< End of packet
-        eep = 2       ///< Error end of packet
+        eep = 2,      ///< Error end of packet
+        unknown = 3   ///< Unknown state
     };
 
     struct Result

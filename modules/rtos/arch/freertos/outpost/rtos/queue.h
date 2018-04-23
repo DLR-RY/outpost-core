@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <type_traits>
 
 #include <outpost/time/duration.h>
 
@@ -31,6 +32,11 @@ namespace rtos
  *
  * Can be used to exchange data between different threads.
  *
+ * \warning
+ *      Only works for POD types (see http://en.cppreference.com/w/cpp/concept/PODType)
+ *      due to limitations of the used FreeRTOS queue which doesn't invoke
+ *      constructors/destructors.
+ *
  * \author  Norbert Toth
  * \author  Fabian Greif
  * \ingroup rtos
@@ -38,6 +44,8 @@ namespace rtos
 template <typename T>
 class Queue
 {
+    static_assert(std::is_pod<T>::value, "T must be POD");
+
 public:
     /**
      * Create a Queue.

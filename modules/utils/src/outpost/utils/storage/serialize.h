@@ -23,6 +23,8 @@
 #include <outpost/utils/container/fixed_size_array.h>
 #include <outpost/utils/container/slice.h>
 
+#include <type_traits>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -83,7 +85,18 @@ public:
     static inline size_t
     getTypeSize()
     {
-        return SerializeBigEndianTraits<T>::size();
+        // Removes the const and/or volatile qualification from the given type
+        // to avoid problems with e.g. SerializeBigEndianTraits<T> and
+        // SerializeBigEndianTraits<const T> requiring different traits.
+        return SerializeBigEndianTraits<typename std::remove_cv<T>::type>::size();
+    }
+
+    template <typename U>
+    static inline size_t
+    getTypeSize(outpost::Slice<U> array)
+    {
+        return SerializeBigEndianTraits<typename std::remove_cv<U>::type>::size()
+                * array.getNumberOfElements();
     }
 
     template <typename T>
@@ -295,6 +308,16 @@ public:
         size_t length = array.getNumberOfElements();
         memcpy(&array[0], mBuffer, length);
         mBuffer += length;
+    }
+
+    template <typename U>
+    inline void
+    read(outpost::Slice<U> array)
+    {
+        for (size_t i = 0; i < array.getNumberOfElements(); ++i)
+        {
+            array[i] = SerializeBigEndianTraits<U>::read(mBuffer);
+        }
     }
 
     inline uint32_t

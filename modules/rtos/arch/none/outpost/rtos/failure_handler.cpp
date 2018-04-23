@@ -22,3 +22,4 @@ defaultHandler(outpost::rtos::FailureCode code)
 }
 
 outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::handler = &defaultHandler;
+outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::cleanup = &defaultHandler;

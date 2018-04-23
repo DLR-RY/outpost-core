@@ -17,8 +17,17 @@
 
 #include <outpost/utils/meta.h>
 
+#include <type_traits>
+
 #include <stddef.h>
 #include <string.h>  // for memcpy
+
+// workaround missing "is_trivially_copyable" in g++ < 5.0
+#if __GNUG__ && __GNUC__ < 5
+#define IS_TRIVIALLY_COPYABLE(T) __has_trivial_copy(T)
+#else
+#define IS_TRIVIALLY_COPYABLE(T) std::is_trivially_copyable<T>::value
+#endif
 
 namespace outpost
 {
@@ -39,9 +48,12 @@ public:
 
     friend class FixedSizeArray<const T, N>;
 
-    constexpr FixedSizeArray()
-    {
-    }
+    /// Works only for types which can be copied bitwise for now
+    /// because of the usage of memcpy
+    static_assert(IS_TRIVIALLY_COPYABLE(T),
+                  "T must be copyable via memcpy");
+
+    constexpr FixedSizeArray() = default;
 
     template <typename... U>
     explicit constexpr FixedSizeArray(const U... ts) : mData{ts...}
