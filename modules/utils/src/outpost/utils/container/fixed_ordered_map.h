@@ -114,7 +114,7 @@ public:
     inline Slice<Entry>
     asArray() const
     {
-        return outpost::Slice<Entry>(mEntries, mNumberOfEntries);
+        return outpost::Slice<Entry>::unsafe(mEntries, mNumberOfEntries);
     }
 
     inline Iterator
