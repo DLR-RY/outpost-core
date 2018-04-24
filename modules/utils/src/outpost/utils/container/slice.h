@@ -219,16 +219,16 @@ public:
     /**
      * Create a sub-slice from two indices.
      *
-     * \param   start
-     *      First index which is included.
-     * \param   end
-     *      Last index which **is not included**.
+     * \param   firstIndex
+     *      First index which is included in the range.
+     * \param   lastIndex
+     *      Last index which **is not included** in range.
      */
     inline Slice
-    subRange(IndexType start, IndexType end)
+    subRange(IndexType firstIndex, IndexType lastIndex)
     {
         // TODO check that end is larger than start.
-        return subSlice(start, end - start);
+        return subSlice(firstIndex, lastIndex - firstIndex);
     }
 
     inline operator Slice<const ElementType>() const
