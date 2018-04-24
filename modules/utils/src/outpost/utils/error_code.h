@@ -33,26 +33,11 @@ namespace outpost
  */
 class ErrorCode
 {
-    // These type and member function is needed to implement the
-    // safe bool idiom (see e.g. http://www.artima.com/cppsource/safeboolP.html).
-    //
-    // A normal cast operator to bool would enable some invalid sematics
-    // for this class. For a C++11 a explicit cast operator could be used
-    // instead.
-    typedef void (ErrorCode::*bool_type)() const;
-
-    // LCOV_EXCL_START
-    void
-    this_type_does_no_support_comparisons() const
-    {
-    }
-    // LCOV_EXCL_STOP
-
 public:
     /**
      * Indicate a successful operation.
      */
-    static inline ErrorCode
+    static inline constexpr ErrorCode
     success()
     {
         return ErrorCode(0);
@@ -74,7 +59,7 @@ public:
     /**
      * Indicate a generic error.
      */
-    static inline ErrorCode
+    static inline constexpr ErrorCode
     error()
     {
         return ErrorCode(-1);
@@ -87,13 +72,13 @@ public:
      *        Error code specifying the error that appeared. The error code
      *        must be negative, \c -1 is reserved for a generic error.
      */
-    static inline ErrorCode
+    static inline constexpr ErrorCode
     error(int16_t errorCode)
     {
         return ErrorCode(errorCode);
     }
 
-    ErrorCode(const ErrorCode& other) : mErrorCode(other.mErrorCode)
+    constexpr ErrorCode(const ErrorCode& other) : mErrorCode(other.mErrorCode)
     {
     }
 
@@ -101,18 +86,10 @@ public:
      * This class can be directly used in a boolean expression.
      * A positive value (true) indicates a successful operation.
      */
-    //
-    // When using C++11 this function can be rewritten as:
-    //
-    //     inline explicit
-    //     operator bool() const
-    //     {
-    //         return isSuccess();
-    //     }
-    //
-    operator bool_type() const
+    inline explicit constexpr
+    operator bool() const
     {
-        return (isSuccess() ? &ErrorCode::this_type_does_no_support_comparisons : 0);
+        return isSuccess();
     }
 
     /**
@@ -121,13 +98,13 @@ public:
      * \retval \c true  if the operation was successful.
      * \retval \c false if the operation failed.
      */
-    inline bool
+    inline constexpr bool
     isSuccess() const
     {
         return (mErrorCode >= 0);
     }
 
-    inline bool
+    inline constexpr bool
     isError() const
     {
         return (mErrorCode < 0);
@@ -141,36 +118,36 @@ public:
      *
      * \return  Error code.
      */
-    inline int16_t
+    inline constexpr int16_t
     getCode() const
     {
         return mErrorCode;
     }
 
-    inline bool
+    inline constexpr bool
     operator==(const ErrorCode& other) const
     {
         return (mErrorCode == other.mErrorCode);
     }
 
-    inline bool
+    inline constexpr bool
     operator!=(const ErrorCode& other) const
     {
         return (mErrorCode != other.mErrorCode);
     }
 
-    inline bool operator!() const
+    inline constexpr bool operator!() const
     {
         return !isSuccess();
     }
 
 protected:
-    explicit ErrorCode(int16_t code) : mErrorCode(code)
+    explicit constexpr ErrorCode(int16_t code) : mErrorCode(code)
     {
     }
 
 private:
-    int16_t mErrorCode;
+    const int16_t mErrorCode;
 };
 }  // namespace outpost
 
