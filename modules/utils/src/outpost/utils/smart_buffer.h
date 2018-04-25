@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <array>
-#include <outpost/utils/bounded_array.h>
+#include <outpost/utils/container/slice.h>
 #include <outpost/rtos/mutex_guard.h>
 
 namespace outpost
@@ -58,7 +58,7 @@ public:
 	}
 
 	inline void
-	setData(outpost::BoundedArray<uint8_t> array)
+	setData(outpost::Slice<uint8_t> array)
 	{
 		if (!isUsed())
 		{
@@ -272,20 +272,20 @@ public:
 	}
 
     inline
-    operator outpost::BoundedArray<uint8_t>() const
+    operator outpost::Slice<uint8_t>() const
     {
-        return outpost::BoundedArray<uint8_t>(&(*mPtr)[mOffset], mLength);
+        return outpost::Slice<uint8_t>::unsafe(&(*mPtr)[mOffset], mLength);
     }
 
     inline
-	operator outpost::BoundedArray<const uint8_t>() const
+	operator outpost::Slice<const uint8_t>() const
 	{
-		return outpost::BoundedArray<const uint8_t>(&(*mPtr)[mOffset], mLength);
+		return outpost::Slice<const uint8_t>::unsafe(&(*mPtr)[mOffset], mLength);
 	}
 
-    inline outpost::BoundedArray<uint8_t> toArray() const
+    inline outpost::Slice<uint8_t> asSlice() const
 	{
-    	return outpost::BoundedArray<uint8_t>(&(*mPtr)[mOffset], mLength);
+    	return outpost::Slice<uint8_t>::unsafe(&(*mPtr)[mOffset], mLength);
 	}
 
     inline void setType(uint16_t type)

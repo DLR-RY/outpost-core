@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include <outpost/utils/serialize.h>
+#include <outpost/utils/storage/serialize.h>
 
 #include <outpost/rtos/thread.h>
 
@@ -287,7 +287,7 @@ TEST_F(SmartBufferTest, allocateChildBuffer)
 			EXPECT_TRUE(mPointer.getChild(newChild, 3, 2, 3));
 			EXPECT_TRUE(newChild.isValid());
 
-			outpost::BoundedArray<const uint8_t> mArray(static_cast<outpost::BoundedArray<const uint8_t>>(newChild));
+			outpost::Slice<const uint8_t> mArray(static_cast<outpost::Slice<const uint8_t>>(newChild));
 			EXPECT_EQ(mArray.getNumberOfElements(), newChild.getLength());
 			for (size_t i = 0; i < newChild.getLength();i++)
 			{
@@ -348,7 +348,7 @@ TEST_F(SmartBufferTest, allocateChildChildBuffer)
 
 			EXPECT_FALSE(mPointer.isChild());
 
-			outpost::BoundedArray<const uint8_t> mArray(static_cast<outpost::BoundedArray<const uint8_t>>(newChild));
+			outpost::Slice<const uint8_t> mArray(static_cast<outpost::Slice<const uint8_t>>(newChild));
 			EXPECT_EQ(mArray.getNumberOfElements(), newChild.getLength());
 			for (size_t i = 0; i < newChild.getLength();i++)
 			{

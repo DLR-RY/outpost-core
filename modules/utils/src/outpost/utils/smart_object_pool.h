@@ -15,7 +15,7 @@
 #ifndef OUTPOST_UTILS_SMART_OBJECT_POOL_H_
 #define OUTPOST_UTILS_SMART_OBJECT_POOL_H_
 
-#include <outpost/utils/list.h>
+#include <outpost/utils/container/list.h>
 #include <outpost/rtos/mutex_guard.h>
 
 #include "smart_buffer.h"

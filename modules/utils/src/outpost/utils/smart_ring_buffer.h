@@ -26,8 +26,8 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "smart_buffer.h"
-#include "bounded_array.h"
+#include <outpost/utils/smart_buffer.h>
+#include <outpost/utils/container/slice.h>
 
 namespace outpost
 {
@@ -44,7 +44,7 @@ class SmartRingBuffer
 {
 public:
     explicit inline
-	SmartRingBuffer(outpost::BoundedArray<SmartBufferPointer> buffer, outpost::BoundedArray<uint8_t> flags) :
+	SmartRingBuffer(outpost::Slice<SmartBufferPointer> buffer, outpost::Slice<uint8_t> flags) :
 		mBuffer(buffer),
 		mFlags(flags),
         mReadIndex(0),
@@ -227,8 +227,8 @@ private:
 
 	SmartBufferPointer empty;
 
-	const outpost::BoundedArray<SmartBufferPointer> mBuffer;
-	const outpost::BoundedArray<uint8_t> mFlags;
+	const outpost::Slice<SmartBufferPointer> mBuffer;
+	const outpost::Slice<uint8_t> mFlags;
 
 	size_t mReadIndex;
 	size_t mNumberOfElements;
@@ -245,7 +245,7 @@ class SmartRingBufferStorage : public SmartRingBuffer
 public:
 	inline
 	SmartRingBufferStorage() :
-		SmartRingBuffer(outpost::toArray(mBufferStorage), outpost::toArray(mFlags))
+		SmartRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags))
     {
     }
 
