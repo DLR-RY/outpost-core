@@ -147,7 +147,7 @@ protected:
     }
 
 private:
-    const int16_t mErrorCode;
+    int16_t mErrorCode;
 };
 }  // namespace outpost
 
