@@ -11,10 +11,9 @@
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  * - 2018, Jan Sommer (DLR SC-SRV)
  */
+#include <outpost/rtos/failure_handler.h>
 
 #include <rtems.h>
-
-#include <outpost/rtos/failure_handler.h>
 
 void
 defaultFatalHandler(outpost::rtos::FailureCode code);

@@ -126,6 +126,9 @@ format:
 license-update:
 	python3 ../reword -v
 
+license-update:
+	python3 ../reword -v -u "append"
+
 clean :
 	@for m in $(MODULES); do \
 		printf "\n$(CINFO)Clean module \"$$m\":$(CEND)\n" ; \
