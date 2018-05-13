@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef CONSUMER_H
 #define CONSUMER_H

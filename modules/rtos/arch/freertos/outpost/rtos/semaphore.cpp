@@ -11,7 +11,6 @@
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  * - 2013, Norbert Toth (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include "semaphore.h"
 

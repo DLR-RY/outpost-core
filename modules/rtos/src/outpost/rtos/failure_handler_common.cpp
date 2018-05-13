@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,8 +9,8 @@
  *
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2018, Jan Sommer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #include "failure_handler.h"
 

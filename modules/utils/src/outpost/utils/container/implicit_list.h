@@ -10,7 +10,6 @@
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_IMPLICIT_LIST_H
 #define OUTPOST_UTILS_IMPLICIT_LIST_H

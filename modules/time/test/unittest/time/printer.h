@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_TIME_PRINTER_H
 #define OUTPOST_TIME_PRINTER_H

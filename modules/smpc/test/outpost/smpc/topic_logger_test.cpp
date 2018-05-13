@@ -10,7 +10,6 @@
  * Authors:
  * - 2015-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include <unittest/harness.h>
 #include <unittest/smpc/testing_subscription.h>

@@ -10,7 +10,7 @@
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
+
 #include "rmap_transaction.h"
 
 using namespace outpost::comm;

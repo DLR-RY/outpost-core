@@ -10,7 +10,6 @@
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_RTOS_FREERTOS_TIMER_H
 #define OUTPOST_RTOS_FREERTOS_TIMER_H

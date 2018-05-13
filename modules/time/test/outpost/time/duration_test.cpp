@@ -11,7 +11,6 @@
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Annika Ofenloch (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include <outpost/time/duration.h>
 

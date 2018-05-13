@@ -9,8 +9,8 @@
  *
  * Authors:
  * - 2016-2017, Fabian Greif (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include <unittest/hal/spacewire_stub.h>
 #include <unittest/harness.h>

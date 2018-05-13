@@ -10,9 +10,8 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  * - 2014, Norbert Toth (DLR RY-AVS)
- * - 2015, Jan Sommer (DLR SC-SRV)
+ * - 2015, 2017, Jan Sommer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_HAL_SERIAL_H
 #define OUTPOST_HAL_SERIAL_H

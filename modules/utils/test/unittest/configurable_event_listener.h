@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef UNITTEST_CONFIGURABLE_EVENT_LISTENER_H
 #define UNITTEST_CONFIGURABLE_EVENT_LISTENER_H

@@ -12,7 +12,6 @@
  * - 2015, Janosch Reinking (DLR RY-AVS)
  * - 2016, Jan Sommer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_LIST_IMPL_H
 #define OUTPOST_LIST_IMPL_H

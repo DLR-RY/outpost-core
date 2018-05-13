@@ -10,7 +10,6 @@
  * Authors:
  * - 2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_BASE_MEMBER_PAIR_H
 #define OUTPOST_UTILS_BASE_MEMBER_PAIR_H

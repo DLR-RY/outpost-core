@@ -10,7 +10,6 @@
  * Authors:
  * - 2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_SERIALIZE_STORAGE_TRAITS_H
 #define OUTPOST_UTILS_SERIALIZE_STORAGE_TRAITS_H

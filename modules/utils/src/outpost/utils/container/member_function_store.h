@@ -11,7 +11,6 @@
  * - 2016-2017, Fabian Greif (DLR RY-AVS)
  * - 2016, Benjamin Weps (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_MEMBER_FUNCTION_STORE_H
 #define OUTPOST_UTILS_MEMBER_FUNCTION_STORE_H

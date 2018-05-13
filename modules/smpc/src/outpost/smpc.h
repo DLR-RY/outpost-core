@@ -10,7 +10,6 @@
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_SMPC_H
 #define OUTPOST_SMPC_H

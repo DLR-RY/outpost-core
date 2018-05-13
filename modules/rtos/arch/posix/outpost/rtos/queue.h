@@ -11,7 +11,6 @@
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Norbert Toth (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_RTOS_POSIX_QUEUE_H
 #define OUTPOST_RTOS_POSIX_QUEUE_H

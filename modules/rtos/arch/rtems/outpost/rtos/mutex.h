@@ -10,7 +10,6 @@
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_RTOS_RTEMS_MUTEX_HPP
 #define OUTPOST_RTOS_RTEMS_MUTEX_HPP

@@ -12,7 +12,6 @@
  * - 2014, Benjamin Weps (DLR SC-SRV)
  * - 2015, Annika Ofenloch (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include "time_epoch.h"
 

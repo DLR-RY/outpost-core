@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_BIT_ACCESS_H
 #define OUTPOST_UTILS_BIT_ACCESS_H

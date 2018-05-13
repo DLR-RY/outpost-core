@@ -10,7 +10,6 @@
  * Authors:
  * - 2015-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_FIXED_ORDERED_MAP_IMPL_H
 #define OUTPOST_UTILS_FIXED_ORDERED_MAP_IMPL_H

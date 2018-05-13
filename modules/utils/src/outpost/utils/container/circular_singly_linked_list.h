@@ -11,7 +11,6 @@
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Janosch Reinking (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_CIRCULAR_SINGLY_LINKED_LIST_H
 #define OUTPOST_CIRCULAR_SINGLY_LINKED_LIST_H

@@ -9,8 +9,8 @@
  *
  * Authors:
  * - 2016-2017, Fabian Greif (DLR RY-AVS)
+ * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef UNITTEST_HAL_SPACEWIRE_STUB_H
 #define UNITTEST_HAL_SPACEWIRE_STUB_H

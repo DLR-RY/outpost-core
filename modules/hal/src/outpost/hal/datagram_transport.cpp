@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,9 +8,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
+ * - 2013-2017, Fabian Greif (DLR RY-AVS)
  * - 2017, Jan Sommer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #include "datagram_transport.h"
 

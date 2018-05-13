@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 German Aerospace Center (DLR)
+ * Copyright (c) 2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2018, Fabian Greif (DLR RY-AVS)
+ * - 2018, Jan Sommer (DLR SC-SRV)
  */
 
 #include "quota.h"

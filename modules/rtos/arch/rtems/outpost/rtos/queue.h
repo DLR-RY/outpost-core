@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_RTOS_RTEMS_QUEUE_H
 #define OUTPOST_RTOS_RTEMS_QUEUE_H

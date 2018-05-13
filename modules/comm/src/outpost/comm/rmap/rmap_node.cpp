@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,9 +8,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017-2018, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
+
 #include "rmap_node.h"
 
 #include "rmap_packet.h"

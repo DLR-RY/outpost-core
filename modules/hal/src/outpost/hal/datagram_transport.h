@@ -9,8 +9,9 @@
  *
  * Authors:
  * - 2017, Jan Sommer (DLR SC-SRV)
+ * - 2017, Fabian Greif (DLR RY-AVS)
+ * - 2017, Moritz Christian Ulmer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_HAL_DATAGRAM_TRANSPORT_H
 #define OUTPOST_HAL_DATAGRAM_TRANSPORT_H

@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef L3TEST_SCRIPT_CHANNEL_H
 #define L3TEST_SCRIPT_CHANNEL_H

@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef UNITTEST_SMPC_TESTING_SUBSCRIPTION_H
 #define UNITTEST_SMPC_TESTING_SUBSCRIPTION_H

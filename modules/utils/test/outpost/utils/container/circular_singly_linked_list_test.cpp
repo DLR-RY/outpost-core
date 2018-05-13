@@ -10,7 +10,6 @@
  * Authors:
  * - 2015-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include <outpost/utils/container/circular_singly_linked_list.h>
 

@@ -10,7 +10,6 @@
  * Authors:
  * - 2016-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_RTOS_RTEMS_INTERVAL_H
 #define OUTPOST_RTOS_RTEMS_INTERVAL_H

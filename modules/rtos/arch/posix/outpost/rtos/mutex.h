@@ -11,7 +11,6 @@
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Jan Sommer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_RTOS_POSIX_MUTEX_HPP
 #define OUTPOST_RTOS_POSIX_MUTEX_HPP

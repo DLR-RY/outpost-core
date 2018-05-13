@@ -10,7 +10,6 @@
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_TIME_TIME_POINT_H
 #define OUTPOST_TIME_TIME_POINT_H

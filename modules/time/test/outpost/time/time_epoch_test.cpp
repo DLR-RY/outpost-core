@@ -10,7 +10,6 @@
  * Authors:
  * - 2015-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include <outpost/time/date.h>
 #include <outpost/time/time_epoch.h>

@@ -10,7 +10,6 @@
  * Authors:
  * - 2015-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef UNITTEST_HAL_SERIAL_STUB_H
 #define UNITTEST_HAL_SERIAL_STUB_H

@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2017, German Aerospace Center (DLR)
+# Copyright (c) 2013-2018, German Aerospace Center (DLR)
 #
 # This file is part of the development version of OUTPOST.
 #
@@ -7,8 +7,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Authors:
-# - 2013-2017, Fabian Greif (DLR RY-AVS)
+# - 2013-2018, Fabian Greif (DLR RY-AVS)
 # - 2014, Murat Goeksu (DLR RY-AVS)
+# - 2017, Muhammad Bassam (DLR RY-AVS)
 
 MODULES_GLOBAL = utils time smpc rtos hal comm
 MODULES_TEST = l3test
@@ -128,6 +129,9 @@ HEADER_FILES = $(shell find modules/*/src/ modules/*/test/ -type f -name '*.h')
 format:
 	@$(CLANG_FORMAT) -i $(SOURCE_FILES)
 	@$(CLANG_FORMAT) -i $(HEADER_FILES)
+
+license-update:
+	python3 ../reword -v -u "append"
 
 clean :
 	@for m in $(MODULES); do \

@@ -10,7 +10,6 @@
  * Authors:
  * - 2015-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_L3TEST_LUA_PATH_H
 #define OUTPOST_L3TEST_LUA_PATH_H

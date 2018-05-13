@@ -1,14 +1,14 @@
 /*
- * Copyright (c) 2018, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
- * May contain parts that are subject to export control under
- * the terms of AL Nr.: 9D005 (EG Nr. 428/2009 Dual Use) for
- * export to countries outside the EU.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2018, Fabian Greif (DLR RY-AVS)
+ * - 2013-2018, Fabian Greif (DLR RY-AVS)
  */
 
 #include "utils/base_member_pair.h"

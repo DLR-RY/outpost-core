@@ -9,9 +9,8 @@
  *
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
- * - 2015, Jan Sommer (DLR SC-SRV)
+ * - 2015, 2017, Jan Sommer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #include "timer.h"
 

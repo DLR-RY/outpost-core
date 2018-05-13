@@ -10,7 +10,6 @@
  * Authors:
  * - 2016-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include <outpost/utils/container/member_function_store.h>
 

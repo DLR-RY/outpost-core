@@ -9,8 +9,9 @@
  *
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
+ * - 2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
+
 #include "rmap_initiator.h"
 
 #include "rmap_common.h"

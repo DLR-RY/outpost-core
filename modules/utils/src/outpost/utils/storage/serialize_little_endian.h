@@ -12,7 +12,6 @@
  * - 2015, Janosch Reinking (DLR RY-AVS)
  * - 2015, Olaf Maibaum (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_H
 #define OUTPOST_UTILS_SERIALIZE_LITTLE_ENDIAN_H

@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef UNITTEST_TIME_TESTING_CLOCK_H
 #define UNITTEST_TIME_TESTING_CLOCK_H

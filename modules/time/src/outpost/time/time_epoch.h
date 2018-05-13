@@ -12,7 +12,6 @@
  * - 2014, Benjamin Weps (DLR SC-SRV)
  * - 2015, Annika Ofenloch (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_TIME_TIME_EPOCH_H
 #define OUTPOST_TIME_TIME_EPOCH_H

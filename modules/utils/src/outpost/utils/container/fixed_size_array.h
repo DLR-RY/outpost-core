@@ -10,7 +10,6 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_FIXED_SIZE_ARRAY_H
 #define OUTPOST_FIXED_SIZE_ARRAY_H

@@ -10,7 +10,6 @@
  * Authors:
  * - 2016-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_HAL_REGISTER_IMPL_H
 #define OUTPOST_HAL_REGISTER_IMPL_H

@@ -10,7 +10,6 @@
  * Authors:
  * - 2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_SERIALIZABLE_OBJECT_H
 #define OUTPOST_UTILS_SERIALIZABLE_OBJECT_H

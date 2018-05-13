@@ -12,7 +12,6 @@
  * - 2015, Annika Ofenloch (DLR RY-AVS)
  * - 2016, Jan Sommer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_TIME_DURATION_H
 #define OUTPOST_TIME_DURATION_H

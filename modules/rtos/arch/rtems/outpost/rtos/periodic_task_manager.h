@@ -11,7 +11,6 @@
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Jan Sommer (DLR SC-SRV)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H
 #define OUTPOST_RTOS_RTEMS_PERIODIC_TASK_MANAGER_H

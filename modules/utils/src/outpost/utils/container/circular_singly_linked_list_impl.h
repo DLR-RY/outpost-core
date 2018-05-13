@@ -10,7 +10,6 @@
  * Authors:
  * - 2015-2017, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_CIRCULAR_SINGLY_LINKED_LIST_IMPL_H
 #define OUTPOST_CIRCULAR_SINGLY_LINKED_LIST_IMPL_H

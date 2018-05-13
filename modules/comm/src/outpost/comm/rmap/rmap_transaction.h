@@ -10,7 +10,7 @@
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
+
 #ifndef OUTPOST_COMM_RMAP_TRANSACTION_H_
 #define OUTPOST_COMM_RMAP_TRANSACTION_H_
 

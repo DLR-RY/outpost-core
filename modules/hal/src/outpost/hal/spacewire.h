@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,8 +9,8 @@
  *
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2017-2018, Muhammad Bassam (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_HAL_SPACEWIRE_H
 #define OUTPOST_HAL_SPACEWIRE_H
