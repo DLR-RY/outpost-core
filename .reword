@@ -1,0 +1,67 @@
+---
+basepath: "."
+ignore_patterns:
+  - "*/ext/*"
+  - "*LICENSE"
+  - "*VERSION"
+  - "*modules/l3test/lua/src/inspect.lua"
+  - "*.svg"
+  - "*.xml"
+  - "*/tools/vera++/profiles/outpost"
+  - "*l3test/src/lua/exception*"
+  - "*Jenkinsfile"
+  - "*.git*"
+
+filetype_mapping:
+  "*Makefile": python
+  "*.mk": python
+  "*.sh": python
+
+ignore_commits:
+  - 5c49d9c1492686ccc94b72c7e13634b18b009cb7    # Apply clang-format style
+  - 00a17a7696f0062018f021eb5d85a2275e9bf891    # Update license headers from Git history
+  - 3f81eaafb048790d468b3352c44f44a5008f11db    # Apply clang-format for new files
+
+ignore_missing_history: []
+
+use_commit_name: False
+
+copyright:
+  "Fabian Greif <Fabian.Greif@dlr.de>": "German Aerospace Center (DLR)"
+  "Murat Goeksu <Murat.Goeksu@dlr.de>": "German Aerospace Center (DLR)"
+  "Jan-Gerd Mess <Jan-Gerd.Mess@dlr.de>": "German Aerospace Center (DLR)"
+  "Muhammad Bassam <Muhammad.Bassam@dlr.de>": "German Aerospace Center (DLR)"
+  "Jan Sommer <Jan.Sommer@dlr.de>": "German Aerospace Center (DLR)"
+  "Norbert Toth <Norbert.Toth@dlr.de>": "German Aerospace Center (DLR)"
+  "Olaf Maibaum <Olaf.Maibaum@dlr.de>": "German Aerospace Center (DLR)"
+  "Rhea Rinaldo <Rhea.Rinaldo@dlr.de>": "German Aerospace Center (DLR)"
+  "Annika Ofenloch <Annika.Ofenloch@dlr.de>": "German Aerospace Center (DLR)"
+  "Benjamin Weps <Benjamin.Weps@dlr.de>": "German Aerospace Center (DLR)"
+  "Janosch Reinking <jreinkin@uni-bremen.de>": "German Aerospace Center (DLR)"
+  "Ulmer, Moritz Christian <moritz.ulmer@dlr.de>": "German Aerospace Center (DLR)"
+
+author:
+  "Fabian Greif <Fabian.Greif@dlr.de>": "Fabian Greif (DLR RY-AVS)"
+  "Murat Goeksu <Murat.Goeksu@dlr.de>": "Murat Goeksu (DLR RY-AVS)"
+  "Jan-Gerd Mess <Jan-Gerd.Mess@dlr.de>": "Jan-Gerd Mess (DLR RY-AVS)"
+  "Muhammad Bassam <Muhammad.Bassam@dlr.de>": "Muhammad Bassam (DLR RY-AVS)"
+  "Norbert Toth <Norbert.Toth@dlr.de>": "Norbert Toth (DLR RY-AVS)"
+  "Rhea Rinaldo <Rhea.Rinaldo@dlr.de>": "Rhea Rinaldo (DLR RY-AVS)"
+  "Annika Ofenloch <Annika.Ofenloch@dlr.de>": "Annika Ofenloch (DLR RY-AVS)"
+  "Janosch Reinking <jreinkin@uni-bremen.de>": "Janosch Reinking (DLR RY-AVS)"
+  "Jan Sommer <Jan.Sommer@dlr.de>": "Jan Sommer (DLR SC-SRV)"
+  "Olaf Maibaum <Olaf.Maibaum@dlr.de>": "Olaf Maibaum (DLR SC-SRV)"
+  "Benjamin Weps <Benjamin.Weps@dlr.de>": "Benjamin Weps (DLR SC-SRV)"
+  "Ulmer, Moritz Christian <moritz.ulmer@dlr.de>": "Moritz Christian Ulmer (DLR SC-SRV)"
+
+header: |
+  {copyright}
+
+  This file is part of the development version of OUTPOST.
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+  Authors:
+  {authors}
