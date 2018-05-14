@@ -25,15 +25,13 @@ namespace outpost
 {
 namespace time
 {
-
 /**
  * Quota interface.
  */
 class Quota
 {
 public:
-    virtual
-    ~Quota() = default;
+    virtual ~Quota() = default;
 
     virtual void
     setTimeInterval(outpost::time::Duration interval) = 0;
@@ -50,7 +48,6 @@ public:
     virtual void
     reset() = 0;
 };
-
 
 /**
  * Continuous interval based quota limit.
@@ -96,7 +93,6 @@ private:
     outpost::time::SpacecraftElapsedTime mResources[Resources];
 };
 
-
 /**
  * Slim quota implementation with non-deterministic intervals.
  *
@@ -106,8 +102,7 @@ private:
 class NonDeterministicIntervalQuota : public Quota
 {
 public:
-    NonDeterministicIntervalQuota(outpost::time::Duration interval,
-                                  size_t numberOfResources);
+    NonDeterministicIntervalQuota(outpost::time::Duration interval, size_t numberOfResources);
 
     void
     setTimeInterval(outpost::time::Duration interval) override;
@@ -134,13 +129,11 @@ class UnlimitedQuota : public Quota
 public:
     UnlimitedQuota() = default;
 
-    void
-    setTimeInterval(outpost::time::Duration /*interval*/) final
+    void setTimeInterval(outpost::time::Duration /*interval*/) final
     {
     }
 
-    bool
-    access(outpost::time::SpacecraftElapsedTime /*now*/) final
+    bool access(outpost::time::SpacecraftElapsedTime /*now*/) final
     {
         return true;
     }
@@ -149,12 +142,11 @@ public:
     reset() final
     {
     }
-
 };
 extern UnlimitedQuota DefaultQuota;
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #include "quota_impl.h"
 

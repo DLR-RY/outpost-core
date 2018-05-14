@@ -86,8 +86,7 @@ public:
      * This class can be directly used in a boolean expression.
      * A positive value (true) indicates a successful operation.
      */
-    inline explicit constexpr
-    operator bool() const
+    inline explicit constexpr operator bool() const
     {
         return isSuccess();
     }

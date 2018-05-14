@@ -22,11 +22,11 @@
 #include <outpost/utils/container/fixed_size_array.h>
 #include <outpost/utils/container/slice.h>
 
-#include <type_traits>
-
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
+#include <type_traits>
 
 namespace outpost
 {
@@ -95,7 +95,7 @@ public:
     getTypeSize(outpost::Slice<U> array)
     {
         return SerializeBigEndianTraits<typename std::remove_cv<U>::type>::size()
-                * array.getNumberOfElements();
+               * array.getNumberOfElements();
     }
 
     template <typename T>

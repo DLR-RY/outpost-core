@@ -16,10 +16,10 @@
 
 #include <outpost/utils/meta.h>
 
-#include <type_traits>
-
 #include <stddef.h>
 #include <string.h>  // for memcpy
+
+#include <type_traits>
 
 // workaround missing "is_trivially_copyable" in g++ < 5.0
 #if __GNUG__ && __GNUC__ < 5
@@ -49,8 +49,7 @@ public:
 
     /// Works only for types which can be copied bitwise for now
     /// because of the usage of memcpy
-    static_assert(IS_TRIVIALLY_COPYABLE(T),
-                  "T must be copyable via memcpy");
+    static_assert(IS_TRIVIALLY_COPYABLE(T), "T must be copyable via memcpy");
 
     constexpr FixedSizeArray() = default;
 

@@ -18,12 +18,10 @@ namespace outpost
 {
 namespace time
 {
-
 UnlimitedQuota DefaultQuota;
 
-NonDeterministicIntervalQuota::NonDeterministicIntervalQuota(
-        outpost::time::Duration interval,
-        size_t numberOfResources) :
+NonDeterministicIntervalQuota::NonDeterministicIntervalQuota(outpost::time::Duration interval,
+                                                             size_t numberOfResources) :
     mInterval(interval),
     mIntervalEnd(outpost::time::SpacecraftElapsedTime::startOfEpoch()),
     mNumberOfResources(numberOfResources)
@@ -60,5 +58,5 @@ NonDeterministicIntervalQuota::reset()
     mIntervalEnd = outpost::time::SpacecraftElapsedTime::startOfEpoch();
 }
 
-}
-}
+}  // namespace time
+}  // namespace outpost

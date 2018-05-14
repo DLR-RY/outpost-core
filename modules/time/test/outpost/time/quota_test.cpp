@@ -11,10 +11,10 @@
  * - 2015, 2017-2018, Fabian Greif (DLR RY-AVS)
  */
 
+#include <outpost/time/quota.h>
+
 #include <unittest/harness.h>
 #include <unittest/time/testing_clock.h>
-
-#include <outpost/time/quota.h>
 
 using namespace outpost::time;
 
@@ -24,8 +24,7 @@ public:
     static constexpr size_t quotaLimit = 5;
     static constexpr Duration defaultInterval = Seconds(1);
 
-    QuotaTest() :
-        mClock()
+    QuotaTest() : mClock()
     {
     }
 
@@ -69,4 +68,5 @@ INSTANTIATE_TEST_CASE_P(
         QuotaTest,
         ::testing::Values(
                 new ContinuousIntervalQuota<QuotaTest::quotaLimit>(QuotaTest::defaultInterval),
-                new NonDeterministicIntervalQuota(QuotaTest::defaultInterval, QuotaTest::quotaLimit)));
+                new NonDeterministicIntervalQuota(QuotaTest::defaultInterval,
+                                                  QuotaTest::quotaLimit)));

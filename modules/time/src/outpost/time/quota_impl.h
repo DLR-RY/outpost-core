@@ -20,7 +20,6 @@ namespace outpost
 {
 namespace time
 {
-
 template <size_t Resources>
 ContinuousIntervalQuota<Resources>::ContinuousIntervalQuota(outpost::time::Duration interval) :
     mInterval(interval),
@@ -69,7 +68,7 @@ ContinuousIntervalQuota<Resources>::reset()
     }
 }
 
-}
-}
+}  // namespace time
+}  // namespace outpost
 
 #endif
