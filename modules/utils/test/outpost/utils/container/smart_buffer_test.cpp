@@ -9,14 +9,13 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <outpost/utils/container/smart_buffer.h>
+#include <outpost/utils/container/smart_object_pool.h>
 #include <outpost/utils/storage/serialize.h>
 
 #include <outpost/rtos/thread.h>
 
-#include <outpost/utils/smart_object_pool.h>
-#include <outpost/utils/smart_buffer.h>
-
-#include <unittest/utils/smart_buffer_queue_stub.h>
+#include <unittest/utils/container/smart_buffer_queue_stub.h>
 
 using namespace testing;
 
