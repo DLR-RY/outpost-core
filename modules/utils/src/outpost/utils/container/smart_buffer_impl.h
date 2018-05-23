@@ -21,16 +21,15 @@ namespace outpost
 {
 namespace utils
 {
-
-template<size_t N>
+template <size_t N>
 SmartBuffer::SmartBuffer(uint8_t (&array)[N]) :
-	mReferenceCounter(0),
-	mBuffer(array),
-	mNumElements(N)
+    mReferenceCounter(0),
+    mBuffer(array),
+    mNumElements(N)
 {
 }
 
-}
-}
+}  // namespace utils
+}  // namespace outpost
 
 #endif

@@ -22,18 +22,17 @@
 #ifndef MU_COMMON_UTILS_SMART_RING_BUFFER_H
 #define MU_COMMON_UTILS_SMART_RING_BUFFER_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <string.h>
-
-#include <outpost/utils/smart_buffer.h>
 #include <outpost/utils/container/slice.h>
+#include <outpost/utils/smart_buffer.h>
+
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
 
 namespace outpost
 {
 namespace utils
 {
-
 /**
  * Ring buffer for SmartBuffers.
  *
@@ -43,10 +42,10 @@ namespace utils
 class SmartRingBuffer
 {
 public:
-    explicit inline
-	SmartRingBuffer(outpost::Slice<SmartBufferPointer> buffer, outpost::Slice<uint8_t> flags) :
-		mBuffer(buffer),
-		mFlags(flags),
+    explicit inline SmartRingBuffer(outpost::Slice<SmartBufferPointer> buffer,
+                                    outpost::Slice<uint8_t> flags) :
+        mBuffer(buffer),
+        mFlags(flags),
         mReadIndex(0),
         mNumberOfElements(0)
     {
@@ -88,8 +87,7 @@ public:
      * \retval true  on success (element added)
      */
     inline bool
-    append(const SmartBufferPointer& p,
-           uint8_t flags = 0)
+    append(const SmartBufferPointer& p, uint8_t flags = 0)
     {
         bool appended = false;
         if ((mNumberOfElements < mBuffer.getNumberOfElements()))
@@ -161,7 +159,7 @@ public:
         if (mNumberOfElements > 0)
         {
             mBuffer[mReadIndex] = SmartBufferPointer();
-        	mReadIndex = increment(mReadIndex, 1);
+            mReadIndex = increment(mReadIndex, 1);
             --mNumberOfElements;
             elementRemoved = true;
         }
@@ -206,32 +204,32 @@ public:
         mNumberOfElements = 0;
         for (size_t i = 0; i < mBuffer.getNumberOfElements(); i++)
         {
-        	mBuffer[i] = SmartBufferPointer();
+            mBuffer[i] = SmartBufferPointer();
         }
     }
 
 private:
     // Disable copy constructor
-	SmartRingBuffer(const SmartRingBuffer& o);
+    SmartRingBuffer(const SmartRingBuffer& o);
 
     // Disable copy assignment operator
-	SmartRingBuffer&
-	operator=(const SmartRingBuffer& o);
+    SmartRingBuffer&
+    operator=(const SmartRingBuffer& o);
 
-	inline size_t
-	increment(size_t index, size_t count) const
-	{
+    inline size_t
+    increment(size_t index, size_t count) const
+    {
         size_t next = (index + count) % mBuffer.getNumberOfElements();
         return next;
-	}
+    }
 
-	SmartBufferPointer empty;
+    SmartBufferPointer empty;
 
-	const outpost::Slice<SmartBufferPointer> mBuffer;
-	const outpost::Slice<uint8_t> mFlags;
+    const outpost::Slice<SmartBufferPointer> mBuffer;
+    const outpost::Slice<uint8_t> mFlags;
 
-	size_t mReadIndex;
-	size_t mNumberOfElements;
+    size_t mReadIndex;
+    size_t mNumberOfElements;
 };
 
 /**
@@ -243,9 +241,8 @@ template <size_t totalNumberOfElements>
 class SmartRingBufferStorage : public SmartRingBuffer
 {
 public:
-	inline
-	SmartRingBufferStorage() :
-		SmartRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags))
+    inline SmartRingBufferStorage() :
+        SmartRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags))
     {
     }
 
@@ -258,7 +255,7 @@ private:
     uint8_t mFlags[totalNumberOfElements];
 };
 
-}
-}
+}  // namespace utils
+}  // namespace outpost
 
 #endif
