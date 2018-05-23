@@ -14,7 +14,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <unittest/utils/smart_buffer_queue_stub.h>
+#include <unittest/utils/container/smart_buffer_queue_stub.h>
 
 using namespace testing;
 

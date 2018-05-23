@@ -23,7 +23,7 @@
 #define MU_COMMON_UTILS_SMART_RING_BUFFER_H
 
 #include <outpost/utils/container/slice.h>
-#include <outpost/utils/smart_buffer.h>
+#include <outpost/utils/container/smart_buffer.h>
 
 #include <stddef.h>
 #include <stdint.h>
@@ -42,8 +42,8 @@ namespace utils
 class SmartRingBuffer
 {
 public:
-    explicit inline SmartRingBuffer(outpost::Slice<SmartBufferPointer> buffer,
-                                    outpost::Slice<uint8_t> flags) :
+    inline SmartRingBuffer(outpost::Slice<SmartBufferPointer> buffer,
+                           outpost::Slice<uint8_t> flags) :
         mBuffer(buffer),
         mFlags(flags),
         mReadIndex(0),
@@ -51,9 +51,12 @@ public:
     {
     }
 
-    virtual ~SmartRingBuffer()
-    {
-    }
+    virtual ~SmartRingBuffer() = default;
+
+    SmartRingBuffer(const SmartRingBuffer& o) = delete;
+
+    SmartRingBuffer&
+    operator=(const SmartRingBuffer& o) = delete;
 
     /**l
      * Get the number of currently inactive count
@@ -184,7 +187,7 @@ public:
             return mBuffer[position];
         }
 
-        return empty;
+        return mEmpty;
     }
 
     inline uint8_t
@@ -209,13 +212,6 @@ public:
     }
 
 private:
-    // Disable copy constructor
-    SmartRingBuffer(const SmartRingBuffer& o);
-
-    // Disable copy assignment operator
-    SmartRingBuffer&
-    operator=(const SmartRingBuffer& o);
-
     inline size_t
     increment(size_t index, size_t count) const
     {
@@ -223,7 +219,8 @@ private:
         return next;
     }
 
-    SmartBufferPointer empty;
+    // Dummy item. Used when the buffer is empty.
+    SmartBufferPointer mEmpty;
 
     const outpost::Slice<SmartBufferPointer> mBuffer;
     const outpost::Slice<uint8_t> mFlags;
@@ -246,9 +243,7 @@ public:
     {
     }
 
-    virtual ~SmartRingBufferStorage()
-    {
-    }
+    virtual ~SmartRingBufferStorage() = default;
 
 private:
     SmartBufferPointer mBufferStorage[totalNumberOfElements];

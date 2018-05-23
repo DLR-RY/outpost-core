@@ -30,9 +30,7 @@ public:
     {
     }
 
-    virtual ~SmartBufferQueueBase()
-    {
-    }
+    virtual ~SmartBufferQueueBase() = default;
 
     virtual bool
     send(SmartBufferPointer& data) = 0;
@@ -49,11 +47,11 @@ template <size_t N>
 class SmartBufferQueue : public SmartBufferQueueBase
 {
 public:
-    SmartBufferQueue() : SmartBufferQueueBase(N), itemsInQueue(0), lastIndex(0)
+    SmartBufferQueue() : SmartBufferQueueBase(N), mItemsInQueue(0), mLastIndex(0)
     {
         for (size_t i = 0; i < N; i++)
         {
-            isUsed[i] = false;
+            mIsUsed[i] = false;
         }
     }
 
@@ -63,8 +61,10 @@ public:
         outpost::rtos::MutexGuard lock(mMutex);
         for (size_t i = 0; i < N; i++)
         {
-            if (isUsed[i])
+            if (mIsUsed[i])
+            {
                 return false;
+            }
         }
         return true;
     }
@@ -79,7 +79,7 @@ public:
                 return false;
         }
         return true;*/
-        return itemsInQueue == N;
+        return mItemsInQueue == N;
     }
 
     virtual bool
@@ -87,25 +87,25 @@ public:
     {
         outpost::rtos::MutexGuard lock(mMutex);
         bool res = false;
-        size_t i = lastIndex;
-        size_t endSearch = (lastIndex - 1) % N;
+        size_t i = mLastIndex;
+        size_t endSearch = (mLastIndex - 1) % N;
         // for (size_t i = 0; i < N; i++)
         do
         {
-            if (!isUsed[i])
+            if (!mIsUsed[i])
             {
                 mPointers[i] = data;
-                isUsed[i] = true;
-                lastIndex = (i + 1) % N;
+                mIsUsed[i] = true;
+                mLastIndex = (i + 1) % N;
                 if (outpost::rtos::Queue<size_t>::send(i))
                 {
-                    itemsInQueue++;
+                    mItemsInQueue++;
                     res = true;
                 }
                 else
                 {
-                    isUsed[i] = false;
-                    mPointers[i] = _empty;
+                    mIsUsed[i] = false;
+                    mPointers[i] = mEmpty;
                 }
                 break;
             }
@@ -124,32 +124,32 @@ public:
         {
             outpost::rtos::MutexGuard lock(mMutex);
             data = SmartBufferPointer(mPointers[index]);
-            mPointers[index] = _empty;
-            isUsed[index] = false;
-            itemsInQueue--;
+            mPointers[index] = mEmpty;
+            mIsUsed[index] = false;
+            mItemsInQueue--;
             res = true;
         }
         return res;
     }
 
     virtual uint16_t
-    getNumberOfItems()
+    getNumberOfItems() override
     {
         outpost::rtos::MutexGuard lock(mMutex);
-        return itemsInQueue;
+        return mItemsInQueue;
     }
 
 private:
-    SmartBufferPointer _empty;
+    SmartBufferPointer mEmpty;
 
     outpost::rtos::Mutex mMutex;
 
-    uint16_t itemsInQueue;
+    uint16_t mItemsInQueue;
 
-    size_t lastIndex;
+    size_t mLastIndex;
 
     SmartBufferPointer mPointers[N];
-    bool isUsed[N];
+    bool mIsUsed[N];
 };
 
 }  // namespace utils

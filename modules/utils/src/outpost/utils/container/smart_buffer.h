@@ -35,6 +35,11 @@ public:
 
     virtual ~SmartBuffer();
 
+    SmartBuffer(const SmartBuffer&) = delete;
+
+    const SmartBuffer&
+    operator=(SmartBuffer&) = delete;
+
     inline uint8_t*
     getPointer() const
     {
@@ -81,12 +86,9 @@ public:
 private:
     friend class SmartBufferPointer;
 
-    SmartBuffer(const SmartBuffer&);
-    const SmartBuffer&
-    operator=(SmartBuffer&);
-
     void
     incrementCount();
+
     void
     decrementCount();
 

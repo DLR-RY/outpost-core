@@ -33,14 +33,14 @@ class SmartBufferPoolBase
 public:
     virtual bool
     allocate(SmartBufferPointer& pointer) = 0;
+
     virtual size_t
     numberOfElements() const = 0;
+
     virtual size_t
     numberOfFreeElements() const = 0;
 
-    virtual ~SmartBufferPoolBase()
-    {
-    }
+    virtual ~SmartBufferPoolBase() = default;
 };
 
 /**
@@ -54,7 +54,7 @@ template <size_t E, size_t N>
 class SmartBufferPool : public SmartBufferPoolBase
 {
 public:
-    SmartBufferPool() : lastIndex(0)
+    SmartBufferPool() : mLastIndex(0)
     {
         for (size_t i = 0; i < N; i++)
         {
@@ -62,24 +62,22 @@ public:
         }
     }
 
-    virtual ~SmartBufferPool()
-    {
-    }
+    virtual ~SmartBufferPool() = default;
 
     bool
-    allocate(SmartBufferPointer& pointer)
+    allocate(SmartBufferPointer& pointer) override
     {
         outpost::rtos::MutexGuard lock(mMutex);
         bool res = false;
-        size_t searchLastIndex = (lastIndex - 1) % N;
-        size_t i = lastIndex;
+        size_t searchLastIndex = (mLastIndex - 1) % N;
+        size_t i = mLastIndex;
         do
         {
             if (!mBuffer[i].isUsed())
             {
                 pointer = SmartBufferPointer(&mBuffer[i]);
                 res = true;
-                lastIndex = i;
+                mLastIndex = i;
             }
             i = (i + 1) % N;
         } while (i != searchLastIndex && !res);
@@ -104,14 +102,14 @@ public:
         printf("\n");
     }
 
-    size_t
-    numberOfElements() const
+    inline size_t
+    numberOfElements() const override
     {
         return N;
     }
 
     size_t
-    numberOfFreeElements() const
+    numberOfFreeElements() const override
     {
         size_t temp = 0;
         for (size_t i = 0; i < N; i++)
@@ -128,7 +126,7 @@ protected:
     uint8_t mDataBuffer[N][E] __attribute__((aligned(4)));
     SmartBuffer mBuffer[N];
 
-    size_t lastIndex;
+    size_t mLastIndex;
 
     outpost::rtos::Mutex mMutex;
 };
