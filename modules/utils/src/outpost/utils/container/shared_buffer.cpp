@@ -12,36 +12,36 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "smart_buffer.h"
+#include "shared_buffer.h"
 
 namespace outpost
 {
 namespace utils
 {
-outpost::rtos::Mutex SmartBuffer::mMutex;
+outpost::rtos::Mutex SharedBuffer::mMutex;
 
-SmartBuffer::SmartBuffer() : mReferenceCounter(0), mBuffer(0), mNumElements(0)
+SharedBuffer::SharedBuffer() : mReferenceCounter(0), mBuffer(0), mNumElements(0)
 {
 }
 
-SmartBuffer::~SmartBuffer()
+SharedBuffer::~SharedBuffer()
 {
-}
-
-void
-SmartBuffer::incrementCount()
-{
-    SmartBuffer::incrementCountAtomic(mReferenceCounter);
 }
 
 void
-SmartBuffer::decrementCount()
+SharedBuffer::incrementCount()
 {
-    SmartBuffer::decrementCountAtomic(mReferenceCounter);
+    SharedBuffer::incrementCountAtomic(mReferenceCounter);
+}
+
+void
+SharedBuffer::decrementCount()
+{
+    SharedBuffer::decrementCountAtomic(mReferenceCounter);
 }
 
 bool
-SmartBufferPointer::getChild(ChildSmartPointer& ptr,
+SharedBufferPointer::getChild(SharedChildPointer& ptr,
                              uint16_t type,
                              size_t pOffset,
                              size_t length) const
@@ -51,7 +51,7 @@ SmartBufferPointer::getChild(ChildSmartPointer& ptr,
     {
         if (mOffset + pOffset + length <= mPtr->mNumElements && length > 0)
         {
-            ptr = ChildSmartPointer(mPtr, *this);
+            ptr = SharedChildPointer(mPtr, *this);
             ptr.mType = type;
             ptr.mOffset = mOffset + pOffset;
             ptr.mLength = length;

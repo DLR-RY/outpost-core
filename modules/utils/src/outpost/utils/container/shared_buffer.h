@@ -1,14 +1,26 @@
 /*
+ * Copyright (c) 2013-2017, German Aerospace Center (DLR)
  *
- * Copyright (c) 2016, German Aerospace Center (DLR)
- * All Rights Reserved.
+ * This file is part of the development version of OUTPOST.
  *
- * See the file "LICENSE" for the full license governing this code.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Authors:
+ * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
 
-#ifndef OUTPOST_RTOS_SMART_BUFFER_H_
-#define OUTPOST_RTOS_SMART_BUFFER_H_
+/**
+ *
+ * \defgroup    SharedBuffer
+ * \brief       Shared buffers and corresponding allocation and distribution classes
+ *
+ */
+
+#ifndef OUTPOST_UTILS_SMART_BUFFER_H_
+#define OUTPOST_UTILS_SMART_BUFFER_H_
 #include <outpost/rtos/mutex_guard.h>
 #include <outpost/utils/container/slice.h>
 
@@ -21,24 +33,24 @@ namespace outpost
 {
 namespace utils
 {
-class SmartBuffer
+class SharedBuffer
 {
 public:
-    SmartBuffer();
+    SharedBuffer();
 
     template <size_t N>
-    SmartBuffer(uint8_t (&array)[N]);
+    SharedBuffer(uint8_t (&array)[N]);
 
-    SmartBuffer(uint8_t* data, size_t e) : mReferenceCounter(0), mBuffer(data), mNumElements(e)
+    SharedBuffer(uint8_t* data, size_t e) : mReferenceCounter(0), mBuffer(data), mNumElements(e)
     {
     }
 
-    virtual ~SmartBuffer();
+    virtual ~SharedBuffer();
 
-    SmartBuffer(const SmartBuffer&) = delete;
+    SharedBuffer(const SharedBuffer&) = delete;
 
-    const SmartBuffer&
-    operator=(SmartBuffer&) = delete;
+    const SharedBuffer&
+    operator=(SharedBuffer&) = delete;
 
     inline uint8_t*
     getPointer() const
@@ -74,7 +86,7 @@ public:
     inline bool
     isUsed() const
     {
-        return SmartBuffer::isUsedAtomic(mReferenceCounter);
+        return SharedBuffer::isUsedAtomic(mReferenceCounter);
     }
 
     inline size_t
@@ -84,7 +96,7 @@ public:
     }
 
 private:
-    friend class SmartBufferPointer;
+    friend class SharedBufferPointer;
 
     void
     incrementCount();
@@ -124,16 +136,16 @@ private:
     size_t mNumElements;
 };
 
-class ChildSmartPointer;
+class SharedChildPointer;
 
-class SmartBufferPointer
+class SharedBufferPointer
 {
 public:
-    SmartBufferPointer() : mPtr(nullptr), mType(0), mOffset(0), mLength(0)
+    SharedBufferPointer() : mPtr(nullptr), mType(0), mOffset(0), mLength(0)
     {
     }
 
-    SmartBufferPointer(SmartBuffer* pT) :
+    SharedBufferPointer(SharedBuffer* pT) :
         mPtr(pT),
         mType(0),
         mOffset(0),
@@ -148,13 +160,13 @@ public:
         incrementCount();
     }
 
-    static inline SmartBufferPointer
+    static inline SharedBufferPointer
     empty()
     {
-        return SmartBufferPointer();
+        return SharedBufferPointer();
     }
 
-    SmartBufferPointer(const SmartBufferPointer& other) :
+    SharedBufferPointer(const SharedBufferPointer& other) :
         mPtr(other.mPtr),
         mType(other.mType),
         mOffset(other.mOffset),
@@ -163,7 +175,7 @@ public:
         incrementCount();
     }
 
-    SmartBufferPointer(const SmartBufferPointer&& other) :
+    SharedBufferPointer(const SharedBufferPointer&& other) :
         mPtr(other.mPtr),
         mType(other.mType),
         mOffset(other.mOffset),
@@ -172,13 +184,13 @@ public:
         incrementCount();
     }
 
-    ~SmartBufferPointer()
+    ~SharedBufferPointer()
     {
         decrementCount();
     }
 
-    const SmartBufferPointer&
-    operator=(const SmartBufferPointer& other)
+    const SharedBufferPointer&
+    operator=(const SharedBufferPointer& other)
     {
         if (&other != this)
         {
@@ -192,8 +204,8 @@ public:
         return *this;
     }
 
-    const SmartBufferPointer&
-    operator=(const SmartBufferPointer&& other)
+    const SharedBufferPointer&
+    operator=(const SharedBufferPointer&& other)
     {
         if (&other != this)
         {
@@ -220,20 +232,20 @@ public:
     }
 
     bool
-    getChild(ChildSmartPointer& ptr, uint16_t type, size_t pOffest, size_t length) const;
+    getChild(SharedChildPointer& ptr, uint16_t type, size_t pOffest, size_t length) const;
 
-    inline SmartBuffer* operator->() const
+    inline SharedBuffer* operator->() const
     {
         return mPtr;
     }
 
-    inline SmartBuffer& operator*() const
+    inline SharedBuffer& operator*() const
     {
         return *mPtr;
     }
 
     inline bool
-    operator==(const SmartBufferPointer& other)
+    operator==(const SharedBufferPointer& other)
     {
         return mPtr == other.mPtr;
     }
@@ -245,7 +257,7 @@ public:
     }
 
     inline bool
-    operator!=(const SmartBufferPointer& other)
+    operator!=(const SharedBufferPointer& other)
     {
         return mPtr != other.mPtr;
     }
@@ -331,42 +343,42 @@ protected:
     }
 
 protected:
-    SmartBuffer* mPtr;
+    SharedBuffer* mPtr;
 
     uint16_t mType;
     size_t mOffset;
     size_t mLength;
 };
 
-class ChildSmartPointer : public SmartBufferPointer
+class SharedChildPointer : public SharedBufferPointer
 {
 public:
-    friend SmartBufferPointer;
+    friend SharedBufferPointer;
 
-    ChildSmartPointer() : SmartBufferPointer(), mParent(nullptr)
+    SharedChildPointer() : SharedBufferPointer(), mParent(nullptr)
     {
     }
 
-    ChildSmartPointer(SmartBuffer* pT, const SmartBufferPointer& parent) :
-        SmartBufferPointer(pT),
+    SharedChildPointer(SharedBuffer* pT, const SharedBufferPointer& parent) :
+        SharedBufferPointer(pT),
         mParent(parent)
     {
     }
 
-    ChildSmartPointer(const ChildSmartPointer& other) :
-        SmartBufferPointer(other),
+    SharedChildPointer(const SharedChildPointer& other) :
+        SharedBufferPointer(other),
         mParent(other.mParent)
     {
     }
 
-    ChildSmartPointer(const ChildSmartPointer&& other) :
-        SmartBufferPointer(other),
+    SharedChildPointer(const SharedChildPointer&& other) :
+        SharedBufferPointer(other),
         mParent(other.mParent)
     {
     }
 
-    const ChildSmartPointer&
-    operator=(const ChildSmartPointer& other)
+    const SharedChildPointer&
+    operator=(const SharedChildPointer& other)
     {
         if (&other != this)
         {
@@ -381,8 +393,8 @@ public:
         return *this;
     }
 
-    const ChildSmartPointer&
-    operator=(ChildSmartPointer& other)
+    const SharedChildPointer&
+    operator=(SharedChildPointer& other)
     {
         if (&other != this)
         {
@@ -397,8 +409,8 @@ public:
         return *this;
     }
 
-    const ChildSmartPointer&
-    operator=(ChildSmartPointer&& other)
+    const SharedChildPointer&
+    operator=(SharedChildPointer&& other)
     {
         if (&other != this)
         {
@@ -413,8 +425,8 @@ public:
         return *this;
     }
 
-    const ChildSmartPointer&
-    operator=(const ChildSmartPointer&& other)
+    const SharedChildPointer&
+    operator=(const SharedChildPointer&& other)
     {
         if (&other != this)
         {
@@ -429,20 +441,20 @@ public:
         return *this;
     }
 
-    ~ChildSmartPointer()
+    ~SharedChildPointer()
     {
     }
 
-    SmartBufferPointer
+    SharedBufferPointer
     getParent() const
     {
         return mParent;
     }
 
-    SmartBufferPointer
+    SharedBufferPointer
     getOrigin() const
     {
-        return SmartBufferPointer(mPtr);
+        return SharedBufferPointer(mPtr);
     }
 
     inline bool
@@ -452,12 +464,12 @@ public:
     }
 
 private:
-    SmartBufferPointer mParent;
+    SharedBufferPointer mParent;
 };
 
 }  // namespace utils
 }  // namespace outpost
 
-#include "smart_buffer_impl.h"
+#include "shared_buffer_impl.h"
 
 #endif /* SRC_MU_COMMON_UTILS_SMART_BUFFER_H_ */

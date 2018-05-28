@@ -15,24 +15,23 @@
 #ifndef OUTPOST_UTILS_SMART_OBJECT_POOL_H_
 #define OUTPOST_UTILS_SMART_OBJECT_POOL_H_
 
-#include "smart_buffer.h"
-
 #include <outpost/rtos/mutex_guard.h>
 #include <outpost/utils/container/list.h>
+#include "shared_buffer.h"
 
 namespace outpost
 {
 namespace utils
 {
 /**
- * Base class of the SmartObjectPool for passing by reference.
+ * Base class of the SharedObjectPool for passing by reference.
  *
  */
-class SmartBufferPoolBase
+class SharedBufferPoolBase
 {
 public:
     virtual bool
-    allocate(SmartBufferPointer& pointer) = 0;
+    allocate(SharedBufferPointer& pointer) = 0;
 
     virtual size_t
     numberOfElements() const = 0;
@@ -40,21 +39,21 @@ public:
     virtual size_t
     numberOfFreeElements() const = 0;
 
-    virtual ~SmartBufferPoolBase() = default;
+    virtual ~SharedBufferPoolBase() = default;
 };
 
 /**
- * A SmartBufferPool holds poolable objects and allows for allocating these when needed.
+ * A SharedBufferPool holds poolable objects and allows for allocating these when needed.
  *
  * When looking for an unused element,
  * the element next to the one that was allocated last is considered first.
  *
  */
 template <size_t E, size_t N>
-class SmartBufferPool : public SmartBufferPoolBase
+class SharedBufferPool : public SharedBufferPoolBase
 {
 public:
-    SmartBufferPool() : mLastIndex(0)
+    SharedBufferPool() : mLastIndex(0)
     {
         for (size_t i = 0; i < N; i++)
         {
@@ -62,10 +61,10 @@ public:
         }
     }
 
-    virtual ~SmartBufferPool() = default;
+    virtual ~SharedBufferPool() = default;
 
     bool
-    allocate(SmartBufferPointer& pointer) override
+    allocate(SharedBufferPointer& pointer) override
     {
         outpost::rtos::MutexGuard lock(mMutex);
         bool res = false;
@@ -75,7 +74,7 @@ public:
         {
             if (!mBuffer[i].isUsed())
             {
-                pointer = SmartBufferPointer(&mBuffer[i]);
+                pointer = SharedBufferPointer(&mBuffer[i]);
                 res = true;
                 mLastIndex = i;
             }
@@ -89,7 +88,7 @@ public:
     {
         for (unsigned int i = 0; i < N; i++)
         {
-            printf("SmartBuffer: %u (Address %p) : ", i, &mBuffer[i]);
+            printf("SharedBuffer: %u (Address %p) : ", i, &mBuffer[i]);
             if (mBuffer[i].isUsed())
             {
                 printf("used (%lu)\n", mBuffer[i].getReferenceCount());
@@ -124,7 +123,7 @@ public:
 
 protected:
     uint8_t mDataBuffer[N][E] __attribute__((aligned(4)));
-    SmartBuffer mBuffer[N];
+    SharedBuffer mBuffer[N];
 
     size_t mLastIndex;
 

@@ -7,27 +7,27 @@
 // ----------------------------------------------------------------------------
 
 #include <outpost/rtos/thread.h>
-#include <outpost/utils/container/smart_buffer.h>
-#include <outpost/utils/container/smart_object_pool.h>
+#include <outpost/utils/container/shared_buffer.h>
+#include <outpost/utils/container/shared_object_pool.h>
 #include <outpost/utils/storage/serialize.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <unittest/utils/container/smart_buffer_queue_stub.h>
+#include <unittest/utils/container/shared_buffer_queue_stub.h>
 
 using namespace testing;
 
 static constexpr size_t poolSize = 1500;
 static constexpr size_t objectSize = 160;
 
-class SmartBufferTest : public testing::Test
+class SharedBufferTest : public testing::Test
 {
 public:
-    outpost::utils::SmartBufferPool<objectSize, poolSize> mPool;
-    unittest::utils::SmartBufferQueue<10> mQueue;
+    outpost::utils::SharedBufferPool<objectSize, poolSize> mPool;
+    unittest::utils::SharedBufferQueue<10> mQueue;
 
-    SmartBufferTest()
+    SharedBufferTest()
     {
     }
 
@@ -42,22 +42,22 @@ public:
     }
 
     void
-    passByRef(outpost::utils::SmartBufferPointer& p);
+    passByRef(outpost::utils::SharedBufferPointer& p);
 
     void
-    passByValue(outpost::utils::SmartBufferPointer p);
+    passByValue(outpost::utils::SharedBufferPointer p);
 };
 
-TEST_F(SmartBufferTest, isInitialized)
+TEST_F(SharedBufferTest, isInitialized)
 {
     EXPECT_EQ(mPool.numberOfFreeElements(), poolSize);
     EXPECT_EQ(mPool.numberOfElements(), poolSize);
 }
 
-TEST_F(SmartBufferTest, allocateBuffer)
+TEST_F(SharedBufferTest, allocateBuffer)
 {
-    outpost::utils::SmartBufferPointer p1;
-    outpost::utils::SmartBufferPointer p2;
+    outpost::utils::SharedBufferPointer p1;
+    outpost::utils::SharedBufferPointer p2;
     EXPECT_TRUE(mPool.allocate(p1));
     EXPECT_TRUE(p1.isValid());
     EXPECT_EQ(p1->getReferenceCount(), 1U);
@@ -70,25 +70,25 @@ TEST_F(SmartBufferTest, allocateBuffer)
     EXPECT_TRUE(p2 != p1);
 }
 
-TEST_F(SmartBufferTest, constructorTest)
+TEST_F(SharedBufferTest, constructorTest)
 {
-    outpost::utils::SmartBufferPointer p1;
+    outpost::utils::SharedBufferPointer p1;
     EXPECT_TRUE(mPool.allocate(p1));
     EXPECT_EQ(p1->getReferenceCount(), 1U);
-    outpost::utils::SmartBufferPointer p2;
+    outpost::utils::SharedBufferPointer p2;
     EXPECT_EQ(p1->getReferenceCount(), 1U);
     p2 = p1;
     EXPECT_EQ(p1->getReferenceCount(), 2U);
 
-    outpost::utils::SmartBufferPointer p3(p1);
+    outpost::utils::SharedBufferPointer p3(p1);
     EXPECT_EQ(p1->getReferenceCount(), 3U);
 
     {
-        outpost::utils::SmartBufferPointer p4 = outpost::utils::SmartBufferPointer(p3);
+        outpost::utils::SharedBufferPointer p4 = outpost::utils::SharedBufferPointer(p3);
         EXPECT_EQ(p1->getReferenceCount(), 4U);
-        outpost::utils::ChildSmartPointer ch2;
+        outpost::utils::SharedChildPointer ch2;
         {
-            outpost::utils::ChildSmartPointer ch1;
+            outpost::utils::SharedChildPointer ch1;
             EXPECT_EQ(p1->getReferenceCount(), 4U);
             p1.getChild(ch1, 0, 0, 1);
             EXPECT_EQ(p1->getReferenceCount(), 6U);
@@ -101,18 +101,18 @@ TEST_F(SmartBufferTest, constructorTest)
         }
         EXPECT_EQ(p1->getReferenceCount(), 6U);
 
-        outpost::utils::ChildSmartPointer ch3 = outpost::utils::ChildSmartPointer(ch2);
+        outpost::utils::SharedChildPointer ch3 = outpost::utils::SharedChildPointer(ch2);
     }
 
     EXPECT_EQ(p1->getReferenceCount(), 3U);
 }
 
-TEST_F(SmartBufferTest, deleteParentFirst)
+TEST_F(SharedBufferTest, deleteParentFirst)
 {
     {
-        outpost::utils::ChildSmartPointer ch1;
+        outpost::utils::SharedChildPointer ch1;
         {
-            outpost::utils::SmartBufferPointer p1;
+            outpost::utils::SharedBufferPointer p1;
             mPool.allocate(p1);
             EXPECT_EQ(p1->getReferenceCount(), 1U);
             p1.getChild(ch1, 0, 0, 1);
@@ -132,12 +132,12 @@ TEST_F(SmartBufferTest, deleteParentFirst)
 }
 
 void
-SmartBufferTest::passByRef(outpost::utils::SmartBufferPointer& p)
+SharedBufferTest::passByRef(outpost::utils::SharedBufferPointer& p)
 {
     EXPECT_EQ(p->getReferenceCount(), 3U);
 
     {
-        outpost::utils::SmartBufferPointer p_temp = p;
+        outpost::utils::SharedBufferPointer p_temp = p;
         EXPECT_EQ(p->getReferenceCount(), 4U);
     }
 
@@ -145,22 +145,22 @@ SmartBufferTest::passByRef(outpost::utils::SmartBufferPointer& p)
 }
 
 void
-SmartBufferTest::passByValue(outpost::utils::SmartBufferPointer p)
+SharedBufferTest::passByValue(outpost::utils::SharedBufferPointer p)
 {
     EXPECT_EQ(p->getReferenceCount(), 4U);
 
     {
-        outpost::utils::SmartBufferPointer p_temp = p;
+        outpost::utils::SharedBufferPointer p_temp = p;
         EXPECT_EQ(p->getReferenceCount(), 5U);
     }
 
     EXPECT_EQ(p->getReferenceCount(), 4U);
 }
 
-TEST_F(SmartBufferTest, deallocateBuffer)
+TEST_F(SharedBufferTest, deallocateBuffer)
 {
     {
-        outpost::utils::SmartBufferPointer p1;
+        outpost::utils::SharedBufferPointer p1;
         EXPECT_TRUE(mPool.allocate(p1));
         EXPECT_TRUE(p1.isValid());
         EXPECT_EQ(mPool.numberOfFreeElements(), poolSize - 1);
@@ -169,28 +169,28 @@ TEST_F(SmartBufferTest, deallocateBuffer)
     EXPECT_EQ(mPool.numberOfFreeElements(), poolSize);
 }
 
-TEST_F(SmartBufferTest, allocateFullPool)
+TEST_F(SharedBufferTest, allocateFullPool)
 {
-    outpost::utils::SmartBufferPointer p[poolSize];
+    outpost::utils::SharedBufferPointer p[poolSize];
     for (size_t i = 0; i < poolSize; i++)
     {
         EXPECT_TRUE(mPool.allocate(p[i]));
         EXPECT_TRUE(p[i].isValid());
     }
 
-    outpost::utils::SmartBufferPointer p_false;
+    outpost::utils::SharedBufferPointer p_false;
     EXPECT_FALSE(mPool.allocate(p_false));
     EXPECT_FALSE(p_false.isValid());
 }
 
-TEST_F(SmartBufferTest, queueBuffer)
+TEST_F(SharedBufferTest, queueBuffer)
 {
-    unittest::utils::SmartBufferQueue<2> q;
+    unittest::utils::SharedBufferQueue<2> q;
     EXPECT_TRUE(q.isEmpty());
     EXPECT_FALSE(q.isFull());
 
     {
-        outpost::utils::SmartBufferPointer p1;
+        outpost::utils::SharedBufferPointer p1;
         ASSERT_TRUE(mPool.allocate(p1));
         EXPECT_TRUE(p1.isValid());
         for (size_t i = 0; i < objectSize; i++)
@@ -205,7 +205,7 @@ TEST_F(SmartBufferTest, queueBuffer)
 
     EXPECT_EQ(mPool.numberOfFreeElements(), poolSize - 1);
     {
-        outpost::utils::SmartBufferPointer p1;
+        outpost::utils::SharedBufferPointer p1;
         ASSERT_TRUE(mPool.allocate(p1));
         EXPECT_TRUE(p1.isValid());
 
@@ -223,7 +223,7 @@ TEST_F(SmartBufferTest, queueBuffer)
     EXPECT_EQ(mPool.numberOfFreeElements(), poolSize - 2);
 
     {
-        outpost::utils::SmartBufferPointer p2;
+        outpost::utils::SharedBufferPointer p2;
         EXPECT_TRUE(q.receive(p2, outpost::time::Duration::zero()));
         EXPECT_TRUE(p2.isValid());
         for (size_t i = 0; i < objectSize; i++)
@@ -238,7 +238,7 @@ TEST_F(SmartBufferTest, queueBuffer)
     EXPECT_EQ(mPool.numberOfFreeElements(), poolSize - 1);
 
     {
-        outpost::utils::SmartBufferPointer p2;
+        outpost::utils::SharedBufferPointer p2;
 
         EXPECT_TRUE(q.receive(p2, outpost::time::Duration::zero()));
 
@@ -255,15 +255,15 @@ TEST_F(SmartBufferTest, queueBuffer)
     EXPECT_EQ(mPool.numberOfFreeElements(), poolSize);
 }
 
-TEST_F(SmartBufferTest, allocateChildBuffer)
+TEST_F(SharedBufferTest, allocateChildBuffer)
 {
     {
-        outpost::utils::ChildSmartPointer child;
+        outpost::utils::SharedChildPointer child;
 
         EXPECT_EQ(mPool.numberOfFreeElements(), poolSize);
 
         {
-            outpost::utils::SmartBufferPointer mPointer;
+            outpost::utils::SharedBufferPointer mPointer;
             EXPECT_TRUE(mPool.allocate(mPointer));
             EXPECT_TRUE(mPointer.isValid());
             for (size_t i = 0; i < objectSize; i++)
@@ -280,9 +280,9 @@ TEST_F(SmartBufferTest, allocateChildBuffer)
         EXPECT_EQ(mPool.numberOfFreeElements(), poolSize - 1);
 
         {
-            outpost::utils::SmartBufferPointer mPointer = child.getParent();
+            outpost::utils::SharedBufferPointer mPointer = child.getParent();
 
-            outpost::utils::ChildSmartPointer newChild;
+            outpost::utils::SharedChildPointer newChild;
 
             EXPECT_TRUE(mPointer.getChild(newChild, 3, 2, 3));
             EXPECT_TRUE(newChild.isValid());
@@ -302,16 +302,16 @@ TEST_F(SmartBufferTest, allocateChildBuffer)
     EXPECT_EQ(mPool.numberOfFreeElements(), poolSize);
 }
 
-TEST_F(SmartBufferTest, allocateChildChildBuffer)
+TEST_F(SharedBufferTest, allocateChildChildBuffer)
 {
     {
-        outpost::utils::ChildSmartPointer child;
-        outpost::utils::ChildSmartPointer childChild;
+        outpost::utils::SharedChildPointer child;
+        outpost::utils::SharedChildPointer childChild;
 
         EXPECT_EQ(mPool.numberOfFreeElements(), poolSize);
 
         {
-            outpost::utils::SmartBufferPointer mPointer;
+            outpost::utils::SharedBufferPointer mPointer;
             EXPECT_TRUE(mPool.allocate(mPointer));
             EXPECT_TRUE(mPointer.isValid());
             for (size_t i = 0; i < objectSize; i++)
@@ -328,7 +328,7 @@ TEST_F(SmartBufferTest, allocateChildChildBuffer)
             EXPECT_TRUE(childChild.getParent() == child);
             EXPECT_EQ(mPool.numberOfFreeElements(), poolSize - 1);
 
-            outpost::utils::ChildSmartPointer childChildChild;
+            outpost::utils::SharedChildPointer childChildChild;
             EXPECT_TRUE(childChild.getChild(childChildChild, 3, 0, 5));
             EXPECT_TRUE(childChildChild.getOrigin() == mPointer);
             EXPECT_TRUE(childChildChild == mPointer);
@@ -337,9 +337,9 @@ TEST_F(SmartBufferTest, allocateChildChildBuffer)
         EXPECT_EQ(mPool.numberOfFreeElements(), poolSize - 1);
 
         {
-            outpost::utils::SmartBufferPointer mPointer = child.getParent();
+            outpost::utils::SharedBufferPointer mPointer = child.getParent();
 
-            outpost::utils::ChildSmartPointer newChild;
+            outpost::utils::SharedChildPointer newChild;
 
             EXPECT_TRUE(mPointer.getChild(newChild, 3, 2, 3));
             EXPECT_TRUE(newChild.isValid());

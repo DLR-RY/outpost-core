@@ -15,28 +15,27 @@
 #ifndef OUTPOST_UTILS_SMART_BUFFER_QUEUE_H_
 #define OUTPOST_UTILS_SMART_BUFFER_QUEUE_H_
 
-#include "smart_buffer.h"
-
 #include <outpost/rtos/queue.h>
+#include "shared_buffer.h"
 
 namespace outpost
 {
 namespace utils
 {
-class SmartBufferQueueBase : public outpost::rtos::Queue<size_t>
+class SharedBufferQueueBase : public outpost::rtos::Queue<size_t>
 {
 public:
-    inline SmartBufferQueueBase(size_t N) : outpost::rtos::Queue<size_t>(N)
+    inline SharedBufferQueueBase(size_t N) : outpost::rtos::Queue<size_t>(N)
     {
     }
 
-    virtual ~SmartBufferQueueBase() = default;
+    virtual ~SharedBufferQueueBase() = default;
 
     virtual bool
-    send(SmartBufferPointer& data) = 0;
+    send(SharedBufferPointer& data) = 0;
 
     virtual bool
-    receive(SmartBufferPointer& data,
+    receive(SharedBufferPointer& data,
             outpost::time::Duration timeout = outpost::time::Duration::infinity()) = 0;
 
     virtual uint16_t
@@ -44,10 +43,10 @@ public:
 };
 
 template <size_t N>
-class SmartBufferQueue : public SmartBufferQueueBase
+class SharedBufferQueue : public SharedBufferQueueBase
 {
 public:
-    SmartBufferQueue() : SmartBufferQueueBase(N), mItemsInQueue(0), mLastIndex(0)
+    SharedBufferQueue() : SharedBufferQueueBase(N), mItemsInQueue(0), mLastIndex(0)
     {
         for (size_t i = 0; i < N; i++)
         {
@@ -83,7 +82,7 @@ public:
     }
 
     virtual bool
-    send(SmartBufferPointer& data) override
+    send(SharedBufferPointer& data) override
     {
         outpost::rtos::MutexGuard lock(mMutex);
         bool res = false;
@@ -115,7 +114,7 @@ public:
     }
 
     virtual bool
-    receive(SmartBufferPointer& data,
+    receive(SharedBufferPointer& data,
             outpost::time::Duration timeout = outpost::time::Duration::infinity()) override
     {
         bool res = false;
@@ -123,7 +122,7 @@ public:
         if (outpost::rtos::Queue<size_t>::receive(index, timeout))
         {
             outpost::rtos::MutexGuard lock(mMutex);
-            data = SmartBufferPointer(mPointers[index]);
+            data = SharedBufferPointer(mPointers[index]);
             mPointers[index] = mEmpty;
             mIsUsed[index] = false;
             mItemsInQueue--;
@@ -140,7 +139,7 @@ public:
     }
 
 private:
-    SmartBufferPointer mEmpty;
+    SharedBufferPointer mEmpty;
 
     outpost::rtos::Mutex mMutex;
 
@@ -148,7 +147,7 @@ private:
 
     size_t mLastIndex;
 
-    SmartBufferPointer mPointers[N];
+    SharedBufferPointer mPointers[N];
     bool mIsUsed[N];
 };
 

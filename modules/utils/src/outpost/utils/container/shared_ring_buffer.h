@@ -16,33 +16,32 @@
  * \file
  * \author  Jan-Gerd Mess
  *
- * \brief FIFO ring buffer data structure for SmartBuffers.
+ * \brief FIFO ring buffer data structure for SharedBuffers.
  */
 
 #ifndef MU_COMMON_UTILS_SMART_RING_BUFFER_H
 #define MU_COMMON_UTILS_SMART_RING_BUFFER_H
 
 #include <outpost/utils/container/slice.h>
-#include <outpost/utils/container/smart_buffer.h>
-
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include "shared_buffer.h"
 
 namespace outpost
 {
 namespace utils
 {
 /**
- * Ring buffer for SmartBuffers.
+ * Ring buffer for SharedBuffers.
  *
  *
  * \author  Jan-Gerd Mess
  */
-class SmartRingBuffer
+class SharedRingBuffer
 {
 public:
-    inline SmartRingBuffer(outpost::Slice<SmartBufferPointer> buffer,
+    inline SharedRingBuffer(outpost::Slice<SharedBufferPointer> buffer,
                            outpost::Slice<uint8_t> flags) :
         mBuffer(buffer),
         mFlags(flags),
@@ -51,12 +50,12 @@ public:
     {
     }
 
-    virtual ~SmartRingBuffer() = default;
+    virtual ~SharedRingBuffer() = default;
 
-    SmartRingBuffer(const SmartRingBuffer& o) = delete;
+    SharedRingBuffer(const SharedRingBuffer& o) = delete;
 
-    SmartRingBuffer&
-    operator=(const SmartRingBuffer& o) = delete;
+    SharedRingBuffer&
+    operator=(const SharedRingBuffer& o) = delete;
 
     /**l
      * Get the number of currently inactive count
@@ -90,7 +89,7 @@ public:
      * \retval true  on success (element added)
      */
     inline bool
-    append(const SmartBufferPointer& p, uint8_t flags = 0)
+    append(const SharedBufferPointer& p, uint8_t flags = 0)
     {
         bool appended = false;
         if ((mNumberOfElements < mBuffer.getNumberOfElements()))
@@ -124,13 +123,13 @@ public:
      * Read element from the buffer.
      *
      */
-    inline const SmartBufferPointer&
+    inline const SharedBufferPointer&
     read() const
     {
         return mBuffer[mReadIndex];
     }
 
-    inline SmartBufferPointer&
+    inline SharedBufferPointer&
     read()
     {
         return mBuffer[mReadIndex];
@@ -161,7 +160,7 @@ public:
 
         if (mNumberOfElements > 0)
         {
-            mBuffer[mReadIndex] = SmartBufferPointer();
+            mBuffer[mReadIndex] = SharedBufferPointer();
             mReadIndex = increment(mReadIndex, 1);
             --mNumberOfElements;
             elementRemoved = true;
@@ -178,7 +177,7 @@ public:
      *
      * \param[in] index of the element in question
      */
-    inline const SmartBufferPointer&
+    inline const SharedBufferPointer&
     peek(size_t index) const
     {
         if (index <= mBuffer.getNumberOfElements())
@@ -207,7 +206,7 @@ public:
         mNumberOfElements = 0;
         for (size_t i = 0; i < mBuffer.getNumberOfElements(); i++)
         {
-            mBuffer[i] = SmartBufferPointer();
+            mBuffer[i] = SharedBufferPointer();
         }
     }
 
@@ -220,9 +219,9 @@ private:
     }
 
     // Dummy item. Used when the buffer is empty.
-    SmartBufferPointer mEmpty;
+    SharedBufferPointer mEmpty;
 
-    const outpost::Slice<SmartBufferPointer> mBuffer;
+    const outpost::Slice<SharedBufferPointer> mBuffer;
     const outpost::Slice<uint8_t> mFlags;
 
     size_t mReadIndex;
@@ -230,23 +229,23 @@ private:
 };
 
 /**
- * Storage provider for SmartRingBuffer.
+ * Storage provider for SharedRingBuffer.
  *
  * \author  Jan-Gerd Mess
  */
 template <size_t totalNumberOfElements>
-class SmartRingBufferStorage : public SmartRingBuffer
+class SharedRingBufferStorage : public SharedRingBuffer
 {
 public:
-    inline SmartRingBufferStorage() :
-        SmartRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags))
+    inline SharedRingBufferStorage() :
+        SharedRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags))
     {
     }
 
-    virtual ~SmartRingBufferStorage() = default;
+    virtual ~SharedRingBufferStorage() = default;
 
 private:
-    SmartBufferPointer mBufferStorage[totalNumberOfElements];
+    SharedBufferPointer mBufferStorage[totalNumberOfElements];
     uint8_t mFlags[totalNumberOfElements];
 };
 

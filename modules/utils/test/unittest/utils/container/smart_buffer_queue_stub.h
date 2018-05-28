@@ -18,10 +18,10 @@ namespace unittest
 namespace utils
 {
 template <size_t N>
-class SmartBufferQueue
+class SharedBufferQueue
 {
 public:
-    SmartBufferQueue()
+    SharedBufferQueue()
     {
         for (size_t i = 0; i < N; i++)
         {
@@ -52,7 +52,7 @@ public:
     }
 
     bool
-    send(const outpost::utils::SmartBufferPointer& data)
+    send(const outpost::utils::SharedBufferPointer& data)
     {
         bool res = false;
         for (size_t i = 0; i < N; i++)
@@ -70,7 +70,7 @@ public:
     }
 
     bool
-    receive(outpost::utils::SmartBufferPointer& data, outpost::time::Duration)
+    receive(outpost::utils::SharedBufferPointer& data, outpost::time::Duration)
     {
         bool res = false;
         if (mQueue.size() > 0)
@@ -92,11 +92,11 @@ public:
     }
 
 private:
-    std::queue<outpost::utils::SmartBufferPointer> mQueue;
+    std::queue<outpost::utils::SharedBufferPointer> mQueue;
 
-    outpost::utils::SmartBufferPointer _empty;
+    outpost::utils::SharedBufferPointer _empty;
 
-    outpost::utils::SmartBufferPointer mPointers[N];
+    outpost::utils::SharedBufferPointer mPointers[N];
     bool isUsed[N];
 };
 

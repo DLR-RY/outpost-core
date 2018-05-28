@@ -15,14 +15,14 @@
 #ifndef OUTPOST_UTILS_SMART_BUFFER_IMPL_H_
 #define OUTPOST_UTILS_SMART_BUFFER_IMPL_H_
 
-#include "smart_buffer.h"
+#include "shared_buffer.h"
 
 namespace outpost
 {
 namespace utils
 {
 template <size_t N>
-SmartBuffer::SmartBuffer(uint8_t (&array)[N]) :
+SharedBuffer::SharedBuffer(uint8_t (&array)[N]) :
     mReferenceCounter(0),
     mBuffer(array),
     mNumElements(N)
