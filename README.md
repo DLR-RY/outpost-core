@@ -47,6 +47,25 @@ This repository contains the following software modules:
     Lua based testing framework. Allows to run Lua scripts as part of
     the unit tests.
 
+Install dependencies
+-------
+Install Busted for running the unit tests
+
+```
+sudo apt-get install libreadline-dev
+wget http://www.lua.org/ftp/lua-5.2.3.tar.gz 
+tar zxf lua-5.2.3.tar.gz
+cd lua-5.2.3
+make linux
+sudo make linux install
+wget http://luarocks.org/releases/luarocks-2.1.2.tar.gz 
+tar zxf luarocks-2.1.2.tar.gz
+cd luarocks-2.1.2
+./configure
+make build
+sudo make install
+sudo luarocks install busted
+```
 
 License
 -------
