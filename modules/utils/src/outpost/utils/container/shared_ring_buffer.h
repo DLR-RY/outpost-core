@@ -33,7 +33,8 @@ namespace outpost
 namespace utils
 {
 /**
- * Ring buffer for SharedBuffers.
+ * \ingroup SharedBuffer
+ * \brief Ring buffer data structure for SharedBuffers.
  *
  *
  * \author  Jan-Gerd Mess
@@ -41,6 +42,10 @@ namespace utils
 class SharedRingBuffer
 {
 public:
+	/**
+	 * \brief Constructor for a SharedRingBuffer based on a Slice of SharedBufferPointers and a Slice byte array of flags.
+	 * Both have to have the same length.
+	 */
     inline SharedRingBuffer(outpost::Slice<SharedBufferPointer> buffer,
                            outpost::Slice<uint8_t> flags) :
         mBuffer(buffer),
@@ -50,6 +55,9 @@ public:
     {
     }
 
+    /**
+     * \brief Standard destructor
+     */
     virtual ~SharedRingBuffer() = default;
 
     SharedRingBuffer(const SharedRingBuffer& o) = delete;
@@ -57,10 +65,10 @@ public:
     SharedRingBuffer&
     operator=(const SharedRingBuffer& o) = delete;
 
-    /**l
-     * Get the number of currently inactive count
+    /**
+     * \brief Getter function for the number of free slots in the SharedRingBuffer
      *
-     * \return number of free count in the buffer
+     * \return Returns the number of unoccupied slots in the SharedRingBuffer
      */
     inline size_t
     getFreeSlots() const
@@ -70,9 +78,9 @@ public:
     }
 
     /**
-     * Get the number of currently active count.
+     * \brief Getter function for the number of currently occupied slots in the SharedRingBuffer.
      *
-     * \return number of taken count in the buffer
+     * \return Returns the number of elements currently stored in the SharedRingBuffer
      */
     inline size_t
     getUsedSlots() const
@@ -81,12 +89,12 @@ public:
     }
 
     /**
-     * Write element to the buffer.
+     * \brief Stores an element to the first unoccupied index it finds and updates the writeIndex.
      *
-     * \param[in] e new element of type T
+     * \param p SharedBufferPointer to be stored
+     * \param flags Additional flags for the SharedBufferPointer that may be set.
      *
-     * \retval false on overflow (element not added; buffer full)
-     * \retval true  on success (element added)
+     * \return Returns true if the element could be stored in the SharedRingBuffer, otherwise false.
      */
     inline bool
     append(const SharedBufferPointer& p, uint8_t flags = 0)
@@ -108,10 +116,9 @@ public:
     }
 
     /**
-     * Check if the buffer is empty.
+     * \brief Checks if the buffer is empty.
      *
-     * \retval true  if the buffer is empty.
-     * \retval false if the buffer contains at least one element.
+     * \return Returns true  if the buffer is empty, otherwise false.
      */
     inline bool
     isEmpty() const
@@ -120,8 +127,8 @@ public:
     }
 
     /**
-     * Read element from the buffer.
-     *
+     * \brief Reads one element from the SharedRingBuffer
+     * \return Returns the element at the current read pointer. The user has to perform all validity checks.
      */
     inline const SharedBufferPointer&
     read() const
@@ -129,18 +136,30 @@ public:
         return mBuffer[mReadIndex];
     }
 
+    /**
+     * \brief Reads one element from the SharedRingBuffer
+     * \return Returns the element at the current read pointer. The user has to perform all validity checks.
+     */
     inline SharedBufferPointer&
     read()
     {
         return mBuffer[mReadIndex];
     }
 
+    /**
+     * \brief Reads the current element's flags from the SharedRingBuffer
+     * \return Returns the byte of flags at the current read pointer.
+     */
     inline uint8_t
     readFlags() const
     {
         return mFlags[mReadIndex];
     }
 
+    /**
+     * \brief Sets the current element's flags on the SharedRingBuffer
+     * \param flags Flags to be set at the current read pointer.
+     */
     inline void
     setFlags(uint8_t flags)
     {
@@ -148,10 +167,9 @@ public:
     }
 
     /**
+     * \brief Deletes the element at the current read pointer from the SharedRingBuffer.
      *
-     *
-     * \retval false on underflow (no element read; buffer empty)
-     * \retval true  on success
+     * \return Returns true if the element was removed, false if the buffer is empty and no element was removed.
      */
     inline bool
     pop()
@@ -170,12 +188,15 @@ public:
     }
 
     /**
-     * Provides the means to access a specific element.
+     * \brief Provides the means to access one specific element.
+     *
+     * Indexing starts that the current read pointer.
      *
      * - Head: index = 0
      * - Tail: index = getUsedcount()
      *
-     * \param[in] index of the element in question
+     * \param index Index of the element to be read
+     * \return SharedBufferPointer found at the given index (can be invalid)
      */
     inline const SharedBufferPointer&
     peek(size_t index) const
@@ -189,6 +210,17 @@ public:
         return mEmpty;
     }
 
+    /**
+     * \brief Provides the means to access one specific element's flags.
+     *
+     * Indexing starts that the current read pointer.
+     *
+     * - Head: index = 0
+     * - Tail: index = getUsedcount()
+     *
+     * \param index Index of the element whose flags shall be read
+     * \return Flags found at the given index (can be invalid)
+     */
     inline uint8_t
     peekFlags(size_t index) const
     {
@@ -197,7 +229,7 @@ public:
     }
 
     /**
-     * Quick way of resetting the FIFO.
+     * \brief Resets the SharedRingBuffer, deleting all references.
      */
     inline void
     reset()
@@ -229,19 +261,27 @@ private:
 };
 
 /**
- * Storage provider for SharedRingBuffer.
+ * \ingroup SharedBuffer
+ * Storage provider for the SharedRingBuffer.
  *
- * \author  Jan-Gerd Mess
+ * \tparam totalNumberOfElements Maximum number of elements to be stored in the SharedRingBuffer
+ *
  */
 template <size_t totalNumberOfElements>
 class SharedRingBufferStorage : public SharedRingBuffer
 {
 public:
+	/**
+	 * \brief Standard constructor
+	 */
     inline SharedRingBufferStorage() :
         SharedRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags))
     {
     }
 
+	/**
+	 * \brief Standard detructor
+	 */
     virtual ~SharedRingBufferStorage() = default;
 
 private:

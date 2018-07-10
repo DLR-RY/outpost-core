@@ -22,30 +22,84 @@ namespace outpost
 {
 namespace utils
 {
+/**
+ * \ingroup SharedBuffer
+ * \brief Base class of the SharedBufferQueue for passing by reference.
+ *
+ * The standard RTOS/POSIX queues are not capable of handling SharedBufferPointers,
+ * since they use pointers or standard constructors instead of references.
+ * Hence, SharedBufferQueueBase inherits from outpost::rtos::Queue and adds a wrapper that keeps the references.
+ */
 class SharedBufferQueueBase : public outpost::rtos::Queue<size_t>
 {
 public:
-    inline SharedBufferQueueBase(size_t N) : outpost::rtos::Queue<size_t>(N)
-    {
-    }
-
+    /**
+     * Default destructor.
+     */
     virtual ~SharedBufferQueueBase() = default;
 
+    /**
+     * \brief Send a SharedBufferPointer to the queue.
+     * \param data SharedBufferPointer to be sent.
+     * \return Returns true if data could be sent, false otherwise.
+     */
     virtual bool
     send(SharedBufferPointer& data) = 0;
 
+    /**
+     *	\brief Receive a SharedBufferPointer from the queue.
+     *
+     *	Can be either blocking (timeout > 0) or non-blocking (timeout = 0).
+     *	\param data Reference for the SharedBufferPointer to be received.
+     *	\param timeout Duration for which the caller is willing to wait for an incoming SharedBufferPointer
+     *	\return Returns true if a SharedBufferPointer was received, false otherwise (e.g. a timeout occured)
+     */
     virtual bool
     receive(SharedBufferPointer& data,
             outpost::time::Duration timeout = outpost::time::Duration::infinity()) = 0;
 
+    /**
+     *	\brief Getter function for the number of items currently stored in the queue.
+     *	\return Returns the number of items in the queue that are ready for receiving.
+     */
     virtual uint16_t
     getNumberOfItems() = 0;
+
+    /**
+     *	\brief Checks whether the queue is currently empty.
+     *	\return Returns true if there are no elements in the queue waiting to be received, false otherwise.
+     */
+    virtual bool
+    isEmpty() = 0;
+
+    /**
+     *	\brief Checks whether there is a free slot in the queue.
+     *	\return Returns true if data can be sent to the queue, false otherwise.
+     */
+    virtual bool
+    isFull() = 0;
+
+protected:
+	/**
+	 * \brief Constructor for a SharedBufferQueueBase. May only be called by its derivatives (i.e. SharedBufferQueue)
+	 * \param N Maximum number of elements in the queue
+	 */
+    inline SharedBufferQueueBase(size_t N) : outpost::rtos::Queue<size_t>(N)
+    {
+    }
 };
 
+/**
+ * \ingroup SharedBuffer
+ * \brief Implementation of a outpost::rtos::Queue that stores all additional information needed for passing SharedBufferPointer instances.
+ */
 template <size_t N>
 class SharedBufferQueue : public SharedBufferQueueBase
 {
 public:
+	/**
+	 *	\brief Standard constructor.
+	 */
     SharedBufferQueue() : SharedBufferQueueBase(N), mItemsInQueue(0), mLastIndex(0)
     {
         for (size_t i = 0; i < N; i++)
@@ -54,6 +108,10 @@ public:
         }
     }
 
+    /**
+     *	\brief Checks whether the queue is currently empty.
+     *	\return Returns true if there are no elements in the queue waiting to be received, false otherwise.
+     */
     bool
     isEmpty()
     {
@@ -68,6 +126,10 @@ public:
         return true;
     }
 
+    /**
+     *	\brief Checks whether there is a free slot in the queue.
+     *	\return Returns true if data can be sent to the queue, false otherwise.
+     */
     bool
     isFull()
     {
@@ -81,6 +143,12 @@ public:
         return mItemsInQueue == N;
     }
 
+    /**
+     * \brief Send a SharedBufferPointer to the queue.
+     * \see SharedBufferQueueBase::send(SharedBufferPointer&)
+     * \param data SharedBufferPointer to be sent.
+     * \return Returns true if data could be sent, false otherwise.
+     */
     virtual bool
     send(SharedBufferPointer& data) override
     {
@@ -113,6 +181,15 @@ public:
         return res;
     }
 
+    /**
+     *	\brief Receive a SharedBufferPointer from the queue.
+     *	\see SharedBufferQueueBase::receive(SharedBufferPointer&, outpost::time::Duration)
+     *
+     *	Can be either blocking (timeout > 0) or non-blocking (timeout = 0).
+     *	\param data Reference for the SharedBufferPointer to be received.
+     *	\param timeout Duration for which the caller is willing to wait for an incoming SharedBufferPointer
+     *	\return Returns true if a SharedBufferPointer was received, false otherwise (e.g. a timeout occured)
+     */
     virtual bool
     receive(SharedBufferPointer& data,
             outpost::time::Duration timeout = outpost::time::Duration::infinity()) override
@@ -131,6 +208,10 @@ public:
         return res;
     }
 
+    /**
+     *	\brief Getter function for the number of items currently stored in the queue.
+     *	\return Returns the number of items in the queue that are ready for receiving.
+     */
     virtual uint16_t
     getNumberOfItems() override
     {
