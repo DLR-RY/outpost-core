@@ -221,3 +221,17 @@ TEST(SliceTest, shouldCreateSubSliceFromTwoIndicies)
     EXPECT_EQ(2U, slice1[0]);
     EXPECT_EQ(3U, slice1[1]);
 }
+
+TEST(SliceTest, shouldBeUseableInConstexprContextForCArray)
+{
+    uint8_t array[4] = {1, 2, 3, 4};
+
+    static_assert(outpost::asSlice(array).getNumberOfElements() == 4, "Must have length 4.");
+}
+
+TEST(SliceTest, shouldBeUseableInConstexprContextForStdArray)
+{
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
+
+    static_assert(outpost::asSlice(array).getNumberOfElements() == 4, "Must have length 4.");
+}

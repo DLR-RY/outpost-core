@@ -53,20 +53,39 @@ public:
     friend Slice<typename std::remove_const<ElementType>::type>;
     friend Slice<const ElementType>;
 
+    template <class T, size_t N>
+    friend constexpr Slice<T> asSlice(T (&arr)[N]);
+
+    template <class T, size_t N>
+    friend constexpr Slice<T>
+    asSlice(std::array<T, N>& arr);
+
+    /**
+     * Create from a fixed size gsl::span.
+     */
+    template <size_t N>
+    constexpr inline Slice(gsl::span<ElementType, N> span) :
+        mData(span.data()),
+        mNumberOfElements(N)
+    {
+    }
+
     /**
      * Create from a gsl::span.
      *
      * This allows creation from e.g. STL standard containers and C style
      * arrays.
      */
-    inline Slice(gsl::span<ElementType> span) : mData(span.data()), mNumberOfElements(span.size())
+    constexpr inline Slice(gsl::span<ElementType> span) :
+        mData(span.data()),
+        mNumberOfElements(span.size())
     {
     }
 
     /**
      * Create from an iterator pair.
      */
-    inline Slice(Iterator firstElement, Iterator lastElement) :
+    constexpr inline Slice(Iterator firstElement, Iterator lastElement) :
         mData(firstElement),
         mNumberOfElements(std::distance(firstElement, lastElement))
     {
@@ -85,7 +104,7 @@ public:
     /**
      * Generate an empty array.
      */
-    static inline Slice
+    static constexpr inline Slice
     empty()
     {
         return Slice(nullptr, IndexType(0));
@@ -111,7 +130,7 @@ public:
      * \param numberOfElements
      *      Number of elements in the array.
      */
-    static inline Slice
+    static constexpr inline Slice
     unsafe(ElementType* array, LengthType numberOfElements)
     {
         return Slice(array, numberOfElements);
@@ -120,7 +139,7 @@ public:
     /**
      * Get number of elements in the array.
      */
-    inline LengthType
+    inline constexpr LengthType
     getNumberOfElements() const
     {
         return mNumberOfElements;
@@ -141,7 +160,7 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline ElementType& operator[](IndexType index) const
+    inline constexpr ElementType& operator[](IndexType index) const
     {
         return mData[index];
     }
@@ -242,7 +261,7 @@ public:
     }
 
 private:
-    inline Slice(ElementType* array, size_t numberOfElements) :
+    inline constexpr Slice(ElementType* array, size_t numberOfElements) :
         mData(array),
         mNumberOfElements(numberOfElements)
     {
@@ -265,7 +284,7 @@ private:
  *      first() and last().
  */
 template <class ElementType>
-Slice<ElementType>
+constexpr Slice<ElementType>
 asSliceUnsafe(ElementType* ptr, typename Slice<ElementType>::IndexType count)
 {
     return Slice<ElementType>::unsafe(ptr, count);
@@ -275,7 +294,7 @@ asSliceUnsafe(ElementType* ptr, typename Slice<ElementType>::IndexType count)
  * Create a slice from an iterator pair.
  */
 template <class ElementType>
-Slice<ElementType>
+constexpr Slice<ElementType>
 asSlice(ElementType* firstElement, ElementType* lastElement)
 {
     return Slice<ElementType>(firstElement, lastElement);
@@ -285,9 +304,19 @@ asSlice(ElementType* firstElement, ElementType* lastElement)
  * Create slice from a C-style array.
  */
 template <class ElementType, size_t N>
-Slice<ElementType> asSlice(ElementType (&arr)[N])
+constexpr Slice<ElementType> asSlice(ElementType (&arr)[N])
 {
-    return Slice<ElementType>(arr);
+    return Slice<ElementType>(arr, N);
+}
+
+/**
+ * Create slice from a std::array.
+ */
+template <class ElementType, size_t N>
+constexpr Slice<ElementType>
+asSlice(std::array<ElementType, N>& arr)
+{
+    return Slice<ElementType>(&std::get<0>(arr), N);
 }
 
 /**
