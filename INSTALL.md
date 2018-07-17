@@ -41,7 +41,7 @@ Requires `lcov` >= 1.10.
 ```
 sudo apt-get install libreadline-dev
 
-wget http://www.lua.org/ftp/lua-5.2.3.tar.gz 
+wget http://www.lua.org/ftp/lua-5.2.3.tar.gz
 tar zxf lua-5.2.3.tar.gz
 cd lua-5.2.3
 make linux
@@ -53,7 +53,7 @@ sudo make linux install
 Busted is used for running the Lua based unit tests:
 
 ```
-wget http://luarocks.org/releases/luarocks-2.1.2.tar.gz 
+wget http://luarocks.org/releases/luarocks-2.1.2.tar.gz
 tar zxf luarocks-2.1.2.tar.gz
 cd luarocks-2.1.2
 ./configure
@@ -73,6 +73,7 @@ For Debian 9 (stretch) (for other see http://apt.llvm.org/)
 ```
 sudo apt-get install software-properties-common
 sudo apt-add-repository "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-6.0 main"
-sudo apt-get udpate
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+sudo apt-get update
 sudo apt-get install clang-format-6.0
 ```
