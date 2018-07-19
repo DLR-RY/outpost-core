@@ -16,6 +16,7 @@
 
 #include <outpost/rtos/failure_handler.h>
 #include <outpost/rtos/mutex_guard.h>
+#include <outpost/rtos/thread.h>
 
 #include "rtems/interval.h"
 
@@ -64,7 +65,9 @@ outpost::rtos::Timer::isRunning()
 void
 outpost::rtos::Timer::startTimerDaemonThread(uint8_t priority, size_t stack)
 {
-    rtems_status_code result = rtems_timer_initiate_server(priority, stack, RTEMS_DEFAULT_ATTRIBUTES);
+    rtems_status_code result = rtems_timer_initiate_server(outpost::rtos::Thread::toRtemsPriority(priority),
+                                                           stack,
+                                                           RTEMS_DEFAULT_ATTRIBUTES);
     if (result != RTEMS_SUCCESSFUL)
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::timer));
