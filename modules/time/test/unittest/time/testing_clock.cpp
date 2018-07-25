@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2014-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Fabian Greif (DLR RY-AVS)
+ * - 2014-2018, Fabian Greif (DLR RY-AVS)
  */
 
 #include "testing_clock.h"
@@ -16,10 +16,6 @@
 using namespace unittest::time;
 
 TestingClock::TestingClock() : currentTime(outpost::time::SpacecraftElapsedTime::startOfEpoch())
-{
-}
-
-TestingClock::~TestingClock()
 {
 }
 
@@ -33,4 +29,10 @@ void
 TestingClock::setTime(outpost::time::SpacecraftElapsedTime timePoint)
 {
     currentTime = timePoint;
+}
+
+void
+TestingClock::incrementBy(outpost::time::Duration time)
+{
+    currentTime += time;
 }

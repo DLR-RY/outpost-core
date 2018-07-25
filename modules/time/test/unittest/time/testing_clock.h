@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2014-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Fabian Greif (DLR RY-AVS)
+ * - 2014-2018, Fabian Greif (DLR RY-AVS)
  */
 
 #ifndef UNITTEST_TIME_TESTING_CLOCK_H
@@ -30,12 +30,24 @@ class TestingClock : public outpost::time::Clock
 public:
     TestingClock();
 
-    virtual ~TestingClock();
+    virtual ~TestingClock() = default;
 
     virtual outpost::time::SpacecraftElapsedTime
     now() const;
 
-    void setTime(outpost::time::SpacecraftElapsedTime);
+    /**
+     * Set the current time to an absolute value.
+     */
+    void
+    setTime(outpost::time::SpacecraftElapsedTime time);
+
+    /**
+     * Increment the current time by the given duration.
+     *
+     * The duration can be negative.
+     */
+    void
+    incrementBy(outpost::time::Duration time);
 
 private:
     outpost::time::SpacecraftElapsedTime currentTime;

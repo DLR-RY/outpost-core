@@ -58,7 +58,7 @@ TEST_P(QuotaTest, shouldAllowAccessAgainAfterTimeLimit)
 {
     accessTimes(quotaLimit);
 
-    mClock.setTime(mClock.now() + defaultInterval);
+    mClock.incrementBy(defaultInterval);
 
     EXPECT_TRUE(GetParam()->access(mClock.now()));
 }
