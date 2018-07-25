@@ -14,11 +14,10 @@
 #ifndef OUTPOST_RTOS_POSIX_QUEUE_IMPL_H
 #define OUTPOST_RTOS_POSIX_QUEUE_IMPL_H
 
+#include "internal/time.h"
 #include "queue.h"
 
 #include <outpost/rtos/failure_handler.h>
-
-#include "internal/time.h"
 
 template <typename T>
 outpost::rtos::Queue<T>::Queue(size_t numberOfItems) :
@@ -101,7 +100,7 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
     return itemRetrieved;
 }
 
-template<typename T>
+template <typename T>
 size_t
 outpost::rtos::Queue<T>::increment(size_t index)
 {

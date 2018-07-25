@@ -14,10 +14,11 @@
 
 #include "mutex.h"
 
-#include <time.h>
+#include "internal/time.h"
+
 #include <outpost/rtos/failure_handler.h>
 
-#include "internal/time.h"
+#include <time.h>
 
 using namespace outpost::rtos;
 

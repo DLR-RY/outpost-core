@@ -15,6 +15,7 @@
 #define OUTPOST_FREERTOS_THREAD_PRIORITIES_H
 
 #include <stdint.h>
+
 #include <cstddef>
 
 // FreeRTOS supports priorities between 0 and (configMAX_PRIORITIES - 1).
@@ -28,10 +29,12 @@ toFreeRtosPriority(uint8_t priority, size_t numPriorities)
 
     uint8_t out = (priority / stepWidth);
 
-    if (out > (numPriorities - 1)) {
+    if (out > (numPriorities - 1))
+    {
         return (numPriorities - 1);
     }
-    else {
+    else
+    {
         return out;
     }
 }

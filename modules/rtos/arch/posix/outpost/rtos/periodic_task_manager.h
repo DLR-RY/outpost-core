@@ -14,18 +14,16 @@
 #ifndef OUTPOST_RTOS_POSIX_PERIODIC_TASK_MANAGER_H
 #define OUTPOST_RTOS_POSIX_PERIODIC_TASK_MANAGER_H
 
-#include <time.h>
-
+#include <outpost/rtos/failure_handler.h>
+#include <outpost/rtos/mutex.h>
 #include <outpost/time/duration.h>
 
-#include <outpost/rtos/mutex.h>
-#include <outpost/rtos/failure_handler.h>
+#include <time.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Helper class for Rate-Monotonic Scheduling (RMS).
  *
@@ -115,7 +113,7 @@ private:
     struct timespec nextWakeTime;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

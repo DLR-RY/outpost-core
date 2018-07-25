@@ -15,13 +15,13 @@
 #define OUTPOST_RTOS_RTEMS_SEMAPHORE_HPP
 
 #include <rtems.h>
+
 #include <outpost/time/duration.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Counting semaphores.
  *
@@ -192,7 +192,7 @@ private:
     rtems_id mId;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

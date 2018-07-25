@@ -23,7 +23,6 @@ namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Helper class for Rate-Monotonic Scheduling (RMS).
  *
@@ -129,7 +128,7 @@ private:
     rtems_id mId;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

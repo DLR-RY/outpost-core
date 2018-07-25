@@ -13,13 +13,13 @@
 
 #include "periodic_task_manager.h"
 
+#include "traits.h"
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
 #include <outpost/rtos/mutex.h>
 #include <outpost/rtos/mutex_guard.h>
-
-#include "traits.h"
 
 using namespace outpost::rtos;
 
@@ -42,15 +42,18 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
     Status::Type currentStatus = Status::running;
 
     const portTickType nextPeriodTicks = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
-    if (mTimerRunning) {
-        if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - mLastWakeTime) >
-                static_cast<Traits<portTickType>::SignedType>(mCurrentPeriod)) {
+    if (mTimerRunning)
+    {
+        if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - mLastWakeTime)
+            > static_cast<Traits<portTickType>::SignedType>(mCurrentPeriod))
+        {
             currentStatus = Status::timeout;
         }
 
         vTaskDelayUntil(&mLastWakeTime, mCurrentPeriod);
     }
-    else {
+    else
+    {
         // period is started now, no need to wait
         mLastWakeTime = xTaskGetTickCount();
         mTimerRunning = true;
@@ -65,14 +68,17 @@ PeriodicTaskManager::status()
 {
     MutexGuard lock(mMutex);
 
-    if (!mTimerRunning) {
+    if (!mTimerRunning)
+    {
         return Status::idle;
     }
-    else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - mLastWakeTime) >
-                static_cast<Traits<portTickType>::SignedType>(mCurrentPeriod)) {
+    else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - mLastWakeTime)
+             > static_cast<Traits<portTickType>::SignedType>(mCurrentPeriod))
+    {
         return Status::timeout;
     }
-    else {
+    else
+    {
         return Status::running;
     }
 }

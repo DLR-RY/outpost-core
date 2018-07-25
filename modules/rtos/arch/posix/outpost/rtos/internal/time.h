@@ -14,27 +14,24 @@
 #ifndef OUTPOST_RTOS_POSIX_TIME_H
 #define OUTPOST_RTOS_POSIX_TIME_H
 
-#include <time.h>
-
 #include <outpost/time/duration.h>
+
+#include <time.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 static inline timespec
 toRelativeTime(const time::Duration duration)
 {
     uint64_t nanoseconds = duration.microseconds() * 1000;
 
-    timespec relativeTime = {
-        // seconds
-        static_cast<time_t>(nanoseconds / 1000000000),
+    timespec relativeTime = {// seconds
+                             static_cast<time_t>(nanoseconds / 1000000000),
 
-        // remaining nanoseconds
-        static_cast<long int>(nanoseconds % 1000000000)
-    };
+                             // remaining nanoseconds
+                             static_cast<long int>(nanoseconds % 1000000000)};
 
     return relativeTime;
 }
@@ -64,7 +61,7 @@ toAbsoluteTime(const time::Duration duration)
     return absoluteTime;
 }
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

@@ -15,16 +15,16 @@
 #ifndef OUTPOST_RTOS_FREERTOS_THREAD_H
 #define OUTPOST_RTOS_FREERTOS_THREAD_H
 
-#include <cstddef>
+#include <outpost/time/duration.h>
+
 #include <stdint.h>
 
-#include <outpost/time/duration.h>
+#include <cstddef>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Wrapper class for the Thread function of the Operating System.
  *
@@ -89,9 +89,9 @@ public:
      * \see    rtos::FailureHandler::fatal()
      */
     Thread(uint8_t priority,
-            size_t stack = defaultStackSize,
-            const char* name = 0,
-            FloatingPointSupport floatingPointSupport = noFloatingPoint);
+           size_t stack = defaultStackSize,
+           const char* name = 0,
+           FloatingPointSupport floatingPointSupport = noFloatingPoint);
 
     /**
      * Destructor.
@@ -99,8 +99,7 @@ public:
      * Frees the resources used by this thread to be used by another
      * thread.
      */
-    virtual
-    ~Thread();
+    virtual ~Thread();
 
     /**
      * Start the execution of the thread.
@@ -215,14 +214,14 @@ private:
     static void
     wrapper(void* object);
 
-    void* mHandle;    // FreeRTOS thread handle (xTaskHandle)
+    void* mHandle;  // FreeRTOS thread handle (xTaskHandle)
 
     const uint8_t mPriority;
     size_t mStackSize;
     const char* const mName;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

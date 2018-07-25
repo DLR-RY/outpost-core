@@ -24,5 +24,6 @@ outpost::rtos::SystemClock::now() const
     // convert to microseconds
     uint64_t microseconds = (time.tv_nsec / 1000) + (time.tv_sec * 1000000);
 
-    return outpost::time::SpacecraftElapsedTime::afterEpoch(outpost::time::Microseconds(microseconds));
+    return outpost::time::SpacecraftElapsedTime::afterEpoch(
+            outpost::time::Microseconds(microseconds));
 }

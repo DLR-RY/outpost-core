@@ -13,10 +13,11 @@
 
 #include "semaphore.h"
 
-#include <time.h>
+#include "internal/time.h"
+
 #include <outpost/rtos/failure_handler.h>
 
-#include "internal/time.h"
+#include <time.h>
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Semaphore::Semaphore(uint32_t count) : sid()
@@ -41,8 +42,7 @@ outpost::rtos::Semaphore::acquire(time::Duration timeout)
 }
 
 // ----------------------------------------------------------------------------
-outpost::rtos::BinarySemaphore::BinarySemaphore(State::Type initial) :
-    value(initial)
+outpost::rtos::BinarySemaphore::BinarySemaphore(State::Type initial) : value(initial)
 {
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&signal, NULL);

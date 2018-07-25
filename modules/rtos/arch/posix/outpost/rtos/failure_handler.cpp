@@ -14,15 +14,15 @@
 
 #include <outpost/rtos/failure_handler.h>
 
-#include <stdio.h>
-#include <cstdlib>
-
 #include <inttypes.h>
+#include <stdio.h>
+
+#include <cstdlib>
 
 static void
 defaultFatalHandler(outpost::rtos::FailureCode code)
 {
-    //printf("Fatal Handler: %"PRIu32"\n", code.getCode());
+    // printf("Fatal Handler: %"PRIu32"\n", code.getCode());
     printf("Fatal Handler: 0x%08X\n", static_cast<int>(code.getCode()));
     exit(1);
 }
@@ -30,10 +30,11 @@ defaultFatalHandler(outpost::rtos::FailureCode code)
 static void
 defaultCleanupHandler(outpost::rtos::FailureCode code);
 
-static void
-defaultCleanupHandler(outpost::rtos::FailureCode /*code*/)
+static void defaultCleanupHandler(outpost::rtos::FailureCode /*code*/)
 {
 }
 
-outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::handler = &defaultFatalHandler;
-outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::cleanup = &defaultCleanupHandler;
+outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::handler =
+        &defaultFatalHandler;
+outpost::rtos::FailureHandler::Handler outpost::rtos::FailureHandler::cleanup =
+        &defaultCleanupHandler;

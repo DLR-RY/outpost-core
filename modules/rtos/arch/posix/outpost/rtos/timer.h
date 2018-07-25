@@ -14,18 +14,16 @@
 #ifndef OUTPOST_RTOS_POSIX_TIMER_H
 #define OUTPOST_RTOS_POSIX_TIMER_H
 
+#include <outpost/time/duration.h>
+#include <outpost/utils/callable.h>
+
 #include <signal.h>
 #include <time.h>
-
-#include <outpost/time/duration.h>
-
-#include <outpost/utils/callable.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Software timer.
  *
@@ -66,9 +64,7 @@ public:
      * \see    outpost::Callable
      */
     template <typename T>
-    Timer(T* object,
-          typename TimerFunction<T>::type function,
-          const char* name = "TIM-");
+    Timer(T* object, typename TimerFunction<T>::type function, const char* name = "TIM-");
 
     /**
      * Delete the timer.
@@ -122,13 +118,13 @@ public:
      * Not used for the POSIX implementation.
      */
     static void
-    startTimerDaemonThread(uint8_t priority,
-                           size_t stack = 0);
+    startTimerDaemonThread(uint8_t priority, size_t stack = 0);
 
 private:
     // disable copy-constructor and assignment operator
     Timer(const Timer& other);
-    Timer& operator=(const Timer& other);
+    Timer&
+    operator=(const Timer& other);
 
     void
     createTimer(const char* name);
@@ -148,16 +144,14 @@ private:
     itimerspec mInterval;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
-outpost::rtos::Timer::Timer(T* object,
-                         typename TimerFunction<T>::type function,
-                         const char* name) :
-    mObject(reinterpret_cast<Callable *>(object)),
+outpost::rtos::Timer::Timer(T* object, typename TimerFunction<T>::type function, const char* name) :
+    mObject(reinterpret_cast<Callable*>(object)),
     mFunction(reinterpret_cast<Function>(function)),
     mTid()
 {

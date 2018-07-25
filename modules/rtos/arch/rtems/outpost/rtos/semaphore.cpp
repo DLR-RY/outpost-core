@@ -14,19 +14,19 @@
 
 #include "semaphore.h"
 
-#include <rtems.h>
-#include <outpost/rtos/failure_handler.h>
-
 #include "rtems/interval.h"
+
+#include <rtems.h>
+
+#include <outpost/rtos/failure_handler.h>
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Semaphore::Semaphore(uint32_t count)
 {
     rtems_name name = rtems_build_name('C', 'S', 'E', 'M');
 
-    if (rtems_semaphore_create(name, count,
-            RTEMS_PRIORITY |
-            RTEMS_COUNTING_SEMAPHORE, 1, &mId) != RTEMS_SUCCESSFUL)
+    if (rtems_semaphore_create(name, count, RTEMS_PRIORITY | RTEMS_COUNTING_SEMAPHORE, 1, &mId)
+        != RTEMS_SUCCESSFUL)
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
     }
@@ -54,8 +54,9 @@ outpost::rtos::Semaphore::acquire(time::Duration timeout)
     if (timeout == time::Duration::zero())
     {
         waitOption = RTEMS_NO_WAIT;
-    } // else use default value RTEMS_WAIT
-    return (rtems_semaphore_obtain(mId, waitOption, rtems::getInterval(timeout)) == RTEMS_SUCCESSFUL);
+    }  // else use default value RTEMS_WAIT
+    return (rtems_semaphore_obtain(mId, waitOption, rtems::getInterval(timeout))
+            == RTEMS_SUCCESSFUL);
 }
 
 // ----------------------------------------------------------------------------
@@ -63,9 +64,12 @@ outpost::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
 {
     rtems_name name = rtems_build_name('B', 'S', 'E', 'M');
 
-    if (rtems_semaphore_create(name, (initial == State::acquired) ? 0 : 1,
-            RTEMS_PRIORITY |
-            RTEMS_SIMPLE_BINARY_SEMAPHORE, 1, &mId) != RTEMS_SUCCESSFUL)
+    if (rtems_semaphore_create(name,
+                               (initial == State::acquired) ? 0 : 1,
+                               RTEMS_PRIORITY | RTEMS_SIMPLE_BINARY_SEMAPHORE,
+                               1,
+                               &mId)
+        != RTEMS_SUCCESSFUL)
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
     }
@@ -92,6 +96,7 @@ outpost::rtos::BinarySemaphore::acquire(time::Duration timeout)
     if (timeout == time::Duration::zero())
     {
         waitOption = RTEMS_NO_WAIT;
-    } // else use default value RTEMS_WAIT
-    return (rtems_semaphore_obtain(mId, waitOption, rtems::getInterval(timeout)) == RTEMS_SUCCESSFUL);
+    }  // else use default value RTEMS_WAIT
+    return (rtems_semaphore_obtain(mId, waitOption, rtems::getInterval(timeout))
+            == RTEMS_SUCCESSFUL);
 }

@@ -14,17 +14,15 @@
 #ifndef OUTPOST_RTOS_FREERTOS_TIMER_H
 #define OUTPOST_RTOS_FREERTOS_TIMER_H
 
-#include <cstddef>
-
 #include <outpost/time/duration.h>
-
 #include <outpost/utils/callable.h>
+
+#include <cstddef>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Software timer.
  *
@@ -132,7 +130,8 @@ public:
      * - configTIMER_QUEUE_LENGTH
      * - configTIMER_TASK_STACK_DEPTH
      *
-     * \see http://www.freertos.org/Configuring-a-real-time-RTOS-application-to-use-software-timers.html
+     * \see
+     * http://www.freertos.org/Configuring-a-real-time-RTOS-application-to-use-software-timers.html
      */
     static void
     startTimerDaemonThread(uint8_t priority, size_t stack = 0);
@@ -152,14 +151,14 @@ private:
     void* mHandle;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
 outpost::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
-    mObject(reinterpret_cast<Callable *>(object)),
+    mObject(reinterpret_cast<Callable*>(object)),
     mFunction(reinterpret_cast<Function>(function)),
     mHandle()
 {

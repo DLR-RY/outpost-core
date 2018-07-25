@@ -14,13 +14,14 @@
 #include "thread.h"
 
 #include <outpost/rtos/failure_handler.h>
+
 #include <stdio.h>
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Thread::Thread(uint8_t priority,
-                           size_t stack,
-                           const char* name,
-                           FloatingPointSupport /*floatingPointSupport*/)
+                              size_t stack,
+                              const char* name,
+                              FloatingPointSupport /*floatingPointSupport*/)
 {
     (void) priority;
     (void) stack;

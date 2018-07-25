@@ -14,18 +14,17 @@
 #ifndef OUTPOST_RTOS_FREERTOS_MUTEX_HPP
 #define OUTPOST_RTOS_FREERTOS_MUTEX_HPP
 
-#include <stdint.h>
-
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
 
 #include <outpost/time/duration.h>
 
+#include <stdint.h>
+
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Mutex class.
  *
@@ -94,7 +93,7 @@ private:
     void* mHandle;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

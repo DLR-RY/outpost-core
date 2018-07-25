@@ -15,6 +15,7 @@
 #include "thread.h"
 
 #include <outpost/rtos/failure_handler.h>
+
 #include <stdio.h>
 
 using outpost::rtos::Thread;
@@ -23,7 +24,7 @@ using outpost::rtos::Thread;
 void
 Thread::wrapper(rtems_task_argument object)
 {
-    Thread* thread = reinterpret_cast<Thread *>(object);
+    Thread* thread = reinterpret_cast<Thread*>(object);
     thread->run();
 
     // Returning from a RTEMS thread is a fatal error, nothing more to
@@ -81,8 +82,12 @@ Thread::Thread(uint8_t priority,
         attributes |= RTEMS_FLOATING_POINT;
     }
 
-    rtems_status_code status = rtems_task_create(taskName, rtemsPriority, stack,
-            RTEMS_DEFAULT_MODES | RTEMS_TIMESLICE , attributes, &mTid);
+    rtems_status_code status = rtems_task_create(taskName,
+                                                 rtemsPriority,
+                                                 stack,
+                                                 RTEMS_DEFAULT_MODES | RTEMS_TIMESLICE,
+                                                 attributes,
+                                                 &mTid);
 
     if (status != RTEMS_SUCCESSFUL)
     {

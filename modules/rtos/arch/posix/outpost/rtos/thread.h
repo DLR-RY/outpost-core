@@ -14,19 +14,19 @@
 #ifndef OUTPOST_POSIX_THREAD_H
 #define OUTPOST_POSIX_THREAD_H
 
+#include <pthread.h>
+
+#include <outpost/time/duration.h>
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <string>
-#include <pthread.h>
-
-#include <outpost/time/duration.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Wrapper class for the Thread function of the Operating System.
  *
@@ -74,11 +74,10 @@ public:
      *
      * \see    rtos::FailureHandler::fatal()
      */
-    explicit
-    Thread(uint8_t priority,
-           size_t stack = defaultStackSize,
-           const char* name = 0,
-           FloatingPointSupport floatingPointSupport = noFloatingPoint);
+    explicit Thread(uint8_t priority,
+                    size_t stack = defaultStackSize,
+                    const char* name = 0,
+                    FloatingPointSupport floatingPointSupport = noFloatingPoint);
 
     /**
      * Destructor.
@@ -86,8 +85,7 @@ public:
      * Frees the resources used by this thread to be used by another
      * thread.
      */
-    virtual
-    ~Thread();
+    virtual ~Thread();
 
     /**
      * Start the execution of the thread.
@@ -164,7 +162,7 @@ private:
     std::string mName;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

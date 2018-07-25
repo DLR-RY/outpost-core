@@ -14,11 +14,11 @@
 
 #include "timer.h"
 
+#include "rtems/interval.h"
+
 #include <outpost/rtos/failure_handler.h>
 #include <outpost/rtos/mutex_guard.h>
 #include <outpost/rtos/thread.h>
-
-#include "rtems/interval.h"
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Timer::~Timer()
@@ -32,10 +32,8 @@ outpost::rtos::Timer::start(time::Duration duration)
 {
     MutexGuard lock(mMutex);
     mRunning = true;
-    rtems_timer_server_fire_after(mTid,
-                                  rtems::getInterval(duration),
-                                  &Timer::invokeTimer,
-                                  (void *) this);
+    rtems_timer_server_fire_after(
+            mTid, rtems::getInterval(duration), &Timer::invokeTimer, (void*) this);
 }
 
 void
@@ -65,9 +63,8 @@ outpost::rtos::Timer::isRunning()
 void
 outpost::rtos::Timer::startTimerDaemonThread(uint8_t priority, size_t stack)
 {
-    rtems_status_code result = rtems_timer_initiate_server(outpost::rtos::Thread::toRtemsPriority(priority),
-                                                           stack,
-                                                           RTEMS_DEFAULT_ATTRIBUTES);
+    rtems_status_code result = rtems_timer_initiate_server(
+            outpost::rtos::Thread::toRtemsPriority(priority), stack, RTEMS_DEFAULT_ATTRIBUTES);
     if (result != RTEMS_SUCCESSFUL)
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::timer));
@@ -82,7 +79,8 @@ outpost::rtos::Timer::createTimer(const char* name)
     if (name == 0)
     {
         // taskName = 0 is not allowed.
-        taskName = rtems_build_name('T', 'I', 'M', '-');;
+        taskName = rtems_build_name('T', 'I', 'M', '-');
+        ;
     }
     else
     {
@@ -107,9 +105,9 @@ outpost::rtos::Timer::createTimer(const char* name)
 void
 outpost::rtos::Timer::invokeTimer(rtems_id id, void* parameter)
 {
-    (void) id;    // not used here
+    (void) id;  // not used here
 
-    Timer* timer = reinterpret_cast<Timer *>(parameter);
+    Timer* timer = reinterpret_cast<Timer*>(parameter);
     {
         MutexGuard lock(timer->mMutex);
         timer->mRunning = false;

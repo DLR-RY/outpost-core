@@ -20,11 +20,11 @@
 #include <unistd.h>
 
 // for nanosleep()
-#include <time.h>
+#include "internal/time.h"
 
 #include <outpost/rtos/failure_handler.h>
 
-#include "internal/time.h"
+#include <time.h>
 
 // ----------------------------------------------------------------------------
 void*
@@ -45,9 +45,9 @@ outpost::rtos::Thread::wrapper(void* object)
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Thread::Thread(uint8_t,
-                           size_t,
-                           const char* name,
-                           FloatingPointSupport /*floatingPointSupport*/) :
+                              size_t,
+                              const char* name,
+                              FloatingPointSupport /*floatingPointSupport*/) :
     mIsRunning(false),
     mPthreadId(),
     mTid(),
@@ -82,7 +82,7 @@ outpost::rtos::Thread::getCurrentThreadIdentifier()
     pid_t tid = syscall(SYS_gettid);
     return tid;
 #else
-#   error "SYS_gettid unavailable on this system"
+#error "SYS_gettid unavailable on this system"
 #endif
 }
 
@@ -94,7 +94,7 @@ outpost::rtos::Thread::start()
     pthread_attr_t attr;
     pthread_attr_init(&attr);
 
-    int ret = pthread_create(&mPthreadId, &attr, &Thread::wrapper, reinterpret_cast<void *>(this));
+    int ret = pthread_create(&mPthreadId, &attr, &Thread::wrapper, reinterpret_cast<void*>(this));
     if (ret != 0)
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::thread));

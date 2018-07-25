@@ -22,8 +22,7 @@ outpost::rtos::SystemClock::now() const
     rtems_interval ticks_since_boot = rtems_clock_get_ticks_since_boot();
 
     // convert to microseconds
-    uint64_t us = static_cast<uint64_t>(ticks_since_boot) *
-                  static_cast<uint64_t>(us_per_tick);
+    uint64_t us = static_cast<uint64_t>(ticks_since_boot) * static_cast<uint64_t>(us_per_tick);
 
     return outpost::time::SpacecraftElapsedTime::afterEpoch(outpost::time::Microseconds(us));
 }

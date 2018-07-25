@@ -43,7 +43,8 @@ outpost::rtos::Mutex::acquire()
 bool
 outpost::rtos::Mutex::acquire(time::Duration timeout)
 {
-    return (xSemaphoreTakeRecursive(mHandle, timeout.milliseconds() * configTICK_RATE_HZ / 1000) == pdTRUE);
+    return (xSemaphoreTakeRecursive(mHandle, timeout.milliseconds() * configTICK_RATE_HZ / 1000)
+            == pdTRUE);
 }
 
 void

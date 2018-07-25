@@ -13,8 +13,9 @@
 
 #include "periodic_task_manager.h"
 
-#include <errno.h>
 #include <outpost/rtos/mutex_guard.h>
+
+#include <errno.h>
 
 static const uint32_t nanosecondsPerSecond = 1000000000;
 static const uint32_t nanosecondsPerMicrosecond = 1000;
@@ -76,10 +77,7 @@ getTime(timespec* time)
     }
 }
 
-PeriodicTaskManager::PeriodicTaskManager() :
-    mMutex(),
-    mTimerRunning(false),
-    nextWakeTime()
+PeriodicTaskManager::PeriodicTaskManager() : mMutex(), mTimerRunning(false), nextWakeTime()
 {
 }
 
@@ -107,8 +105,7 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
         int result;
         do
         {
-            result = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME,
-                    &nextWakeTime, NULL);
+            result = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &nextWakeTime, NULL);
 
             // EINTR is returned when the sleep is interrupted by a signal
             // handler. In this case the sleep can be restarted.
@@ -119,8 +116,7 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
             {
                 FailureHandler::fatal(FailureCode::genericRuntimeError());
             }
-        }
-        while (result != 0);
+        } while (result != 0);
     }
     else
     {

@@ -20,7 +20,6 @@ namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Counting semaphores.
  *
@@ -181,7 +180,7 @@ private:
     operator=(const BinarySemaphore& other);
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

@@ -68,7 +68,7 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration)
     return itemRetrieved;
 }
 
-template<typename T>
+template <typename T>
 size_t
 outpost::rtos::Queue<T>::increment(size_t index)
 {

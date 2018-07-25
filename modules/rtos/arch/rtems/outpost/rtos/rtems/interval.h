@@ -15,6 +15,7 @@
 #define OUTPOST_RTOS_RTEMS_INTERVAL_H
 
 #include <rtems.h>
+
 #include <outpost/time/duration.h>
 
 namespace outpost
@@ -23,7 +24,6 @@ namespace rtos
 {
 namespace rtems
 {
-
 /**
  * Converts a duration into a RTEMS interval.
  *
@@ -55,8 +55,8 @@ getInterval(outpost::time::Duration duration)
     return interval;
 }
 
-}
-}
-}
+}  // namespace rtems
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

@@ -15,13 +15,13 @@
 #define OUTPOST_RTOS_RTEMS_MUTEX_HPP
 
 #include <rtems.h>
+
 #include <outpost/time/duration.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Mutex class.
  *
@@ -103,7 +103,7 @@ private:
     rtems_id mId;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

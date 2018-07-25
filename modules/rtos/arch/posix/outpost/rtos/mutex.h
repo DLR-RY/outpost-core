@@ -23,7 +23,6 @@ namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Mutex
  *
@@ -34,8 +33,7 @@ class Mutex
 public:
     Mutex();
 
-    inline
-    ~Mutex()
+    inline ~Mutex()
     {
         pthread_mutex_destroy(&mutex);
     }
@@ -88,7 +86,7 @@ private:
     pthread_mutex_t mutex;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

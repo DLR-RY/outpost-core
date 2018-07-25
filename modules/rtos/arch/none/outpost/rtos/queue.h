@@ -14,17 +14,17 @@
 #ifndef OUTPOST_RTOS_RTEMS_QUEUE_H
 #define OUTPOST_RTOS_RTEMS_QUEUE_H
 
+#include <outpost/time/duration.h>
+
 #include <stddef.h>
 #include <stdint.h>
-#include <type_traits>
 
-#include <outpost/time/duration.h>
+#include <type_traits>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Atomic Queue.
  *
@@ -102,8 +102,8 @@ private:
     size_t tail;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #include "queue_impl.h"
 

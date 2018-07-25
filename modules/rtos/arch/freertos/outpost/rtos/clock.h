@@ -14,14 +14,13 @@
 #ifndef OUTPOST_RTOS_FREERTOS_CLOCK_H
 #define OUTPOST_RTOS_FREERTOS_CLOCK_H
 
-#include <outpost/time/time_point.h>
 #include <outpost/time/clock.h>
+#include <outpost/time/time_point.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  *
  * \ingroup    rtos
@@ -33,7 +32,7 @@ public:
     now() const;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

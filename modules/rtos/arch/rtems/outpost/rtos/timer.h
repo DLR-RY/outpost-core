@@ -14,18 +14,17 @@
 #ifndef OUTPOST_RTOS_RTEMS_TIMER_H
 #define OUTPOST_RTOS_RTEMS_TIMER_H
 
-#include <rtems.h>
-#include <outpost/time/duration.h>
-
-#include <outpost/utils/callable.h>
-
 #include "mutex.h"
+
+#include <rtems.h>
+
+#include <outpost/time/duration.h>
+#include <outpost/utils/callable.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Software timer.
  *
@@ -199,14 +198,14 @@ private:
     rtems_id mTid;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
 outpost::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
-    mObject(reinterpret_cast<Callable *>(object)),
+    mObject(reinterpret_cast<Callable*>(object)),
     mFunction(reinterpret_cast<Function>(function)),
     mRunning(false),
     mTid()

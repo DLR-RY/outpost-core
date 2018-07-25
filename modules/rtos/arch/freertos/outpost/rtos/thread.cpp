@@ -14,14 +14,14 @@
 
 #include "thread.h"
 
-#include <stdio.h>
+#include "thread_priorities.h"
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-#include "thread_priorities.h"
-
 #include <outpost/rtos/failure_handler.h>
+
+#include <stdio.h>
 
 /// Minimum stack size configured through the FreeRTOS configuration.
 static const size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTACK_TYPE);
@@ -30,7 +30,7 @@ static const size_t minimumStackSize = configMINIMAL_STACK_SIZE * sizeof(portSTA
 void
 outpost::rtos::Thread::wrapper(void* object)
 {
-    Thread* thread = reinterpret_cast<Thread *>(object);
+    Thread* thread = reinterpret_cast<Thread*>(object);
     thread->run();
 
     // Returning from a FreeRTOS thread is a fatal error, nothing more to
@@ -40,9 +40,9 @@ outpost::rtos::Thread::wrapper(void* object)
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Thread::Thread(uint8_t priority,
-                           size_t stack,
-                           const char* name,
-                           FloatingPointSupport /*floatingPointSupport*/) :
+                              size_t stack,
+                              const char* name,
+                              FloatingPointSupport /*floatingPointSupport*/) :
     mHandle(0),
     mPriority(priority),
     mStackSize(stack),
@@ -68,14 +68,14 @@ outpost::rtos::Thread::start()
 {
     if (mHandle == 0)
     {
-        int status = xTaskCreate(
-                &Thread::wrapper,
-                (const signed char*) mName,
-                (mStackSize / sizeof(portSTACK_TYPE)) + 1,
-                this,
-                static_cast<unsigned portBASE_TYPE>(toFreeRtosPriority(mPriority, configMAX_PRIORITIES)),
-                //3,
-                &mHandle);
+        int status = xTaskCreate(&Thread::wrapper,
+                                 (const signed char*) mName,
+                                 (mStackSize / sizeof(portSTACK_TYPE)) + 1,
+                                 this,
+                                 static_cast<unsigned portBASE_TYPE>(
+                                         toFreeRtosPriority(mPriority, configMAX_PRIORITIES)),
+                                 // 3,
+                                 &mHandle);
 
         if (status != pdPASS)
         {

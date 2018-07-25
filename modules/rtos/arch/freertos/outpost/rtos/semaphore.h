@@ -46,8 +46,7 @@ public:
      * \param count
      *         Initial value for the semaphore.
      */
-    explicit
-    Semaphore(uint32_t count);
+    explicit Semaphore(uint32_t count);
 
     /**
      * Destroy the semaphore and release it's resources.
@@ -128,8 +127,7 @@ public:
      * \param initial
      *         Initial value for the semaphore.
      */
-    explicit
-    BinarySemaphore(State::Type initial);
+    explicit BinarySemaphore(State::Type initial);
 
     /**
      * Destroy the semaphore and release it's resources.
@@ -182,7 +180,7 @@ private:
     void* mHandle;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

@@ -16,7 +16,6 @@
 // ----------------------------------------------------------------------------
 outpost::rtos::Timer::~Timer()
 {
-
 }
 
 // ----------------------------------------------------------------------------
@@ -50,8 +49,8 @@ outpost::rtos::Timer::createTimer(const char* name)
 }
 
 // ----------------------------------------------------------------------------
-//void
-//outpost::rtos::Timer::invokeTimer(rtems_id id, void* parameter)
+// void
+// outpost::rtos::Timer::invokeTimer(rtems_id id, void* parameter)
 //{
 //    Timer* timer = reinterpret_cast<Timer *>(parameter);
 //    (timer->object->*(timer->function))(timer);

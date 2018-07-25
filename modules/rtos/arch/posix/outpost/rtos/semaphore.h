@@ -14,18 +14,17 @@
 #ifndef OUTPOST_RTOS_POSIX_SEMAPHORE_HPP
 #define OUTPOST_RTOS_POSIX_SEMAPHORE_HPP
 
-#include <stdint.h>
-
-#include <semaphore.h>
 #include <pthread.h>
+#include <semaphore.h>
 
 #include <outpost/time/duration.h>
+
+#include <stdint.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Counting Semaphore.
  *
@@ -175,7 +174,7 @@ private:
     State::Type value;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

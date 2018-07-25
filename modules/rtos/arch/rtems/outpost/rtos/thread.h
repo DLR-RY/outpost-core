@@ -15,17 +15,18 @@
 #ifndef OUTPOST_RTOS_RTEMS_THREAD_H
 #define OUTPOST_RTOS_RTEMS_THREAD_H
 
-#include <cstddef>
-#include <stdint.h>
+#include "rtems/interval.h"
 
 #include <rtems.h>
-#include "rtems/interval.h"
+
+#include <stdint.h>
+
+#include <cstddef>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Wrapper class for the Thread function of the Operating System.
  *
@@ -97,8 +98,7 @@ public:
      * Frees the resources used by this thread to be used by another
      * thread.
      */
-    virtual
-    ~Thread();
+    virtual ~Thread();
 
     /**
      * Start the execution of the thread.
@@ -179,13 +179,13 @@ public:
     }
 
     /*
-    * RTEMS supports priorities between 1..255. Lower values represent a higher
-    * priority, 1 is the highest and 255 the lowest priority.
-    *
-    * These RTEMS are priorities are mapped to 0..255 priority map with 0
-    * representing the lowest priority and 255 the highest. Because RTEMS
-    * has only 255 steps, both 0 and 1 represent the same priority.
-    */
+     * RTEMS supports priorities between 1..255. Lower values represent a higher
+     * priority, 1 is the highest and 255 the lowest priority.
+     *
+     * These RTEMS are priorities are mapped to 0..255 priority map with 0
+     * representing the lowest priority and 255 the highest. Because RTEMS
+     * has only 255 steps, both 0 and 1 represent the same priority.
+     */
     static uint8_t
     toRtemsPriority(uint8_t priority);
 
@@ -214,7 +214,7 @@ private:
     rtems_id mTid;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

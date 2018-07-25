@@ -14,11 +14,11 @@
 
 #include "timer.h"
 
-#include <outpost/rtos/failure_handler.h>
-
 #include <freertos/FreeRTOS.h>
-#include <freertos/timers.h>
 #include <freertos/task.h>
+#include <freertos/timers.h>
+
+#include <outpost/rtos/failure_handler.h>
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Timer::~Timer()
@@ -33,10 +33,10 @@ outpost::rtos::Timer::~Timer()
 void
 outpost::rtos::Timer::start(time::Duration duration)
 {
-    if ((xTimerChangePeriod(mHandle,
-                            (duration.milliseconds() * configTICK_RATE_HZ) / 1000,
-                            portMAX_DELAY) != pdPASS) ||
-        (xTimerStart(mHandle, portMAX_DELAY) != pdPASS))
+    if ((xTimerChangePeriod(
+                 mHandle, (duration.milliseconds() * configTICK_RATE_HZ) / 1000, portMAX_DELAY)
+         != pdPASS)
+        || (xTimerStart(mHandle, portMAX_DELAY) != pdPASS))
     {
         FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::timer));
     }
@@ -84,11 +84,12 @@ outpost::rtos::Timer::startTimerDaemonThread(uint8_t priority, size_t stack)
 void
 outpost::rtos::Timer::createTimer(const char* name)
 {
-    mHandle = xTimerCreate(reinterpret_cast<const signed char *>(name),
-                          1,        // dummy value (must be >= 0 but will be changed when starting the timer)
-                          pdFALSE,    // no auto-reload
-                          (void *) this,
-                          &Timer::invokeTimer);
+    mHandle = xTimerCreate(
+            reinterpret_cast<const signed char*>(name),
+            1,        // dummy value (must be >= 0 but will be changed when starting the timer)
+            pdFALSE,  // no auto-reload
+            (void*) this,
+            &Timer::invokeTimer);
 
     if (mHandle == 0)
     {
@@ -100,6 +101,6 @@ outpost::rtos::Timer::createTimer(const char* name)
 void
 outpost::rtos::Timer::invokeTimer(void* handle)
 {
-    Timer* timer = reinterpret_cast<Timer *>(pvTimerGetTimerID(handle));
+    Timer* timer = reinterpret_cast<Timer*>(pvTimerGetTimerID(handle));
     (timer->mObject->*(timer->mFunction))(timer);
 }

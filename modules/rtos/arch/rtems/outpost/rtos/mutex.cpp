@@ -13,20 +13,19 @@
 
 #include "mutex.h"
 
-#include <rtems.h>
-#include <outpost/rtos/failure_handler.h>
-
 #include "rtems/interval.h"
+
+#include <rtems.h>
+
+#include <outpost/rtos/failure_handler.h>
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Mutex::Mutex()
 {
     rtems_name name = rtems_build_name('M', 'T', 'X', '-');
 
-    rtems_status_code status = rtems_semaphore_create(name, 1,
-            RTEMS_PRIORITY |
-            RTEMS_BINARY_SEMAPHORE |
-            RTEMS_INHERIT_PRIORITY, 1, &mId);
+    rtems_status_code status = rtems_semaphore_create(
+            name, 1, RTEMS_PRIORITY | RTEMS_BINARY_SEMAPHORE | RTEMS_INHERIT_PRIORITY, 1, &mId);
     if (status != RTEMS_SUCCESSFUL)
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::mutex));

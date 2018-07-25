@@ -83,7 +83,8 @@ TEST_F(SubscriptionVirtualClassTest, baseClassShouldReceiveData)
 
 TEST_F(SubscriptionVirtualClassTest, childClassShouldReceiveData)
 {
-    outpost::smpc::Subscription subscription(topic, &componentChild, &ComponentChild::onReceiveData);
+    outpost::smpc::Subscription subscription(
+            topic, &componentChild, &ComponentChild::onReceiveData);
     unittest::smpc::TestingSubscription::connectSubscriptionsToTopics();
 
     topic.publish(false);

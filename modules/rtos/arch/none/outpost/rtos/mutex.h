@@ -14,14 +14,14 @@
 #ifndef OUTPOST_RTOS_NONE_MUTEX_HPP
 #define OUTPOST_RTOS_NONE_MUTEX_HPP
 
-#include <stdint.h>
 #include <outpost/time/duration.h>
+
+#include <stdint.h>
 
 namespace outpost
 {
 namespace rtos
 {
-
 /**
  * Mutex class.
  *
@@ -100,7 +100,7 @@ private:
     operator=(const Mutex& other);
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

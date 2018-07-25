@@ -15,8 +15,7 @@
 
 using namespace outpost::rtos;
 
-PeriodicTaskManager::PeriodicTaskManager() :
-    mId()
+PeriodicTaskManager::PeriodicTaskManager() : mId()
 {
     rtems_name name = rtems_build_name('P', 'E', 'R', 'D');
     rtems_status_code result = rtems_rate_monotonic_create(name, &mId);

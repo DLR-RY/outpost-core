@@ -13,8 +13,9 @@
 
 #include "timer.h"
 
-#include <cstring>
 #include <outpost/rtos/failure_handler.h>
+
+#include <cstring>
 
 // ----------------------------------------------------------------------------
 outpost::rtos::Timer::~Timer()
@@ -27,7 +28,8 @@ void
 outpost::rtos::Timer::start(time::Duration duration)
 {
     struct itimerspec time;
-    uint64_t nanoseconds = duration.microseconds() * outpost::time::Duration::nanosecondsPerMicrosecond;
+    uint64_t nanoseconds =
+            duration.microseconds() * outpost::time::Duration::nanosecondsPerMicrosecond;
 
     // interval
     time.it_interval.tv_sec = 0;
@@ -88,11 +90,9 @@ outpost::rtos::Timer::isRunning()
 }
 
 // ----------------------------------------------------------------------------
-void
-outpost::rtos::Timer::startTimerDaemonThread(uint8_t /*priority*/,
-                                          size_t /*stack*/)
+void outpost::rtos::Timer::startTimerDaemonThread(uint8_t /*priority*/, size_t /*stack*/)
 {
-	// do nothing here for POSIX, only used for RTEMS
+    // do nothing here for POSIX, only used for RTEMS
 }
 
 // ----------------------------------------------------------------------------
@@ -124,6 +124,6 @@ outpost::rtos::Timer::createTimer(const char* /*name*/)
 void
 outpost::rtos::Timer::invokeTimer(union sigval parameter)
 {
-    Timer* timer = reinterpret_cast<Timer *>(parameter.sival_ptr);
+    Timer* timer = reinterpret_cast<Timer*>(parameter.sival_ptr);
     (timer->mObject->*(timer->mFunction))(timer);
 }

@@ -14,10 +14,10 @@
 #ifndef OUTPOST_RTOS_NONE_TIMER_H
 #define OUTPOST_RTOS_NONE_TIMER_H
 
-#include <stddef.h>
 #include <outpost/time/duration.h>
-
 #include <outpost/utils/callable.h>
+
+#include <stddef.h>
 
 namespace outpost
 {
@@ -123,14 +123,14 @@ private:
     Function const mFunction;
 };
 
-}
-}
+}  // namespace rtos
+}  // namespace outpost
 
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
 outpost::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
-    mObject(reinterpret_cast<Callable *>(object)),
+    mObject(reinterpret_cast<Callable*>(object)),
     mFunction(reinterpret_cast<Function>(function))
 {
     this->createTimer(name);

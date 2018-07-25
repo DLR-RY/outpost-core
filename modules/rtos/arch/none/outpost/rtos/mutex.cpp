@@ -37,7 +37,7 @@ outpost::rtos::Mutex::acquire()
 bool
 outpost::rtos::Mutex::acquire(time::Duration timeout)
 {
-    (void) timeout;     // not used
+    (void) timeout;  // not used
 
     // TODO
     return false;
