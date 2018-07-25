@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2014, 2016-2017, German Aerospace Center (DLR)
+# Copyright (c) 2013-2014, 2016-2018, German Aerospace Center (DLR)
 #
 # This file is part of the development version of OUTPOST.
 #
@@ -7,7 +7,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Authors:
-# - 2013-2014, 2016-2017, Fabian Greif (DLR RY-AVS)
+# - 2013-2014, 2016-2018, Fabian Greif (DLR RY-AVS)
 # - 2016, Jan Sommer (DLR SC-SRV)
 # - 2016, Rhea Rinaldo (DLR RY-AVS)
 
@@ -164,6 +164,15 @@ design:
 	@$(MAKE) -C doc/design
 
 doc: doxygen design
+
+CLANG_FORMAT="clang-format-6.0"
+
+FORMAT_SOURCE_FILES ?= $(shell find src/ test/ -type f -name '*.cpp')
+FORMAT_HEADER_FILES ?= $(shell find src/ test/ -type f -name '*.h')
+
+format:
+	@$(CLANG_FORMAT) -i $(FORMAT_SOURCE_FILES)
+	@$(CLANG_FORMAT) -i $(FORMAT_HEADER_FILES)
 
 clean-default:
 	@$(RM) -r doc/doxygen/api/*

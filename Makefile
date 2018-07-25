@@ -116,14 +116,12 @@ metric:
 		sloccount --duplicates --wide modules/$$m/test ; \
 	done
 
-CLANG_FORMAT="clang-format-6.0"
-
-SOURCE_FILES = $(shell find modules/*/src/ modules/*/test/ -type f -name '*.cpp')
-HEADER_FILES = $(shell find modules/*/src/ modules/*/test/ -type f -name '*.h')
-
 format:
-	@$(CLANG_FORMAT) -i $(SOURCE_FILES)
-	@$(CLANG_FORMAT) -i $(HEADER_FILES)
+	@for m in $(MODULES); do \
+		printf "\n$(CINFO)Run clang-format for \"$$m\":$(CEND)\n" ; \
+		$(MAKE) -C modules/$$m format --no-print-directory || return 1 ; \
+	done
+	@printf "\n$(COK)[PASS] Formatting done!$(CEND)\n"
 
 license-update:
 	python3 ../reword -v

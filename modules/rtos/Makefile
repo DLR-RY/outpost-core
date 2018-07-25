@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2017, German Aerospace Center (DLR)
+# Copyright (c) 2013-2018, German Aerospace Center (DLR)
 #
 # This file is part of the development version of OUTPOST.
 #
@@ -7,7 +7,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 # Authors:
-# - 2013-2017, Fabian Greif (DLR RY-AVS)
+# - 2013-2018, Fabian Greif (DLR RY-AVS)
 
 MODULE=rtos
 
@@ -16,6 +16,10 @@ LCOV_REMOVE_PATTERN = \
 
 # Slash at the end is important!
 LIBCOBC_HW_PATH = /home/user/development/ry-avs-outpost/lib/sw/outpost-hw/
+
+# For the RTOS module the arch/ folder needs to be formatted as well
+FORMAT_SOURCE_FILES ?= $(shell find src/ test/ arch/ -type f -name '*.cpp')
+FORMAT_HEADER_FILES ?= $(shell find src/ test/ arch/ -type f -name '*.h')
 
 all: test
 
