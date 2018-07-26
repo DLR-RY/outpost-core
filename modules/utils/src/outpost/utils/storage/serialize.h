@@ -211,6 +211,13 @@ public:
         return (mBuffer - mBegin);
     }
 
+    template <typename T>
+    inline T
+    getPosition() const
+    {
+        return static_cast<T>(mBuffer - mBegin);
+    }
+
     inline uint8_t*
     getPointerToCurrentPosition()
     {
