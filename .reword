@@ -7,7 +7,7 @@ ignore_patterns:
   - "*modules/l3test/lua/src/inspect.lua"
   - "*.svg"
   - "*.xml"
-  - "*/tools/vera++/profiles/outpost"
+  - "*tools/vera++/profiles/outpost"
   - "*l3test/src/lua/exception*"
   - "*Jenkinsfile"
   - "*.git*"
@@ -21,6 +21,7 @@ ignore_commits:
   - 5c49d9c1492686ccc94b72c7e13634b18b009cb7    # Apply clang-format style
   - 00a17a7696f0062018f021eb5d85a2275e9bf891    # Update license headers from Git history
   - 3f81eaafb048790d468b3352c44f44a5008f11db    # Apply clang-format for new files
+  - f35e3badbd565fc656b53e66ecd589b0b530a781    # [rtos] Apply clang-format to rtos/arch folder
 
 ignore_missing_history: []
 
