@@ -150,17 +150,18 @@ public:
         return mBegin;
     }
 
-    // get position of the buffer
-    inline ptrdiff_t
-    getPosition() const
-    {
-        return (mBuffer - mBegin);
-    }
-
     inline uint8_t*
     getPointerToCurrentPosition()
     {
         return mBuffer;
+    }
+
+    // get position of the buffer
+    template <typename T = ptrdiff_t>
+    inline T
+    getPosition() const
+    {
+        return static_cast<T>(mBuffer - mBegin);
     }
 
     template <typename T>
@@ -351,13 +352,7 @@ public:
         return mBuffer;
     }
 
-    inline ptrdiff_t
-    getPosition() const
-    {
-        return (mBuffer - mBegin);
-    }
-
-    template <typename T>
+    template <typename T = ptrdiff_t>
     inline T
     getPosition() const
     {

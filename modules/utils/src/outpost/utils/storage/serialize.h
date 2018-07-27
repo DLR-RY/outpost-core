@@ -201,13 +201,7 @@ public:
     }
 
     // get position of the buffer
-    inline ptrdiff_t
-    getPosition() const
-    {
-        return (mBuffer - mBegin);
-    }
-
-    template <typename T>
+    template <typename T = ptrdiff_t>
     inline T
     getPosition() const
     {
@@ -423,13 +417,7 @@ public:
         return mBuffer;
     }
 
-    inline ptrdiff_t
-    getPosition() const
-    {
-        return (mBuffer - mBegin);
-    }
-
-    template <typename T>
+    template <typename T = ptrdiff_t>
     inline T
     getPosition() const
     {
