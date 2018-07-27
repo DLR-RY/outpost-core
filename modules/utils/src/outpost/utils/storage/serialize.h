@@ -214,6 +214,12 @@ public:
         return mBuffer;
     }
 
+    inline Slice<uint8_t>
+    asSlice()
+    {
+        return Slice<uint8_t>::unsafe(mBegin, getPosition());
+    }
+
     template <typename T>
     inline Serialize&
     operator<<(const T& data)
@@ -422,6 +428,12 @@ public:
     getPosition() const
     {
         return static_cast<T>(mBuffer - mBegin);
+    }
+
+    inline Slice<const uint8_t>
+    asSlice() const
+    {
+        return Slice<const uint8_t>::unsafe(mBegin, getPosition());
     }
 
 private:

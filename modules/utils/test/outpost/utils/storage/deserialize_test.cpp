@@ -81,24 +81,26 @@ TEST(DeserialzeTest, skipPositions)
 
 TEST(DeserialzeTest, shouldReadData)
 {
-    uint8_t data[18] = {0xAB,
-                        0xEF,
-                        0x12,
-                        0xA6,
-                        0xC0,
-                        0x1A,
-                        0x61,
-                        0xA9,
-                        0xF5,
-                        0x1E,
-                        0xAE,
-                        0x5F,
-                        0xA2,
-                        0xB0,
-                        0x00,
-                        0x7D,
-                        0x32,
-                        0xC2};
+    uint8_t data[18] = {
+            0xAB,
+            0xEF,
+            0x12,
+            0xA6,
+            0xC0,
+            0x1A,
+            0x61,
+            0xA9,
+            0xF5,
+            0x1E,
+            0xAE,
+            0x5F,
+            0xA2,
+            0xB0,
+            0x00,
+            0x7D,
+            0x32,
+            0xC2,
+    };
 
     Deserialize payload(data);
 
@@ -209,24 +211,26 @@ TEST(DeserialzeTest, readDouble)
 
 TEST(DeserialzeTest, peekTemplate)
 {
-    uint8_t data[18] = {0xAB,
-                        0xEF,
-                        0x12,
-                        0xA6,
-                        0xC0,
-                        0x1A,
-                        0x61,
-                        0xA9,
-                        0xF5,
-                        0x1E,
-                        0xAE,
-                        0x5F,
-                        0xA2,
-                        0xB0,
-                        0x00,
-                        0x7D,
-                        0x32,
-                        0xC2};
+    uint8_t data[18] = {
+            0xAB,
+            0xEF,
+            0x12,
+            0xA6,
+            0xC0,
+            0x1A,
+            0x61,
+            0xA9,
+            0xF5,
+            0x1E,
+            0xAE,
+            0x5F,
+            0xA2,
+            0xB0,
+            0x00,
+            0x7D,
+            0x32,
+            0xC2,
+    };
 
     Deserialize payload(data);
 
@@ -248,21 +252,23 @@ TEST(DeserialzeTest, peekTemplate)
 
 TEST(DeserialzeTest, readTemplate)
 {
-    uint8_t data[18] = {0xAB,
-                        0xEF,
-                        0x12,
-                        0x61,
-                        0xA9,
-                        0xF5,
-                        0x1E,
-                        0xAE,
-                        0x5F,
-                        0xA2,
-                        0xB0,
-                        0x00,
-                        0x7D,
-                        0x32,
-                        0xC2};
+    uint8_t data[18] = {
+            0xAB,
+            0xEF,
+            0x12,
+            0x61,
+            0xA9,
+            0xF5,
+            0x1E,
+            0xAE,
+            0x5F,
+            0xA2,
+            0xB0,
+            0x00,
+            0x7D,
+            0x32,
+            0xC2,
+    };
 
     Deserialize payload(data);
 
@@ -277,4 +283,20 @@ TEST(DeserialzeTest, readTemplate)
 
     uint64_t d64 = payload.read<uint64_t>();
     EXPECT_EQ(0xAE5FA2B0007D32C2ULL, d64);
+}
+
+TEST(DeserializeTest, shouldRetrieveReadDataAsSlice)
+{
+    uint8_t data[8];
+    Deserialize payload(data);
+
+    auto slice = payload.asSlice();
+    EXPECT_EQ(0U, slice.getNumberOfElements());
+    EXPECT_EQ(&data[0], &slice[0]);
+
+    payload.read<float>();
+
+    slice = payload.asSlice();
+    EXPECT_EQ(4U, slice.getNumberOfElements());
+    EXPECT_EQ(&data[0], &slice[0]);
 }

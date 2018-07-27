@@ -81,24 +81,26 @@ TEST(DeserialzeLittleEndianTest, skipPositions)
 
 TEST(DeserialzeLittleEndianTest, shouldReadData)
 {
-    uint8_t data[18] = {0xAB,
-                        0xEF,
-                        0x12,
-                        0xA6,
-                        0xC0,
-                        0x1A,
-                        0x61,
-                        0xA9,
-                        0xF5,
-                        0x1E,
-                        0xAE,
-                        0x5F,
-                        0xA2,
-                        0xB0,
-                        0x00,
-                        0x7D,
-                        0x32,
-                        0xC2};
+    uint8_t data[18] = {
+            0xAB,
+            0xEF,
+            0x12,
+            0xA6,
+            0xC0,
+            0x1A,
+            0x61,
+            0xA9,
+            0xF5,
+            0x1E,
+            0xAE,
+            0x5F,
+            0xA2,
+            0xB0,
+            0x00,
+            0x7D,
+            0x32,
+            0xC2,
+    };
 
     DeserializeLittleEndian payload(data);
 
@@ -227,24 +229,26 @@ TEST(DeserialzeLittleEndianTest, readDouble)
 
 TEST(DeserialzeLittleEndianTest, peekTemplate)
 {
-    uint8_t data[18] = {0xAB,
-                        0xEF,
-                        0x12,
-                        0xA6,
-                        0xC0,
-                        0x1A,
-                        0x61,
-                        0xA9,
-                        0xF5,
-                        0x1E,
-                        0xAE,
-                        0x5F,
-                        0xA2,
-                        0xB0,
-                        0x00,
-                        0x7D,
-                        0x32,
-                        0xC2};
+    uint8_t data[18] = {
+            0xAB,
+            0xEF,
+            0x12,
+            0xA6,
+            0xC0,
+            0x1A,
+            0x61,
+            0xA9,
+            0xF5,
+            0x1E,
+            0xAE,
+            0x5F,
+            0xA2,
+            0xB0,
+            0x00,
+            0x7D,
+            0x32,
+            0xC2,
+    };
 
     DeserializeLittleEndian payload(data);
 
@@ -266,21 +270,23 @@ TEST(DeserialzeLittleEndianTest, peekTemplate)
 
 TEST(DeserialzeLittleEndianTest, readTemplate)
 {
-    uint8_t data[18] = {0xAB,
-                        0xEF,
-                        0x12,
-                        0x61,
-                        0xA9,
-                        0xF5,
-                        0x1E,
-                        0xAE,
-                        0x5F,
-                        0xA2,
-                        0xB0,
-                        0x00,
-                        0x7D,
-                        0x32,
-                        0xC2};
+    uint8_t data[18] = {
+            0xAB,
+            0xEF,
+            0x12,
+            0x61,
+            0xA9,
+            0xF5,
+            0x1E,
+            0xAE,
+            0x5F,
+            0xA2,
+            0xB0,
+            0x00,
+            0x7D,
+            0x32,
+            0xC2,
+    };
 
     DeserializeLittleEndian payload(data);
 
@@ -295,4 +301,20 @@ TEST(DeserialzeLittleEndianTest, readTemplate)
 
     uint64_t d64 = payload.read<uint64_t>();
     EXPECT_EQ(0xC2327D00B0A25FAEULL, d64);
+}
+
+TEST(DeserializeLittleEndianTest, shouldRetrieveReadDataAsSlice)
+{
+    uint8_t data[8];
+    DeserializeLittleEndian payload(data);
+
+    auto slice = payload.asSlice();
+    EXPECT_EQ(0U, slice.getNumberOfElements());
+    EXPECT_EQ(&data[0], &slice[0]);
+
+    payload.read<float>();
+
+    slice = payload.asSlice();
+    EXPECT_EQ(4U, slice.getNumberOfElements());
+    EXPECT_EQ(&data[0], &slice[0]);
 }

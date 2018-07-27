@@ -215,3 +215,19 @@ TEST(SerializeLittleEndianTest, storeDouble)
 
     EXPECT_EQ(8, payload.getPosition());
 }
+
+TEST(SerializeLitteEndianTest, shouldRetrieveWrittenOutputAsSlice)
+{
+    uint8_t data[8];
+    SerializeLittleEndian payload(data);
+
+    auto slice = payload.asSlice();
+    EXPECT_EQ(0U, slice.getNumberOfElements());
+    EXPECT_EQ(&data[0], &slice[0]);
+
+    payload.store(14.0f);
+
+    slice = payload.asSlice();
+    EXPECT_EQ(4U, slice.getNumberOfElements());
+    EXPECT_EQ(&data[0], &slice[0]);
+}
