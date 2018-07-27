@@ -50,15 +50,9 @@ public:
     {
     }
 
-    inline ~SerializeLittleEndian()
-    {
-    }
+    ~SerializeLittleEndian() = default;
 
-    inline SerializeLittleEndian(const SerializeLittleEndian& other) :
-        mBuffer(other.mBuffer),
-        mBegin(other.mBegin)
-    {
-    }
+    SerializeLittleEndian(const SerializeLittleEndian& other) = default;
 
     /**
      * Reset the read pointer to the beginning of the
@@ -214,15 +208,9 @@ public:
     {
     }
 
-    inline ~DeserializeLittleEndian()
-    {
-    }
+    ~DeserializeLittleEndian() = default;
 
-    inline DeserializeLittleEndian(const DeserializeLittleEndian& other) :
-        mBuffer(other.mBuffer),
-        mBegin(other.mBegin)
-    {
-    }
+    DeserializeLittleEndian(const DeserializeLittleEndian& other) = default;
 
     /**
      * Reset the read pointer to the beginning of the

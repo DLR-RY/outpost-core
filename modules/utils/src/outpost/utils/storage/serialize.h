@@ -62,13 +62,9 @@ public:
     {
     }
 
-    inline ~Serialize()
-    {
-    }
+    ~Serialize() = default;
 
-    inline Serialize(const Serialize& other) : mBuffer(other.mBuffer), mBegin(other.mBegin)
-    {
-    }
+    Serialize(const Serialize& other) = default;
 
     /**
      * Reset the read pointer to the beginning of the
@@ -276,13 +272,9 @@ public:
     {
     }
 
-    inline ~Deserialize()
-    {
-    }
+    ~Deserialize() = default;
 
-    inline Deserialize(const Deserialize& other) : mBuffer(other.mBuffer), mBegin(other.mBegin)
-    {
-    }
+    Deserialize(const Deserialize& other) = default;
 
     /**
      * Reset the read pointer to the beginning of the
