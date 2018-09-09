@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2018, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2018, Fabian Greif (DLR RY-AVS)
+
+class Gsl(Module):
+    def init(self, module):
+        module.name = "gsl"
+        module.description = """Guideline Support Library
+
+viboes/GSL - Microsoft/GSL fork supporting C++11/C++14/C++1z compilers"""
+
+    def prepare(self, module, options):
+        return True
+
+    def build(self, env):
+        env.copy('gsl/gsl', 'ext/gsl')
+
+
+def init(module):
+    module.name = "ext"
+    module.description = "External libraries (meta module)"
+
+    module.add_submodule(Gsl())
+
+def prepare(module, options):
+    return True
+
+def build(env):
+    pass
