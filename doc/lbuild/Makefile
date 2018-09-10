@@ -12,10 +12,10 @@
 # Authors:
 # - 2018, Fabian Greif (DLR RY-AVS)
 
-LBUILD=python3 ~/development/modm/library-builder/
+LBUILD=python3 ~/development/modm/lbuild/
 
 show-modules:
-	$(LBUILD) -r ../../outpost.lb discover-modules
+	$(LBUILD) -r ../../outpost.lb discover
 
 dependencies:
 	$(LBUILD) -r ../../outpost.lb dependencies > dep.dot
