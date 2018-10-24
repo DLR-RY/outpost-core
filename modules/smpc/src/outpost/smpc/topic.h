@@ -63,6 +63,13 @@ public:
      */
     ~TopicBase();
 
+    // disable copy constructor
+    TopicBase(const TopicBase&) = delete;
+
+    // disable assignment operator
+    TopicBase&
+    operator=(const TopicBase&) = delete;
+
     /**
      * Publish new data.
      *
@@ -77,13 +84,6 @@ protected:
     static TopicBase* listOfAllTopics;
 
 private:
-    // disable copy constructor
-    TopicBase(const TopicBase&);
-
-    // disable assignment operator
-    TopicBase&
-    operator=(const TopicBase&);
-
     static void
     clearSubscriptions();
 
@@ -140,9 +140,7 @@ public:
      *      it is necessary to hold all other threads which
      *      might also create or destroy topics and/or subscriptions.
      */
-    inline ~Topic()
-    {
-    }
+    ~Topic() = default;
 
     // disable copy constructor
     Topic(const Topic&) = delete;
