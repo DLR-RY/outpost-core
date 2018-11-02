@@ -42,9 +42,6 @@ else:
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
 
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
-
-# The tests use C++11
-envGlobal['CXXFLAGS_language'] = ['-std=c++0x']
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports='envGlobal')
 
 env = envGlobal.Clone()

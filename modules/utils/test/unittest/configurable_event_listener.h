@@ -51,9 +51,7 @@ public:
     {
     }
 
-    virtual ~ConfigurableEventListener()
-    {
-    }
+    virtual ~ConfigurableEventListener() = default;
 
     virtual void
     OnTestProgramStart(const testing::UnitTest& unit_test)
@@ -111,18 +109,7 @@ public:
     }
 
     virtual void
-    OnTestEnd(const testing::TestInfo& test_info)
-    {
-        if (showInlineFailures && test_info.result()->Failed())
-        {
-            testing::internal::ColoredPrintf(testing::internal::COLOR_RED, "[  FAILED  ]");
-            printf(" %s.%s\n\n", test_info.test_case_name(), test_info.name());
-        }
-        else if (showSuccesses && !test_info.result()->Failed())
-        {
-            eventListener->OnTestEnd(test_info);
-        }
-    }
+    OnTestEnd(const testing::TestInfo& test_info);
 
     virtual void
     OnTestCaseEnd(const testing::TestCase& test_case)

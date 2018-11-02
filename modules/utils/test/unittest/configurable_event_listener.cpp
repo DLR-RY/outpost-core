@@ -13,6 +13,20 @@
 
 #include "configurable_event_listener.h"
 
+void
+unittest::ConfigurableEventListener::OnTestEnd(const testing::TestInfo& test_info)
+{
+    if (showInlineFailures && test_info.result()->Failed())
+    {
+        testing::internal::ColoredPrintf(testing::internal::COLOR_RED, "[  FAILED  ]");
+        printf(" %s.%s\n\n", test_info.test_case_name(), test_info.name());
+    }
+    else if (showSuccesses && !test_info.result()->Failed())
+    {
+        eventListener->OnTestEnd(test_info);
+    }
+}
+
 unittest::ConfigurableEventListener*
 unittest::registerConfigurableEventListener()
 {
