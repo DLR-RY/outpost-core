@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2016-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,14 +8,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2016-2017, Fabian Greif (DLR RY-AVS)
+ * - 2016-2018, Fabian Greif (DLR RY-AVS)
  * - 2016, Benjamin Weps (DLR SC-SRV)
  */
 
 #ifndef OUTPOST_UTILS_MEMBER_FUNCTION_STORE_H
 #define OUTPOST_UTILS_MEMBER_FUNCTION_STORE_H
 
-#include <outpost/utils/callable.h>
+#include <outpost/base/callable.h>
 
 #include <stddef.h>
 

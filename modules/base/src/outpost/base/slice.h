@@ -14,8 +14,6 @@
 #ifndef OUTPOST_SLICE_H
 #define OUTPOST_SLICE_H
 
-#include <outpost/utils/meta.h>
-
 #include <stddef.h>
 
 #include <gsl/span>

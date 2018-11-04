@@ -11,7 +11,7 @@
  * - 2014-2018, Fabian Greif (DLR RY-AVS)
  */
 
-#include <outpost/utils/container/slice.h>
+#include <outpost/base/slice.h>
 
 #include <unittest/harness.h>
 

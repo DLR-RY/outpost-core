@@ -19,8 +19,8 @@
 #include "serialize_storage_traits.h"
 #include "serialize_traits.h"
 
+#include <outpost/base/slice.h>
 #include <outpost/utils/container/fixed_size_array.h>
-#include <outpost/utils/container/slice.h>
 
 #include <stddef.h>
 #include <stdint.h>

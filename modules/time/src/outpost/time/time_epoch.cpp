@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,14 +8,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2013-2018, Fabian Greif (DLR RY-AVS)
  * - 2014, Benjamin Weps (DLR SC-SRV)
  * - 2015, Annika Ofenloch (DLR RY-AVS)
  */
 
 #include "time_epoch.h"
 
-#include <outpost/utils/container/slice.h>
+#include <outpost/base/slice.h>
 
 using namespace outpost::time;
 

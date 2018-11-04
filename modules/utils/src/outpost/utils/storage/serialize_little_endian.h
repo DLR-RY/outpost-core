@@ -18,7 +18,7 @@
 
 #include "serialize_little_endian_traits.h"
 
-#include <outpost/utils/container/slice.h>
+#include <outpost/base/slice.h>
 
 #include <stddef.h>
 #include <stdint.h>
