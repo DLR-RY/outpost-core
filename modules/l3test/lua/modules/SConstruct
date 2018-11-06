@@ -78,7 +78,6 @@ envGlobal = envGlobalTemp
 
 env = envGlobal.Clone()
 
-env['CXXFLAGS_language'] = ['-std=c++0x']
 env.Append(CPPPATH=[rootpath + 'src'])
 env.Append(CPPPATH=['.', '..'])
 

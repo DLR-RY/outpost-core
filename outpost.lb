@@ -12,17 +12,21 @@
 # Authors:
 # - 2015, 2017, Fabian Greif (DLR RY-AVS)
 
-def init(repo):
-	repo.name = "outpost"
 
-	repo.add_option(StringOption(
+def init(repo):
+    repo.name = "outpost"
+
+    repo.add_option(StringOption(
         name="target",
-	    default="hosted",
-	    description="Target architecture for the library."))
-	repo.add_option(BooleanOption(
-	    name="test",
+        default="hosted",
+        description="Target architecture for the library."))
+    repo.add_option(BooleanOption(
+        name="test",
         default=False,
         description="Include unit test source code."))
+
+    repo.add_ignore_patterns("*SConscript", "*SConstruct", "*.sconsign.dblite")
+
 
 def prepare(repo, options):
     repo.find_modules_recursive(".", modulefile="module.lb")

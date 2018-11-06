@@ -12,20 +12,27 @@
 # Authors:
 # - 2015, 2017-2018, Fabian Greif (DLR RY-AVS)
 
+
 def init(module):
     module.name = "utils"
     module.description = "Useful utilities."
 
+
 def prepare(module, options):
-    module.depends("outpost:ext:gsl")
+    module.depends("outpost:base")
     return True
+
 
 def build(env):
     env.copy('src', 'src')
 
     if env[':test']:
-        env.copy('test', 'test')
+        env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))
 
-        env.copy('ext/gmock-1.7.0/fused-src/gtest', 'ext/gtest')
-        env.copy('ext/gmock-1.7.0/fused-src/gmock', 'ext/gmock')
-        env.copy('ext/gmock-1.7.0/fused-src/gmock-gtest-all.cc', 'ext/gmock-gtest-all.cc')
+        env.copy('ext/googletest-1.8.0-fused/gtest', 'ext/gtest')
+        env.copy('ext/googletest-1.8.0-fused/gmock', 'ext/gmock')
+        env.copy('ext/googletest-1.8.0-fused/gmock-gtest-all.cc', 'ext/gmock-gtest-all.cc')
+
+        env.copy('ext/rapidcheck/src')
+        env.copy('ext/rapidcheck/include')
+        env.copy('ext/rapidcheck/extras')

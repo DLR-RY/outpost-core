@@ -12,25 +12,34 @@
 # Authors:
 # - 2015, 2017-2018, Fabian Greif (DLR RY-AVS)
 
+import os
+import subprocess
+
+
 def init(module):
     module.name = "l3test"
     module.description = "Low Level Lua tests"
+
 
 def prepare(module, options):
     module.depends(":utils")
     return True
 
+
 def build(env):
-    env.copy('src', 'test')
+    env.copy('src', 'src')
 
     if env[':test']:
         env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))
 
-    env.copy('lua/modules/l3test', 'test/modules/l3test')
-    env.copy('ext/lua-5.2.3/src', 'ext/lua', ignore=env.ignore_files('lua.c', 'luac.c'))
+    env.copy('ext/lua-5.3.4/src', 'ext/lua', ignore=env.ignore_files('lua.c', 'luac.c'))
 
     env.copy('lua/src', 'lua/src')
+    env.copy('lua/modules/l3test/channel.cpp', 'src/modules/l3test/channel.cpp')
+    env.copy('lua/modules/l3test/channel.h', 'src/modules/l3test/channel.h')
     env.copy('ext/luassert', 'lua/src/luassert')
     env.copy('ext/say', 'lua/src/say')
 
-    env.copy('bin', 'bin')
+    # Build the Lua modules and include only the build objects
+    subprocess.run(["make", "build-lua"], cwd=os.path.dirname(os.path.realpath(__file__)))
+    env.copy('../../bin/lua', 'bin/lua', ignore=env.ignore_files("*.map"))

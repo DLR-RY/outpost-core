@@ -12,17 +12,20 @@
 # Authors:
 # - 2015, 2017-2018, Fabian Greif (DLR RY-AVS)
 
+
 def init(module):
     module.name = "rtos"
     module.description = "Operating system abstraction layer"
 
+
 def prepare(module, options):
-    module.depends(":utils", ":time")
+    module.depends(":time")
 
     if options[':target'] in ['posix', 'rtems', 'freertos', 'bare-metal']:
         return True
     else:
         return False
+
 
 def build(env):
     env.copy('src', 'src')
@@ -30,5 +33,5 @@ def build(env):
     if env[':target'] == 'posix':
         env.copy('arch/posix', 'src')
     else:
-        print("TODO")
+        print("Currently not supported")
         exit(1)

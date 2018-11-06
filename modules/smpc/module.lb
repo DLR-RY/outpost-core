@@ -12,13 +12,16 @@
 # Authors:
 # - 2015, 2017-2018, Fabian Greif (DLR RY-AVS)
 
+
 def init(module):
     module.name = "smpc"
     module.description = "Simple message passing channel"
 
+
 def prepare(module, options):
-    module.depends(":utils")
+    module.depends(":rtos")
     return True
+
 
 def build(env):
     env.copy('src', 'src')

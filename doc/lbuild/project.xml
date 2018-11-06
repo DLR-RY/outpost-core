@@ -2,6 +2,7 @@
 <library>
   <options>
     <option name=":target">posix</option>
+    <option name=":test">true</option>
   </options>
   <modules>
   </modules>

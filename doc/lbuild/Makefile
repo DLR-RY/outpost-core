@@ -22,6 +22,11 @@ dependencies:
 	dot -Grankdir=BT -Tpng dep.dot > dep.png
 	xdg-open dep.png
 
+build-all:
+	#$(RM) -r source
+	$(LBUILD) -r ../../outpost.lb --path source build --module "outpost:*"
+	scons -j3 -C source
+
 clean:
 	$(RM) dep.dot
 	$(RM) dep.png

@@ -14,12 +14,12 @@
 
 
 def init(module):
-    module.name = "comm"
-    module.description = "Communication protocols"
+    module.name = "base"
+    module.description = "Core data structures used in all other modules"
 
 
 def prepare(module, options):
-    module.depends(":utils")
+    module.depends("outpost:ext:gsl")
     return True
 
 
@@ -27,4 +27,5 @@ def build(env):
     env.copy('src', 'src')
 
     if env[':test']:
-        env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))
+        env.copy('test', 'test')
+        env.template('../../tpl/SConstruct.in', 'SConstruct')

@@ -30,9 +30,11 @@ def init(module):
     module.name = "ext"
     module.description = "External libraries (meta module)"
 
+
 def prepare(module, options):
     module.add_submodule(Gsl())
     return True
+
 
 def build(env):
     pass

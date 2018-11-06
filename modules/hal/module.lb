@@ -12,16 +12,19 @@
 # Authors:
 # - 2018, Fabian Greif (DLR RY-AVS)
 
+
 def init(module):
     module.name = "hal"
     module.description = "Device driver interfaces"
+
 
 def prepare(module, options):
     module.depends(":utils")
     return True
 
+
 def build(env):
     env.copy('src', 'src')
 
     if env[':test']:
-        env.copy('test', 'test')
+        env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))
