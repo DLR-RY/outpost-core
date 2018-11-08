@@ -28,11 +28,3 @@ def build(env):
 
     if env[':test']:
         env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))
-
-        env.copy('ext/googletest-1.8.0-fused/gtest', 'ext/gtest')
-        env.copy('ext/googletest-1.8.0-fused/gmock', 'ext/gmock')
-        env.copy('ext/googletest-1.8.0-fused/gmock-gtest-all.cc', 'ext/gmock-gtest-all.cc')
-
-        env.copy('ext/rapidcheck/src')
-        env.copy('ext/rapidcheck/include')
-        env.copy('ext/rapidcheck/extras')

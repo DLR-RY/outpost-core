@@ -12,19 +12,22 @@
 # Authors:
 # - 2018, Fabian Greif (DLR RY-AVS)
 
-LBUILD=python3 ~/development/modm/lbuild/
+LBUILD=lbuild
 
 show-modules:
-	$(LBUILD) -r ../../outpost.lb discover
+	$(LBUILD) discover
 
 dependencies:
-	$(LBUILD) -r ../../outpost.lb dependencies > dep.dot
+	$(LBUILD) --option=":test=False" dependencies > dep.dot
 	dot -Grankdir=BT -Tpng dep.dot > dep.png
+	$(LBUILD) --option=":test=True" dependencies > dep_test.dot
+	dot -Grankdir=BT -Tpng dep_test.dot > dep_test.png
 	xdg-open dep.png
+	xdg-open dep_test.png
 
 build-all:
 	#$(RM) -r source
-	$(LBUILD) -r ../../outpost.lb --path source build --module "outpost:*"
+	$(LBUILD) --path source build --module "outpost:*"
 	scons -j3 -C source
 
 clean:

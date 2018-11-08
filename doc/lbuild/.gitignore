@@ -1,2 +1,6 @@
 dep.dot
 dep.png
+dep_test.dot
+dep_test.png
+source/
+*.log

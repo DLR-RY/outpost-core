@@ -20,6 +20,10 @@ def init(module):
 
 def prepare(module, options):
     module.depends("outpost:ext:gsl")
+
+    if options[':test']:
+        module.depends("outpost:ext:googletest",
+                       "outpost:ext:rapidcheck")
     return True
 
 

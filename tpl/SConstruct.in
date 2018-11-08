@@ -27,7 +27,7 @@ envGlobal = Environment(
         ENV=os.environ)
 Help(vars.GenerateHelpText(envGlobal))
 
-buildfolder = os.path.join(rootpath, 'build')
+buildfolder = 'build'
 if envGlobal['coverage']:
     envGlobal.Tool('compiler_hosted_gcc_coverage')
     envGlobal.Tool('settings_buildpath')
@@ -37,11 +37,17 @@ else:
     envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'test/unittest'))
 
+envGlobal['CCACHE_BASEDIR'] = envGlobal['BUILDPATH']
+envGlobal['CXX_bak'] = envGlobal['CXX']
+envGlobal['CXX'] = "ccache $CXX_bak"
+
 envGlobal.Append(CPPPATH=['src', 'ext'])
 envGlobal.Append(LIBS=['rt', 'pthread', 'dl'])
 envGlobal.Append(CPPDEFINES=['LUA_USE_LINUX'])
 
 env = envGlobal.Clone()
+
+objects = []
 
 files = env.Glob('src/*.cpp')
 files += env.Glob('src/*/*.cpp')
@@ -55,7 +61,8 @@ env.RemoveFromList('CCFLAGS_warning', [
     '-Wcast-align'])
 env.Append(CCFLAGS_warning=['-Wno-cast-qual'])
 
-files += env.Glob('ext/lua/*.c')
+for file in env.Glob('ext/lua/*.c'):
+    objects.append(env.Object(file))
 
 # Build the test files
 env = envGlobal.Clone()
@@ -87,5 +94,5 @@ files += env.Glob('test/*/*/*.cpp')
 files += env.Glob('test/*/*/*/*.cpp')
 files += env.Glob('test/*/*/*/*/*.cpp')
 
-envGlobal.Alias('build', env.Program('runner', files))
+envGlobal.Alias('build', env.Program('runner', objects + files))
 envGlobal.Default('build')
