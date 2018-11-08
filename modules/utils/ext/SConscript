@@ -6,7 +6,7 @@ Import('envGlobal')
 
 if envGlobal['ARCHITECTURE'] == 'hosted':
     # Build GoogleTest
-    googletest = 'googletest-1.8.0-fused'
+    googletest = 'googletest-1.8.1-fused'
     envGlobal.Append(CPPPATH=[
         os.path.abspath('%s' % googletest),
     ])
