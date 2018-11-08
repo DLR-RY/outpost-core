@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
+ * - 2018, Jan Malburg (DLR RY-AVS)
  */
 
 #include <outpost/utils/storage/bitfield.h>
@@ -78,6 +79,12 @@ TEST_F(BitfieldTest, readSingleByte2)
 {
     uint16_t value = Bitfield::read<16, 23>(data);
     EXPECT_EQ(0x56U, value);
+}
+
+TEST_F(BitfieldTest, readoverThreeBytes)
+{
+    uint16_t value = Bitfield::read<4, 19>(data);
+    EXPECT_EQ(0x2345U, value);
 }
 
 TEST_F(BitfieldTest, readTwoBytesFromStart)
@@ -153,6 +160,39 @@ TEST_F(BitfieldTest, writeTwoBytesWithOffset2)
     EXPECT_EQ(0xFFU, buffer[0]);
     EXPECT_EQ(0x00U, buffer[1]);
     EXPECT_EQ(0x00U, buffer[2]);
+    EXPECT_EQ(0xFFU, buffer[3]);
+}
+
+TEST_F(BitfieldTest, writeIntoTowBytes)
+{
+    uint8_t buffer[4] = {0xFF, 0xFF, 0xFF, 0xFF};
+
+    Bitfield::write<13, 20>(buffer, 0x34);
+    EXPECT_EQ(0xFFU, buffer[0]);
+    EXPECT_EQ(0xF9U, buffer[1]);
+    EXPECT_EQ(0xA7U, buffer[2]);
+    EXPECT_EQ(0xFFU, buffer[3]);
+}
+
+TEST_F(BitfieldTest, writeIntoThreeBytes)
+{
+    uint8_t buffer[4] = {0xFF, 0xFF, 0xFF, 0xFF};
+
+    Bitfield::write<4, 19>(buffer, 0x1234);
+    EXPECT_EQ(0xF1U, buffer[0]);
+    EXPECT_EQ(0x23U, buffer[1]);
+    EXPECT_EQ(0x4FU, buffer[2]);
+    EXPECT_EQ(0xFFU, buffer[3]);
+}
+
+TEST_F(BitfieldTest, writeIntoThreeBytes2)
+{
+    uint8_t buffer[4] = {0xFF, 0xFF, 0xFF, 0xFF};
+
+    Bitfield::write<5, 20>(buffer, 0x1234);
+    EXPECT_EQ(0xF8U, buffer[0]);
+    EXPECT_EQ(0x91U, buffer[1]);
+    EXPECT_EQ(0xA7U, buffer[2]);
     EXPECT_EQ(0xFFU, buffer[3]);
 }
 

@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
+ * - 2018       Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_UTILS_BITFIELD_H
@@ -29,6 +30,16 @@ namespace outpost
 class Bitfield
 {
 public:
+    // Disable compiler generated functions
+    Bitfield() = delete;
+
+    ~Bitfield() = delete;
+
+    Bitfield(const Bitfield& other) = delete;
+
+    Bitfield&
+    operator=(const Bitfield& other) = delete;
+
     /**
      * Read a single bit from a byte stream.
      *
@@ -103,17 +114,53 @@ public:
     write(uint8_t* byteArray, uint16_t value);
 
 private:
-    // Disable compiler generated functions
-    Bitfield();
+    static constexpr int numberOfBitsPerByte = 8;
 
-    ~Bitfield();
+    static constexpr inline int
+    affectedBytes(int start, int end)
+    {
+        return ((end / numberOfBitsPerByte) - (start / numberOfBitsPerByte)) + 1;
+    }
 
-    Bitfield(const Bitfield& other);
+    /**
+     * Base Version no instantiation, only specializations are used
+     */
+    template <int start, int end, int affectedBytes>
+    struct Reader
+    {
+        inline static uint16_t
+        read(const uint8_t* byteArray);
+    };
 
-    Bitfield&
-    operator=(const Bitfield& other);
+    /**
+     * The specialization when a single byte is affected
+     */
+    template <int start, int end>
+    struct Reader<start, end, 1>
+    {
+        inline static uint16_t
+        read(const uint8_t* byteArray);
+    };
 
-    static const int numberOfBitsPerByte = 8;
+    /**
+     * The specialization when two bytes are affected
+     */
+    template <int start, int end>
+    struct Reader<start, end, 2>
+    {
+        inline static uint16_t
+        read(const uint8_t* byteArray);
+    };
+
+    /**
+     * The specialization when three bytes are affected
+     */
+    template <int start, int end>
+    struct Reader<start, end, 3>
+    {
+        inline static uint16_t
+        read(const uint8_t* byteArray);
+    };
 };
 
 }  // namespace outpost
