@@ -17,11 +17,11 @@
 
 #include <outpost/rtos/mutex_guard.h>
 
-outpost::smpc::TopicBase* outpost::smpc::TopicBase::listOfAllTopics = 0;
+outpost::smpc::TopicBase* outpost::smpc::TopicBase::listOfAllTopics = nullptr;
 
 outpost::smpc::TopicBase::TopicBase() :
     ImplicitList<TopicBase>(listOfAllTopics, this),
-    mSubscriptions(0)
+    mSubscriptions(nullptr)
 {
 }
 
@@ -35,7 +35,7 @@ outpost::smpc::TopicBase::publishTypeUnsafe(void* message) const
 {
     rtos::MutexGuard lock(mMutex);
 
-    for (Subscription* subscription = mSubscriptions; subscription != 0;
+    for (Subscription* subscription = mSubscriptions; subscription != nullptr;
          subscription = subscription->mNextTopicSubscription)
     {
         subscription->execute(message);
@@ -45,8 +45,8 @@ outpost::smpc::TopicBase::publishTypeUnsafe(void* message) const
 void
 outpost::smpc::TopicBase::clearSubscriptions()
 {
-    for (TopicBase* it = listOfAllTopics; it != 0; it = it->getNext())
+    for (TopicBase* it = listOfAllTopics; it != nullptr; it = it->getNext())
     {
-        it->mSubscriptions = 0;
+        it->mSubscriptions = nullptr;
     }
 }
