@@ -26,5 +26,5 @@ files += env.Glob('unittest/*/*/*.cpp')
 
 objects = []
 for file in files:
-	objects.append(env.Object(file))
+    objects.append(env.Object(file))
 envGlobal.Append(objects_unittest=objects)

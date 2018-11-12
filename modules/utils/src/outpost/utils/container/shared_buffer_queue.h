@@ -80,10 +80,10 @@ public:
     isFull() = 0;
 
 protected:
-	/**
-	 * \brief Constructor for a SharedBufferQueueBase. May only be called by its derivatives (i.e. SharedBufferQueue)
-	 * \param N Maximum number of elements in the queue
-	 */
+    /**
+     * \brief Constructor for a SharedBufferQueueBase. May only be called by its derivatives (i.e. SharedBufferQueue)
+     * \param N Maximum number of elements in the queue
+     */
     inline SharedBufferQueueBase(size_t N) : outpost::rtos::Queue<size_t>(N)
     {
     }
@@ -97,9 +97,9 @@ template <size_t N>
 class SharedBufferQueue : public SharedBufferQueueBase
 {
 public:
-	/**
-	 *	\brief Standard constructor.
-	 */
+    /**
+     *	\brief Standard constructor.
+     */
     SharedBufferQueue() : SharedBufferQueueBase(N), mItemsInQueue(0), mLastIndex(0)
     {
         for (size_t i = 0; i < N; i++)

@@ -42,10 +42,10 @@ namespace utils
 class SharedRingBuffer
 {
 public:
-	/**
-	 * \brief Constructor for a SharedRingBuffer based on a Slice of SharedBufferPointers and a Slice byte array of flags.
-	 * Both have to have the same length.
-	 */
+    /**
+     * \brief Constructor for a SharedRingBuffer based on a Slice of SharedBufferPointers and a Slice byte array of flags.
+     * Both have to have the same length.
+     */
     inline SharedRingBuffer(outpost::Slice<SharedBufferPointer> buffer,
                            outpost::Slice<uint8_t> flags) :
         mBuffer(buffer),
@@ -271,17 +271,17 @@ template <size_t totalNumberOfElements>
 class SharedRingBufferStorage : public SharedRingBuffer
 {
 public:
-	/**
-	 * \brief Standard constructor
-	 */
+    /**
+     * \brief Standard constructor
+     */
     inline SharedRingBufferStorage() :
         SharedRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags))
     {
     }
 
-	/**
-	 * \brief Standard detructor
-	 */
+    /**
+     * \brief Standard detructor
+     */
     virtual ~SharedRingBufferStorage() = default;
 
 private:

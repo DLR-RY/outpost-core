@@ -31,37 +31,37 @@ namespace utils
 class SharedBufferPoolBase
 {
 public:
-	/**
-	 * \brief Allocation of an unused SharedBufferPoiner from the pool.
-	 *
-	 * \param pointer Reference to the SharedBufferPointer
-	 * \return Returns true if a valid SharedBudderPointer was found, otherwise false.
-	 */
+    /**
+     * \brief Allocation of an unused SharedBufferPoiner from the pool.
+     *
+     * \param pointer Reference to the SharedBufferPointer
+     * \return Returns true if a valid SharedBudderPointer was found, otherwise false.
+     */
     virtual bool
     allocate(SharedBufferPointer& pointer) = 0;
 
     /**
-	 * \brief Getter function for the overall number of elements in the pool.
-	 *
-	 * \return Returns the overall number of items in the pool, including occupied and unused buffers.
-	 */
+     * \brief Getter function for the overall number of elements in the pool.
+     *
+     * \return Returns the overall number of items in the pool, including occupied and unused buffers.
+     */
     virtual size_t
     numberOfElements() const = 0;
 
     /**
-	 * \brief Getter function for the number of free elements in the pool.
-	 *
-	 * \return Returns the number of unused items in the pool.
-	 */
+     * \brief Getter function for the number of free elements in the pool.
+     *
+     * \return Returns the number of unused items in the pool.
+     */
     virtual size_t
     numberOfFreeElements() const = 0;
 
     /**
-	 * \brief Default destructor.
-	 *
-	 * Should not be called unless absolutely certain that all buffers in the pool are unused,
-	 * since this might free their underlying memory.
-	 */
+     * \brief Default destructor.
+     *
+     * Should not be called unless absolutely certain that all buffers in the pool are unused,
+     * since this might free their underlying memory.
+     */
     virtual ~SharedBufferPoolBase() = default;
 };
 
@@ -85,21 +85,21 @@ public:
     }
 
     /**
-	 * \brief Default destructor.
-	 *
-	 * Should not be called unless absolutely certain that all buffers in the pool are unused.
-	 */
+     * \brief Default destructor.
+     *
+     * Should not be called unless absolutely certain that all buffers in the pool are unused.
+     */
     virtual ~SharedBufferPool() = default;
 
-	/**
-	 * \brief Allocation of an unused SharedBufferPoiner from the pool.
-	 *
-	 *  When looking for an unused element,
-	 *  the element next to the one that was allocated last is considered first.
-	 *
-	 * \param pointer Reference to the SharedBufferPointer
-	 * \return Returns true if a valid SharedBudderPointer was found, otherwise false.
-	 */
+    /**
+     * \brief Allocation of an unused SharedBufferPoiner from the pool.
+     *
+     *  When looking for an unused element,
+     *  the element next to the one that was allocated last is considered first.
+     *
+     * \param pointer Reference to the SharedBufferPointer
+     * \return Returns true if a valid SharedBudderPointer was found, otherwise false.
+     */
     bool
     allocate(SharedBufferPointer& pointer) override
     {
@@ -121,10 +121,10 @@ public:
     }
 
     /**
-	 * \brief Prints the current state (used, unused) of all SharedBufferPointers in the pool.
-	 *
-	 * Used for optimization and debugging only.
-	 */
+     * \brief Prints the current state (used, unused) of all SharedBufferPointers in the pool.
+     *
+     * Used for optimization and debugging only.
+     */
     void
     print() const
     {
@@ -144,10 +144,10 @@ public:
     }
 
     /**
-	 * \brief Getter function for the overall number of elements in the pool.
-	 *
-	 * \return Returns the overall number of items in the pool, including occupied and unused buffers.
-	 */
+     * \brief Getter function for the overall number of elements in the pool.
+     *
+     * \return Returns the overall number of items in the pool, including occupied and unused buffers.
+     */
     inline size_t
     numberOfElements() const override
     {
@@ -155,10 +155,10 @@ public:
     }
 
     /**
-	 * \brief Getter function for the number of free elements in the pool.
-	 *
-	 * \return Returns the number of unused items in the pool.
-	 */
+     * \brief Getter function for the number of free elements in the pool.
+     *
+     * \return Returns the number of unused items in the pool.
+     */
     size_t
     numberOfFreeElements() const override
     {
