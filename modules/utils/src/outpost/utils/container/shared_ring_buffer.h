@@ -22,11 +22,13 @@
 #ifndef MU_COMMON_UTILS_SMART_RING_BUFFER_H
 #define MU_COMMON_UTILS_SMART_RING_BUFFER_H
 
+#include "shared_buffer.h"
+
 #include <outpost/utils/container/slice.h>
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-#include "shared_buffer.h"
 
 namespace outpost
 {
@@ -43,12 +45,12 @@ class SharedRingBuffer
 {
 public:
     /**
-     * \brief Constructor for a SharedRingBuffer based on a Slice of SharedBufferPointers and a Slice byte array of flags.
-     * Both have to have the same length. Flags can be used by superordinate data structures to mark elements,
-     * e.g. as being in use or ready for deletion.
+     * \brief Constructor for a SharedRingBuffer based on a Slice of SharedBufferPointers and a
+     * Slice byte array of flags. Both have to have the same length. Flags can be used by
+     * superordinate data structures to mark elements, e.g. as being in use or ready for deletion.
      */
     inline SharedRingBuffer(outpost::Slice<SharedBufferPointer> buffer,
-                           outpost::Slice<uint8_t> flags) :
+                            outpost::Slice<uint8_t> flags) :
         mBuffer(buffer),
         mFlags(flags),
         mReadIndex(0),
@@ -129,7 +131,8 @@ public:
 
     /**
      * \brief Reads one element from the SharedRingBuffer
-     * \return Returns the element at the current read pointer. The user has to perform all validity checks.
+     * \return Returns the element at the current read pointer. The user has to perform all validity
+     * checks.
      */
     inline const SharedBufferPointer&
     read() const
@@ -139,7 +142,8 @@ public:
 
     /**
      * \brief Reads one element from the SharedRingBuffer
-     * \return Returns the element at the current read pointer. The user has to perform all validity checks.
+     * \return Returns the element at the current read pointer. The user has to perform all validity
+     * checks.
      */
     inline SharedBufferPointer&
     read()
@@ -170,7 +174,8 @@ public:
     /**
      * \brief Deletes the element at the current read pointer from the SharedRingBuffer.
      *
-     * \return Returns true if the element was removed, false if the buffer is empty and no element was removed.
+     * \return Returns true if the element was removed, false if the buffer is empty and no element
+     * was removed.
      */
     inline bool
     pop()

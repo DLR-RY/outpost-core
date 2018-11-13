@@ -26,26 +26,26 @@ namespace outpost
 {
 namespace utils
 {
-
 /**
  * \ingroup SharedBuffer
- * \brief Reference counting byte buffer as the underlying data structure for the SharedBufferPointer
+ * \brief Reference counting byte buffer as the underlying data structure for the
+ * SharedBufferPointer
  */
 class SharedBuffer
 {
 public:
-
     /**
      * \brief Constructor for an empty (invalid) buffer.
      *
-     * Needed for array creation. The array then needs to be filled with setPointer(uint8_t*,size_t) or SharedBuffer::setData
+     * Needed for array creation. The array then needs to be filled with setPointer(uint8_t*,size_t)
+     * or SharedBuffer::setData
      */
     SharedBuffer();
 
     /**
-     * \brief Constructor for creating a SharedBuffer instance from a pointer and a given size in bytes.
-     * \param data Pointer to the byte array.
-     * \param e Size of the array in bytes.
+     * \brief Constructor for creating a SharedBuffer instance from a pointer and a given size in
+     * bytes.
+     * \param slice Slice holding the byte array.
      */
     SharedBuffer(outpost::Slice<uint8_t> slice) : mReferenceCounter(0), mBuffer(slice)
     {
@@ -54,7 +54,8 @@ public:
     /**
      * \brief Standard destructor
      *
-     * Should only be called manually if absolutely certain that the buffer is not in use or part of a pool.
+     * Should only be called manually if absolutely certain that the buffer is not in use or part of
+     * a pool.
      */
     virtual ~SharedBuffer();
 
@@ -75,18 +76,19 @@ public:
 
     /**
      * \brief Indexed access to te elements of the underlying byte array
-     * \param index Index to be returned. Warning: Any checks for valid index ranges need to be performed by the caller.
+     * \param index Index to be returned. Warning: Any checks for valid index ranges need to be
+     * performed by the caller.
      * \return Byte value at the specified index
      */
     inline uint8_t& operator[](size_t index) const
     {
-    	return mBuffer[index];
+        return mBuffer[index];
     }
 
     /**
-     * \brief Setter function the pointer and size of an unused SharedBuffer. Nothing will happen, if the buffer is currently in use.
-     * \param data Pointer to the new byte buffer.
-     * \param e Size of the buffer in bytes.
+     * \brief Setter function the pointer and size of an unused SharedBuffer. Nothing will happen,
+     * if the buffer is currently in use.
+     * \param slice Slice holding the new byte buffer.
      */
     inline void
     setPointer(outpost::Slice<uint8_t> slice)
@@ -98,7 +100,8 @@ public:
     }
 
     /**
-     * \brief Getter function for the usage state of the SharedBuffer. Calls outpost::rtos::Mutex protected functions internally.
+     * \brief Getter function for the usage state of the SharedBuffer. Calls outpost::rtos::Mutex
+     * protected functions internally.
      * \return Returns true if the SharedBuffer is currently in use, false otherwise.
      */
     inline bool
@@ -122,9 +125,9 @@ public:
      * \return Return true if the underlying byte array is not a nullptr, false otherwise.
      */
     inline bool
-	isValid() const
+    isValid() const
     {
-    	return mBuffer.getNumberOfElements() > 0;
+        return mBuffer.getNumberOfElements() > 0;
     }
 
 private:
@@ -148,9 +151,9 @@ private:
     void
     decrementCount();
 
-
     /**
-     * \brief outpost::rtos::Mutex protected access to the usage state, derived from the reference counter.
+     * \brief outpost::rtos::Mutex protected access to the usage state, derived from the reference
+     * counter.
      *
      * Called internally by the member function isUsed().
      * Does not need to be called manually.
@@ -200,13 +203,13 @@ private:
     static outpost::rtos::Mutex mMutex;
 
     /**
-      * \brief Reference counter for the current usage state.
-      */
+     * \brief Reference counter for the current usage state.
+     */
     size_t mReferenceCounter;
 
     /**
-      * \brief Pointer to the underlying byte array.
-      */
+     * \brief Pointer to the underlying byte array.
+     */
     outpost::Slice<uint8_t> mBuffer;
 };
 
@@ -337,9 +340,11 @@ public:
     }
 
     /**
-     * \brief Getter function for the validity of a SharedBufferPointer and its underlying SharedBuffer.
+     * \brief Getter function for the validity of a SharedBufferPointer and its underlying
+     * SharedBuffer.
      *
-     * \return Returns true if the underlying SharedBuffer is neither a nullptr nor invalid, otherwise false.
+     * \return Returns true if the underlying SharedBuffer is neither a nullptr nor invalid,
+     * otherwise false.
      */
     inline bool
     isValid() const
@@ -348,9 +353,11 @@ public:
     }
 
     /**
-     * \brief Getter function for whether the current buffer is a nested buffer of some other SharedBufferPointer instance.
+     * \brief Getter function for whether the current buffer is a nested buffer of some other
+     * SharedBufferPointer instance.
      *
-     * \return Always returns false for instances of SharedBufferPointer, but needed for inheritance.
+     * \return Always returns false for instances of SharedBufferPointer, but needed for
+     * inheritance.
      */
     virtual inline bool
     isChild() const
@@ -359,13 +366,15 @@ public:
     }
 
     /**
-     * \brief Getter function for a child (nested) SharedBufferPointer that is working on the same SharedBuffer.
+     * \brief Getter function for a child (nested) SharedBufferPointer that is working on the same
+     * SharedBuffer.
      *
      * \param ptr Reference to which the nested buffer will be assigned
      * \param type Type id of the nested buffer for identification of purpose (e.g. protocol, etc.)
      * \param pOffset Offset of the nested SharedBufferPointer
      * \param length Length of the nested SharedBufferPointer in bytes
-     * \return Returns true if the underlying SharedBuffer is neither a nullptr nor invalid, otherwise wise.
+     * \return Returns true if the underlying SharedBuffer is neither a nullptr nor invalid,
+     * otherwise wise.
      */
     bool
     getChild(SharedChildPointer& ptr, uint16_t type, size_t pOffest, size_t length) const;
@@ -376,10 +385,11 @@ public:
     }
 
     /**
-     * \brief Dereferencing operator will return the underlying SharedBuffer to allow access to the data.
+     * \brief Dereferencing operator will return the underlying SharedBuffer to allow access to the
+     * data.
      *
-     * Warning: This also means that pointers to SharedBufferPointer instances may not be passed around,
-     * since this breaks the reference counting mechanism. Use references instead!
+     * Warning: This also means that pointers to SharedBufferPointer instances may not be passed
+     * around, since this breaks the reference counting mechanism. Use references instead!
      *
      * \return Returns a reference to the underlying SharedBuffer instance
      */
@@ -408,7 +418,8 @@ public:
      * A SharedBufferPointer instance is considered equal to a void pointer
      * if the pointer points to the underlying SharedBuffer instance.
      * \param other Void pointer to be compared to the SharedBuffer instance.
-     * \return Returns true if the void pointer points to the SharedBuffer instance, otherwise false.
+     * \return Returns true if the void pointer points to the SharedBuffer instance, otherwise
+     * false.
      */
     inline bool
     operator==(const void* other) const
@@ -436,7 +447,8 @@ public:
      * if the pointer points to the underlying SharedBuffer instance.
      * \see operator==(const void* other)
      * \param other Void pointer to be compared to the SharedBuffer instance.
-     * \return Returns true if the void pointer does not point to the SharedBuffer instance, otherwise false.
+     * \return Returns true if the void pointer does not point to the SharedBuffer instance,
+     * otherwise false.
      */
     inline bool
     operator!=(const void* other) const
@@ -511,7 +523,8 @@ public:
     }
 
     /**
-     * \brief Conversion function to an outpost::Slice slice of the underlying SharedBuffer including a possible offset.
+     * \brief Conversion function to an outpost::Slice slice of the underlying SharedBuffer
+     * including a possible offset.
      *
      * \return Returns a outpost::Slice of the data buffer.
      */
@@ -572,7 +585,8 @@ protected:
 
 /**
  * \ingroup SharedBuffer
- * \brief Nested derivative of SharedBufferPointer that also features a SharedBufferPointer to its parent.
+ * \brief Nested derivative of SharedBufferPointer that also features a SharedBufferPointer to its
+ * parent.
  */
 class SharedChildPointer : public SharedBufferPointer
 {
@@ -670,7 +684,8 @@ public:
     }
 
     /**
-     * \brief Getter function for whether  the SharedChildPointer is actually a child buffer of some valid parent.
+     * \brief Getter function for whether  the SharedChildPointer is actually a child buffer of some
+     * valid parent.
      *
      * \return Returns true if the SharedChildPointer instance's parent is valid.
      */

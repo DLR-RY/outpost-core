@@ -15,9 +15,10 @@ l * Copyright (c) 2017, German Aerospace Center (DLR)
 #ifndef OUTPOST_UTILS_SMART_OBJECT_POOL_H_
 #define OUTPOST_UTILS_SMART_OBJECT_POOL_H_
 
+#include "shared_buffer.h"
+
 #include <outpost/rtos/mutex_guard.h>
 #include <outpost/utils/container/list.h>
-#include "shared_buffer.h"
 
 namespace outpost
 {
@@ -43,7 +44,8 @@ public:
     /**
      * \brief Getter function for the overall number of elements in the pool.
      *
-     * \return Returns the overall number of items in the pool, including occupied and unused buffers.
+     * \return Returns the overall number of items in the pool, including occupied and unused
+     * buffers.
      */
     virtual size_t
     numberOfElements() const = 0;
@@ -67,7 +69,8 @@ public:
 
 /**
  * \ingroup SharedBuffer
- * \brief A SharedBufferPool holds SharedBuffer instances and allows for allocating matching SharedBufferPointer instances these when needed.
+ * \brief A SharedBufferPool holds SharedBuffer instances and allows for allocating matching
+ * SharedBufferPointer instances these when needed.
  *
  * \tparam E Length of a single element in bytes
  * \tparam N Number of elements
@@ -146,7 +149,8 @@ public:
     /**
      * \brief Getter function for the overall number of elements in the pool.
      *
-     * \return Returns the overall number of items in the pool, including occupied and unused buffers.
+     * \return Returns the overall number of items in the pool, including occupied and unused
+     * buffers.
      */
     inline size_t
     numberOfElements() const override

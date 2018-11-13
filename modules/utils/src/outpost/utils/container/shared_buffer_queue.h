@@ -15,8 +15,9 @@
 #ifndef OUTPOST_UTILS_SMART_BUFFER_QUEUE_H_
 #define OUTPOST_UTILS_SMART_BUFFER_QUEUE_H_
 
-#include <outpost/rtos/queue.h>
 #include "shared_buffer.h"
+
+#include <outpost/rtos/queue.h>
 
 namespace outpost
 {
@@ -28,7 +29,8 @@ namespace utils
  *
  * The standard RTOS/POSIX queues are not capable of handling SharedBufferPointers,
  * since they use pointers or standard constructors instead of references.
- * Hence, SharedBufferQueueBase inherits from outpost::rtos::Queue and adds a wrapper that keeps the references.
+ * Hence, SharedBufferQueueBase inherits from outpost::rtos::Queue and adds a wrapper that keeps the
+ * references.
  */
 class SharedBufferQueueBase : public outpost::rtos::Queue<size_t>
 {
@@ -47,42 +49,45 @@ public:
     send(SharedBufferPointer& data) = 0;
 
     /**
-     *	\brief Receive a SharedBufferPointer from the queue.
+     * \brief Receive a SharedBufferPointer from the queue.
      *
-     *	Can be either blocking (timeout > 0) or non-blocking (timeout = 0).
-     *	\param data Reference for the SharedBufferPointer to be received.
-     *	\param timeout Duration for which the caller is willing to wait for an incoming SharedBufferPointer
-     *	\return Returns true if a SharedBufferPointer was received, false otherwise (e.g. a timeout occured)
+     * Can be either blocking (timeout > 0) or non-blocking (timeout = 0).
+     * \param data Reference for the SharedBufferPointer to be received.
+     * \param timeout Duration for which the caller is willing to wait for an incoming
+     * SharedBufferPointer
+     * \return Returns true if a SharedBufferPointer was received, false
+     * otherwise (e.g. a timeout occured)
      */
     virtual bool
     receive(SharedBufferPointer& data,
             outpost::time::Duration timeout = outpost::time::Duration::infinity()) = 0;
 
     /**
-     *	\brief Getter function for the number of items currently stored in the queue.
-     *	\return Returns the number of items in the queue that are ready for receiving.
+     * \brief Getter function for the number of items currently stored in the queue.
+     * \return Returns the number of items in the queue that are ready for receiving.
      */
     virtual uint16_t
     getNumberOfItems() = 0;
 
     /**
-     *	\brief Checks whether the queue is currently empty.
-     *	\return Returns true if there are no elements in the queue waiting to be received, false otherwise.
+     * \brief Checks whether the queue is currently empty.
+     * \return Returns true if there are no elements in the queue waiting to be received, false
+     * otherwise.
      */
     virtual bool
     isEmpty() = 0;
 
     /**
-     *	\brief Checks whether there is a free slot in the queue.
-     *	\return Returns true if data can be sent to the queue, false otherwise.
+     * \brief Checks whether there is a free slot in the queue.
+     * \return Returns true if data can be sent to the queue, false otherwise.
      */
     virtual bool
     isFull() = 0;
 
 protected:
     /**
-     * \brief Constructor for a SharedBufferQueueBase. May only be called by its derivatives (i.e. SharedBufferQueue)
-     * \param N Maximum number of elements in the queue
+     * \brief Constructor for a SharedBufferQueueBase. May only be called by its derivatives (i.e.
+     * SharedBufferQueue) \param N Maximum number of elements in the queue
      */
     inline SharedBufferQueueBase(size_t N) : outpost::rtos::Queue<size_t>(N)
     {
@@ -91,14 +96,15 @@ protected:
 
 /**
  * \ingroup SharedBuffer
- * \brief Implementation of a outpost::rtos::Queue that stores all additional information needed for passing SharedBufferPointer instances.
+ * \brief Implementation of a outpost::rtos::Queue that stores all additional information needed for
+ * passing SharedBufferPointer instances.
  */
 template <size_t N>
 class SharedBufferQueue : public SharedBufferQueueBase
 {
 public:
     /**
-     *	\brief Standard constructor.
+     * \brief Standard constructor.
      */
     SharedBufferQueue() : SharedBufferQueueBase(N), mItemsInQueue(0), mLastIndex(0)
     {
@@ -109,8 +115,9 @@ public:
     }
 
     /**
-     *	\brief Checks whether the queue is currently empty.
-     *	\return Returns true if there are no elements in the queue waiting to be received, false otherwise.
+     * \brief Checks whether the queue is currently empty.
+     * \return Returns true if there are no elements in the queue waiting to be received, false
+     *otherwise.
      */
     bool
     isEmpty()
@@ -127,8 +134,8 @@ public:
     }
 
     /**
-     *	\brief Checks whether there is a free slot in the queue.
-     *	\return Returns true if data can be sent to the queue, false otherwise.
+     * \brief Checks whether there is a free slot in the queue.
+     * \return Returns true if data can be sent to the queue, false otherwise.
      */
     bool
     isFull()
@@ -182,13 +189,15 @@ public:
     }
 
     /**
-     *	\brief Receive a SharedBufferPointer from the queue.
-     *	\see SharedBufferQueueBase::receive(SharedBufferPointer&, outpost::time::Duration)
+     * \brief Receive a SharedBufferPointer from the queue.
+     * \see SharedBufferQueueBase::receive(SharedBufferPointer&, outpost::time::Duration)
      *
-     *	Can be either blocking (timeout > 0) or non-blocking (timeout = 0).
-     *	\param data Reference for the SharedBufferPointer to be received.
-     *	\param timeout Duration for which the caller is willing to wait for an incoming SharedBufferPointer
-     *	\return Returns true if a SharedBufferPointer was received, false otherwise (e.g. a timeout occured)
+     * Can be either blocking (timeout > 0) or non-blocking (timeout = 0).
+     * \param data Reference for the SharedBufferPointer to be received.
+     * \param timeout Duration for which the caller is willing to wait for an incoming
+     * SharedBufferPointer
+     * \return Returns true if a SharedBufferPointer was received, false
+     * otherwise (e.g. a timeout occured)
      */
     virtual bool
     receive(SharedBufferPointer& data,

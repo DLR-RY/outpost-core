@@ -42,9 +42,9 @@ SharedBuffer::decrementCount()
 
 bool
 SharedBufferPointer::getChild(SharedChildPointer& ptr,
-                             uint16_t type,
-                             size_t pOffset,
-                             size_t length) const
+                              uint16_t type,
+                              size_t pOffset,
+                              size_t length) const
 {
     bool res = false;
     if (isValid())
