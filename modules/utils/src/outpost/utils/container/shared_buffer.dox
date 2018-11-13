@@ -1,0 +1,195 @@
+/*!
+ *
+ * \defgroup    SharedBuffer
+ * \brief       Shared buffers and corresponding allocation and distribution classes
+ *
+ * SharedBuffer instances (and SharedBufferPointer instances, which are mostly applied by the user)
+ * provide a means to pre-allocate memory blocks (cf. SharedBufferPool) at system startup and fetch them from a pool as needed.
+ * The buffer itself will keep track of the number of references to it. Once it is not referenced (i.e. not needed) anymore,
+ * the SharedBufferPool will automatically consider it again for new allocation requests.
+ * As long as they are reference, SharedBufferPointers can be passed around the system without the need to ever copy their contents.
+ * This is especially useful for applications that push around big chunks of data by DMA transfers.
+ *
+ * In order to represent nested protocols (such as telemetry packets inside telemetry frames or similar),
+ * SharedChildPointer instances can be generated that also keep track of their parent buffer.
+ * Only if all parent and child buffers are not referenced by some part of the system,
+ * the buffer is considered unoccupied and may be reallocated.
+ *
+ * In order to share buffers among different parts of the system in a thread-safe fashion, SharedBufferQueue (based on outpost::rtos::Queue)
+ * and SharedRingBuffer can be used.
+ *
+ * The application of SharedBufferPointer instances and surrounding peripherals is best explained by a short pseudo-code example:
+ *
+ * Consider a system, that is composed of two subsytems A, B and C that shall communicate with each other.
+ *
+ * Subsystem A will periodically generate a report for which it needs memory. For this purpose,
+ * it holds a reference to the system-wide memory pool, from which it can allocate blocks.
+ * Data is then passed to a queue.
+ *
+ * \code{.cpp}
+ * class SubsystemA
+ * {
+ * public:
+ * 	SubsytemA(SharedBufferPoolBase& pool, SharedBufferQueueBase& queue) :
+ * 		mPool(pool),
+ * 		mQueue(queue)
+ * 	{
+ * 	}
+ *
+ * 	void run()
+ * 	{
+ * 		// Generate a message to the queue every 5 seconds
+ * 		while(true)
+ * 		{
+ * 			// Code block for releasing p after mQueue.send
+ * 			{
+ * 				SharedBufferPointer p;
+ * 				if(mPool.allocate(p))
+ * 				{
+ * 					// p now references a valid memory block
+ *
+ * 					// Generate data for p
+ * 					// ...
+ * 					// ...
+ * 					mQueue.send(p);
+ * 				}
+ * 			}
+ *
+ * 			delay(5000);
+ * 		}
+ * 	}
+ *
+ * 	SharedBufferPoolBase& mPool;
+ * 	SharedBufferQueueBase& mQueue;
+ * };
+ * \endcode
+ *
+ * Subsystem B will process messages from the queue and forward them to a serial interface.
+ * On request (onRequest()), it will also generate a report, for which it allocates memory from its own pool.
+ *
+ * \code{.cpp}
+ * class SubsystemB
+ * {
+ * public:
+ * 	SubsytemB(SharedBufferQueueBase& queue) :
+ * 		mQueue(queue)
+ * 	{
+ * 	}
+ *
+ * 	void run()
+ * 	{
+ * 		// Read messages from the queue, send them to a SerialInterface
+ * 		while(true)
+ * 		{
+ * 			// Code block for releasing p after mQueue.send
+ * 			{
+ * 				SharedBufferPointer p;
+ * 				if(mQueue.receive(p))
+ * 				{
+ * 					// p now references a valid memory block
+ * 					serial.write(&p, p.getLength());
+ * 				}
+ *
+ * 				// Note that p does not have to be freed here.
+ * 				// If there are no further references once this block ends,
+ * 				// p can be reallocated from the pool immediately.
+ * 			}
+ * 		}
+ * 	}
+ *
+ * 	void onRequest()
+ * 	{
+ * 		SharedBufferPointer p;
+ *		if(mMemoryPool.allocate(p))
+ *		{
+ *			// Generate report in p
+ *			// ...
+ *			// ...
+ *			// ...
+ *			// Forward it to the queue
+ *			mQueue.send(p);
+ *		}
+ * 	}
+ *
+ *		SerialInterface serial;
+ *		//MemoryPool containing 5 units of 16384 bytes each.
+ *		//Note: Every instance can have its own pool if needed.
+ *		//Note: Buffers will always (!) return to the pool they have been allocated from.
+ *		SharedBufferPool<5, 16384> mMemoryPool;
+ *		SharedBufferQueueBase& mQueue;
+ * };
+ * \endcode
+ *
+ * Subsystem C will receive packet data  that is surrounded by some extra protocol prefix
+ * from a serial interface, check the incoming packets for validity and
+ * forward the inner data to the queue.
+ * Note that the receive buffer will only be considered for reallocation once all its references and all references to its children
+ * are freed.
+ *
+ * \code{.cpp}
+ * class SubsystemC
+ * {
+ * public:
+ * 	SubsytemC(SharedBufferQueueBase& queue) :
+ * 		mQueue(queue)
+ * 	{
+ * 	}
+ *
+ * 	void run()
+ * 	{
+ * 		// Read messages from the queue, send them to a SerialInterface
+ * 		while(true)
+ * 		{
+ * 			// Code block for releasing p after mQueue.send
+ * 			{
+ * 				SharedBufferPointer p;
+ * 				if(mMemoryPool.allocate(p))
+ * 				{
+ * 					// read from a serial interface
+ * 					size_t length;
+ * 					if(serial.read(&p, length))
+ * 					{
+ * 						// the serial protocol can now be checked for validity
+ * 						// ..
+ * 						// ..
+ *
+ *						// Now, pass only the data part to the next layer.
+ *						// The buffer will only be considered unoccupied once all its child references are freed.
+ * 						SharedChildPointer ch;
+ * 						p.getChildBuffer(ch, protocolId, protocolOffset, p.getLength()-protocolOffset);
+ * 						mQueue.send(ch);
+ * 					}
+ * 				}
+ * 				// Note that p does not have to be freed here.
+ * 				// If there are no further references once this block ends,
+ * 				// p can be reallocated from the pool immediately.
+ * 			}
+ * 		}
+ * 	}
+ *
+ *		SerialInterface serial;
+ *		//MemoryPool containing 20 units of 16384 bytes each.
+ *		//Note: Buffers will always (!) return to the pool they have been allocated from.
+ *		uint16_t protocolId;
+ *		uint16_t protocolOffset;
+ *		SharedBufferPool<20, 16384> mMemoryPool;
+ *		SharedBufferQueueBase& mQueue;
+ * };
+ * \endcode
+ *
+ * Now, the whole system can be assembled.
+ * Note that calling the start function of each subsystem will eventually start a dedicated thread
+ * and call the run method of each class.
+ *
+ * \code{.cpp}
+ * class System
+ * {
+ * 	//MemoryPool containing 100 units of 16384 bytes each.
+ * 	SharedBufferPool<100, 16384> mMemoryPool;
+ * 	SharedBufferQueue<10> mQueue;
+ * };
+ * \endcode
+ *
+ * For further information, please contact jan-gerd.mess@dlr.de
+ *
+ */
