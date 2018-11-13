@@ -20,7 +20,7 @@ namespace utils
 {
 outpost::rtos::Mutex SharedBuffer::mMutex;
 
-SharedBuffer::SharedBuffer() : mReferenceCounter(0), mBuffer(0), mNumElements(0)
+SharedBuffer::SharedBuffer() : mReferenceCounter(0), mBuffer(outpost::Slice<uint8_t>::empty())
 {
 }
 
@@ -49,7 +49,7 @@ SharedBufferPointer::getChild(SharedChildPointer& ptr,
     bool res = false;
     if (isValid())
     {
-        if (mOffset + pOffset + length <= mPtr->mNumElements && length > 0)
+        if (mOffset + pOffset + length <= mPtr->mBuffer.getNumberOfElements() && length > 0)
         {
             ptr = SharedChildPointer(mPtr, *this);
             ptr.mType = type;

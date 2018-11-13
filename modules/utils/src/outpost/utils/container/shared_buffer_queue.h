@@ -235,4 +235,4 @@ private:
 }  // namespace utils
 }  // namespace outpost
 
-#endif /* MODULES_UTILS_SRC_MU_COMMON_UTILS_SMART_BUFFER_QUEUE_H_ */
+#endif /* OUTPOST_UTILS_SMART_BUFFER_QUEUE_H_ */

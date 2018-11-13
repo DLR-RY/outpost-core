@@ -250,7 +250,7 @@ public:
      * \param data Pointer to the byte array.
      * \param e Size of the array in bytes.
      */
-    SharedBuffer(uint8_t* data, size_t e) : mReferenceCounter(0), mBuffer(data), mNumElements(e)
+    SharedBuffer(outpost::Slice<uint8_t> slice) : mReferenceCounter(0), mBuffer(slice)
     {
     }
 
@@ -270,7 +270,7 @@ public:
      * \brief Getter function for the underlying byte array.
      * \return Pointer to the byte array.
      */
-    inline uint8_t*
+    inline outpost::Slice<uint8_t>
     getPointer() const
     {
         return mBuffer;
@@ -292,26 +292,11 @@ public:
      * \param e Size of the buffer in bytes.
      */
     inline void
-    setPointer(uint8_t* data, size_t e)
+    setPointer(outpost::Slice<uint8_t> slice)
     {
         if (!isUsed())
         {
-            mBuffer = data;
-            mNumElements = e;
-        }
-    }
-
-    /**
-     * \brief Setter function the pointer and size of an unused SharedBuffer from an outpost::Slice. Nothing will happen, if the buffer is currently in use.
-     * \param array Slice to be used as underlying byte array.
-     */
-    inline void
-    setData(outpost::Slice<uint8_t> array)
-    {
-        if (!isUsed())
-        {
-            mBuffer = array.begin();
-            mNumElements = array.getNumberOfElements();
+            mBuffer = slice;
         }
     }
 
@@ -342,7 +327,7 @@ public:
     inline bool
 	isValid() const
     {
-    	return mBuffer != nullptr;
+    	return mBuffer.getNumberOfElements() > 0;
     }
 
 private:
@@ -425,12 +410,7 @@ private:
     /**
       * \brief Pointer to the underlying byte array.
       */
-    uint8_t* mBuffer;
-
-    /**
-      * \brief Size of the underlying array in bytes.
-      */
-    size_t mNumElements;
+    outpost::Slice<uint8_t> mBuffer;
 };
 
 class SharedChildPointer;
@@ -466,7 +446,7 @@ public:
         mLength([pT]() -> size_t {
             if (pT)
             {
-                return pT->mNumElements;
+                return pT->mBuffer.getNumberOfElements();
             }
             return 0;
         }())
@@ -720,7 +700,7 @@ public:
      */
     inline operator outpost::Slice<uint8_t>() const
     {
-        return outpost::Slice<uint8_t>::unsafe(&(*mPtr)[mOffset], mLength);
+        return mPtr->getPointer().subSlice(mOffset, mLength);
     }
 
     /**
@@ -730,7 +710,7 @@ public:
      */
     inline operator outpost::Slice<const uint8_t>() const
     {
-        return outpost::Slice<const uint8_t>::unsafe(&(*mPtr)[mOffset], mLength);
+        return mPtr->getPointer().subSlice(mOffset, mLength);
     }
 
     /**
@@ -741,7 +721,7 @@ public:
     inline outpost::Slice<uint8_t>
     asSlice() const
     {
-        return outpost::Slice<uint8_t>::unsafe(&(*mPtr)[mOffset], mLength);
+        return mPtr->getPointer();
     }
 
     /**
@@ -918,4 +898,4 @@ private:
 
 #include "shared_buffer_impl.h"
 
-#endif /* SRC_MU_COMMON_UTILS_SMART_BUFFER_H_ */
+#endif /* OUTPOST_UTILS_SMART_BUFFER_H_ */

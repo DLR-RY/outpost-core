@@ -80,7 +80,7 @@ public:
     {
         for (size_t i = 0; i < N; i++)
         {
-            mBuffer[i].setPointer(mDataBuffer[i], E);
+            mBuffer[i].setPointer(outpost::Slice<uint8_t>::unsafe(mDataBuffer[i], E));
         }
     }
 

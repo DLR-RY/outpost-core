@@ -44,7 +44,8 @@ class SharedRingBuffer
 public:
     /**
      * \brief Constructor for a SharedRingBuffer based on a Slice of SharedBufferPointers and a Slice byte array of flags.
-     * Both have to have the same length.
+     * Both have to have the same length. Flags can be used by superordinate data structures to mark elements,
+     * e.g. as being in use or ready for deletion.
      */
     inline SharedRingBuffer(outpost::Slice<SharedBufferPointer> buffer,
                            outpost::Slice<uint8_t> flags) :

@@ -24,8 +24,7 @@ namespace utils
 template <size_t N>
 SharedBuffer::SharedBuffer(uint8_t (&array)[N]) :
     mReferenceCounter(0),
-    mBuffer(array),
-    mNumElements(N)
+    mBuffer(outpost::Slice<uint8_t>(array))
 {
 }
 
