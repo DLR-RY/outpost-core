@@ -238,14 +238,6 @@ public:
     SharedBuffer();
 
     /**
-     * \brief Constructor for creating a SharedBuffer instance from an array.
-     * \tparam N Size of the underlying array. May be implicit.
-     * \param array[N] Array to be used as data storage.
-     */
-    template <size_t N>
-    SharedBuffer(uint8_t (&array)[N]);
-
-    /**
      * \brief Constructor for creating a SharedBuffer instance from a pointer and a given size in bytes.
      * \param data Pointer to the byte array.
      * \param e Size of the array in bytes.
@@ -556,7 +548,7 @@ public:
      * \return Always returns false for instances of SharedBufferPointer, but needed for inheritance.
      */
     virtual inline bool
-    isChild()
+    isChild() const
     {
         return false;
     }
@@ -600,7 +592,7 @@ public:
      * \return Returns true if the SharedBufferPointer instances are equal, otherwise false.
      */
     inline bool
-    operator==(const SharedBufferPointer& other)
+    operator==(const SharedBufferPointer& other) const
     {
         return mPtr == other.mPtr;
     }
@@ -614,7 +606,7 @@ public:
      * \return Returns true if the void pointer points to the SharedBuffer instance, otherwise false.
      */
     inline bool
-    operator==(const void* other)
+    operator==(const void* other) const
     {
         return mPtr == other;
     }
@@ -627,7 +619,7 @@ public:
      * \return Returns true if the SharedBufferPointer instances are not equal, otherwise false.
      */
     inline bool
-    operator!=(const SharedBufferPointer& other)
+    operator!=(const SharedBufferPointer& other) const
     {
         return mPtr != other.mPtr;
     }
@@ -642,7 +634,7 @@ public:
      * \return Returns true if the void pointer does not point to the SharedBuffer instance, otherwise false.
      */
     inline bool
-    operator!=(const void* other)
+    operator!=(const void* other) const
     {
         return mPtr != other;
     }
@@ -878,7 +870,7 @@ public:
      * \return Returns true if the SharedChildPointer instance's parent is valid.
      */
     virtual inline bool
-    isChild()
+    isChild() const
     {
         return mParent.isValid();
     }
@@ -895,7 +887,5 @@ private:
 
 }  // namespace utils
 }  // namespace outpost
-
-#include "shared_buffer_impl.h"
 
 #endif /* OUTPOST_UTILS_SMART_BUFFER_H_ */

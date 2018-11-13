@@ -1,8 +1,14 @@
 /*
- * Copyright (c) 2016-2017, German Aerospace Center (DLR)
- * All Rights Reserved.
+ * Copyright (c) 2018, German Aerospace Center (DLR)
  *
- * See the file "LICENSE" for the full license governing this code.
+ * This file is part of the development version of OUTPOST.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Authors:
+ * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
  */
 // ----------------------------------------------------------------------------
 
@@ -103,4 +109,4 @@ private:
 }  // namespace utils
 }  // namespace unittest
 
-#endif /* MODULES_UTILS_TEST_UNITTEST_UTILS_SMART_BUFFER_QUEUE_STUB_H_ */
+#endif /* UNITTEST_UTILS_SMART_BUFFER_QUEUE_STUB_H_ */

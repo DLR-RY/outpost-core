@@ -61,10 +61,10 @@ public:
      */
     virtual ~SharedRingBuffer() = default;
 
-    SharedRingBuffer(const SharedRingBuffer& o) = delete;
+    SharedRingBuffer(static const SharedRingBuffer& o) = delete;
 
     SharedRingBuffer&
-    operator=(const SharedRingBuffer& o) = delete;
+    operator=(static const SharedRingBuffer& o) = delete;
 
     /**
      * \brief Getter function for the number of free slots in the SharedRingBuffer
