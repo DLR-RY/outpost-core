@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,7 +9,7 @@
  *
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
- * - 2017, Fabian Greif (DLR RY-AVS)
+ * - 2017-2018, Fabian Greif (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_COMM_RMAP_NODE_H_
@@ -17,7 +17,7 @@
 
 #include "rmap_common.h"
 
-#include <outpost/utils/container/slice.h>
+#include <outpost/base/slice.h>
 
 #include <stdint.h>
 #include <string.h>

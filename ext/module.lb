@@ -1,0 +1,84 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2018, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2018, Fabian Greif (DLR RY-AVS)
+
+
+class Gsl(Module):
+
+    def init(self, module):
+        module.name = "gsl"
+        module.description = """Guideline Support Library
+
+viboes/GSL - Microsoft/GSL fork supporting C++11/C++14/C++1z compilers"""
+
+    def prepare(self, module, options):
+        return True
+
+    def build(self, env):
+        env.copy('gsl/gsl', 'ext/gsl')
+
+
+class GoogleTest(Module):
+
+    def init(self, module):
+        module.name = "googletest"
+        module.description = """Unit test framework"""
+
+    def prepare(self, module, options):
+        if options[':test']:
+            return True
+        else:
+            return False
+
+    def build(self, env):
+        env.copy('../modules/utils/ext/googletest-1.8.1-fused/gtest', 'ext/gtest')
+        env.copy('../modules/utils/ext/googletest-1.8.1-fused/gmock', 'ext/gmock')
+        env.copy('../modules/utils/ext/googletest-1.8.1-fused/gmock-gtest-all.cc', 'ext/gmock-gtest-all.cc')
+
+
+class RapidCheck(Module):
+
+    def init(self, module):
+        module.name = "rapidcheck"
+        module.description = """Property based testing"""
+
+    def prepare(self, module, options):
+        if options[':test']:
+            return True
+        else:
+            return False
+
+    def build(self, env):
+        env.copy('../modules/utils/ext/rapidcheck/src', 'ext/rapidcheck/src')
+        env.copy('../modules/utils/ext/rapidcheck/include', 'ext/rapidcheck/include')
+        env.copy('../modules/utils/ext/rapidcheck/extras', 'ext/rapidcheck/extras')
+
+
+def init(module):
+    module.name = "ext"
+    module.description = "External libraries (meta module)"
+
+
+def prepare(module, options):
+    module.add_submodule(Gsl())
+    module.add_submodule(GoogleTest())
+    module.add_submodule(RapidCheck())
+
+    if options[':test']:
+        module.depends("outpost:base")
+
+    return True
+
+
+def build(env):
+    pass

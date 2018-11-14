@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2013-2018, Fabian Greif (DLR RY-AVS)
  * - 2015-2016, 2018, Jan Sommer (DLR SC-SRV)
  */
 

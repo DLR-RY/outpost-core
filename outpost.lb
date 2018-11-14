@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2015, 2017, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2015, 2017, Fabian Greif (DLR RY-AVS)
+
+
+def init(repo):
+    repo.name = "outpost"
+
+    repo.add_option(StringOption(
+        name="target",
+        default="hosted",
+        description="Target architecture for the library."))
+    repo.add_option(BooleanOption(
+        name="test",
+        default=False,
+        description="Include unit test source code."))
+
+    repo.add_ignore_patterns("*SConscript", "*SConstruct", "*.sconsign.dblite")
+
+
+def prepare(repo, options):
+    repo.find_modules_recursive(".", modulefile="module.lb")

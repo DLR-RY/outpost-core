@@ -13,11 +13,18 @@
 
 #include "engine.h"
 
-#include <lua/exception.h>
 #include <modules/l3test/channel.h>
+
+#include <lua/exception.h>
 
 #include <array>
 #include <sstream>
+
+extern "C"
+{
+#include <lualib.h>
+#include <lauxlib.h>
+}
 
 using namespace l3test::script;
 

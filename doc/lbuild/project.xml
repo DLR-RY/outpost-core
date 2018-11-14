@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<library>
+  <repositories>
+    <repository>
+      <path>../../outpost.lb</path>
+    </repository>
+  </repositories>
+  <options>
+    <option name=":target">posix</option>
+    <option name=":test">true</option>
+  </options>
+  <modules>
+  </modules>
+</library>

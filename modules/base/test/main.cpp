@@ -11,14 +11,15 @@
  * - 2013-2018, Fabian Greif (DLR RY-AVS)
  */
 
-#include "base/callable.h"
-#include "utils/base_member_pair.h"
-#include "utils/coding/coding.h"
-#include "utils/container/container.h"
-#include "utils/error_code.h"
-#include "utils/functor.h"
-#include "utils/iterator.h"
-#include "utils/limits.h"
-#include "utils/meta.h"
-#include "utils/pow.h"
-#include "utils/storage/storage.h"
+#include <gtest/gtest.h>
+
+#include <unittest/configurable_event_listener.h>
+
+int
+main(int argc, char** argv)
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    unittest::registerConfigurableEventListener();
+
+    return RUN_ALL_TESTS();
+}

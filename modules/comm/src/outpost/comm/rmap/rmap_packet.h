@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,15 +9,15 @@
  *
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
- * - 2017, Fabian Greif (DLR RY-AVS)
+ * - 2017-2018, Fabian Greif (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_COMM_RMAP_PACKET_H_
 #define OUTPOST_COMM_RMAP_PACKET_H_
 
+#include <outpost/base/slice.h>
 #include <outpost/comm/rmap/rmap_node.h>
 #include <outpost/comm/rmap/rmap_status.h>
-#include <outpost/utils/container/slice.h>
 #include <outpost/utils/storage/bit_access.h>
 #include <outpost/utils/storage/serialize.h>
 

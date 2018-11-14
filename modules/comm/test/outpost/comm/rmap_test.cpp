@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,13 +9,13 @@
  *
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
- * - 2017, Fabian Greif (DLR RY-AVS)
+ * - 2017-2018, Fabian Greif (DLR RY-AVS)
  */
 
+#include <outpost/base/slice.h>
 #include <outpost/comm/rmap/rmap_initiator.h>
 #include <outpost/smpc/subscription.h>
 #include <outpost/utils/coding/crc.h>
-#include <outpost/utils/container/slice.h>
 #include <outpost/utils/storage/bit_access.h>
 
 #include <unittest/hal/spacewire_stub.h>

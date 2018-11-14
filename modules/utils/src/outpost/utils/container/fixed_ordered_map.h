@@ -14,8 +14,7 @@
 #ifndef OUTPOST_UTILS_FIXED_ORDERED_MAP_H
 #define OUTPOST_UTILS_FIXED_ORDERED_MAP_H
 
-#include "slice.h"
-
+#include <outpost/base/slice.h>
 #include <outpost/utils/iterator.h>
 
 #include <stddef.h>

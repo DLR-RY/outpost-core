@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,16 +9,16 @@
  *
  * Authors:
  * - 2017, Jan Sommer (DLR SC-SRV)
- * - 2017, Fabian Greif (DLR RY-AVS)
+ * - 2017-2018, Fabian Greif (DLR RY-AVS)
  * - 2017, Moritz Christian Ulmer (DLR SC-SRV)
  */
 
 #ifndef OUTPOST_HAL_DATAGRAM_TRANSPORT_H
 #define OUTPOST_HAL_DATAGRAM_TRANSPORT_H
 
+#include <outpost/base/slice.h>
 #include <outpost/time/duration.h>
 #include <outpost/utils/container/fixed_size_array.h>
-#include <outpost/utils/container/slice.h>
 
 #include <array>
 
