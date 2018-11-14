@@ -15,7 +15,7 @@
 #ifndef OUTPOST_UTILS_SMART_BUFFER_H_
 #define OUTPOST_UTILS_SMART_BUFFER_H_
 #include <outpost/rtos/mutex_guard.h>
-#include <outpost/utils/container/slice.h>
+#include <outpost/base/slice.h>
 
 #include <stdio.h>
 #include <string.h>

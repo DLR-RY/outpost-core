@@ -46,8 +46,8 @@ env = envGlobal.Clone()
 
 env.AppendUnique(LIBS=[
     'outpost_time',
-    'outpost_utils',
     'outpost_rtos',
+    'outpost_utils',
 ])
 
 files  = env.Glob('*.cpp')

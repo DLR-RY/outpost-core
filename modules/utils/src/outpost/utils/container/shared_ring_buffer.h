@@ -24,7 +24,7 @@
 
 #include "shared_buffer.h"
 
-#include <outpost/utils/container/slice.h>
+#include <outpost/base/slice.h>
 
 #include <stddef.h>
 #include <stdint.h>
