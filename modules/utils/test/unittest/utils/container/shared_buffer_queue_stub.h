@@ -9,8 +9,8 @@
  *
  * Authors:
  * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
+ * - 2018, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef UNITTEST_UTILS_SMART_BUFFER_QUEUE_STUB_H_
 #define UNITTEST_UTILS_SMART_BUFFER_QUEUE_STUB_H_

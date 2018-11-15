@@ -11,6 +11,7 @@
  * - 2013-2018, Fabian Greif (DLR RY-AVS)
  * - 2014, Benjamin Weps (DLR SC-SRV)
  * - 2015, Annika Ofenloch (DLR RY-AVS)
+ * - 2018, Jan-Gerd Mess (DLR RY-AVS)
  */
 
 #include "time_epoch.h"

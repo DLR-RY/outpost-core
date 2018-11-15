@@ -11,6 +11,7 @@ ignore_patterns:
   - "*l3test/src/lua/exception*"
   - "*Jenkinsfile"
   - "*.git*"
+  - "*doxyfile"
 
 filetype_mapping:
   "*Makefile": python
@@ -40,6 +41,7 @@ copyright:
   "Benjamin Weps <Benjamin.Weps@dlr.de>": "German Aerospace Center (DLR)"
   "Janosch Reinking <jreinkin@uni-bremen.de>": "German Aerospace Center (DLR)"
   "Ulmer, Moritz Christian <moritz.ulmer@dlr.de>": "German Aerospace Center (DLR)"
+  "Jan Malburg <jan.malburg@dlr.de>": "German Aerospace Center (DLR)"
 
 author:
   "Fabian Greif <Fabian.Greif@dlr.de>": "Fabian Greif (DLR RY-AVS)"
@@ -54,6 +56,7 @@ author:
   "Olaf Maibaum <Olaf.Maibaum@dlr.de>": "Olaf Maibaum (DLR SC-SRV)"
   "Benjamin Weps <Benjamin.Weps@dlr.de>": "Benjamin Weps (DLR SC-SRV)"
   "Ulmer, Moritz Christian <moritz.ulmer@dlr.de>": "Moritz Christian Ulmer (DLR SC-SRV)"
+  "Jan Malburg <jan.malburg@dlr.de>": "Jan Malburg (DLR RY-AVS)"
 
 header: |
   {copyright}

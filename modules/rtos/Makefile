@@ -8,6 +8,7 @@
 #
 # Authors:
 # - 2013-2018, Fabian Greif (DLR RY-AVS)
+# - 2018, Jan-Gerd Mess (DLR RY-AVS)
 
 MODULE=rtos
 

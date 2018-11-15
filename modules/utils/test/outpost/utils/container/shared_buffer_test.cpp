@@ -9,8 +9,8 @@
  *
  * Authors:
  * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
+ * - 2018, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #include <outpost/rtos/thread.h>
 #include <outpost/utils/container/shared_buffer.h>

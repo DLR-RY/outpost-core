@@ -12,7 +12,6 @@
 # Authors:
 # - 2015, 2017-2018, Fabian Greif (DLR RY-AVS)
 
-
 def init(module):
     module.name = "time"
     module.description = "Time management."

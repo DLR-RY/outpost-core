@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,8 +9,8 @@
  *
  * Authors:
  * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
+ * - 2018, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_SMART_BUFFER_H_
 #define OUTPOST_UTILS_SMART_BUFFER_H_

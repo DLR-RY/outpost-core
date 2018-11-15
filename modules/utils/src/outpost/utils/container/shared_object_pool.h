@@ -1,5 +1,5 @@
 /*
-l * Copyright (c) 2017, German Aerospace Center (DLR)
+ * Copyright (c) 2017-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,9 +8,9 @@ l * Copyright (c) 2017, German Aerospace Center (DLR)
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2017, Jan-Gerd Mess (DLR RY-AVS)
+ * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
+ * - 2018, Fabian Greif (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
 
 #ifndef OUTPOST_UTILS_SMART_OBJECT_POOL_H_
 #define OUTPOST_UTILS_SMART_OBJECT_POOL_H_

@@ -124,9 +124,6 @@ format:
 	@printf "\n$(COK)[PASS] Formatting done!$(CEND)\n"
 
 license-update:
-	python3 ../reword -v
-
-license-update:
 	python3 ../reword -v -u "append"
 
 clean :

@@ -11,7 +11,7 @@
 #
 # Authors:
 # - 2015, 2017-2018, Fabian Greif (DLR RY-AVS)
-
+# - 2018, Jan-Gerd Mess (DLR RY-AVS)
 
 def init(module):
     module.name = "utils"

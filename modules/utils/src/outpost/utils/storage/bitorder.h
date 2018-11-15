@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2014-2018, Fabian Greif (DLR RY-AVS)
+ * - 2018, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_UTILS_BITORDER_H
