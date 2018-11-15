@@ -531,7 +531,7 @@ public:
     inline outpost::Slice<uint8_t>
     asSlice() const
     {
-        return mPtr->getPointer();
+        return mPtr->getPointer().subSlice(mOffset, mLength);;
     }
 
     /**
