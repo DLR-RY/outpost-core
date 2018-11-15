@@ -23,6 +23,7 @@ ignore_commits:
   - 00a17a7696f0062018f021eb5d85a2275e9bf891    # Update license headers from Git history
   - 3f81eaafb048790d468b3352c44f44a5008f11db    # Apply clang-format for new files
   - f35e3badbd565fc656b53e66ecd589b0b530a781    # [rtos] Apply clang-format to rtos/arch folder
+  - 7b661d6ca2a5d5f64076d32dee7591a3f9af8447    # Update license headers
 
 ignore_missing_history: []
 
