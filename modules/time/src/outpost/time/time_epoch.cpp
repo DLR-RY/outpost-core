@@ -23,19 +23,17 @@ using namespace outpost::time;
 Duration TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::offsetToGpsTime =
         Duration::zero();
 
-// ----------------------------------------------------------------------------
 void
 outpost::time::setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gps)
 {
     TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(scet, gps);
 }
 
-// ----------------------------------------------------------------------------
 /**
  * Leap second correction table.
  *
- * When new leap seconds are added they have to be added here. The values are
- * calculated as followed:
+ * When new leap seconds are introduces they have to be added here. The values
+ * are calculated as follows:
  *
  *     (DateUtils::getDay(Date { 1981, 6, 30, 0, 0, 0 })
  *    - DateUtils::getDay(Date { 1958, 1,  1, 0, 0, 0 }) + 1) * 86400
@@ -43,7 +41,7 @@ outpost::time::setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gp
  *
  * See also http://hpiers.obspm.fr/eop-pc/earthor/utc/TAI-UTC_tab.html
  */
-static const int64_t leapSecondArray[] = {
+static constexpr int64_t leapSecondArray[] = {
         1861920036,  // 36: 2016-12-31T23:59:60Z
         1814400035,  // 35: 2015-06-30T23:59:60Z
         1719792034,  // 34: 2012-06-30T23:59:60Z
@@ -79,13 +77,13 @@ TimeEpochConverter<TaiEpoch, UnixEpoch>::getCorrectionFactorForLeapSeconds(
         int64_t seconds, LeapSecondCorrection::Type correction)
 {
     int64_t correctionFactor = 0;
-    size_t numberOfElements = sizeof(leapSecondArray)/sizeof(const int64_t);
-    for (size_t i = 0; (i < numberOfElements)
+    auto leapSeconds = outpost::asSlice(leapSecondArray);
+    for (size_t i = 0; (i < leapSeconds.getNumberOfElements())
                     && (correctionFactor == 0); ++i)
     {
-        if (seconds >= leapSecondArray[i])
+        if (seconds >= leapSeconds[i])
         {
-            correctionFactor = numberOfElements - i;
+            correctionFactor = leapSeconds.getNumberOfElements() - i;
 
             // As leap seconds are accumulated, it can happen that adding
             // leap seconds causes the resulting time to overflow into the
@@ -96,7 +94,7 @@ TimeEpochConverter<TaiEpoch, UnixEpoch>::getCorrectionFactorForLeapSeconds(
             if ((correction == LeapSecondCorrection::add) && (i != 0U))
             {
                 seconds = seconds + correctionFactor;
-                if (seconds >= leapSecondArray[i - 1U])
+                if (seconds >= leapSeconds[i - 1U])
                 {
                     correctionFactor += 1;
                 }
@@ -107,7 +105,6 @@ TimeEpochConverter<TaiEpoch, UnixEpoch>::getCorrectionFactorForLeapSeconds(
     return correctionFactor;
 }
 
-// ----------------------------------------------------------------------------
 TimePoint<UnixEpoch>
 TimeEpochConverter<TaiEpoch, UnixEpoch>::convert(TimePoint<TaiEpoch> from)
 {
