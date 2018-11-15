@@ -56,6 +56,8 @@ env.Append(CCFLAGS=['-fPIC'])
 
 env.SConscript([
 	    os.path.join(modulepath, 'base/src/SConscript'),
+	    os.path.join(modulepath, 'time/src/SConscript'),
+	    os.path.join(modulepath, 'rtos/src/SConscript'),
         os.path.join(modulepath, 'utils/src/SConscript'),
     ],
     exports='envGlobal')

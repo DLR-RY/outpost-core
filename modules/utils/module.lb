@@ -19,7 +19,7 @@ def init(module):
 
 
 def prepare(module, options):
-    module.depends("outpost:base")
+    module.depends("outpost:base", "outpost:rtos")
     return True
 
 

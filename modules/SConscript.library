@@ -22,7 +22,7 @@ envGlobal.SConscript([
         'utils/src/SConscript',
         'hal/src/SConscript',
         'smpc/src/SConscript',
-        'comm/src/SConscript',
+        'comm/src/SConscript'
     ],
     exports='envGlobal')
 

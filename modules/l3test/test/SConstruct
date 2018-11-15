@@ -53,6 +53,7 @@ env.AppendUnique(LIBS=[
     'outpost_l3test_lua',
     'outpost_smpc',
     'outpost_time',
+    'outpost_rtos',
     'outpost_utils',
 ])
 

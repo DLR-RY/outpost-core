@@ -77,13 +77,14 @@ int64_t
 TimeEpochConverter<TaiEpoch, UnixEpoch>::getCorrectionFactorForLeapSeconds(
         int64_t seconds, LeapSecondCorrection::Type correction)
 {
-    outpost::Slice<const int64_t> leapSeconds(leapSecondArray);
     int64_t correctionFactor = 0;
-    for (size_t i = 0; (i < leapSeconds.getNumberOfElements()) && (correctionFactor == 0); ++i)
+    size_t numberOfElements = sizeof(leapSecondArray)/sizeof(const int64_t);
+    for (size_t i = 0; (i < numberOfElements)
+                    && (correctionFactor == 0); ++i)
     {
-        if (seconds >= leapSeconds[i])
+        if (seconds >= leapSecondArray[i])
         {
-            correctionFactor = leapSeconds.getNumberOfElements() - i;
+            correctionFactor = numberOfElements - i;
 
             // As leap seconds are accumulated, it can happen that adding
             // leap seconds causes the resulting time to overflow into the
@@ -94,7 +95,7 @@ TimeEpochConverter<TaiEpoch, UnixEpoch>::getCorrectionFactorForLeapSeconds(
             if ((correction == LeapSecondCorrection::add) && (i != 0U))
             {
                 seconds = seconds + correctionFactor;
-                if (seconds >= leapSeconds[i - 1U])
+                if (seconds >= leapSecondArray[i - 1U])
                 {
                     correctionFactor += 1;
                 }

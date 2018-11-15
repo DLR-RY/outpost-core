@@ -8,5 +8,6 @@
 # Build tools
 build/
 bin/
+modules/*/doc/doxygen/api/*
 .sconsign.dblite
 *.pyc

@@ -22,8 +22,9 @@ envGlobal.RemoveFromList('CCFLAGS_warning', [
 envGlobal.SConscript([
         'utils/ext/SConscript',
         'base/test/SConscript',
-        'utils/test/SConscript',
         'time/test/SConscript',
+        'rtos/test/SConscript',
+        'utils/test/SConscript',
         'smpc/test/SConscript',
         'hal/test/SConscript',
         'l3test/src/SConscript',

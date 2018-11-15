@@ -47,6 +47,7 @@ envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports=
 env = envGlobal.Clone()
 
 env.AppendUnique(LIBS=[
+    'outpost_rtos',
     'outpost_utils',
 ])
 
