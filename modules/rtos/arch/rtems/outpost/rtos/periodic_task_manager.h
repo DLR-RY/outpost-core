@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2018, Jan Malburg (DLR RY-AVS)
  * - 2015, Jan Sommer (DLR SC-SRV)
  */
 
@@ -92,7 +93,16 @@ public:
     nextPeriod(time::Duration period)
     {
         rtems_status_code result = rtems_rate_monotonic_period(mId, rtems::getInterval(period));
-        return static_cast<Status::Type>(result);
+        if (result == RTEMS_TIMEOUT)
+        {
+            return Status::timeout;
+        }
+        else
+        {
+            // RTEMS_NOT_OWNER_OF_RESOURCE (called from wrong thread)
+            // not especially handled has no corresponding status flag exists.
+            return Status::running;
+        }
     }
 
     /**
@@ -110,7 +120,18 @@ public:
     status()
     {
         rtems_status_code result = rtems_rate_monotonic_period(mId, RTEMS_PERIOD_STATUS);
-        return static_cast<Status::Type>(result);
+        if (result == RTEMS_TIMEOUT)
+        {
+            return Status::timeout;
+        }
+        else if (result == RTEMS_NOT_DEFINED)
+        {
+            return Status::idle;
+        }
+        else
+        {
+            return Status::running;
+        }
     }
 
     /**
