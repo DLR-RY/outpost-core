@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2018, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2018, Annika Ofenloch (DLR RY-AVS)
+
+def init(module):
+    module.name = "support"
+    module.description = "Support for heartbeats"
+
+def prepare(module, options):
+    module.depends(":smpc")
+    return True
+
+def build(env):
+    env.copy('src', 'src')
+
+    if env[':test']:
+        env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))

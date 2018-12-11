@@ -13,6 +13,7 @@
 # - 2014-2015, 2017-2018, Fabian Greif (DLR RY-AVS)
 # - 2017, Muhammad Bassam (DLR RY-AVS)
 # - 2018, Jan-Gerd Mess (DLR RY-AVS)
+# - 2018, Annika Ofenloch (DLR RY-AVS)
 
 Import('envGlobal')
 
@@ -23,7 +24,8 @@ envGlobal.SConscript([
         'utils/src/SConscript',
         'hal/src/SConscript',
         'smpc/src/SConscript',
-        'comm/src/SConscript'
+        'comm/src/SConscript',
+        'support/src/SConscript'
     ],
     exports='envGlobal')
 

@@ -12,6 +12,7 @@
 # Authors:
 # - 2014-2015, 2017-2018, Fabian Greif (DLR RY-AVS)
 # - 2018, Jan-Gerd Mess (DLR RY-AVS)
+# - 2018, Annika Ofenloch (DLR RY-AVS)
 
 Import('envGlobal')
 
@@ -31,6 +32,7 @@ envGlobal.SConscript([
         'l3test/src/SConscript',
         'l3test/ext/SConscript',
         'l3test/test/SConscript',
+        'support/test/SConscript',
     ],
     exports='envGlobal')
 
