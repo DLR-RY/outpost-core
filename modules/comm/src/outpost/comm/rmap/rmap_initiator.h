@@ -23,8 +23,8 @@
 #include <outpost/hal/spacewire.h>
 #include <outpost/rtos.h>
 #include <outpost/smpc.h>
-#include <outpost/time/duration.h>
 #include <outpost/support/heartbeat.h>
+#include <outpost/time/duration.h>
 
 namespace outpost
 {
@@ -220,7 +220,11 @@ public:
     };
 
     //--------------------------------------------------------------------------
-    RmapInitiator(hal::SpaceWire& spw, RmapTargetsList* list, uint8_t priority, size_t stackSize, outpost::support::parameter::HeartbeatSource heartbeatSource);
+    RmapInitiator(hal::SpaceWire& spw,
+                  RmapTargetsList* list,
+                  uint8_t priority,
+                  size_t stackSize,
+                  outpost::support::parameter::HeartbeatSource heartbeatSource);
     ~RmapInitiator();
 
     /**

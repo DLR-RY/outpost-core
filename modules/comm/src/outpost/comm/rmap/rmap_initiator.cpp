@@ -352,7 +352,7 @@ RmapInitiator::run()
     mStopped = false;
     while (!mStopped)
     {
-        outpost::support::Heartbeat::send(mHeartbeatSource,receiveTimeout*2);
+        outpost::support::Heartbeat::send(mHeartbeatSource, receiveTimeout * 2);
         if (receivePacket(&packet))
         {
             // Only handling reply packet, no command packets
@@ -441,8 +441,7 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket)
     bool result = false;
 
     // Receive response
-    if (mSpW.receive(rxBuffer, receiveTimeout)
-        == hal::SpaceWire::Result::success)
+    if (mSpW.receive(rxBuffer, receiveTimeout) == hal::SpaceWire::Result::success)
     {
         if (rxBuffer.getEndMarker() == hal::SpaceWire::eop)
         {
