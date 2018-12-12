@@ -18,4 +18,5 @@
 #include "implicit_list.h"
 #include "list.h"
 #include "member_function_store.h"
-#include "slice.h"
+
+#include <outpost/base/slice.h>

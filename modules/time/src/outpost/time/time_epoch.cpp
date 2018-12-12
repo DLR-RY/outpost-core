@@ -78,8 +78,7 @@ TimeEpochConverter<TaiEpoch, UnixEpoch>::getCorrectionFactorForLeapSeconds(
 {
     int64_t correctionFactor = 0;
     auto leapSeconds = outpost::asSlice(leapSecondArray);
-    for (size_t i = 0; (i < leapSeconds.getNumberOfElements())
-                    && (correctionFactor == 0); ++i)
+    for (size_t i = 0; (i < leapSeconds.getNumberOfElements()) && (correctionFactor == 0); ++i)
     {
         if (seconds >= leapSeconds[i])
         {

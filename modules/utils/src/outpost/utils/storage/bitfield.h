@@ -126,7 +126,7 @@ private:
      * Base Version no instantiation, only specializations are used
      */
     template <int start, int end, int affectedBytes>
-    struct Reader
+    struct Access
     {
         inline static uint16_t
         read(const uint8_t* byteArray);
@@ -136,30 +136,39 @@ private:
      * The specialization when a single byte is affected
      */
     template <int start, int end>
-    struct Reader<start, end, 1>
+    struct Access<start, end, 1>
     {
         inline static uint16_t
         read(const uint8_t* byteArray);
+
+        inline static void
+        write(uint8_t* byteArray, uint16_t value);
     };
 
     /**
      * The specialization when two bytes are affected
      */
     template <int start, int end>
-    struct Reader<start, end, 2>
+    struct Access<start, end, 2>
     {
         inline static uint16_t
         read(const uint8_t* byteArray);
+
+        inline static void
+        write(uint8_t* byteArray, uint16_t value);
     };
 
     /**
      * The specialization when three bytes are affected
      */
     template <int start, int end>
-    struct Reader<start, end, 3>
+    struct Access<start, end, 3>
     {
         inline static uint16_t
         read(const uint8_t* byteArray);
+
+        inline static void
+        write(uint8_t* byteArray, uint16_t value);
     };
 };
 

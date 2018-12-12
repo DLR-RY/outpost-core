@@ -14,8 +14,8 @@
 
 #ifndef OUTPOST_UTILS_SMART_BUFFER_H_
 #define OUTPOST_UTILS_SMART_BUFFER_H_
-#include <outpost/rtos/mutex_guard.h>
 #include <outpost/base/slice.h>
+#include <outpost/rtos/mutex_guard.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -531,7 +531,7 @@ public:
     inline outpost::Slice<uint8_t>
     asSlice() const
     {
-        return mPtr->getPointer().subSlice(mOffset, mLength);;
+        return mPtr->getPointer().subSlice(mOffset, mLength);
     }
 
     /**

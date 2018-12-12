@@ -11,7 +11,6 @@
  * - 2013-2018, Fabian Greif (DLR RY-AVS)
  */
 
-#include "base/callable.h"
 #include "utils/base_member_pair.h"
 #include "utils/coding/coding.h"
 #include "utils/container/container.h"
@@ -22,3 +21,5 @@
 #include "utils/meta.h"
 #include "utils/pow.h"
 #include "utils/storage/storage.h"
+
+#include <outpost/base/callable.h>
