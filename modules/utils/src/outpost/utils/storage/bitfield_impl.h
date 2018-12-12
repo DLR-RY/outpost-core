@@ -44,12 +44,12 @@ outpost::Bitfield::read(const uint8_t* byteArray)
     static_assert(numberOfBits <= 16, "Bitfield::read can read at most 16 bits");
 
     // Based on the number of affected bytes another specialized version of read will be called.
-    return Reader<start, end, affectedBytes(start, end)>::read(byteArray);
+    return Access<start, end, affectedBytes(start, end)>::read(byteArray);
 }
 
 template <int start, int end>
 uint16_t
-outpost::Bitfield::Reader<start, end, 1>::read(const uint8_t* byteArray)
+outpost::Bitfield::Access<start, end, 1>::read(const uint8_t* byteArray)
 {
     // Load the bytes in big endian order
     Deserialize stream(&byteArray[BitorderMsb0ToLsb0<uint8_t, start, end>::byteIndex]);
@@ -64,7 +64,7 @@ outpost::Bitfield::Reader<start, end, 1>::read(const uint8_t* byteArray)
 
 template <int start, int end>
 uint16_t
-outpost::Bitfield::Reader<start, end, 2>::read(const uint8_t* byteArray)
+outpost::Bitfield::Access<start, end, 2>::read(const uint8_t* byteArray)
 {
     // Load the bytes in big endian order
     Deserialize stream(&byteArray[BitorderMsb0ToLsb0<uint16_t, start, end>::byteIndex]);
@@ -79,7 +79,7 @@ outpost::Bitfield::Reader<start, end, 2>::read(const uint8_t* byteArray)
 
 template <int start, int end>
 uint16_t
-outpost::Bitfield::Reader<start, end, 3>::read(const uint8_t* byteArray)
+outpost::Bitfield::Access<start, end, 3>::read(const uint8_t* byteArray)
 {
     // put the data into a temporary variable to prevent access behind the array
     uint8_t buffer[4] = {0, 0, 0, 0};
@@ -118,92 +118,111 @@ outpost::Bitfield::write(uint8_t* byteArray, uint16_t value)
 
     constexpr uint32_t numberOfBits = (end - start) + 1;
 
-    static_assert(numberOfBits <= 16, "Bitfield::write can write at most 16 bits");
+    static_assert(numberOfBits <= 16, "Bitfield::read can read at most 16 bits");
 
+    // Based on the number of affected bytes another specialized version of write will be called.
+    Access<start, end, affectedBytes(start, end)>::write(byteArray, value);
+}
+
+template <int start, int end>
+void
+outpost::Bitfield::Access<start, end, 1>::write(uint8_t* byteArray, uint16_t value)
+{
+    constexpr uint32_t numberOfBits = (end - start) + 1;
     constexpr uint16_t pos = start & 0x7;
-    constexpr unsigned int index = start / numberOfBitsPerByte;
+    constexpr uint16_t index = start / numberOfBitsPerByte;
 
-    if (affectedBytes(start, end) == 2)
-    {
-        // pos of bits to set (in 16-bit word)
-        constexpr int bitpos = 16 - (pos + numberOfBits);
+    // pos of bits to set (in byte)
+    constexpr uint16_t bitpos = 8 - (pos + numberOfBits);
 
-        // bitmask for number of bits to set
-        const uint16_t mask = ((1 << numberOfBits) - 1) << bitpos;
+    // bitmask for number of bits to set
+    const uint8_t mask = ((1 << numberOfBits) - 1) << bitpos;
 
-        // shift value to desired position
-        value = static_cast<uint16_t>(value << bitpos);
+    // shift value to desired position
+    uint8_t toSet = static_cast<uint8_t>(value << bitpos);
 
-        // make sure to load the bytes in big endian order
-        uint16_t word = (static_cast<uint16_t>(byteArray[index]) << numberOfBitsPerByte)
-                        | static_cast<uint16_t>(byteArray[index + 1]);
+    // get the original value
+    uint8_t byte = byteArray[index];
 
-        // clear bit field
-        word = static_cast<uint16_t>(word & ~mask);
+    // clear bit field
+    byte = (byte & ~mask);
 
-        // set the corresponding bits
-        word = static_cast<uint16_t>(word | (mask & value));
+    // set the corresponding bits
+    byte = (byte | (mask & toSet));
 
-        // make sure to store the bytes in big-endian order
-        // most significant first
-        byteArray[index] = static_cast<uint8_t>(word >> numberOfBitsPerByte);
-        byteArray[index + 1] = static_cast<uint8_t>(word);
-    }
-    else if (affectedBytes(start, end) == 1)
-    {
-        // pos of bits to set (in byte)
-        constexpr int bitpos = 8 - (pos + numberOfBits);
+    byteArray[index] = byte;
+}
 
-        // bitmask for number of bits to set
-        const uint8_t mask = ((1 << numberOfBits) - 1) << bitpos;
+template <int start, int end>
+void
+outpost::Bitfield::Access<start, end, 2>::write(uint8_t* byteArray, uint16_t value)
+{
+    constexpr uint32_t numberOfBits = (end - start) + 1;
+    constexpr uint16_t pos = start & 0x7;
+    constexpr uint16_t index = start / numberOfBitsPerByte;
 
-        // shift value to desired position
-        uint8_t toSet = static_cast<uint8_t>(value << bitpos);
+    // pos of bits to set (in 16-bit word)
+    constexpr uint16_t bitpos = 16 - (pos + numberOfBits);
 
-        // get the original value
-        uint8_t byte = byteArray[index];
+    // bitmask for number of bits to set
+    const uint16_t mask = ((1 << numberOfBits) - 1) << bitpos;
 
-        // clear bit field
-        byte = (byte & ~mask);
+    // shift value to desired position
+    value = static_cast<uint16_t>(value << bitpos);
 
-        // set the corresponding bits
-        byte = (byte | (mask & toSet));
+    // make sure to load the bytes in big endian order
+    uint16_t word = (static_cast<uint16_t>(byteArray[index]) << numberOfBitsPerByte)
+                    | static_cast<uint16_t>(byteArray[index + 1]);
 
-        byteArray[index] = byte;
-    }
-    else  // we affect 3 bytes
-    {
-        constexpr int bitpos_low = 8 - (pos);
-        constexpr int bitpos_high = 1 + (end & 0x7);
+    // clear bit field
+    word = static_cast<uint16_t>(word & ~mask);
 
-        constexpr uint8_t mask_low = static_cast<uint8_t>(0xff << bitpos_low);
-        constexpr uint8_t mask_high = static_cast<uint8_t>(0xff >> bitpos_high);
+    // set the corresponding bits
+    word = static_cast<uint16_t>(word | (mask & value));
 
-        // low in sense of index means low byte most significant
-        // we must push the start position and we must additionally push the most significant byte
-        // into the less significant byte.
-        uint8_t byte_low = static_cast<uint8_t>((value >> (pos + 8)) & 0xff);
+    // make sure to store the bytes in big-endian order
+    // most significant first
+    byteArray[index] = static_cast<uint8_t>(word >> numberOfBitsPerByte);
+    byteArray[index + 1] = static_cast<uint8_t>(word);
+}
 
-        // we only must adjust to an unaligned start
-        uint8_t byte_middle = static_cast<uint8_t>((value >> pos) & 0xff);
+template <int start, int end>
+void
+outpost::Bitfield::Access<start, end, 3>::write(uint8_t* byteArray, uint16_t value)
+{
+    constexpr uint16_t pos = start & 0x7;
+    constexpr uint16_t index = start / numberOfBitsPerByte;
 
-        // high byte must be the lower on as at least 8 bits are in the middle byte
-        // then just push the bit on the correct position
-        uint8_t byte_high = static_cast<uint8_t>((value & 0xff) << (8 - bitpos_high));
+    constexpr uint16_t bitpos_low = 8 - (pos);
+    constexpr uint16_t bitpos_high = 1 + (end & 0x7);
 
-        // first zero out the part of the value we don't want
-        uint8_t toSet_low = byte_low & ~mask_low;
-        uint8_t toSet_high = byte_high & ~mask_high;
+    constexpr uint8_t mask_low = static_cast<uint8_t>(0xff << bitpos_low);
+    constexpr uint8_t mask_high = static_cast<uint8_t>(0xff >> bitpos_high);
 
-        // then combine with existing contents of the array
-        toSet_low |= (byteArray[index] & mask_low);
-        toSet_high |= (byteArray[index + 2] & mask_high);
+    // low in sense of index means low byte most significant
+    // we must push the start position and we must additionally push the most significant byte
+    // into the less significant byte.
+    uint8_t byte_low = static_cast<uint8_t>((value >> (pos + 8)) & 0xff);
 
-        byteArray[index] = toSet_low;
-        byteArray[index + 1] =
-                byte_middle;  // there is no mask needed for middle byte as it will be written whole
-        byteArray[index + 2] = toSet_high;
-    }
+    // we only must adjust to an unaligned start
+    uint8_t byte_middle = static_cast<uint8_t>((value >> pos) & 0xff);
+
+    // high byte must be the lower on as at least 8 bits are in the middle byte
+    // then just push the bit on the correct position
+    uint8_t byte_high = static_cast<uint8_t>((value & 0xff) << (8 - bitpos_high));
+
+    // first zero out the part of the value we don't want
+    uint8_t toSet_low = byte_low & ~mask_low;
+    uint8_t toSet_high = byte_high & ~mask_high;
+
+    // then combine with existing contents of the array
+    toSet_low |= (byteArray[index] & mask_low);
+    toSet_high |= (byteArray[index + 2] & mask_high);
+
+    byteArray[index] = toSet_low;
+    byteArray[index + 1] =
+            byte_middle;  // there is no mask needed for middle byte as it will be written whole
+    byteArray[index + 2] = toSet_high;
 }
 
 #endif
