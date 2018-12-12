@@ -14,8 +14,7 @@
 #ifndef OUTPOST_DEQUE_H
 #define OUTPOST_DEQUE_H
 
-#include "slice.h"
-
+#include <outpost/base/slice.h>
 #include <outpost/utils/meta.h>
 
 #include <stddef.h>
