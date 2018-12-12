@@ -14,6 +14,9 @@
 #ifndef OUTPOST_DEQUE_IMPL_H
 #define OUTPOST_DEQUE_IMPL_H
 
+// Needed for memcpy
+#include <string.h>
+
 #include "deque.h"
 
 template <typename T>
@@ -138,6 +141,55 @@ outpost::Deque<T>::append(const T& value)
     return result;
 }
 
+// ----------------------------------------------------------------------------
+
+template <typename T>
+bool
+outpost::Deque<T>::append(const outpost::Slice<T>& values)
+{
+    bool result = false;
+
+    if (!isFull())
+    {
+        if (mHead >= (mMaxSize - 1))
+        {
+            mHead = 0;
+        }
+        else
+        {
+            mHead++;
+        }
+
+        // Get number of elements until end of ring buffer
+        Size remainingEnd = mMaxSize - mHead;
+        // Get number of elements to copy until overflow happens
+        Size elementsToCopy = values.getNumberOfElements();
+        if(elementsToCopy > mMaxSize - mSize) {
+            elementsToCopy = mMaxSize - mSize;
+        } else {
+          result = true;
+        }
+
+        // Two cases:
+        // All elements has place in the end of the ring buffer,
+        // or fill up all slots in the end and remaining elements should copy to the begin of the ring buffer
+        if(elementsToCopy <= remainingEnd) {
+            // Copy only to the end of the ring buffer
+            memcpy(mBuffer + mHead, values.begin(), sizeof(T) * elementsToCopy);
+            mHead += elementsToCopy - 1;
+        } else {
+            // Split the elements to copy into two slices, one in the end, other in the begin of array
+            memcpy(mBuffer + mHead, &(values[0]), sizeof(T) * remainingEnd);
+            memcpy(mBuffer, &(values[remainingEnd]), sizeof(T) * (elementsToCopy - remainingEnd));
+            mHead = elementsToCopy - remainingEnd - 1;
+        }
+        mSize += elementsToCopy;
+    }
+
+    return result;
+}
+
+// ----------------------------------------------------------------------------
 template <typename T>
 void
 outpost::Deque<T>::removeBack()

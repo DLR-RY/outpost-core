@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2017, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,13 +8,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2013-2018, Fabian Greif (DLR RY-AVS)
+ * - 2013-2017, Fabian Greif (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_DEQUE_H
 #define OUTPOST_DEQUE_H
 
-#include <outpost/base/slice.h>
+#include "slice.h"
+
 #include <outpost/utils/meta.h>
 
 #include <stddef.h>
@@ -93,6 +94,14 @@ public:
 
     bool
     append(const T& value);
+
+    /**
+     * \param values A slice to append to the deque.
+     *
+     * \result If all elements are copied true.
+     */
+    bool
+    append(const outpost::Slice<T>& values);
 
     bool
     prepend(const T& value);
