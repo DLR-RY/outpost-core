@@ -10,6 +10,7 @@
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  * - 2017, Fabian Greif (DLR RY-AVS)
+ * - 2018, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_COMM_RMAP_INITIATOR_H_
@@ -23,6 +24,7 @@
 #include <outpost/rtos.h>
 #include <outpost/smpc.h>
 #include <outpost/time/duration.h>
+#include <outpost/support/heartbeat.h>
 
 namespace outpost
 {
@@ -45,6 +47,8 @@ namespace comm
 class RmapInitiator : public outpost::rtos::Thread
 {
     friend class TestingRmap;
+
+    static constexpr outpost::time::Duration receiveTimeout = outpost::time::Seconds(5);
 
 public:
     enum Operation
@@ -216,7 +220,7 @@ public:
     };
 
     //--------------------------------------------------------------------------
-    RmapInitiator(hal::SpaceWire& spw, RmapTargetsList* list, uint8_t priority, size_t stackSize);
+    RmapInitiator(hal::SpaceWire& spw, RmapTargetsList* list, uint8_t priority, size_t stackSize, outpost::support::parameter::HeartbeatSource heartbeatSource);
     ~RmapInitiator();
 
     /**
@@ -486,6 +490,8 @@ private:
 
     ErrorCounters mCounters;
     Buffer mRxData;
+
+    const outpost::support::parameter::HeartbeatSource mHeartbeatSource;
 };
 
 typedef outpost::Slice<const uint8_t> NonRmapDataType;

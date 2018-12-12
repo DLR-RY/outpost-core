@@ -127,7 +127,7 @@ public:
         mSpaceWire(100),
         mRmapTarget(targetName, 1, targetLogicalAddress, key),
         mTargetNodes(),
-        mRmapInitiator(mSpaceWire, &mTargetNodes, 100, 4096),
+        mRmapInitiator(mSpaceWire, &mTargetNodes, 100, 4096, outpost::support::parameter::HeartbeatSource::default0),
         mTestingRmap(),
         mNonRmapReceiver()
     {
