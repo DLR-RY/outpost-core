@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2013-2018, Fabian Greif (DLR RY-AVS), Olaf Maibaum (DLR SC-OSS)
  */
 
 #ifndef OUTPOST_DEQUE_H
