@@ -366,7 +366,7 @@ RmapInitiator::run()
             }
         }
     }
-
+    outpost::support::Heartbeat::suspend(mHeartbeatSource);
     mStopped = true;
 }
 
