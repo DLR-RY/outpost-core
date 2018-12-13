@@ -8,7 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2013-2018, Fabian Greif (DLR RY-AVS), Olaf Maibaum (DLR SC-OSS)
+ * - 2013-2018, Fabian Greif (DLR RY-AVS)
+ * - 2018, Olaf Maibaum (DLR SC-OSS)
  */
 
 #ifndef OUTPOST_DEQUE_H
@@ -94,13 +95,14 @@ public:
     /**
      * \param value One value to append to the deque.
      *
-     * \result Number of appended values.
+     * \result True when value is appended.
      */
-    size_t
+    bool
     append(const T& value);
 
     /**
-     * \param values A slice to append to the deque.
+     * \param values A slice to append to the deque. If not enough space is available in the deque,
+     * deque is filled up with the first values from the slice until it is full.
      *
      * \result Number of appended values.
      */

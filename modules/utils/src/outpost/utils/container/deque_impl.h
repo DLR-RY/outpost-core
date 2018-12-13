@@ -8,7 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2013-2018, Fabian Greif (DLR RY-AVS), Olaf Maibaum (SC-OSS)
+ * - 2013-2018, Fabian Greif (DLR RY-AVS)
+ * - 2018, Olaf Maibaum (SC-OSS)
  */
 
 #ifndef OUTPOST_DEQUE_IMPL_H
@@ -117,10 +118,10 @@ outpost::Deque<T>::getBack() const
 
 // ----------------------------------------------------------------------------
 template <typename T>
-size_t
+bool
 outpost::Deque<T>::append(const T& value)
 {
-    Size result = 0;
+    bool result = false;
     if (!isFull())
     {
         if (mHead >= (mMaxSize - 1))
@@ -135,7 +136,7 @@ outpost::Deque<T>::append(const T& value)
         mBuffer[mHead] = value;
         mSize++;
 
-        result = 1;
+        result = true;
     }
 
     return result;
@@ -161,14 +162,16 @@ outpost::Deque<T>::append(const outpost::Slice<T>& values)
         Size remainingEnd = mMaxSize - head;
         // Get number of elements to copy until overflow happens
         elementsToAppend = values.getNumberOfElements();
-        if(elementsToAppend > mMaxSize - mSize) {
+        if(elementsToAppend > mMaxSize - mSize)
+        {
             elementsToAppend = mMaxSize - mSize;
         }
 
         // Two cases:
         // All elements has place in the end of the ring buffer,
         // or fill up all slots in the end and remaining elements should copy to the begin of the ring buffer
-        if(elementsToAppend <= remainingEnd) {
+        if(elementsToAppend <= remainingEnd)
+        {
             // Copy only to the end of the ring buffer
             memcpy(mBuffer + head, values.begin(), sizeof(T) * elementsToAppend);
             mHead = head + elementsToAppend - 1;
