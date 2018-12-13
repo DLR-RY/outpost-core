@@ -117,10 +117,10 @@ outpost::Deque<T>::getBack() const
 
 // ----------------------------------------------------------------------------
 template <typename T>
-bool
+size_t
 outpost::Deque<T>::append(const T& value)
 {
-    bool result = false;
+    Size result = 0;
     if (!isFull())
     {
         if (mHead >= (mMaxSize - 1))
@@ -135,7 +135,7 @@ outpost::Deque<T>::append(const T& value)
         mBuffer[mHead] = value;
         mSize++;
 
-        result = true;
+        result = 1;
     }
 
     return result;
@@ -144,49 +144,46 @@ outpost::Deque<T>::append(const T& value)
 // ----------------------------------------------------------------------------
 
 template <typename T>
-bool
+size_t
 outpost::Deque<T>::append(const outpost::Slice<T>& values)
 {
-    bool result = false;
+    Size elementsToAppend = 0;
 
     if (!isFull())
     {
-        if (mHead >= (mMaxSize - 1))
+        Index head = mHead + 1;
+        if (head >= (mMaxSize - 1))
         {
             mHead = 0;
         }
-        else
-        {
-            mHead++;
-        }
 
         // Get number of elements until end of ring buffer
-        Size remainingEnd = mMaxSize - mHead;
+        Size remainingEnd = mMaxSize - head;
         // Get number of elements to copy until overflow happens
-        Size elementsToCopy = values.getNumberOfElements();
-        if(elementsToCopy > mMaxSize - mSize) {
-            elementsToCopy = mMaxSize - mSize;
-        } else {
-          result = true;
+        elementsToAppend = values.getNumberOfElements();
+        if(elementsToAppend > mMaxSize - mSize) {
+            elementsToAppend = mMaxSize - mSize;
         }
 
         // Two cases:
         // All elements has place in the end of the ring buffer,
         // or fill up all slots in the end and remaining elements should copy to the begin of the ring buffer
-        if(elementsToCopy <= remainingEnd) {
+        if(elementsToAppend <= remainingEnd) {
             // Copy only to the end of the ring buffer
-            memcpy(mBuffer + mHead, values.begin(), sizeof(T) * elementsToCopy);
-            mHead += elementsToCopy - 1;
-        } else {
-            // Split the elements to copy into two slices, one in the end, other in the begin of array
-            memcpy(mBuffer + mHead, &(values[0]), sizeof(T) * remainingEnd);
-            memcpy(mBuffer, &(values[remainingEnd]), sizeof(T) * (elementsToCopy - remainingEnd));
-            mHead = elementsToCopy - remainingEnd - 1;
+            memcpy(mBuffer + head, values.begin(), sizeof(T) * elementsToAppend);
+            mHead = head + elementsToAppend - 1;
         }
-        mSize += elementsToCopy;
+        else
+        {
+            // Split the elements to copy into two slices, one in the end, other in the begin of array
+            memcpy(mBuffer + head, &(values[0]), sizeof(T) * remainingEnd);
+            memcpy(mBuffer, &(values[remainingEnd]), sizeof(T) * (elementsToAppend - remainingEnd));
+            mHead = elementsToAppend - remainingEnd - 1;
+        }
+        mSize += elementsToAppend;
     }
 
-    return result;
+    return elementsToAppend;
 }
 
 // ----------------------------------------------------------------------------

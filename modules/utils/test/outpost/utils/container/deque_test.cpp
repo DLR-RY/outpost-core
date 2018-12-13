@@ -191,7 +191,7 @@ TEST(DequeTest, appendSlice) {
     slice[1] = 31;
     slice[2] = 42;
 
-    EXPECT_TRUE(deque.append(slice)); // {- 20t 31 42h -}
+    EXPECT_EQ(3u, deque.append(slice)); // {- 20t 31 42h -}
     EXPECT_EQ(2u, deque.getAvailableSpace());
     EXPECT_EQ(3u, deque.getSize());
     EXPECT_EQ(20, deque.getFront());
@@ -199,7 +199,7 @@ TEST(DequeTest, appendSlice) {
 
     deque.removeFront(); // {- - 31t 42h -}
 
-    EXPECT_TRUE(deque.append(slice)); // {31 42h 31t 42 20}
+    EXPECT_EQ(3u, deque.append(slice)); // {31 42h 31t 42 20}
     EXPECT_EQ(0u, deque.getAvailableSpace());
     EXPECT_EQ(5u, deque.getSize());
     EXPECT_EQ(31, deque.getFront());
@@ -209,7 +209,7 @@ TEST(DequeTest, appendSlice) {
     deque.removeBack(); // {31h - - 42t 20}
 
     slice[1] = 35;
-    EXPECT_FALSE(deque.append(slice)); // {31 20 35h 42t 20}
+    EXPECT_EQ(2u, deque.append(slice)); // {31 20 35h 42t 20}
     EXPECT_EQ(0u, deque.getAvailableSpace());
     EXPECT_EQ(5u, deque.getSize());
     EXPECT_EQ(42, deque.getFront());

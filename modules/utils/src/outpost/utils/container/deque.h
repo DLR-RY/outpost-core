@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -91,15 +91,20 @@ public:
     inline const T&
     getBack() const;
 
-    bool
+    /**
+     * \param value One value to append to the deque.
+     *
+     * \result Number of appended values.
+     */
+    size_t
     append(const T& value);
 
     /**
      * \param values A slice to append to the deque.
      *
-     * \result If all elements are copied true.
+     * \result Number of appended values.
      */
-    bool
+    size_t
     append(const outpost::Slice<T>& values);
 
     bool
