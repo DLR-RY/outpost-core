@@ -14,16 +14,15 @@
 #ifndef OUTPOST_SUPPORT_HEARTBEAT_H
 #define OUTPOST_SUPPORT_HEARTBEAT_H
 
+#include <outpost/parameter/support.h>
 #include <outpost/smpc/topic.h>
 #include <outpost/time/time_epoch.h>
 #include <outpost/time/time_point.h>
-#include <outpost/parameter/support.h>
 
 namespace outpost
 {
 namespace support
 {
-
 struct Heartbeat
 {
     enum class TimeoutType
@@ -45,7 +44,8 @@ struct Heartbeat
      *      Time until which the next tick will be reported.
      */
     static inline void
-    send(outpost::support::parameter::HeartbeatSource source, outpost::time::Duration timeToNextTick);
+    send(outpost::support::parameter::HeartbeatSource source,
+         outpost::time::Duration timeToNextTick);
 
     /**
      * Send heartbeat tick.
@@ -56,7 +56,8 @@ struct Heartbeat
      *      Absolute time point until which the next tick will be reported.
      */
     static inline void
-    send(outpost::support::parameter::HeartbeatSource source, outpost::time::SpacecraftElapsedTime nextTick);
+    send(outpost::support::parameter::HeartbeatSource source,
+         outpost::time::SpacecraftElapsedTime nextTick);
 
     /**
      * Suspend the generation of heartbeats.
@@ -75,7 +76,8 @@ extern outpost::smpc::Topic<const Heartbeat> watchdogHeartbeat;
 
 // Implementation of inline functions
 void
-Heartbeat::send(outpost::support::parameter::HeartbeatSource source, outpost::time::Duration timeToNextTick)
+Heartbeat::send(outpost::support::parameter::HeartbeatSource source,
+                outpost::time::Duration timeToNextTick)
 {
     Heartbeat trigger{source,
                       TimeoutType::relativeTime,
@@ -84,7 +86,8 @@ Heartbeat::send(outpost::support::parameter::HeartbeatSource source, outpost::ti
 }
 
 void
-Heartbeat::send(outpost::support::parameter::HeartbeatSource source, outpost::time::SpacecraftElapsedTime nextTick)
+Heartbeat::send(outpost::support::parameter::HeartbeatSource source,
+                outpost::time::SpacecraftElapsedTime nextTick)
 {
     Heartbeat trigger{source, TimeoutType::absoluteTime, nextTick};
     watchdogHeartbeat.publish(trigger);
@@ -102,7 +105,7 @@ Heartbeat::suspend(outpost::support::parameter::HeartbeatSource source)
     watchdogHeartbeat.publish(trigger);
 }
 
-}  // namespace common
-}  // namespace euc
+}  // namespace support
+}  // namespace outpost
 
 #endif

@@ -18,7 +18,7 @@ def init(module):
 
 
 def prepare(module, options):
-    module.depends(":rtos", ":smpc", ":utils", ":hal")
+    module.depends(":rtos", ":smpc", ":utils", ":hal", ":support")
     return True
 
 

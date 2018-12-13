@@ -20,11 +20,14 @@ using namespace outpost::comm;
 
 outpost::smpc::Topic<outpost::comm::NonRmapDataType> outpost::comm::nonRmapPacketReceived;
 
+constexpr outpost::time::Duration RmapInitiator::receiveTimeout;
+
 //-----------------------------------------------------------------------------
 RmapInitiator::RmapInitiator(hal::SpaceWire& spw,
                              RmapTargetsList* list,
                              uint8_t priority,
-                             size_t stackSize) :
+                             size_t stackSize,
+                             outpost::support::parameter::HeartbeatSource heartbeatSource) :
     outpost::rtos::Thread(priority, stackSize, "RMEN"),
     mSpW(spw),
     mTargetNodes(list),
@@ -38,7 +41,8 @@ RmapInitiator::RmapInitiator(hal::SpaceWire& spw,
     mTransactionsList(),
     mDiscardedPacket(nullptr),
     mCounters(),
-    mRxData()
+    mRxData(),
+    mHeartbeatSource(heartbeatSource)
 {
 }
 
@@ -348,6 +352,7 @@ RmapInitiator::run()
     mStopped = false;
     while (!mStopped)
     {
+        outpost::support::Heartbeat::send(mHeartbeatSource, receiveTimeout * 2);
         if (receivePacket(&packet))
         {
             // Only handling reply packet, no command packets
@@ -361,7 +366,7 @@ RmapInitiator::run()
             }
         }
     }
-
+    outpost::support::Heartbeat::suspend(mHeartbeatSource);
     mStopped = true;
 }
 
@@ -436,8 +441,7 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket)
     bool result = false;
 
     // Receive response
-    if (mSpW.receive(rxBuffer, outpost::time::Duration::maximum())
-        == hal::SpaceWire::Result::success)
+    if (mSpW.receive(rxBuffer, receiveTimeout) == hal::SpaceWire::Result::success)
     {
         if (rxBuffer.getEndMarker() == hal::SpaceWire::eop)
         {
