@@ -9,19 +9,18 @@
  *
  * Authors:
  * - 2013-2018, Fabian Greif (DLR RY-AVS)
- * - 2018, Olaf Maibaum (SC-OSS)
+ * - 2018, Olaf Maibaum (DLR SC-OSS)
  */
 
 #ifndef OUTPOST_DEQUE_IMPL_H
 #define OUTPOST_DEQUE_IMPL_H
 
-// Needed for memcpy
-#include <string.h>
-
 #include "deque.h"
 
-template <typename T>
-outpost::Deque<T>::Deque(T* backendBuffer, size_t n) :
+namespace outpost
+{
+template <typename T, DequeAppendStrategy strategy>
+Deque<T, strategy>::Deque(T* backendBuffer, size_t n) :
     mBuffer(backendBuffer),
     mMaxSize(n),
     mHead(0),
@@ -30,8 +29,8 @@ outpost::Deque<T>::Deque(T* backendBuffer, size_t n) :
 {
 }
 
-template <typename T>
-outpost::Deque<T>::Deque(outpost::Slice<T> backendBuffer) :
+template <typename T, DequeAppendStrategy strategy>
+Deque<T, strategy>::Deque(outpost::Slice<T> backendBuffer) :
     mBuffer(backendBuffer.begin()),
     mMaxSize(backendBuffer.getNumberOfElements()),
     mHead(0),
@@ -40,86 +39,81 @@ outpost::Deque<T>::Deque(outpost::Slice<T> backendBuffer) :
 {
 }
 
-// ----------------------------------------------------------------------------
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 bool
-outpost::Deque<T>::isEmpty() const
+Deque<T, strategy>::isEmpty() const
 {
     return (mSize == 0);
 }
 
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 bool
-outpost::Deque<T>::isFull() const
+Deque<T, strategy>::isFull() const
 {
     return (mSize == mMaxSize);
 }
 
-template <typename T>
-typename outpost::Deque<T>::Size
-outpost::Deque<T>::getSize() const
+template <typename T, DequeAppendStrategy strategy>
+typename Deque<T, strategy>::Size
+Deque<T, strategy>::getSize() const
 {
     return mSize;
 }
 
-template <typename T>
-typename outpost::Deque<T>::Size
-outpost::Deque<T>::getMaxSize() const
+template <typename T, DequeAppendStrategy strategy>
+typename Deque<T, strategy>::Size
+Deque<T, strategy>::getMaxSize() const
 {
     return mMaxSize;
 }
 
-template <typename T>
-typename outpost::Deque<T>::Size
-outpost::Deque<T>::getAvailableSpace() const
+template <typename T, DequeAppendStrategy strategy>
+typename Deque<T, strategy>::Size
+Deque<T, strategy>::getAvailableSpace() const
 {
     return (mMaxSize - mSize);
 }
 
-// ----------------------------------------------------------------------------
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 void
-outpost::Deque<T>::clear()
+Deque<T, strategy>::clear()
 {
     mHead = 0;
     mTail = 1;
     mSize = 0;
 }
 
-// ----------------------------------------------------------------------------
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 T&
-outpost::Deque<T>::getFront()
+Deque<T, strategy>::getFront()
 {
     return mBuffer[mTail];
 }
 
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 const T&
-outpost::Deque<T>::getFront() const
+Deque<T, strategy>::getFront() const
 {
     return mBuffer[mTail];
 }
 
-// ----------------------------------------------------------------------------
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 T&
-outpost::Deque<T>::getBack()
+Deque<T, strategy>::getBack()
 {
     return mBuffer[mHead];
 }
 
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 const T&
-outpost::Deque<T>::getBack() const
+Deque<T, strategy>::getBack() const
 {
     return mBuffer[mHead];
 }
 
-// ----------------------------------------------------------------------------
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 bool
-outpost::Deque<T>::append(const T& value)
+Deque<T, strategy>::append(const T& value)
 {
     bool result = false;
     if (!isFull())
@@ -142,57 +136,63 @@ outpost::Deque<T>::append(const T& value)
     return result;
 }
 
-// ----------------------------------------------------------------------------
-
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 size_t
-outpost::Deque<T>::append(const outpost::Slice<T>& values)
+Deque<T, strategy>::append(outpost::Slice<T> values)
 {
     Size elementsToAppend = 0;
-
     if (!isFull())
     {
         Index head = mHead + 1;
-        if (head >= (mMaxSize - 1))
-        {
-            mHead = 0;
-        }
 
         // Get number of elements until end of ring buffer
-        Size remainingEnd = mMaxSize - head;
+        Size elementsUntilEndOfBuffer = mMaxSize - head;
+
         // Get number of elements to copy until overflow happens
         elementsToAppend = values.getNumberOfElements();
-        if(elementsToAppend > mMaxSize - mSize)
+        if (elementsToAppend > (mMaxSize - mSize))
         {
-            elementsToAppend = mMaxSize - mSize;
+            if (strategy == DequeAppendStrategy::partial)
+            {
+                elementsToAppend = mMaxSize - mSize;
+            }
+            else
+            {
+                // Do not append anything if not everything can be added.
+                elementsToAppend = 0;
+            }
         }
 
         // Two cases:
-        // All elements has place in the end of the ring buffer,
-        // or fill up all slots in the end and remaining elements should copy to the begin of the ring buffer
-        if(elementsToAppend <= remainingEnd)
+        // 1. All elements has place in the end of the ring buffer, or fill up
+        // all slots in the end and remaining elements should copy to the begin
+        // of the ring buffer.
+        if (elementsToAppend <= elementsUntilEndOfBuffer)
         {
             // Copy only to the end of the ring buffer
-            memcpy(mBuffer + head, values.begin(), sizeof(T) * elementsToAppend);
+            memcpy(&mBuffer[head], values.begin(), sizeof(T) * elementsToAppend);
             mHead = head + elementsToAppend - 1;
         }
         else
         {
-            // Split the elements to copy into two slices, one in the end, other in the begin of array
-            memcpy(mBuffer + head, &(values[0]), sizeof(T) * remainingEnd);
-            memcpy(mBuffer, &(values[remainingEnd]), sizeof(T) * (elementsToAppend - remainingEnd));
-            mHead = elementsToAppend - remainingEnd - 1;
+            // 2. Split the elements to copy into two slices, one in the end,
+            // other in the begin of array.
+            memcpy(&mBuffer[head], values.begin(), sizeof(T) * elementsUntilEndOfBuffer);
+            memcpy(&mBuffer[0],
+                   &(values[elementsUntilEndOfBuffer]),
+                   sizeof(T) * (elementsToAppend - elementsUntilEndOfBuffer));
+            mHead = elementsToAppend - elementsUntilEndOfBuffer - 1;
         }
+
         mSize += elementsToAppend;
     }
 
     return elementsToAppend;
 }
 
-// ----------------------------------------------------------------------------
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 void
-outpost::Deque<T>::removeBack()
+Deque<T, strategy>::removeBack()
 {
     if (mHead == 0)
     {
@@ -205,10 +205,9 @@ outpost::Deque<T>::removeBack()
     mSize--;
 }
 
-// ----------------------------------------------------------------------------
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 bool
-outpost::Deque<T>::prepend(const T& value)
+Deque<T, strategy>::prepend(const T& value)
 {
     bool result = false;
     if (!isFull())
@@ -231,9 +230,9 @@ outpost::Deque<T>::prepend(const T& value)
     return result;
 }
 
-template <typename T>
+template <typename T, DequeAppendStrategy strategy>
 void
-outpost::Deque<T>::removeFront()
+Deque<T, strategy>::removeFront()
 {
     if (mTail >= (mMaxSize - 1))
     {
@@ -246,5 +245,6 @@ outpost::Deque<T>::removeFront()
 
     mSize--;
 }
+}  // namespace outpost
 
 #endif
