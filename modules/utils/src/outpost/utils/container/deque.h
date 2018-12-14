@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2013-2018, Fabian Greif (DLR RY-AVS)
+ * - 2018, Olaf Maibaum (DLR SC-OSS)
  */
 
 #ifndef OUTPOST_DEQUE_H
@@ -20,8 +21,20 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// Needed for memcpy
+#include <string.h>
+
 namespace outpost
 {
+enum class DequeAppendStrategy
+{
+    /// Only append data if all data can be added.
+    complete,
+
+    /// Append as much data as possible.
+    partial
+};
+
 /**
  * Double ended queue.
  *
@@ -44,7 +57,7 @@ namespace outpost
  *
  * \author  Fabian Greif
  */
-template <typename T>
+template <typename T, DequeAppendStrategy Strategy = DequeAppendStrategy::partial>
 class Deque
 {
 public:
@@ -52,9 +65,21 @@ public:
     typedef Index Size;
 
 public:
+    /**
+     * \deprecated
+     *      Use the slice based constructor instead. This constructor will
+     *      be removed in one of the next versions of the library.
+     */
     Deque(T* backendBuffer, size_t n);
 
     explicit Deque(outpost::Slice<T> backendBuffer);
+
+    // disable copy constructor
+    Deque(const Deque&) = delete;
+
+    // disable copy assignment operator
+    Deque&
+    operator=(const Deque&) = delete;
 
     inline bool
     isEmpty() const;
@@ -91,8 +116,29 @@ public:
     inline const T&
     getBack() const;
 
+    /**
+     * \param value One value to append to the deque.
+     *
+     * \result True when value is appended.
+     */
     bool
     append(const T& value);
+
+    /**
+     * Append a list of elements to the queue.
+     *
+     * If the append strategy is set to `partial` and not enough space is
+     * available, the queue is filled up with the first values from the slice
+     * until it is full.
+     * Otherwise the append operation is aborted completely.
+     *
+     * \param values
+     *      A slice to append to the deque.
+     *
+     * \result Number of appended values.
+     */
+    size_t
+    append(outpost::Slice<T> values);
 
     bool
     prepend(const T& value);
@@ -104,13 +150,6 @@ public:
     removeFront();
 
 private:
-    // disable copy constructor
-    Deque(const Deque&);
-
-    // disable assignment operator
-    Deque&
-    operator=(const Deque&);
-
     T* const mBuffer;
     const Size mMaxSize;
 

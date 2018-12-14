@@ -8,17 +8,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2013-2018, Fabian Greif (DLR RY-AVS)
+ * - 2018, Olaf Maibaum (DLR SC-OSS)
  */
 
 #include <outpost/utils/container/deque.h>
 
 #include <unittest/harness.h>
 
+using namespace outpost;
+
 TEST(DequeTest, forward)
 {
     int16_t buffer[3];
-    outpost::Deque<int16_t> deque(buffer, 3);
+    outpost::Deque<int16_t> deque(outpost::asSlice(buffer));
 
     EXPECT_TRUE(deque.isEmpty());
     EXPECT_EQ(deque.getMaxSize(), 3U);
@@ -68,7 +71,7 @@ TEST(DequeTest, forward)
 TEST(DequeTest, backward)
 {
     int16_t buffer[3];
-    outpost::Deque<int16_t> deque(buffer, 3);
+    outpost::Deque<int16_t> deque(outpost::asSlice(buffer));
 
     EXPECT_TRUE(deque.prepend(1));
     EXPECT_TRUE(deque.prepend(2));
@@ -102,7 +105,7 @@ TEST(DequeTest, backward)
 TEST(DequeTest, both)
 {
     int16_t buffer[3];
-    outpost::Deque<int16_t> deque(buffer, 3);
+    outpost::Deque<int16_t> deque(outpost::asSlice(buffer));
 
     EXPECT_EQ(deque.getSize(), 0U);
 
@@ -140,7 +143,7 @@ TEST(DequeTest, both)
 TEST(DequeTest, clear)
 {
     int16_t buffer[3];
-    outpost::Deque<int16_t> deque(buffer, 3);
+    outpost::Deque<int16_t> deque(outpost::asSlice(buffer));
 
     deque.prepend(12);
     deque.prepend(11);
@@ -177,5 +180,62 @@ TEST(DequeTest, clear)
     EXPECT_EQ(deque.getBack(), 13);
     deque.removeBack();
 
+    EXPECT_TRUE(deque.isEmpty());
+}
+
+TEST(DequeTest, appendSlice)
+{
+    // invalid = -, head = h, tail = t
+    int16_t buffer[5];
+    outpost::Deque<int16_t> deque(outpost::asSlice(buffer));  // {-h -t - - -}
+
+    int16_t elements[3];
+    outpost::Slice<int16_t> slice(elements);
+    slice[0] = 20;
+    slice[1] = 31;
+    slice[2] = 42;
+
+    EXPECT_EQ(3u, deque.append(slice));  // {- 20t 31 42h -}
+    EXPECT_EQ(2u, deque.getAvailableSpace());
+    EXPECT_EQ(3u, deque.getSize());
+    EXPECT_EQ(20, deque.getFront());
+    EXPECT_EQ(42, deque.getBack());
+
+    deque.removeFront();  // {- - 31t 42h -}
+
+    EXPECT_EQ(3u, deque.append(slice));  // {31 42h 31t 42 20}
+    EXPECT_EQ(0u, deque.getAvailableSpace());
+    EXPECT_EQ(5u, deque.getSize());
+    EXPECT_EQ(31, deque.getFront());
+    EXPECT_EQ(42, deque.getBack());
+
+    deque.removeFront();  // {31 42h - 42t 20}
+    deque.removeBack();   // {31h - - 42t 20}
+
+    slice[1] = 35;
+    EXPECT_EQ(2u, deque.append(slice));  // {31 20 35h 42t 20}
+    EXPECT_EQ(0u, deque.getAvailableSpace());
+    EXPECT_EQ(5u, deque.getSize());
+    EXPECT_EQ(42, deque.getFront());
+    EXPECT_EQ(35, deque.getBack());
+}
+
+TEST(DequeTest, shouldOnlyAppendCompleteSlice)
+{
+    int16_t buffer[5];
+    Deque<int16_t, DequeAppendStrategy::complete> deque(outpost::asSlice(buffer));
+
+    int16_t elements[3];
+    EXPECT_EQ(3U, deque.append(outpost::asSlice(elements)));
+    EXPECT_EQ(0U, deque.append(outpost::asSlice(elements)));
+}
+
+TEST(DequeTest, shouldAppendEmptySlice)
+{
+    int16_t buffer[5];
+    outpost::Deque<int16_t> deque(outpost::asSlice(buffer));
+
+    EXPECT_TRUE(deque.isEmpty());
+    EXPECT_EQ(0U, deque.append(outpost::Slice<int16_t>::empty()));
     EXPECT_TRUE(deque.isEmpty());
 }
