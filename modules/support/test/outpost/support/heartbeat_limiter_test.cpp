@@ -11,6 +11,7 @@
  * - 2018, Fabian Greif (DLR RY-AVS)
  */
 
+#include <outpost/parameter/support.h>
 #include <outpost/support/heartbeat_limiter.h>
 
 #include <unittest/harness.h>
@@ -64,8 +65,8 @@ TEST_F(HeartbeatLimiterTest, sendHeartbeatOnFirstInvocation)
     auto& entry = mLogger.getNext();
 
     EXPECT_EQ(source, entry.mSource);
-    EXPECT_EQ(outpost::time::SpacecraftElapsedTime::afterEpoch(heartbeatInterval
-                                                               + executionTimeoutShort),
+    EXPECT_EQ(outpost::time::SpacecraftElapsedTime::afterEpoch(
+                      heartbeatInterval + executionTimeoutShort + parameter::heartbeatTolerance),
               entry.mTimeout);
 
     mLogger.dropNext();
@@ -91,8 +92,8 @@ TEST_F(HeartbeatLimiterTest, shouldNotResendHeartbeatBeforeInterval)
 
     auto& entry = mLogger.getNext();
     EXPECT_EQ(source, entry.mSource);
-    EXPECT_EQ(outpost::time::SpacecraftElapsedTime::afterEpoch(heartbeatInterval
-                                                               + executionTimeoutShort),
+    EXPECT_EQ(outpost::time::SpacecraftElapsedTime::afterEpoch(
+                      heartbeatInterval + executionTimeoutShort + parameter::heartbeatTolerance),
               entry.mTimeout);
 
     mLogger.dropNext();
@@ -110,8 +111,8 @@ TEST_F(HeartbeatLimiterTest, shouldResendOnShorterExecutionTimeout)
 
     auto& entry = mLogger.getNext();
     EXPECT_EQ(source, entry.mSource);
-    EXPECT_EQ(outpost::time::SpacecraftElapsedTime::afterEpoch(heartbeatInterval
-                                                               + executionTimeoutShort),
+    EXPECT_EQ(outpost::time::SpacecraftElapsedTime::afterEpoch(
+                      heartbeatInterval + executionTimeoutShort + parameter::heartbeatTolerance),
               entry.mTimeout);
 
     mLogger.dropNext();

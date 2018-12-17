@@ -28,9 +28,21 @@ namespace support
 /**
  * Helper class to avoid sending heartbeats too often.
  *
- * Limits the number of heartbeat signals send to the topic to one
- * per heartbeat interval. If the execution timeout changes a heart beat might
- * be send earlier.
+ * Limits the number of heartbeat ticks sent to the topic to one
+ * per heartbeat interval. If the execution timeout changes a heartbeat might
+ * be sent earlier.
+ *
+ * This class is intended to be used when a lot of tasks with a high variability
+ * in their processing time are processed. In this case it is inefficient to
+ * send a heartbeat after each processing step (which might be very short), but
+ * it is not known after which number of steps the heartbeat should be sent.
+ * This class tracks the time since the last heartbeat has been sent to
+ * determine when to send the next tick. Therefore the `send` function
+ * can be called after each processing step, but the heartbeat tick will
+ * only be sent when necessary.
+ *
+ * \see outpost::support::Heartbeat for a more detailed description of the
+ *      heartbeat timing.
  */
 class HeartbeatLimiter
 {
@@ -52,7 +64,7 @@ public:
      *      Maximum time allocated to finish the operation
      */
     void
-    send(outpost::time::Duration executionTimeout);
+    send(outpost::time::Duration processingTimeout);
 
 private:
     outpost::time::Clock& mClock;
