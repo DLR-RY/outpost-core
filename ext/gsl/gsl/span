@@ -321,7 +321,7 @@ namespace details
             Expects(ext.size() == Ext);
         }
 
-        GSL_CONTRACT_CONSTEXPR extent_type(index_type size) { Expects(size == Ext); }
+        GSL_CONTRACT_CONSTEXPR extent_type(index_type size__) { Expects(size__ == Ext); }
 
         constexpr inline index_type size() const noexcept { return Ext; }
     };
@@ -337,7 +337,7 @@ namespace details
         {
         }
 
-        explicit GSL_CONTRACT_CONSTEXPR extent_type(index_type size) : size_(size) { Expects(size >= 0); }
+        explicit GSL_CONTRACT_CONSTEXPR extent_type(index_type size__) : size_(size__) { Expects(size__ >= 0); }
 
         constexpr inline index_type size() const noexcept { return size_; }
 
@@ -547,9 +547,9 @@ private:
     {
     public:
         template <class OtherExtentType>
-        GSL_CONTRACT_CONSTEXPR storage_type(pointer data, OtherExtentType ext) : ExtentType(ext), data_(data)
+        GSL_CONTRACT_CONSTEXPR storage_type(pointer data_ptr, OtherExtentType ext) : ExtentType(ext), data_(data_ptr)
         {
-            Expects((!data && ExtentType::size() == 0) || (data && ExtentType::size() >= 0));
+            Expects((!data_ptr && ExtentType::size() == 0) || (data_ptr && ExtentType::size() >= 0));
         }
 
         constexpr inline pointer data() const noexcept { return data_; }
