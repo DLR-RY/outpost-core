@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2014-2018, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Fabian Greif (DLR RY-AVS)
+ * - 2014-2018, Fabian Greif (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_TIME_CLOCK_H
@@ -28,14 +28,14 @@ namespace time
 class Clock
 {
 public:
-    Clock();
+    Clock() = default;
+
+    virtual ~Clock() = default;
 
     Clock(const Clock&) = delete;
 
     Clock&
     operator=(const Clock&) = delete;
-
-    virtual ~Clock();
 
     virtual SpacecraftElapsedTime
     now() const = 0;
