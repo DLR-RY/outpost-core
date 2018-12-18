@@ -1,3 +1,1 @@
-[submodule "ext/gsl"]
-	path = ext/gsl
-	url = ssh://git@hbryavsci1l.hb.dlr.de:10022/avionics-software-open/external/gsl.git
+
