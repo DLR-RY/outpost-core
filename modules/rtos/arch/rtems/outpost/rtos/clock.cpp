@@ -18,11 +18,11 @@
 outpost::time::SpacecraftElapsedTime
 outpost::rtos::SystemClock::now() const
 {
-    rtems_interval us_per_tick = rtems_configuration_get_microseconds_per_tick();
-    rtems_interval ticks_since_boot = rtems_clock_get_ticks_since_boot();
+    timespec ts;
+    rtems_clock_get_uptime(&ts);
 
     // convert to microseconds
-    uint64_t us = static_cast<uint64_t>(ticks_since_boot) * static_cast<uint64_t>(us_per_tick);
+    uint64_t us = static_cast<uint64_t>(ts.tv_sec)*1000000 + static_cast<uint64_t>(ts.tv_nsec)/1000;
 
     return outpost::time::SpacecraftElapsedTime::afterEpoch(outpost::time::Microseconds(us));
 }
