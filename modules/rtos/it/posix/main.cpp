@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2014-2017, 2019, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,14 +8,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Fabian Greif (DLR RY-AVS)
+ * - 2014-2017, 2019, Fabian Greif (DLR RY-AVS)
  */
 
 #include <stdint.h>
 #include <stdio.h>
 
-#include <../reference/consumer.h>
-#include <../reference/producer.h>
+// POSIX specific
+#include <outpost/rtos/internal/time.h>
+
+#include "../reference/consumer.h"
+#include "../reference/producer.h"
 
 outpost::rtos::Queue<uint32_t> queue(10);
 
@@ -25,6 +28,15 @@ Consumer consumer(queue);
 int
 main(void)
 {
+    timespec relative = outpost::rtos::toRelativeTime(outpost::time::Duration::infinity());
+    printf("%lu %li\n", relative.tv_sec, relative.tv_nsec);
+
+    timespec negative = outpost::rtos::toRelativeTime(-outpost::time::Milliseconds(1500));
+    printf("%li %li\n", negative.tv_sec, negative.tv_nsec);
+
+    timespec absolute = outpost::rtos::toAbsoluteTime(outpost::time::Duration::infinity());
+    printf("%lu %li\n", absolute.tv_sec, absolute.tv_nsec);
+
     producer.start();
     consumer.start();
 
