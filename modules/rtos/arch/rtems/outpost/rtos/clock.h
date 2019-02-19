@@ -29,7 +29,7 @@ class SystemClock : public time::Clock
 {
 public:
     virtual time::SpacecraftElapsedTime
-    now() const;
+    now() const override;
 };
 
 }  // namespace rtos

@@ -56,6 +56,13 @@ public:
         mLock.acquire();
     }
 
+    // Disable copy constructor
+    Guard(const Guard&) = delete;
+
+    // Disable assignment operator
+    Guard&
+    operator=(const Guard& other) = delete;
+
     /**
      * Release the mutex.
      */
@@ -65,13 +72,6 @@ public:
     }
 
 private:
-    // Disable copy constructor
-    Guard(const Guard&);
-
-    // Disable assignment operator
-    Guard&
-    operator=(const Guard& other);
-
     T& mLock;
 };
 

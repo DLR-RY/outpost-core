@@ -13,12 +13,6 @@
 
 #include "timer.h"
 
-// ----------------------------------------------------------------------------
-outpost::rtos::Timer::~Timer()
-{
-}
-
-// ----------------------------------------------------------------------------
 void
 outpost::rtos::Timer::start(time::Duration duration)
 {
@@ -41,17 +35,8 @@ outpost::rtos::Timer::isRunning()
     return false;
 }
 
-// ----------------------------------------------------------------------------
 void
 outpost::rtos::Timer::createTimer(const char* name)
 {
     (void) name;
 }
-
-// ----------------------------------------------------------------------------
-// void
-// outpost::rtos::Timer::invokeTimer(rtems_id id, void* parameter)
-//{
-//    Timer* timer = reinterpret_cast<Timer *>(parameter);
-//    (timer->object->*(timer->function))(timer);
-//}

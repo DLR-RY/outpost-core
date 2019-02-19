@@ -21,11 +21,11 @@
 
 template <typename T>
 outpost::rtos::Queue<T>::Queue(size_t numberOfItems) :
-    buffer(new T[numberOfItems]),
-    maximumSize(numberOfItems),
-    itemsInBuffer(0),
-    head(0),
-    tail(0)
+    mBuffer(new T[numberOfItems]),
+    mMaximumSize(numberOfItems),
+    mItemsInBuffer(0),
+    mHead(0),
+    mTail(0)
 {
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&signal, NULL);
@@ -36,10 +36,10 @@ outpost::rtos::Queue<T>::~Queue()
 {
     pthread_mutex_lock(&mutex);
 
-    itemsInBuffer = 0;
-    head = 0;
-    tail = 0;
-    delete[] buffer;
+    mItemsInBuffer = 0;
+    mHead = 0;
+    mTail = 0;
+    delete[] mBuffer;
 
     pthread_mutex_unlock(&mutex);
 
@@ -54,12 +54,12 @@ outpost::rtos::Queue<T>::send(const T& data)
     bool itemStored = false;
     pthread_mutex_lock(&mutex);
 
-    if (itemsInBuffer < maximumSize)
+    if (mItemsInBuffer < mMaximumSize)
     {
-        head = increment(head);
+        mHead = increment(mHead);
 
-        buffer[head] = data;
-        itemsInBuffer++;
+        mBuffer[mHead] = data;
+        mItemsInBuffer++;
         itemStored = true;
 
         pthread_cond_signal(&signal);
@@ -78,7 +78,7 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
     timespec time = toAbsoluteTime(timeout);
 
     pthread_mutex_lock(&mutex);
-    while ((itemsInBuffer == 0) && !timeoutOccured)
+    while ((mItemsInBuffer == 0) && !timeoutOccured)
     {
         if (pthread_cond_timedwait(&signal, &mutex, &time) != 0)
         {
@@ -89,10 +89,10 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
 
     if (!timeoutOccured)
     {
-        tail = increment(tail);
+        mTail = increment(mTail);
 
-        data = buffer[tail];
-        itemsInBuffer--;
+        data = mBuffer[mTail];
+        mItemsInBuffer--;
         itemRetrieved = true;
     }
 
@@ -102,9 +102,9 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
 
 template <typename T>
 size_t
-outpost::rtos::Queue<T>::increment(size_t index)
+outpost::rtos::Queue<T>::increment(size_t index) const
 {
-    if (index >= (maximumSize - 1))
+    if (index >= (mMaximumSize - 1))
     {
         index = 0;
     }

@@ -62,7 +62,7 @@ public:
      *
      * The default value is depending on the project settings.
      */
-    static const size_t defaultStackSize = 0;
+    static constexpr size_t defaultStackSize = 0;
 
     /**
      * Create a new thread.
@@ -89,8 +89,15 @@ public:
      */
     Thread(uint8_t priority,
            size_t stack = defaultStackSize,
-           const char* name = 0,
+           const char* name = nullptr,
            FloatingPointSupport floatingPointSupport = floatingPoint);
+
+    // disable copy constructor
+    Thread(const Thread& other) = delete;
+
+    // disable assignment operator
+    Thread&
+    operator=(const Thread& other) = delete;
 
     /**
      * Destructor.
@@ -201,13 +208,6 @@ protected:
     run() = 0;
 
 private:
-    // disable copy constructor
-    Thread(const Thread& other);
-
-    // disable assignment operator
-    Thread&
-    operator=(const Thread& other);
-
     static void
     wrapper(rtems_task_argument object);
 

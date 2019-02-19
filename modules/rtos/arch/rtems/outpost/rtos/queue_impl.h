@@ -21,11 +21,11 @@
 #include <outpost/rtos/failure_handler.h>
 
 template <typename T>
-outpost::rtos::Queue<T>::Queue(size_t numberOfItems) : id()
+outpost::rtos::Queue<T>::Queue(size_t numberOfItems) : mId()
 {
     rtems_attribute attributes = RTEMS_FIFO | RTEMS_LOCAL;
     rtems_status_code result = rtems_message_queue_create(
-            rtems_build_name('R', 'T', 'Q', '0'), numberOfItems, sizeof(T), attributes, &id);
+            rtems_build_name('R', 'T', 'Q', '0'), numberOfItems, sizeof(T), attributes, &mId);
 
     if (result != RTEMS_SUCCESSFUL)
     {
@@ -36,14 +36,14 @@ outpost::rtos::Queue<T>::Queue(size_t numberOfItems) : id()
 template <typename T>
 outpost::rtos::Queue<T>::~Queue()
 {
-    rtems_message_queue_delete(id);
+    rtems_message_queue_delete(mId);
 }
 
 template <typename T>
 bool
 outpost::rtos::Queue<T>::send(const T& data)
 {
-    rtems_status_code result = rtems_message_queue_send(id, &data, sizeof(T));
+    rtems_status_code result = rtems_message_queue_send(mId, &data, sizeof(T));
     bool success = (result == RTEMS_SUCCESSFUL);
 
     return success;
@@ -56,7 +56,7 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
     size_t size;
     rtems_option options = RTEMS_WAIT;
     rtems_interval interval = rtems::getInterval(timeout);
-    rtems_status_code result = rtems_message_queue_receive(id, &data, &size, options, interval);
+    rtems_status_code result = rtems_message_queue_receive(mId, &data, &size, options, interval);
     bool success = (result == RTEMS_SUCCESSFUL);
 
     return success;

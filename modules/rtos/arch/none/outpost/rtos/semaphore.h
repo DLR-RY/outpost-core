@@ -52,6 +52,13 @@ public:
      */
     explicit Semaphore(uint32_t count);
 
+    // disable copy constructor
+    Semaphore(const Semaphore& other) = delete;
+
+    // disable assignment operator
+    Semaphore&
+    operator=(const Semaphore& other) = delete;
+
     /**
      * Destroy the semaphore and release it's resources.
      *
@@ -91,14 +98,6 @@ public:
      */
     void
     release();
-
-private:
-    // disable copy constructor
-    Semaphore(const Semaphore& other);
-
-    // disable assignment operator
-    Semaphore&
-    operator=(const Semaphore& other);
 };
 
 /**
@@ -130,6 +129,13 @@ public:
      *         Initial value for the semaphore.
      */
     explicit BinarySemaphore(State::Type initial);
+
+    // disable copy constructor
+    BinarySemaphore(const BinarySemaphore& other) = delete;
+
+    // disable assignment operator
+    BinarySemaphore&
+    operator=(const BinarySemaphore& other) = delete;
 
     /**
      * Destroy the semaphore and release it's resources.
@@ -170,14 +176,6 @@ public:
      */
     void
     release();
-
-private:
-    // disable copy constructor
-    BinarySemaphore(const BinarySemaphore& other);
-
-    // disable assignment operator
-    BinarySemaphore&
-    operator=(const BinarySemaphore& other);
 };
 
 }  // namespace rtos

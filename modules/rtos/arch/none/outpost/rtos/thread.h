@@ -59,7 +59,7 @@ public:
      *
      * The default value is depending on the project settings.
      */
-    static const size_t defaultStackSize = 0;
+    static constexpr size_t defaultStackSize = 0;
 
     /**
      * Create a new thread.
@@ -84,7 +84,7 @@ public:
      */
     Thread(uint8_t priority,
            size_t stack = defaultStackSize,
-           const char* name = 0,
+           const char* name = nullptr,
            FloatingPointSupport floatingPointSupport = noFloatingPoint);
 
     /**

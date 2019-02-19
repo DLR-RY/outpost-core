@@ -31,7 +31,7 @@ Mutex::Mutex()
     }
 
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(&mutex, &attr);
+    pthread_mutex_init(&mMutex, &attr);
 
     if (pthread_mutexattr_destroy(&attr) != 0)
     {
@@ -43,5 +43,5 @@ bool
 Mutex::acquire(outpost::time::Duration timeout)
 {
     timespec time = toAbsoluteTime(timeout);
-    return (pthread_mutex_timedlock(&mutex, &time) == 0);
+    return (pthread_mutex_timedlock(&mMutex, &time) == 0);
 }

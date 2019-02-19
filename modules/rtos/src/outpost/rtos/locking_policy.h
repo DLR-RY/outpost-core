@@ -35,16 +35,13 @@ public:
         {
         }
 
-        inline ~Lock()
-        {
-        }
-
-    private:
         // Disable copy constructor and copy assignment operator
-        Lock(const Lock&);
+        Lock(const Lock&) = delete;
 
         Lock&
-        operator=(const Lock&);
+        operator=(const Lock&) = delete;
+
+        inline ~Lock() = default;
     };
 };
 
@@ -62,18 +59,18 @@ public:
             mMutex.acquire();
         }
 
+        // Disable copy constructor and copy assignment operator
+        Lock(const Lock&) = delete;
+
+        Lock&
+        operator=(const Lock&) = delete;
+
         inline ~Lock()
         {
             mMutex.release();
         }
 
     private:
-        // Disable copy constructor and copy assignment operator
-        Lock(const Lock&);
-
-        Lock&
-        operator=(const Lock&);
-
         Mutex& mMutex;
     };
 
@@ -98,17 +95,16 @@ public:
             mutex.acquire();
         }
 
+        // Disable copy constructor and copy assignment operator
+        Lock(const Lock&) = delete;
+
+        Lock&
+        operator=(const Lock&) = delete;
+
         inline ~Lock()
         {
             mutex.release();
         }
-
-    private:
-        // Disable copy constructor and copy assignment operator
-        Lock(const Lock&);
-
-        Lock&
-        operator=(const Lock&);
     };
 
 private:

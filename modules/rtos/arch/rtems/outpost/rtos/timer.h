@@ -198,13 +198,10 @@ private:
     rtems_id mTid;
 };
 
-}  // namespace rtos
-}  // namespace outpost
-
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
-outpost::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
+Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
     mObject(reinterpret_cast<Callable*>(object)),
     mFunction(reinterpret_cast<Function>(function)),
     mRunning(false),
@@ -212,5 +209,8 @@ outpost::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const 
 {
     this->createTimer(name);
 }
+
+}  // namespace rtos
+}  // namespace outpost
 
 #endif
