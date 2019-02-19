@@ -21,7 +21,7 @@ namespace outpost
 {
 namespace rtos
 {
-static constexpr int32_t microsecondsPerSecond =
+static constexpr int64_t microsecondsPerSecond =
         time::Duration::microsecondsPerMillisecond * time::Duration::millisecondsPerSecond;
 
 outpost::time::SpacecraftElapsedTime
@@ -31,7 +31,7 @@ SystemClock::now() const
 
     // convert to microseconds
     int64_t microseconds = (time.tv_nsec / time::Duration::nanosecondsPerMicrosecond)
-                           + (time.tv_sec * static_cast<int64_t>(microsecondsPerSecond));
+                           + (time.tv_sec * microsecondsPerSecond);
 
     return outpost::time::SpacecraftElapsedTime::afterEpoch(
             outpost::time::Microseconds(microseconds));
