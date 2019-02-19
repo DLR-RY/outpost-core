@@ -62,7 +62,7 @@ public:
     inline bool
     acquire()
     {
-        return (sem_wait(&sid) == 0);
+        return (sem_wait(&mSid) == 0);
     }
 
     /**
@@ -88,12 +88,12 @@ public:
     inline void
     release()
     {
-        sem_post(&sid);
+        sem_post(&mSid);
     }
 
 private:
     /// POSIX semaphore handle
-    sem_t sid;
+    sem_t mSid;
 };
 
 /**
@@ -169,9 +169,9 @@ public:
 
 private:
     // POSIX handles
-    pthread_mutex_t mutex;
-    pthread_cond_t signal;
-    State::Type value;
+    pthread_mutex_t mMutex;
+    pthread_cond_t mSignal;
+    State::Type mValue;
 };
 
 }  // namespace rtos

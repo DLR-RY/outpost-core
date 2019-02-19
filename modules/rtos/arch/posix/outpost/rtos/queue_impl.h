@@ -27,24 +27,24 @@ outpost::rtos::Queue<T>::Queue(size_t numberOfItems) :
     mHead(0),
     mTail(0)
 {
-    pthread_mutex_init(&mutex, NULL);
-    pthread_cond_init(&signal, NULL);
+    pthread_mutex_init(&mMutex, NULL);
+    pthread_cond_init(&mSignal, NULL);
 }
 
 template <typename T>
 outpost::rtos::Queue<T>::~Queue()
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mMutex);
 
     mItemsInBuffer = 0;
     mHead = 0;
     mTail = 0;
     delete[] mBuffer;
 
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mMutex);
 
-    pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&signal);
+    pthread_mutex_destroy(&mMutex);
+    pthread_cond_destroy(&mSignal);
 }
 
 template <typename T>
@@ -52,7 +52,7 @@ bool
 outpost::rtos::Queue<T>::send(const T& data)
 {
     bool itemStored = false;
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mMutex);
 
     if (mItemsInBuffer < mMaximumSize)
     {
@@ -62,10 +62,10 @@ outpost::rtos::Queue<T>::send(const T& data)
         mItemsInBuffer++;
         itemStored = true;
 
-        pthread_cond_signal(&signal);
+        pthread_cond_signal(&mSignal);
     }
 
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mMutex);
     return itemStored;
 }
 
@@ -74,20 +74,31 @@ bool
 outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
 {
     bool itemRetrieved = false;
-    bool timeoutOccured = false;
-    timespec time = toAbsoluteTime(timeout);
+    bool timeoutOrErrorOccured = false;
 
-    pthread_mutex_lock(&mutex);
-    while ((mItemsInBuffer == 0) && !timeoutOccured)
+    pthread_mutex_lock(&mMutex);
+    while ((mItemsInBuffer == 0) && !timeoutOrErrorOccured)
     {
-        if (pthread_cond_timedwait(&signal, &mutex, &time) != 0)
+        if (timeout == outpost::time::Duration::infinity())
         {
-            // Timeout or other error has occurred
-            timeoutOccured = true;
+            if (pthread_cond_wait(&mSignal, &mMutex) != 0)
+            {
+                // Error has occurred
+                timeoutOrErrorOccured = true;
+            }
+        }
+        else
+        {
+            timespec time = toAbsoluteTime(timeout);
+            if (pthread_cond_timedwait(&mSignal, &mMutex, &time) != 0)
+            {
+                // Timeout or other error has occurred
+                timeoutOrErrorOccured = true;
+            }
         }
     }
 
-    if (!timeoutOccured)
+    if (!timeoutOrErrorOccured)
     {
         mTail = increment(mTail);
 
@@ -96,7 +107,7 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
         itemRetrieved = true;
     }
 
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mMutex);
     return itemRetrieved;
 }
 

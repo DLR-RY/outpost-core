@@ -23,10 +23,10 @@ using outpost::rtos::BinarySemaphore;
 using outpost::rtos::Semaphore;
 
 // ----------------------------------------------------------------------------
-Semaphore::Semaphore(uint32_t count) : sid()
+Semaphore::Semaphore(uint32_t count) : mSid()
 {
     // shared semaphores are disabled
-    if (sem_init(&sid, 0, count) != 0)
+    if (sem_init(&mSid, 0, count) != 0)
     {
         FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
     }
@@ -34,39 +34,48 @@ Semaphore::Semaphore(uint32_t count) : sid()
 
 Semaphore::~Semaphore()
 {
-    sem_destroy(&sid);
+    sem_destroy(&mSid);
 }
 
 bool
 Semaphore::acquire(time::Duration timeout)
 {
-    timespec t = toAbsoluteTime(timeout);
-    return (sem_timedwait(&sid, &t) == 0);
+    bool success = false;
+    if (timeout == time::Duration::infinity())
+    {
+        success = acquire();
+    }
+    else
+    {
+        timespec t = toAbsoluteTime(timeout);
+        success = (sem_timedwait(&mSid, &t) == 0);
+    }
+    return success;
 }
 
 // ----------------------------------------------------------------------------
-BinarySemaphore::BinarySemaphore(State::Type initial) : value(initial)
+BinarySemaphore::BinarySemaphore(State::Type initial) : mValue(initial)
 {
-    pthread_mutex_init(&mutex, NULL);
-    pthread_cond_init(&signal, NULL);
+    pthread_mutex_init(&mMutex, NULL);
+    pthread_cond_init(&mSignal, NULL);
 }
 
 BinarySemaphore::~BinarySemaphore()
 {
-    pthread_cond_destroy(&signal);
-    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&mSignal);
+    pthread_mutex_destroy(&mMutex);
 }
 
 bool
 BinarySemaphore::acquire()
 {
-    pthread_mutex_lock(&mutex);
-    while (value == State::acquired)
+    pthread_mutex_lock(&mMutex);
+    while (mValue == State::acquired)
     {
-        pthread_cond_wait(&signal, &mutex);
+        pthread_cond_wait(&mSignal, &mMutex);
     }
-    value = State::acquired;
-    pthread_mutex_unlock(&mutex);
+    mValue = State::acquired;
+    pthread_mutex_unlock(&mMutex);
 
     return true;
 }
@@ -74,30 +83,38 @@ BinarySemaphore::acquire()
 bool
 BinarySemaphore::acquire(time::Duration timeout)
 {
-    timespec time = toAbsoluteTime(timeout);
-
-    pthread_mutex_lock(&mutex);
-    while (value == State::acquired)
+    bool success = false;
+    if (timeout == time::Duration::infinity())
     {
-        if (pthread_cond_timedwait(&signal, &mutex, &time) != 0)
-        {
-            // Timeout or other error has occurred
-            // => semaphore can't be acquired
-            pthread_mutex_unlock(&mutex);
-            return false;
-        }
+        success = acquire();
     }
-    value = State::acquired;
-    pthread_mutex_unlock(&mutex);
+    else
+    {
+        timespec time = toAbsoluteTime(timeout);
+        pthread_mutex_lock(&mMutex);
+        while (mValue == State::acquired)
+        {
+            if (pthread_cond_timedwait(&mSignal, &mMutex, &time) != 0)
+            {
+                // Timeout or other error has occurred
+                // => semaphore can't be acquired
+                pthread_mutex_unlock(&mMutex);
+                return false;
+            }
+        }
+        mValue = State::acquired;
+        pthread_mutex_unlock(&mMutex);
 
-    return true;
+        success = true;
+    }
+    return success;
 }
 
 void
 BinarySemaphore::release()
 {
-    pthread_mutex_lock(&mutex);
-    value = State::released;
-    pthread_cond_signal(&signal);
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_lock(&mMutex);
+    mValue = State::released;
+    pthread_cond_signal(&mSignal);
+    pthread_mutex_unlock(&mMutex);
 }

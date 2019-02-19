@@ -42,6 +42,15 @@ Mutex::Mutex()
 bool
 Mutex::acquire(outpost::time::Duration timeout)
 {
-    timespec time = toAbsoluteTime(timeout);
-    return (pthread_mutex_timedlock(&mMutex, &time) == 0);
+    bool success = false;
+    if (timeout == time::Duration::infinity())
+    {
+        success = acquire();
+    }
+    else
+    {
+        timespec time = toAbsoluteTime(timeout);
+        success = (pthread_mutex_timedlock(&mMutex, &time) == 0);
+    }
+    return success;
 }
