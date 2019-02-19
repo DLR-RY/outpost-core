@@ -54,6 +54,7 @@ elif env['OS'] == 'posix':
 	env.Append(CPPPATH=[os.path.abspath('../arch/posix')])
 	
 	files += env.Glob('../arch/posix/outpost/rtos/*.cpp')
+	files += env.Glob('../arch/posix/outpost/rtos/*/*.cpp')
 	
 	envGlobal.Append(LIBS=['rt', 'pthread'])
 else:

@@ -19,8 +19,11 @@
 
 #include <time.h>
 
+using outpost::rtos::BinarySemaphore;
+using outpost::rtos::Semaphore;
+
 // ----------------------------------------------------------------------------
-outpost::rtos::Semaphore::Semaphore(uint32_t count) : sid()
+Semaphore::Semaphore(uint32_t count) : sid()
 {
     // shared semaphores are disabled
     if (sem_init(&sid, 0, count) != 0)
@@ -29,33 +32,33 @@ outpost::rtos::Semaphore::Semaphore(uint32_t count) : sid()
     }
 }
 
-outpost::rtos::Semaphore::~Semaphore()
+Semaphore::~Semaphore()
 {
     sem_destroy(&sid);
 }
 
 bool
-outpost::rtos::Semaphore::acquire(time::Duration timeout)
+Semaphore::acquire(time::Duration timeout)
 {
     timespec t = toAbsoluteTime(timeout);
     return (sem_timedwait(&sid, &t) == 0);
 }
 
 // ----------------------------------------------------------------------------
-outpost::rtos::BinarySemaphore::BinarySemaphore(State::Type initial) : value(initial)
+BinarySemaphore::BinarySemaphore(State::Type initial) : value(initial)
 {
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&signal, NULL);
 }
 
-outpost::rtos::BinarySemaphore::~BinarySemaphore()
+BinarySemaphore::~BinarySemaphore()
 {
     pthread_cond_destroy(&signal);
     pthread_mutex_destroy(&mutex);
 }
 
 bool
-outpost::rtos::BinarySemaphore::acquire()
+BinarySemaphore::acquire()
 {
     pthread_mutex_lock(&mutex);
     while (value == State::acquired)
@@ -69,7 +72,7 @@ outpost::rtos::BinarySemaphore::acquire()
 }
 
 bool
-outpost::rtos::BinarySemaphore::acquire(time::Duration timeout)
+BinarySemaphore::acquire(time::Duration timeout)
 {
     timespec time = toAbsoluteTime(timeout);
 
@@ -91,7 +94,7 @@ outpost::rtos::BinarySemaphore::acquire(time::Duration timeout)
 }
 
 void
-outpost::rtos::BinarySemaphore::release()
+BinarySemaphore::release()
 {
     pthread_mutex_lock(&mutex);
     value = State::released;

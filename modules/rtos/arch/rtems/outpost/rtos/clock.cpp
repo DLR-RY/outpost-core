@@ -22,7 +22,8 @@ outpost::rtos::SystemClock::now() const
     rtems_clock_get_uptime(&ts);
 
     // convert to microseconds
-    uint64_t us = static_cast<uint64_t>(ts.tv_sec)*1000000 + static_cast<uint64_t>(ts.tv_nsec)/1000;
+    uint64_t us =
+            static_cast<uint64_t>(ts.tv_sec) * 1000000 + static_cast<uint64_t>(ts.tv_nsec) / 1000;
 
     return outpost::time::SpacecraftElapsedTime::afterEpoch(outpost::time::Microseconds(us));
 }

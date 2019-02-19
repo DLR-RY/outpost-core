@@ -26,9 +26,10 @@
 
 #include <time.h>
 
-// ----------------------------------------------------------------------------
+using outpost::rtos::Thread;
+
 void*
-outpost::rtos::Thread::wrapper(void* object)
+Thread::wrapper(void* object)
 {
     Thread* thread = reinterpret_cast<Thread*>(object);
 
@@ -43,11 +44,7 @@ outpost::rtos::Thread::wrapper(void* object)
     return NULL;
 }
 
-// ----------------------------------------------------------------------------
-outpost::rtos::Thread::Thread(uint8_t,
-                              size_t,
-                              const char* name,
-                              FloatingPointSupport /*floatingPointSupport*/) :
+Thread::Thread(uint8_t, size_t, const char* name, FloatingPointSupport /*floatingPointSupport*/) :
     mIsRunning(false),
     mPthreadId(),
     mTid(),
@@ -59,7 +56,7 @@ outpost::rtos::Thread::Thread(uint8_t,
     }
 }
 
-outpost::rtos::Thread::~Thread()
+Thread::~Thread()
 {
     if (mIsRunning)
     {
@@ -68,15 +65,14 @@ outpost::rtos::Thread::~Thread()
     }
 }
 
-// ----------------------------------------------------------------------------
-outpost::rtos::Thread::Identifier
-outpost::rtos::Thread::getIdentifier() const
+Thread::Identifier
+Thread::getIdentifier() const
 {
     return 0;
 }
 
-outpost::rtos::Thread::Identifier
-outpost::rtos::Thread::getCurrentThreadIdentifier()
+Thread::Identifier
+Thread::getCurrentThreadIdentifier()
 {
 #ifdef SYS_gettid
     pid_t tid = syscall(SYS_gettid);
@@ -86,9 +82,8 @@ outpost::rtos::Thread::getCurrentThreadIdentifier()
 #endif
 }
 
-// ----------------------------------------------------------------------------
 void
-outpost::rtos::Thread::start()
+Thread::start()
 {
     mIsRunning = true;
     pthread_attr_t attr;
@@ -112,30 +107,28 @@ outpost::rtos::Thread::start()
     pthread_attr_destroy(&attr);
 }
 
-// ----------------------------------------------------------------------------
 void
-outpost::rtos::Thread::setPriority(uint8_t priority)
+Thread::setPriority(uint8_t priority)
 {
     // No priority defined for POSIX!
     (void) priority;
 }
 
 uint8_t
-outpost::rtos::Thread::getPriority() const
+Thread::getPriority() const
 {
     return 0;
 }
 
-// ----------------------------------------------------------------------------
 void
-outpost::rtos::Thread::yield()
+Thread::yield()
 {
     // On Linux, this call always succeeds
     pthread_yield();
 }
 
 void
-outpost::rtos::Thread::sleep(::outpost::time::Duration timeout)
+Thread::sleep(::outpost::time::Duration timeout)
 {
     const timespec req = toRelativeTime(timeout);
     timespec rem;

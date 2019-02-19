@@ -13,17 +13,29 @@
 
 #include "clock.h"
 
+#include "internal/time.h"
+
 #include <time.h>
 
-outpost::time::SpacecraftElapsedTime
-outpost::rtos::SystemClock::now() const
+namespace outpost
 {
-    struct timespec time;
-    clock_gettime(CLOCK_MONOTONIC, &time);
+namespace rtos
+{
+static constexpr int32_t microsecondsPerSecond =
+        time::Duration::microsecondsPerMillisecond * time::Duration::millisecondsPerSecond;
+
+outpost::time::SpacecraftElapsedTime
+SystemClock::now() const
+{
+    timespec time = getTime();
 
     // convert to microseconds
-    uint64_t microseconds = (time.tv_nsec / 1000) + (time.tv_sec * 1000000);
+    int64_t microseconds = (time.tv_nsec / time::Duration::nanosecondsPerMicrosecond)
+                           + (time.tv_sec * static_cast<int64_t>(microsecondsPerSecond));
 
     return outpost::time::SpacecraftElapsedTime::afterEpoch(
             outpost::time::Microseconds(microseconds));
 }
+
+}  // namespace rtos
+}  // namespace outpost

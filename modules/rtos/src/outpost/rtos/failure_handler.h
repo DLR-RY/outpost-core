@@ -123,7 +123,7 @@ public:
     setFailureHandlerFunction(Handler newHandler);
 
     /**
-     * Set a new clean up handler
+     * Set a new clean-up handler
      *
      * The handler will be called before the fatal error handler is called.
      * It can be used to e.g. save some critical system states into non-volatile

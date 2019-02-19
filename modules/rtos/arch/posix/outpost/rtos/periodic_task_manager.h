@@ -14,7 +14,6 @@
 #ifndef OUTPOST_RTOS_POSIX_PERIODIC_TASK_MANAGER_H
 #define OUTPOST_RTOS_POSIX_PERIODIC_TASK_MANAGER_H
 
-#include <outpost/rtos/failure_handler.h>
 #include <outpost/rtos/mutex.h>
 #include <outpost/time/duration.h>
 
@@ -53,7 +52,7 @@ public:
 
     PeriodicTaskManager();
 
-    ~PeriodicTaskManager();
+    ~PeriodicTaskManager() = default;
 
     /**
      * Start next period.
@@ -110,7 +109,7 @@ public:
 private:
     Mutex mMutex;
     bool mTimerRunning;
-    struct timespec nextWakeTime;
+    timespec mNextWakeTime;
 };
 
 }  // namespace rtos

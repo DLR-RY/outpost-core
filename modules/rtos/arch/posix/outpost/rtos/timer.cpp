@@ -13,35 +13,33 @@
 
 #include "timer.h"
 
+#include "internal/time.h"
+
 #include <outpost/rtos/failure_handler.h>
 
 #include <cstring>
 
-// ----------------------------------------------------------------------------
-outpost::rtos::Timer::~Timer()
+using outpost::rtos::Timer;
+
+Timer::~Timer()
 {
     timer_delete(mTid);
 }
 
-// ----------------------------------------------------------------------------
 void
-outpost::rtos::Timer::start(time::Duration duration)
+Timer::start(time::Duration duration)
 {
-    struct itimerspec time;
-    uint64_t nanoseconds =
-            duration.microseconds() * outpost::time::Duration::nanosecondsPerMicrosecond;
+    // initial expiration
+    timespec relative = toRelativeTime(duration);
 
-    // interval
+    itimerspec time;
     time.it_interval.tv_sec = 0;
     time.it_interval.tv_nsec = 0;
 
-    // initial expiration
-    // seconds
-    time.it_value.tv_sec = static_cast<time_t>(nanoseconds / 1000000000);
-    // nanoseconds
-    time.it_value.tv_nsec = static_cast<uint32_t>(nanoseconds % 1000000000);
+    time.it_value.tv_sec = relative.tv_sec;
+    time.it_value.tv_nsec = relative.tv_nsec;
 
-    memcpy(&mInterval, &time, sizeof(struct itimerspec));
+    memcpy(&mInterval, &time, sizeof(itimerspec));
 
     if (timer_settime(mTid, 0, &time, NULL) != 0)
     {
@@ -51,7 +49,7 @@ outpost::rtos::Timer::start(time::Duration duration)
 }
 
 void
-outpost::rtos::Timer::reset()
+Timer::reset()
 {
     if (timer_settime(mTid, 0, &mInterval, NULL) != 0)
     {
@@ -60,9 +58,8 @@ outpost::rtos::Timer::reset()
     }
 }
 
-// Disarm timer by
 void
-outpost::rtos::Timer::cancel()
+Timer::cancel()
 {
     struct itimerspec time;
 
@@ -76,9 +73,9 @@ outpost::rtos::Timer::cancel()
 }
 
 bool
-outpost::rtos::Timer::isRunning()
+Timer::isRunning()
 {
-    struct itimerspec value;
+    itimerspec value;
 
     if (timer_gettime(mTid, &value) != 0)
     {
@@ -89,17 +86,15 @@ outpost::rtos::Timer::isRunning()
     return running;
 }
 
-// ----------------------------------------------------------------------------
-void outpost::rtos::Timer::startTimerDaemonThread(uint8_t /*priority*/, size_t /*stack*/)
+void Timer::startTimerDaemonThread(uint8_t /*priority*/, size_t /*stack*/)
 {
     // do nothing here for POSIX, only used for RTEMS
 }
 
-// ----------------------------------------------------------------------------
 void
-outpost::rtos::Timer::createTimer(const char* /*name*/)
+Timer::createTimer(const char* /*name*/)
 {
-    struct sigevent event;
+    sigevent event;
 
     memset(&event, 0, sizeof(event));
 
@@ -120,9 +115,8 @@ outpost::rtos::Timer::createTimer(const char* /*name*/)
     this->cancel();
 }
 
-// ----------------------------------------------------------------------------
 void
-outpost::rtos::Timer::invokeTimer(union sigval parameter)
+Timer::invokeTimer(union sigval parameter)
 {
     Timer* timer = reinterpret_cast<Timer*>(parameter.sival_ptr);
     (timer->mObject->*(timer->mFunction))(timer);

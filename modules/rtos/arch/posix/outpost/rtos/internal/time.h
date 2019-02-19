@@ -23,69 +23,64 @@ namespace outpost
 namespace rtos
 {
 /**
+ * Query the current POSIX time.
+ */
+timespec
+getTime();
+
+/**
  * Convert a duration to a C `timespec` type.
- *
- * A 64 bit for `timespec.tv_sec` is assumed.
  *
  * \warning
  *      For negative durations, `tv_sec` and `tv_nsec`
  *      will be negative.
  */
-static inline timespec
-toRelativeTime(const time::Duration duration)
-{
-    // Split into seconds and sub-seconds to avoid an overflow
-    // when converting the sub-seconds to nanoseconds.
-    uint64_t seconds = duration.seconds();
-    auto subSeconds = duration - time::Seconds(seconds);
-
-    // Convert to sub-seconds nanoseconds, this will never exceed a
-    // value of 1,000,000,000
-    int32_t nanoseconds = subSeconds.microseconds() * time::Duration::nanosecondsPerMicrosecond;
-
-    timespec relativeTime = {
-            // seconds
-            static_cast<time_t>(seconds),
-
-            // remaining nanoseconds
-            static_cast<long int>(nanoseconds),
-    };
-
-    return relativeTime;
-}
+timespec
+toRelativeTime(time::Duration duration);
 
 /**
  * Convert a duration to an absolute time point.
  *
  * Uses the current time as a reference point for the given duration.
  */
-static inline timespec
-toAbsoluteTime(const time::Duration duration)
+timespec
+toAbsoluteTime(time::Duration duration);
+
+/**
+ * Add two `timespec` values.
+ *
+ * \param[inout] result
+ * \param[in]    increment
+ *      Relative time which is added to the result
+ */
+void
+addTime(timespec& result, const timespec& increment);
+
+/**
+ * Compare two times.
+ *
+ * \param time
+ * \param other
+ *
+ * \retval true time is bigger or equal than other
+ * \retval false time is lower than other
+ */
+static inline bool
+isBigger(const timespec& time, const timespec& other)
 {
-    static constexpr int32_t maximumNanosecondsPerSecond =
-            time::Duration::nanosecondsPerMicrosecond * time::Duration::microsecondsPerMillisecond
-            * time::Duration::millisecondsPerSecond;
-
-    // get current time
-    timespec absoluteTime;
-    clock_gettime(CLOCK_REALTIME, &absoluteTime);
-
-    timespec relative = toRelativeTime(duration);
-
-    absoluteTime.tv_nsec += relative.tv_nsec;
-    if (absoluteTime.tv_nsec >= maximumNanosecondsPerSecond)
+    if (time.tv_sec > other.tv_sec)
     {
-        absoluteTime.tv_sec += 1;
-        absoluteTime.tv_nsec -= maximumNanosecondsPerSecond;
+        return true;
     }
-    else if (absoluteTime.tv_nsec < 0)
+    else if (time.tv_sec == other.tv_sec)
     {
-        absoluteTime.tv_sec -= 1;
-        absoluteTime.tv_nsec += maximumNanosecondsPerSecond;
+        if (time.tv_nsec >= other.tv_nsec)
+        {
+            return true;
+        }
     }
-    absoluteTime.tv_sec += relative.tv_sec;
 
-    return absoluteTime;
+    return false;
 }
 
 }  // namespace rtos

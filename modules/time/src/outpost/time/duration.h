@@ -259,7 +259,9 @@ protected:
 private:
     // When using a microsecond resolution a 32 bit value would only
     // provide a range of ~2200 seconds which is insufficient.
-    // With 64 bit a time span of 9 * 10^12 seconds is possible.
+    //
+    // With 64 bit a time span of 9 * 10^12 seconds is possible:
+    // (2^63 - 1) / 1,000,000 / 60 / 60 / 24 /365 = 292,471 years
     int64_t mTicks;
 
     static constexpr int64_t maximumValue = 9223372036854775807LL;
