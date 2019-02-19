@@ -53,7 +53,6 @@ extern const char* bsp_boot_cmdline;
 // C++ requires at least one Semaphore for the constructor calls and the
 // initialization of static member variables.
 #define CONFIGURE_MAXIMUM_SEMAPHORES        5
-#define CONFIGURE_MAXIMUM_POSIX_MUTEXES     4
 
 // ----------------------------------------------------------------------------
 // Timer support
@@ -67,23 +66,5 @@ extern const char* bsp_boot_cmdline;
 
 // Add Timer and UART Driver
 #define CONFIGURE_DRIVER_AMBAPP_GAISLER_GPTIMER
-
-// ----------------------------------------------------------------------------
-// driver manager: we compile with -qleon3std and do the startup
-// initialization manually.
-
-#include <drvmgr/drvmgr_confdefs.h>
-#include <drvmgr/ambapp_bus_grlib.h>
-
-static struct drvmgr_bus_res grlib_drv_resources = {
-    NULL,
-    {}
-};
-
-// GRLIB AMBA bus configuration (the LEON3 root bus configuration)
-static struct grlib_config grlib_bus_config = {
-    &ambapp_plb,              // AMBAPP bus setup
-    &grlib_drv_resources,     // Driver configuration
-};
 
 #endif // SYSTEM_H

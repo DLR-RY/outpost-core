@@ -40,11 +40,11 @@ main(void)
     producer.start();
     consumer.start();
 
-	while (1)
-	{
-	    consumer.waitForNewValue();
-	    uint32_t value = consumer.getCurrentValue();
+    while (1)
+    {
+	consumer.waitForNewValue();
+	uint32_t value = consumer.getCurrentValue();
 
-	    printf("value: %i\n", static_cast<int>(value));
-	}
+	printf("value: %i\n", static_cast<int>(value));
+    }
 }

@@ -77,7 +77,7 @@ main(void)
     queue.send(1245);
 
     uint32_t value;
-    queue.receive(value);
+    queue.receive(value, outpost::time::Seconds(1));
 
     xpcc::rtos::Scheduler::schedule();
     LedRed::set();
