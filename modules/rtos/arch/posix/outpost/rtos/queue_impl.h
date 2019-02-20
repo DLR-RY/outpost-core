@@ -21,30 +21,30 @@
 
 template <typename T>
 outpost::rtos::Queue<T>::Queue(size_t numberOfItems) :
-    buffer(new T[numberOfItems]),
-    maximumSize(numberOfItems),
-    itemsInBuffer(0),
-    head(0),
-    tail(0)
+    mBuffer(new T[numberOfItems]),
+    mMaximumSize(numberOfItems),
+    mItemsInBuffer(0),
+    mHead(0),
+    mTail(0)
 {
-    pthread_mutex_init(&mutex, NULL);
-    pthread_cond_init(&signal, NULL);
+    pthread_mutex_init(&mMutex, NULL);
+    pthread_cond_init(&mSignal, NULL);
 }
 
 template <typename T>
 outpost::rtos::Queue<T>::~Queue()
 {
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mMutex);
 
-    itemsInBuffer = 0;
-    head = 0;
-    tail = 0;
-    delete[] buffer;
+    mItemsInBuffer = 0;
+    mHead = 0;
+    mTail = 0;
+    delete[] mBuffer;
 
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mMutex);
 
-    pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&signal);
+    pthread_mutex_destroy(&mMutex);
+    pthread_cond_destroy(&mSignal);
 }
 
 template <typename T>
@@ -52,20 +52,20 @@ bool
 outpost::rtos::Queue<T>::send(const T& data)
 {
     bool itemStored = false;
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mMutex);
 
-    if (itemsInBuffer < maximumSize)
+    if (mItemsInBuffer < mMaximumSize)
     {
-        head = increment(head);
+        mHead = increment(mHead);
 
-        buffer[head] = data;
-        itemsInBuffer++;
+        mBuffer[mHead] = data;
+        mItemsInBuffer++;
         itemStored = true;
 
-        pthread_cond_signal(&signal);
+        pthread_cond_signal(&mSignal);
     }
 
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mMutex);
     return itemStored;
 }
 
@@ -74,37 +74,48 @@ bool
 outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
 {
     bool itemRetrieved = false;
-    bool timeoutOccured = false;
-    timespec time = toAbsoluteTime(timeout);
+    bool timeoutOrErrorOccured = false;
 
-    pthread_mutex_lock(&mutex);
-    while ((itemsInBuffer == 0) && !timeoutOccured)
+    pthread_mutex_lock(&mMutex);
+    while ((mItemsInBuffer == 0) && !timeoutOrErrorOccured)
     {
-        if (pthread_cond_timedwait(&signal, &mutex, &time) != 0)
+        if (timeout == outpost::time::Duration::infinity())
         {
-            // Timeout or other error has occurred
-            timeoutOccured = true;
+            if (pthread_cond_wait(&mSignal, &mMutex) != 0)
+            {
+                // Error has occurred
+                timeoutOrErrorOccured = true;
+            }
+        }
+        else
+        {
+            timespec time = toAbsoluteTime(timeout);
+            if (pthread_cond_timedwait(&mSignal, &mMutex, &time) != 0)
+            {
+                // Timeout or other error has occurred
+                timeoutOrErrorOccured = true;
+            }
         }
     }
 
-    if (!timeoutOccured)
+    if (!timeoutOrErrorOccured)
     {
-        tail = increment(tail);
+        mTail = increment(mTail);
 
-        data = buffer[tail];
-        itemsInBuffer--;
+        data = mBuffer[mTail];
+        mItemsInBuffer--;
         itemRetrieved = true;
     }
 
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mMutex);
     return itemRetrieved;
 }
 
 template <typename T>
 size_t
-outpost::rtos::Queue<T>::increment(size_t index)
+outpost::rtos::Queue<T>::increment(size_t index) const
 {
-    if (index >= (maximumSize - 1))
+    if (index >= (mMaximumSize - 1))
     {
         index = 0;
     }

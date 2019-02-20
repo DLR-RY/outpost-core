@@ -20,18 +20,18 @@
 
 template <typename T>
 outpost::rtos::Queue<T>::Queue(size_t numberOfItems) :
-    buffer(new T[numberOfItems]),
-    maximumSize(numberOfItems),
-    itemsInBuffer(0),
-    head(0),
-    tail(0)
+    mBuffer(new T[numberOfItems]),
+    mMaximumSize(numberOfItems),
+    mItemsInBuffer(0),
+    mHead(0),
+    mTail(0)
 {
 }
 
 template <typename T>
 outpost::rtos::Queue<T>::~Queue()
 {
-    delete[] buffer;
+    delete[] mBuffer;
 }
 
 template <typename T>
@@ -39,12 +39,12 @@ bool
 outpost::rtos::Queue<T>::send(const T& data)
 {
     bool itemStored = false;
-    if (itemsInBuffer < maximumSize)
+    if (mItemsInBuffer < mMaximumSize)
     {
-        head = increment(head);
+        mHead = increment(mHead);
 
-        buffer[head] = data;
-        itemsInBuffer++;
+        mBuffer[mHead] = data;
+        mItemsInBuffer++;
         itemStored = true;
     }
 
@@ -56,12 +56,12 @@ bool
 outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration)
 {
     bool itemRetrieved = false;
-    if (itemsInBuffer > 0)
+    if (mItemsInBuffer > 0)
     {
-        tail = increment(tail);
+        mTail = increment(mTail);
 
-        data = buffer[tail];
-        itemsInBuffer--;
+        data = mBuffer[mTail];
+        mItemsInBuffer--;
         itemRetrieved = true;
     }
 
@@ -70,9 +70,9 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration)
 
 template <typename T>
 size_t
-outpost::rtos::Queue<T>::increment(size_t index)
+outpost::rtos::Queue<T>::increment(size_t index) const
 {
-    if (index >= (maximumSize - 1))
+    if (index >= (mMaximumSize - 1))
     {
         index = 0;
     }

@@ -15,14 +15,26 @@
 
 #include <rtems.h>
 
+namespace outpost
+{
+namespace rtos
+{
+static constexpr int64_t microsecondsPerSecond =
+        time::Duration::microsecondsPerMillisecond * time::Duration::millisecondsPerSecond;
+
 outpost::time::SpacecraftElapsedTime
 outpost::rtos::SystemClock::now() const
 {
-    timespec ts;
-    rtems_clock_get_uptime(&ts);
+    timespec time;
+    rtems_clock_get_uptime(&time);
 
     // convert to microseconds
-    uint64_t us = static_cast<uint64_t>(ts.tv_sec)*1000000 + static_cast<uint64_t>(ts.tv_nsec)/1000;
+    int64_t microseconds = (time.tv_nsec / time::Duration::nanosecondsPerMicrosecond)
+                           + (time.tv_sec * microsecondsPerSecond);
 
-    return outpost::time::SpacecraftElapsedTime::afterEpoch(outpost::time::Microseconds(us));
+    return outpost::time::SpacecraftElapsedTime::afterEpoch(
+            outpost::time::Microseconds(microseconds));
 }
+
+}  // namespace rtos
+}  // namespace outpost

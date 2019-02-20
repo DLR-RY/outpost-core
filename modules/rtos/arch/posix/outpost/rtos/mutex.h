@@ -33,9 +33,16 @@ class Mutex
 public:
     Mutex();
 
+    // disable copy constructor
+    Mutex(const Mutex& other) = delete;
+
+    // disable assignment operator
+    Mutex&
+    operator=(const Mutex& other) = delete;
+
     inline ~Mutex()
     {
-        pthread_mutex_destroy(&mutex);
+        pthread_mutex_destroy(&mMutex);
     }
 
     /**
@@ -49,7 +56,7 @@ public:
     inline bool
     acquire()
     {
-        return (pthread_mutex_lock(&mutex) == 0);
+        return (pthread_mutex_lock(&mMutex) == 0);
     }
 
     /**
@@ -72,18 +79,11 @@ public:
     inline void
     release()
     {
-        pthread_mutex_unlock(&mutex);
+        pthread_mutex_unlock(&mMutex);
     }
 
 private:
-    // disable copy constructor
-    Mutex(const Mutex& other);
-
-    // disable assignment operator
-    Mutex&
-    operator=(const Mutex& other);
-
-    pthread_mutex_t mutex;
+    pthread_mutex_t mMutex;
 };
 
 }  // namespace rtos

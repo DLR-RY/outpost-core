@@ -59,14 +59,14 @@ public:
      * Initial return value of getIdentifier() before the
      * thread have been started and an associated thread id.
      */
-    static const Identifier invalidIdentifier = 0xffffffff;
+    static constexpr Identifier invalidIdentifier = 0xffffffff;
 
     /**
      * Use the default value for the stack size.
      *
      * The default value is depending on the project settings.
      */
-    static const size_t defaultStackSize = 0;
+    static constexpr size_t defaultStackSize = 0;
 
     /**
      * Create a new thread.
@@ -90,8 +90,15 @@ public:
      */
     Thread(uint8_t priority,
            size_t stack = defaultStackSize,
-           const char* name = 0,
+           const char* name = nullptr,
            FloatingPointSupport floatingPointSupport = noFloatingPoint);
+
+    // disable copy constructor
+    Thread(const Thread&) = delete;
+
+    // disable assignment operator
+    Thread&
+    operator=(const Thread&) = delete;
 
     /**
      * Destructor.
@@ -204,13 +211,6 @@ protected:
     run() = 0;
 
 private:
-    // disable copy constructor
-    Thread(const Thread&);
-
-    // disable assignment operator
-    Thread&
-    operator=(const Thread&);
-
     static void
     wrapper(void* object);
 

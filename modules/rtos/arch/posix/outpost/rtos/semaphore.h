@@ -41,6 +41,13 @@ public:
      */
     explicit Semaphore(uint32_t count);
 
+    // disable copy constructor
+    Semaphore(const Semaphore& other) = delete;
+
+    // disable assignment operator
+    Semaphore&
+    operator=(const Semaphore& other) = delete;
+
     /**
      * Destroy the semaphore and release it's resources.
      */
@@ -55,7 +62,7 @@ public:
     inline bool
     acquire()
     {
-        return (sem_wait(&sid) == 0);
+        return (sem_wait(&mSid) == 0);
     }
 
     /**
@@ -81,19 +88,12 @@ public:
     inline void
     release()
     {
-        sem_post(&sid);
+        sem_post(&mSid);
     }
 
 private:
-    // disable copy constructor
-    Semaphore(const Semaphore& other);
-
-    // disable assignment operator
-    Semaphore&
-    operator=(const Semaphore& other);
-
     /// POSIX semaphore handle
-    sem_t sid;
+    sem_t mSid;
 };
 
 /**
@@ -122,6 +122,13 @@ public:
      *         Initial value of the semaphore.
      */
     explicit BinarySemaphore(State::Type initial);
+
+    // disable copy constructor
+    BinarySemaphore(const BinarySemaphore& other) = delete;
+
+    // disable assignment operator
+    BinarySemaphore&
+    operator=(const BinarySemaphore& other) = delete;
 
     /**
      * Destroy the semaphore and release it's resources.
@@ -161,17 +168,10 @@ public:
     release();
 
 private:
-    // disable copy constructor
-    BinarySemaphore(const BinarySemaphore& other);
-
-    // disable assignment operator
-    BinarySemaphore&
-    operator=(const BinarySemaphore& other);
-
     // POSIX handles
-    pthread_mutex_t mutex;
-    pthread_cond_t signal;
-    State::Type value;
+    pthread_mutex_t mMutex;
+    pthread_cond_t mSignal;
+    State::Type mValue;
 };
 
 }  // namespace rtos

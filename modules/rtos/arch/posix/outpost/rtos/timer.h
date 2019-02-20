@@ -66,6 +66,12 @@ public:
     template <typename T>
     Timer(T* object, typename TimerFunction<T>::type function, const char* name = "TIM-");
 
+    // disable copy-constructor and assignment operator
+    Timer(const Timer& other) = delete;
+
+    Timer&
+    operator=(const Timer& other) = delete;
+
     /**
      * Delete the timer.
      *
@@ -121,11 +127,6 @@ public:
     startTimerDaemonThread(uint8_t priority, size_t stack = 0);
 
 private:
-    // disable copy-constructor and assignment operator
-    Timer(const Timer& other);
-    Timer&
-    operator=(const Timer& other);
-
     void
     createTimer(const char* name);
 
@@ -144,18 +145,18 @@ private:
     itimerspec mInterval;
 };
 
-}  // namespace rtos
-}  // namespace outpost
-
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
-outpost::rtos::Timer::Timer(T* object, typename TimerFunction<T>::type function, const char* name) :
+Timer::Timer(T* object, typename TimerFunction<T>::type function, const char* name) :
     mObject(reinterpret_cast<Callable*>(object)),
     mFunction(reinterpret_cast<Function>(function)),
     mTid()
 {
     this->createTimer(name);
 }
+
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

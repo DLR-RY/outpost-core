@@ -44,6 +44,13 @@ public:
      */
     Mutex();
 
+    // disable copy constructor
+    Mutex(const Mutex& other) = delete;
+
+    // disable assignment operator
+    Mutex&
+    operator=(const Mutex& other) = delete;
+
     /**
      * Destroy the mutex and free it's resources.
      */
@@ -83,13 +90,6 @@ public:
     release();
 
 private:
-    // disable copy constructor
-    Mutex(const Mutex& other);
-
-    // disable assignment operator
-    Mutex&
-    operator=(const Mutex& other);
-
     void* mHandle;
 };
 

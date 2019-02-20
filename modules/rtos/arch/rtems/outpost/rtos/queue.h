@@ -54,6 +54,13 @@ public:
      */
     Queue(size_t numberOfItems);
 
+    // disable copy constructor
+    Queue(const Queue& other) = delete;
+
+    // disable assignment operator
+    Queue&
+    operator=(const Queue& other) = delete;
+
     /**
      * Destroy the queue.
      */
@@ -86,17 +93,10 @@ public:
      * \retval false    Timeout occurred, \p data was not changed.
      */
     bool
-    receive(T& data, outpost::time::Duration timeout = outpost::time::Duration::infinity());
+    receive(T& data, outpost::time::Duration timeout);
 
 private:
-    // disable copy constructor
-    Queue(const Queue& other);
-
-    // disable assignment operator
-    Queue&
-    operator=(const Queue& other);
-
-    rtems_id id;
+    rtems_id mId;
 };
 
 }  // namespace rtos

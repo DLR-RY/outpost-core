@@ -75,7 +75,7 @@ public:
      * allocated resources are reclaimed and can be used for another
      * timer.
      */
-    ~Timer();
+    ~Timer() = default;
 
     /**
      * Start the timer.
@@ -123,17 +123,17 @@ private:
     Function const mFunction;
 };
 
-}  // namespace rtos
-}  // namespace outpost
-
 // ----------------------------------------------------------------------------
 // Implementation of the template constructor
 template <typename T>
-outpost::rtos::Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
+Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
     mObject(reinterpret_cast<Callable*>(object)),
     mFunction(reinterpret_cast<Function>(function))
 {
     this->createTimer(name);
 }
+
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

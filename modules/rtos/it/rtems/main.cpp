@@ -70,13 +70,6 @@ fatalErrorHandler(Internal_errors_Source source, bool isInternal, uint32_t error
 rtems_task
 task_system_init(rtems_task_argument /*ignored*/)
 {
-    // -- manual driver manager startup initialization
-    // register our apbuart driver substitute
-    apbuart_register_drv();
-    // manually register root bus and initialize driver manager
-    ambapp_grlib_root_register(&grlib_bus_config);
-    drvmgr_init();
-
     // NOTE:
     // apbuart0 - debug messages (only accessible via printk(...))
     // apbuart1 - receive/transmit tc and tm

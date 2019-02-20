@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2014-2017, 2019, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2014-2017, Fabian Greif (DLR RY-AVS)
+ * - 2014-2017, 2019, Fabian Greif (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_RTOS_POSIX_TIME_H
@@ -22,43 +22,65 @@ namespace outpost
 {
 namespace rtos
 {
-static inline timespec
-toRelativeTime(const time::Duration duration)
-{
-    uint64_t nanoseconds = duration.microseconds() * 1000;
+/**
+ * Query the current POSIX time.
+ */
+timespec
+getTime();
 
-    timespec relativeTime = {// seconds
-                             static_cast<time_t>(nanoseconds / 1000000000),
-
-                             // remaining nanoseconds
-                             static_cast<long int>(nanoseconds % 1000000000)};
-
-    return relativeTime;
-}
+/**
+ * Convert a duration to a C `timespec` type.
+ *
+ * \warning
+ *      For negative durations, `tv_sec` and `tv_nsec`
+ *      will be negative.
+ */
+timespec
+toRelativeTime(time::Duration duration);
 
 /**
  * Convert a duration to an absolute time point.
  *
  * Uses the current time as a reference point for the given duration.
  */
-static inline timespec
-toAbsoluteTime(const time::Duration duration)
+timespec
+toAbsoluteTime(time::Duration duration);
+
+/**
+ * Add two `timespec` values.
+ *
+ * \param[inout] result
+ * \param[in]    increment
+ *      Relative time which is added to the result
+ */
+void
+addTime(timespec& result, const timespec& increment);
+
+/**
+ * Compare two times.
+ *
+ * \param time
+ * \param other
+ *
+ * \retval true time is bigger or equal than other
+ * \retval false time is lower than other
+ */
+static inline bool
+isBigger(const timespec& time, const timespec& other)
 {
-    uint64_t nanoseconds = duration.microseconds() * 1000;
-
-    // get current time
-    timespec absoluteTime;
-    clock_gettime(CLOCK_REALTIME, &absoluteTime);
-
-    absoluteTime.tv_nsec += static_cast<time_t>(nanoseconds % 1000000000);
-    if (absoluteTime.tv_nsec >= 1000000000)
+    if (time.tv_sec > other.tv_sec)
     {
-        absoluteTime.tv_sec += 1;
-        absoluteTime.tv_nsec = absoluteTime.tv_nsec - 1000000000;
+        return true;
     }
-    absoluteTime.tv_sec += static_cast<long int>(nanoseconds / 1000000000);
+    else if (time.tv_sec == other.tv_sec)
+    {
+        if (time.tv_nsec >= other.tv_nsec)
+        {
+            return true;
+        }
+    }
 
-    return absoluteTime;
+    return false;
 }
 
 }  // namespace rtos
