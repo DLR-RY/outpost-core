@@ -58,7 +58,7 @@ class TimePoint
 public:
     typedef ReferenceEpoch Epoch;
 
-    inline constexpr TimePoint() : mDuration(Seconds(0))
+    inline constexpr TimePoint() : mDuration(Duration::zero())
     {
     }
 
@@ -115,25 +115,25 @@ public:
     inline constexpr bool
     operator<(TimePoint other) const
     {
-        return (mDuration - other.mDuration) < Seconds(0);
+        return (mDuration - other.mDuration) < Duration::zero();
     }
 
     inline constexpr bool
     operator>(TimePoint other) const
     {
-        return (mDuration - other.mDuration) > Seconds(0);
+        return (mDuration - other.mDuration) > Duration::zero();
     }
 
     inline constexpr bool
     operator<=(TimePoint other) const
     {
-        return (mDuration - other.mDuration) <= Seconds(0);
+        return (mDuration - other.mDuration) <= Duration::zero();
     }
 
     inline constexpr bool
     operator>=(TimePoint other) const
     {
-        return (mDuration - other.mDuration) >= Seconds(0);
+        return (mDuration - other.mDuration) >= Duration::zero();
     }
 
     inline TimePoint&
@@ -165,7 +165,7 @@ public:
     static inline constexpr TimePoint<ReferenceEpoch>
     startOfEpoch()
     {
-        return TimePoint(Seconds(0));
+        return TimePoint(Duration::zero());
     }
 
     static inline constexpr TimePoint<ReferenceEpoch>

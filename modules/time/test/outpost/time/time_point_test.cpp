@@ -61,11 +61,11 @@ TEST(TimePointTest, shouldConvertEpoch)
 {
     TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(Microseconds(200));
 
-    SpacecraftElapsedTime timeScet = SpacecraftElapsedTime::afterEpoch(Milliseconds(0));
+    SpacecraftElapsedTime timeScet = SpacecraftElapsedTime::startOfEpoch();
     GpsTime timeGps = timeScet.convertTo<GpsTime>();
 
     EXPECT_EQ(200, timeGps.timeSinceEpoch().microseconds());
 
     // Reset offset
-    TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(Microseconds(0));
+    TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(Duration::zero());
 }
