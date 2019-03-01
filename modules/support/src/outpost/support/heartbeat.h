@@ -93,7 +93,8 @@ struct Heartbeat
     enum class TimeoutType
     {
         relativeTime,
-        absoluteTime
+        absoluteTime,
+        suspended
     };
 
     outpost::support::parameter::HeartbeatSource mSource;
@@ -163,10 +164,7 @@ Heartbeat::suspend(outpost::support::parameter::HeartbeatSource source)
 {
     // The heartbeat is suspended by setting the next time to
     // the highest possible relative time.
-    Heartbeat trigger{
-            source,
-            TimeoutType::relativeTime,
-            outpost::time::SpacecraftElapsedTime::afterEpoch(outpost::time::Duration::maximum())};
+    Heartbeat trigger{source, TimeoutType::suspended, time::SpacecraftElapsedTime::endOfEpoch()};
     watchdogHeartbeat.publish(trigger);
 }
 
