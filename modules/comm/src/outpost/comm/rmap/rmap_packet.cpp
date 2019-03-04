@@ -229,7 +229,7 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             stream.skip(1);
 
             // Read data length
-            mDataLength = stream.read24();
+            mDataLength = stream.readUnsigned24();
 
             // Get the header CRC
             currentStreamPos = stream.getPosition();

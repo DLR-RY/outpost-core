@@ -319,7 +319,7 @@ public:
     }
 
     inline uint32_t
-    read24()
+    readUnsigned24()
     {
         uint32_t value = 0;
         value |= static_cast<uint32_t>(mBuffer[0]) << 16;
@@ -327,6 +327,23 @@ public:
         value |= static_cast<uint32_t>(mBuffer[2]) << 0;
         mBuffer += 3;
 
+        return value;
+    }
+
+    inline int32_t
+    readSigned24()
+    {
+        int32_t value = 0;
+        value |= static_cast<int32_t>(mBuffer[0]) << 16;
+        value |= static_cast<int32_t>(mBuffer[1]) << 8;
+        value |= static_cast<int32_t>(mBuffer[2]) << 0;
+        mBuffer += 3;
+
+        // is negative if the MSB is 1 -> set bits 31-24 to 1
+        if (0x00800000 & value)
+        {
+            value |= 0xFF000000;
+        }
         return value;
     }
 
