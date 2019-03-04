@@ -112,7 +112,7 @@ TEST(DeserialzeTest, shouldReadData)
     EXPECT_EQ(0xEF12, d16);
     EXPECT_EQ(3, payload.getPosition());
 
-    uint32_t d24 = payload.read24();
+    uint32_t d24 = payload.readUnsigned24();
     EXPECT_EQ(0xA6C01AU, d24);
     EXPECT_EQ(6, payload.getPosition());
 
@@ -299,4 +299,29 @@ TEST(DeserializeTest, shouldRetrieveReadDataAsSlice)
     slice = payload.asSlice();
     EXPECT_EQ(4U, slice.getNumberOfElements());
     EXPECT_EQ(&data[0], &slice[0]);
+}
+
+TEST(DeserializeTest, readSigned24ShouldDecodeForAllBitPositions)
+{
+    uint8_t data[8];
+
+    int32_t positive = 1;
+    int32_t negative = -1;
+    for (int bit = 0; bit < 23; ++bit)
+    {
+        Serialize writer(data);
+        writer.store(positive);
+        writer.store(negative);
+
+        Deserialize reader(data);
+        reader.skip(1);
+        EXPECT_EQ(positive, reader.readSigned24());
+
+        reader.skip(1);
+        EXPECT_EQ(negative, reader.readSigned24());
+
+        // update test values:
+        positive *= 2;
+        negative *= 2;
+    }
 }
