@@ -47,7 +47,7 @@ Semaphore::acquire(time::Duration timeout)
     }
     else
     {
-        timespec t = toAbsoluteTime(timeout);
+        timespec t = toAbsoluteTime(CLOCK_REALTIME, timeout);
         success = (sem_timedwait(&mSid, &t) == 0);
     }
     return success;
@@ -90,7 +90,7 @@ BinarySemaphore::acquire(time::Duration timeout)
     }
     else
     {
-        timespec time = toAbsoluteTime(timeout);
+        timespec time = toAbsoluteTime(CLOCK_REALTIME, timeout);
         pthread_mutex_lock(&mMutex);
         while (mValue == State::acquired)
         {

@@ -27,8 +27,8 @@ outpost::rtos::Queue<T>::Queue(size_t numberOfItems) :
     mHead(0),
     mTail(0)
 {
-    pthread_mutex_init(&mMutex, NULL);
-    pthread_cond_init(&mSignal, NULL);
+    pthread_mutex_init(&mMutex, nullptr);
+    pthread_cond_init(&mSignal, nullptr);
 }
 
 template <typename T>
@@ -89,7 +89,7 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
         }
         else
         {
-            timespec time = toAbsoluteTime(timeout);
+            timespec time = toAbsoluteTime(CLOCK_REALTIME, timeout);
             if (pthread_cond_timedwait(&mSignal, &mMutex, &time) != 0)
             {
                 // Timeout or other error has occurred

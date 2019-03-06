@@ -34,7 +34,7 @@ main(void)
     timespec negative = outpost::rtos::toRelativeTime(-outpost::time::Milliseconds(1500));
     printf("%li %li\n", negative.tv_sec, negative.tv_nsec);
 
-    timespec absolute = outpost::rtos::toAbsoluteTime(outpost::time::Duration::infinity());
+    timespec absolute = outpost::rtos::toAbsoluteTime(CLOCK_MONOTONIC, outpost::time::Duration::infinity());
     printf("%lu %li\n", absolute.tv_sec, absolute.tv_nsec);
 
     producer.start();

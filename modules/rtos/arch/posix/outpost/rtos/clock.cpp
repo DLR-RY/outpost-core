@@ -27,7 +27,7 @@ static constexpr int64_t microsecondsPerSecond =
 outpost::time::SpacecraftElapsedTime
 SystemClock::now() const
 {
-    timespec time = getTime();
+    timespec time = getTime(CLOCK_MONOTONIC);
 
     // convert to microseconds
     int64_t microseconds = (time.tv_nsec / time::Duration::nanosecondsPerMicrosecond)
