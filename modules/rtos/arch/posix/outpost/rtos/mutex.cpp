@@ -49,7 +49,7 @@ Mutex::acquire(outpost::time::Duration timeout)
     }
     else
     {
-        timespec time = toAbsoluteTime(timeout);
+        timespec time = toAbsoluteTime(CLOCK_REALTIME, timeout);
         success = (pthread_mutex_timedlock(&mMutex, &time) == 0);
     }
     return success;

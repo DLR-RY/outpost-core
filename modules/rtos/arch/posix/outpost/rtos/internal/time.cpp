@@ -15,6 +15,9 @@
 
 #include <outpost/rtos/failure_handler.h>
 
+#include <errno.h>
+#include <unistd.h>
+
 namespace outpost
 {
 namespace rtos
@@ -24,10 +27,10 @@ static constexpr int32_t nanosecondsPerSecond = time::Duration::nanosecondsPerMi
                                                 * time::Duration::millisecondsPerSecond;
 
 timespec
-getTime()
+getTime(clockid_t clock)
 {
     timespec time;
-    int result = clock_gettime(CLOCK_MONOTONIC, &time);
+    int result = clock_gettime(clock, &time);
     if (result != 0)
     {
         FailureHandler::fatal(FailureCode::genericRuntimeError(Resource::clock));
@@ -59,9 +62,9 @@ toRelativeTime(time::Duration duration)
 }
 
 timespec
-toAbsoluteTime(time::Duration duration)
+toAbsoluteTime(clockid_t clock, time::Duration duration)
 {
-    timespec absoluteTime = getTime();
+    timespec absoluteTime = getTime(clock);
     timespec relative = toRelativeTime(duration);
 
     addTime(absoluteTime, relative);
@@ -84,6 +87,26 @@ addTime(timespec& result, const timespec& increment)
         result.tv_nsec += nanosecondsPerSecond;
     }
     result.tv_sec += increment.tv_sec;
+}
+
+void
+sleepUntilAbsoluteTime(clockid_t clock, const timespec& deadline)
+{
+    int result;
+    do
+    {
+        result = clock_nanosleep(clock, TIMER_ABSTIME, &deadline, nullptr);
+
+        // EINTR is returned when the sleep is interrupted by a signal
+        // handler. In this case the sleep can be restarted.
+        //
+        // Any other result unequal zero is an failure which can not be
+        // resolved here and therefore triggers the fatal error handler.
+        if (result != 0 && result != EINTR)
+        {
+            FailureHandler::fatal(FailureCode::genericRuntimeError());
+        }
+    } while (result != 0);
 }
 
 }  // namespace rtos

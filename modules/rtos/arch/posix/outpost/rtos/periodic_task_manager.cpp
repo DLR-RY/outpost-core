@@ -34,34 +34,22 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
 
     if (mTimerRunning)
     {
-        timespec currentTime = getTime();
+        timespec currentTime = getTime(CLOCK_MONOTONIC);
 
         // Check if the time is in the current period
         if (isBigger(currentTime, mNextWakeTime))
         {
             currentStatus = Status::timeout;
         }
-
-        int result;
-        do
+        else
         {
-            result = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &mNextWakeTime, NULL);
-
-            // EINTR is returned when the sleep is interrupted by a signal
-            // handler. In this case the sleep can be restarted.
-            //
-            // Any other result unequal zero is an failure which can not be
-            // resolved here and therefore triggers the fatal error handler.
-            if (result != 0 && result != EINTR)
-            {
-                FailureHandler::fatal(FailureCode::genericRuntimeError());
-            }
-        } while (result != 0);
+            sleepUntilAbsoluteTime(CLOCK_MONOTONIC, mNextWakeTime);
+        }
     }
     else
     {
         // period is started now, no need to wait
-        mNextWakeTime = getTime();
+        mNextWakeTime = getTime(CLOCK_MONOTONIC);
         mTimerRunning = true;
     }
 
@@ -82,7 +70,7 @@ PeriodicTaskManager::status()
     }
     else
     {
-        timespec currentTime = getTime();
+        timespec currentTime = getTime(CLOCK_MONOTONIC);
 
         // Check if the time is in the current period
         if (isBigger(currentTime, mNextWakeTime))

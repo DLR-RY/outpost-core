@@ -26,7 +26,7 @@ namespace rtos
  * Query the current POSIX time.
  */
 timespec
-getTime();
+getTime(clockid_t clock);
 
 /**
  * Convert a duration to a C `timespec` type.
@@ -44,7 +44,7 @@ toRelativeTime(time::Duration duration);
  * Uses the current time as a reference point for the given duration.
  */
 timespec
-toAbsoluteTime(time::Duration duration);
+toAbsoluteTime(clockid_t clock, time::Duration duration);
 
 /**
  * Add two `timespec` values.
@@ -82,6 +82,15 @@ isBigger(const timespec& time, const timespec& other)
 
     return false;
 }
+
+/**
+ * Sleep until the supplied absolute time.
+ *
+ * Handles interruptions through signal by restarting
+ * the sleep.
+ */
+void
+sleepUntilAbsoluteTime(clockid_t clock, const timespec& time);
 
 }  // namespace rtos
 }  // namespace outpost

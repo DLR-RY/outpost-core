@@ -130,8 +130,6 @@ Thread::yield()
 void
 Thread::sleep(::outpost::time::Duration timeout)
 {
-    const timespec req = toRelativeTime(timeout);
-    timespec rem;
-
-    nanosleep(&req, &rem);
+    const timespec deadline = toAbsoluteTime(CLOCK_MONOTONIC, timeout);
+    sleepUntilAbsoluteTime(CLOCK_MONOTONIC, deadline);
 }

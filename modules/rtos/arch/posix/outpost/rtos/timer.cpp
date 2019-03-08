@@ -95,7 +95,6 @@ void
 Timer::createTimer(const char* /*name*/)
 {
     sigevent event;
-
     memset(&event, 0, sizeof(event));
 
     // Set the sigevent structure to cause the signal to be
