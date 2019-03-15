@@ -29,12 +29,16 @@ SystemClock::now() const
 {
     timespec time = getTime(CLOCK_MONOTONIC);
 
-    // convert to microseconds
-    int64_t microseconds = (time.tv_nsec / time::Duration::nanosecondsPerMicrosecond)
-                           + (time.tv_sec * microsecondsPerSecond);
+    // Convert to microseconds. Store seconds in a uint64_t to avoid an overflow when converting
+    // to microseconds on 32-bit systems.
+    uint64_t secondsInMicroseconds = time.tv_sec;
+    secondsInMicroseconds *= microsecondsPerSecond;
+    uint64_t nanosecondsInMicroseconds = time.tv_nsec;
+    nanosecondsInMicroseconds /= time::Duration::nanosecondsPerMicrosecond;
+    uint64_t totalMicroseconds = secondsInMicroseconds + nanosecondsInMicroseconds;
 
     return outpost::time::SpacecraftElapsedTime::afterEpoch(
-            outpost::time::Microseconds(microseconds));
+            outpost::time::Microseconds(totalMicroseconds));
 }
 
 }  // namespace rtos
