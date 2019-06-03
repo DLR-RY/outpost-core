@@ -33,7 +33,7 @@ struct SerializeLittleEndianTraits
     static T
     peek(const uint8_t* const& buffer, size_t offset);
 
-    static size_t
+    static constexpr size_t
     size();
 };
 
@@ -63,7 +63,7 @@ struct SerializeLittleEndianTraits<uint8_t>
         return buffer[n];
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 1;
@@ -102,7 +102,7 @@ struct SerializeLittleEndianTraits<uint16_t>
         return value;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 2;
@@ -147,7 +147,7 @@ struct SerializeLittleEndianTraits<uint32_t>
         return value;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 4;
@@ -204,7 +204,7 @@ struct SerializeLittleEndianTraits<uint64_t>
         return value;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 8;
@@ -244,7 +244,7 @@ struct SerializeLittleEndianTraits<int8_t>
         return value;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 1;
@@ -275,7 +275,7 @@ struct SerializeLittleEndianTraits<int16_t>
         return value;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 2;
@@ -306,7 +306,7 @@ struct SerializeLittleEndianTraits<int32_t>
         return value;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 4;
@@ -337,7 +337,7 @@ struct SerializeLittleEndianTraits<int64_t>
         return value;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 8;
@@ -374,7 +374,7 @@ struct SerializeLittleEndianTraits<float>
         return f;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 4;
@@ -411,7 +411,7 @@ struct SerializeLittleEndianTraits<double>
         return d;
     }
 
-    static inline size_t
+    static inline constexpr size_t
     size()
     {
         return 8;
