@@ -77,7 +77,7 @@ public:
     }
 
     template <typename T>
-    static inline size_t
+    static inline constexpr size_t
     getTypeSize()
     {
         // Removes the const and/or volatile qualification from the given type
