@@ -22,7 +22,7 @@ vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
 
 module = 'base'
 
-rootpath = '../../../'
+rootpath = os.path.abspath('../../..')
 envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
                         buildroot=[rootpath + 'build/'],
                         tools=['utils_buildformat'],
@@ -35,14 +35,17 @@ buildfolder = os.path.join(rootpath, 'build')
 if envGlobal['coverage']:
     envGlobal.Tool('compiler_hosted_gcc_coverage')
     envGlobal.Tool('settings_buildpath')
-    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/coverage'))
+    envGlobal['BUILDPATH'] = os.path.abspath(
+        os.path.join(buildfolder, module, 'test/coverage'))
 else:
-    envGlobal.Tool('compiler_hosted_llvm')
+    envGlobal.Tool('compiler_hosted_llvm_sanitizer')
     envGlobal.Tool('settings_buildpath')
-    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
+    envGlobal['BUILDPATH'] = os.path.join(buildfolder, module, 'test/unittest')
 
-envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
-envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports='envGlobal')
+envGlobal.SConscript([
+    os.path.join(rootpath, 'modules/SConscript.library'),
+    os.path.join(rootpath, 'modules/SConscript.test'),
+], exports='envGlobal')
 
 env = envGlobal.Clone()
 
