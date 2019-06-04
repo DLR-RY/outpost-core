@@ -13,8 +13,15 @@
 
 #include "configurable_event_listener.h"
 
+namespace unittest
+{
+ConfigurableEventListener::~ConfigurableEventListener()
+{
+    delete eventListener;
+}
+
 void
-unittest::ConfigurableEventListener::OnTestEnd(const testing::TestInfo& test_info)
+ConfigurableEventListener::OnTestEnd(const testing::TestInfo& test_info)
 {
     if (showInlineFailures && test_info.result()->Failed())
     {
@@ -27,8 +34,8 @@ unittest::ConfigurableEventListener::OnTestEnd(const testing::TestInfo& test_inf
     }
 }
 
-unittest::ConfigurableEventListener*
-unittest::registerConfigurableEventListener()
+ConfigurableEventListener*
+registerConfigurableEventListener()
 {
     // Remove the default listener
     testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
@@ -43,3 +50,4 @@ unittest::registerConfigurableEventListener()
 
     return listener;
 }
+}  // namespace unittest

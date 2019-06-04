@@ -13,10 +13,11 @@
 
 #include "time.h"
 
+#include <unistd.h>
+
 #include <outpost/rtos/failure_handler.h>
 
 #include <errno.h>
-#include <unistd.h>
 
 namespace outpost
 {

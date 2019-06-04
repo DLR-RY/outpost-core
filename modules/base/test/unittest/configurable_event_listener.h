@@ -51,7 +51,7 @@ public:
     {
     }
 
-    virtual ~ConfigurableEventListener() = default;
+    virtual ~ConfigurableEventListener();
 
     virtual void
     OnTestProgramStart(const testing::UnitTest& unit_test)
