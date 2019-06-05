@@ -216,7 +216,7 @@ public:
     {
         if (numberOfElements >= mNumberOfElements)
         {
-            return empty();
+            return Slice(mData, IndexType(0));
         }
         else
         {
@@ -251,7 +251,7 @@ public:
     {
         if (numberOfElements >= mNumberOfElements)
         {
-            return empty();
+            return Slice(mData, IndexType(0));
         }
         else
         {
