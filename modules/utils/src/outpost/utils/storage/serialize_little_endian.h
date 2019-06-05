@@ -54,6 +54,10 @@ public:
 
     SerializeLittleEndian(const SerializeLittleEndian& other) = default;
 
+    // disable assignment operator
+    SerializeLittleEndian&
+    operator=(const SerializeLittleEndian& other) = delete;
+
     /**
      * Reset the read pointer to the beginning of the
      * originating buffer.
@@ -179,10 +183,6 @@ public:
     }
 
 private:
-    // disable assignment operator
-    SerializeLittleEndian&
-    operator=(const SerializeLittleEndian& other);
-
     uint8_t* mBuffer;
     uint8_t* mBegin;
 };
@@ -218,6 +218,10 @@ public:
     ~DeserializeLittleEndian() = default;
 
     DeserializeLittleEndian(const DeserializeLittleEndian& other) = default;
+
+    // disable assignment operator
+    DeserializeLittleEndian&
+    operator=(const DeserializeLittleEndian& other) = delete;
 
     /**
      * Reset the read pointer to the beginning of the
@@ -372,10 +376,6 @@ public:
     }
 
 private:
-    // disable assignment operator
-    DeserializeLittleEndian&
-    operator=(const DeserializeLittleEndian& other);
-
     const uint8_t* mBuffer;
     const uint8_t* const mBegin;
 };

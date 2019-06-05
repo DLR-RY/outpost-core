@@ -66,6 +66,10 @@ public:
 
     Serialize(const Serialize& other) = default;
 
+    // disable assignment operator
+    Serialize&
+    operator=(const Serialize& other) = delete;
+
     /**
      * Reset the read pointer to the beginning of the
      * originating buffer.
@@ -229,10 +233,6 @@ public:
     }
 
 private:
-    // disable assignment operator
-    Serialize&
-    operator=(const Serialize& other);
-
     uint8_t* mBuffer;
     uint8_t* mBegin;
 };
@@ -275,6 +275,10 @@ public:
     ~Deserialize() = default;
 
     Deserialize(const Deserialize& other) = default;
+
+    // disable assignment operator
+    Deserialize&
+    operator=(const Deserialize& other) = delete;
 
     /**
      * Reset the read pointer to the beginning of the
@@ -454,10 +458,6 @@ public:
     }
 
 private:
-    // disable assignment operator
-    Deserialize&
-    operator=(const Deserialize& other);
-
     const uint8_t* mBuffer;
     const uint8_t* const mBegin;
 };
