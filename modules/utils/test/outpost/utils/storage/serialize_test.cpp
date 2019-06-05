@@ -18,7 +18,7 @@
 
 using namespace outpost;
 
-TEST(SerialzeTest, store)
+TEST(SerializeTest, store)
 {
     uint8_t data[16] = {
             0,
@@ -71,7 +71,7 @@ TEST(SerializeTest, shouldStorePackedData)
     EXPECT_EQ(0xBC, data[5]);
 }
 
-TEST(SerialzeTest, storeTemplateExplicit)
+TEST(SerializeTest, storeTemplateExplicit)
 {
     uint8_t data[20] = {
             0,
@@ -120,7 +120,7 @@ TEST(SerialzeTest, storeTemplateExplicit)
     EXPECT_EQ(19, payload.getPosition());
 }
 
-TEST(SerialzeTest, storeTemplateImplicit)
+TEST(SerializeTest, storeTemplateImplicit)
 {
     uint8_t data[20] = {
             0,
