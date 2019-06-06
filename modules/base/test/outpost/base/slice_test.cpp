@@ -222,6 +222,68 @@ TEST(SliceTest, shouldCreateSubSliceFromTwoIndicies)
     EXPECT_EQ(3U, slice1[1]);
 }
 
+TEST(SliceTest, shouldCreateSubSliceAfterStartElements)
+{
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
+    auto slice = outpost::asSlice(array);
+
+    auto slice1 = slice.skipFirst(2);
+    EXPECT_EQ(2U, slice1.getNumberOfElements());
+    EXPECT_EQ(3U, slice1[0]);
+    EXPECT_EQ(4U, slice1[1]);
+}
+
+TEST(SliceTest, shouldCreateSkipNoneFromStart)
+{
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
+    auto slice = outpost::asSlice(array);
+
+    auto slice1 = slice.skipFirst(0);
+    EXPECT_EQ(4U, slice1.getNumberOfElements());
+    EXPECT_EQ(1U, slice1[0]);
+    EXPECT_EQ(4U, slice1[3]);
+}
+
+TEST(SliceTest, shouldCreateEmptySliceAfterSkippingTooManyElements)
+{
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
+    auto slice = outpost::asSlice(array);
+
+    auto slice1 = slice.skipFirst(4);
+    EXPECT_EQ(0U, slice1.getNumberOfElements());
+}
+
+TEST(SliceTest, shouldCreateSubSliceAfterEndElements)
+{
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
+    auto slice = outpost::asSlice(array);
+
+    auto slice1 = slice.skipLast(2);
+    EXPECT_EQ(2U, slice1.getNumberOfElements());
+    EXPECT_EQ(1U, slice1[0]);
+    EXPECT_EQ(2U, slice1[1]);
+}
+
+TEST(SliceTest, shouldCreateSkipNoneFromEnd)
+{
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
+    auto slice = outpost::asSlice(array);
+
+    auto slice1 = slice.skipLast(0);
+    EXPECT_EQ(4U, slice1.getNumberOfElements());
+    EXPECT_EQ(1U, slice1[0]);
+    EXPECT_EQ(4U, slice1[3]);
+}
+
+TEST(SliceTest, shouldCreateEmptySliceAfterSkippingTooManyElementsFromEnd)
+{
+    std::array<uint8_t, 4> array = {{1, 2, 3, 4}};
+    auto slice = outpost::asSlice(array);
+
+    auto slice1 = slice.skipLast(4);
+    EXPECT_EQ(0U, slice1.getNumberOfElements());
+}
+
 TEST(SliceTest, shouldBeUseableInConstexprContextForCArray)
 {
     uint8_t array[4] = {1, 2, 3, 4};

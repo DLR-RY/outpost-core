@@ -206,6 +206,25 @@ public:
     }
 
     /**
+     * Create a sub-slice which skips the given number of elements.
+     *
+     * The slice contains the data after the given number until the
+     * end of the array.
+     */
+    inline Slice
+    skipFirst(LengthType numberOfElements)
+    {
+        if (numberOfElements >= mNumberOfElements)
+        {
+            return Slice(mData, IndexType(0));
+        }
+        else
+        {
+            return Slice(mData + numberOfElements, mNumberOfElements - numberOfElements);
+        }
+    }
+
+    /**
      * Create a sub-slice from the end of the slice.
      */
     inline Slice
@@ -220,6 +239,23 @@ public:
         else
         {
             return Slice(mData + (mNumberOfElements - lastElements), lastElements);
+        }
+    }
+
+    /**
+     * Create a sub-slice from the beginning of the slice by removing
+     * the given number of elements from the end.
+     */
+    inline Slice
+    skipLast(LengthType numberOfElements)
+    {
+        if (numberOfElements >= mNumberOfElements)
+        {
+            return Slice(mData, IndexType(0));
+        }
+        else
+        {
+            return Slice(mData, mNumberOfElements - numberOfElements);
         }
     }
 
