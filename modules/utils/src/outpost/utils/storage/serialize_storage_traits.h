@@ -29,34 +29,34 @@ namespace outpost
  * Example:
  * ```
  * // Define type which should be stored
- * struct ControlMode
+ * namespace system
  * {
- *     enum Type
- *     {
- *         automatic = 1,
- *         manual    = 2
- *     };
+ * enum class ControlMode
+ * {
+ *     automatic = 1,
+ *     manual    = 2
  * };
+ * }
  *
  * // Use uint8_t as storage type for ControlMode::Type.
  * namespace outpost
  * {
- * using namespace euc::thermal;
+ * using namespace system;
  *
  * template<>
- * struct SerializeBigEndianTraits<ControlMode::Type> :
- *          public SerializeStorageTraits<ControlMode::Type, uint8_t>
+ * struct SerializeBigEndianTraits<ControlMode> :
+ *          public SerializeStorageTraits<ControlMode, uint8_t>
  * {
  * };
  *
  * }
  *
  * // Prepare stream in which the data should be written.
- * uint8_t buffer[20];
- * Serialize stream(buffer);
+ * std::array<uint8_t, 20> buffer;
+ * Serialize stream(outpost::asSlice(buffer));
  *
  * // Stores the enum as a single byte.
- * stream.store<ControlMode::Type>(ControlMode::automatic);
+ * stream.store<ControlMode>(ControlMode::automatic);
  * ```
  *
  * \author  Fabian Greif

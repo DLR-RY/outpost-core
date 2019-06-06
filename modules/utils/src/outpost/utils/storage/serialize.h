@@ -38,12 +38,10 @@ struct uint24_t
 };
 
 /**
- * \author Fabian Greif
+ * Serialize data as big-endian into raw byte arrays.
+ *
+ * The supported types can be extended through overloads of the `SerializeBigEndianTraits` class.
  */
-// LCOV_EXCL_START
-// Functions are tested in \c test/unit/test_byteorder.cpp
-// But as they are inline functions lcov can't generate useful
-// coverage reports for them
 class Serialize
 {
 public:
@@ -65,6 +63,10 @@ public:
     ~Serialize() = default;
 
     Serialize(const Serialize& other) = default;
+
+    // disable assignment operator
+    Serialize&
+    operator=(const Serialize& other) = delete;
 
     /**
      * Reset the read pointer to the beginning of the
@@ -229,26 +231,18 @@ public:
     }
 
 private:
-    // disable assignment operator
-    Serialize&
-    operator=(const Serialize& other);
-
     uint8_t* mBuffer;
     uint8_t* mBegin;
 };
-// LCOV_EXCL_STOP
-// LCOV_EXCL_END
 
-// ----------------------------------------------------------------------------
 /**
- * Deserialize the application data of a SPP/PUS packet.
+ * Deserialize big-endian data from raw byte arrays.
  *
- * The read<uint8_t>(), read<uint16_t>() and read<uint32_t>() functions read the number of
- * bits from the current location and move the data pointer forward correspondingly. The
- * peek8(), peek16() and peek32() read a value n bytes in front of the current location
- * and *don't* move the data pointer.
+ * The `read<T>()` functions read the number of bits from the current location and move the
+ * data pointer forward correspondingly. The peek<T>() read a value n bytes in front of the
+ * current location and *don't* move the data pointer.
  *
- * \author Fabian Greif
+ * The supported types can be extended through overloads of the `SerializeBigEndianTraits` class.
  */
 class Deserialize
 {
@@ -275,6 +269,10 @@ public:
     ~Deserialize() = default;
 
     Deserialize(const Deserialize& other) = default;
+
+    // disable assignment operator
+    Deserialize&
+    operator=(const Deserialize& other) = delete;
 
     /**
      * Reset the read pointer to the beginning of the
@@ -454,10 +452,6 @@ public:
     }
 
 private:
-    // disable assignment operator
-    Deserialize&
-    operator=(const Deserialize& other);
-
     const uint8_t* mBuffer;
     const uint8_t* const mBegin;
 };
