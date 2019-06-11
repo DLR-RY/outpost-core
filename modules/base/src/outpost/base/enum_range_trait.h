@@ -17,17 +17,17 @@
 namespace outpost
 {
 template <typename T>
-struct EnumTrait
+struct EnumRangeTrait
 {
     static constexpr T
-    min() = 0;
+    min();
     static constexpr T
-    max() = 0;
+    max();
 
     static bool
-    isValid(const T& t) = 0;
+    isValid(const T& t);
 };
 
 }  // namespace outpost
 
-#endif /* EXT_OUTPOST_CORE_MODULES_BASE_SRC_OUTPOST_BASE_ENUM_TRAIT_H_ */
+#endif
