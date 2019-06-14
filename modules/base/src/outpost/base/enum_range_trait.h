@@ -43,6 +43,17 @@ struct EnumRangeTrait
     isValid(const T& t);
 };
 
+/**
+ * Trivial check for enum validity.
+ * \author  Jan-Gerd Mess
+ */
+template<typename T>
+inline constexpr bool
+isValidEnum(const T& t)
+{
+	return t >= EnumRangeTrait<T>::min() && t <= EnumRangeTrait<T>::max();
+}
+
 }  // namespace outpost
 
 #endif

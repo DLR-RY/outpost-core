@@ -41,8 +41,7 @@ struct outpost::EnumRangeTrait<TestEnum>
     static constexpr bool
     isValid(const TestEnum& t)
     {
-        return t <= outpost::EnumRangeTrait<TestEnum>::max()
-               && t >= outpost::EnumRangeTrait<TestEnum>::min();
+        return outpost::isValidEnum(t);
     }
 };
 
