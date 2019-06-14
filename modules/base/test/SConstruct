@@ -38,7 +38,7 @@ if envGlobal['coverage']:
     envGlobal['BUILDPATH'] = os.path.abspath(
         os.path.join(buildfolder, module, 'test/coverage'))
 else:
-    envGlobal.Tool('compiler_hosted_llvm')
+    envGlobal.Tool('compiler_hosted_llvm_sanitizer')
     envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.join(buildfolder, module, 'test/unittest')
 

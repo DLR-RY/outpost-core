@@ -16,15 +16,30 @@
 
 namespace outpost
 {
+/**
+ * Trait class for enums that require a range check.
+ *
+ * \author  Jan-Gerd Mess
+ */
 template <typename T>
 struct EnumRangeTrait
 {
+    /**
+     * Return the minimum integer value allowed for the underlying enum.
+     */
     static constexpr T
     min();
+
+    /**
+     * Return the maximum integer value allowed for the underlying enum.
+     */
     static constexpr T
     max();
 
-    static bool
+    /**
+     * Check the given enum value for validity.
+     */
+    static constexpr bool
     isValid(const T& t);
 };
 

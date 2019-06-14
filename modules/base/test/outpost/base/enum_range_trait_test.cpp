@@ -17,10 +17,10 @@
 
 enum class TestEnum : uint8_t
 {
-    VALUE_1 = 0,
-    VALUE_2 = 1,
-    VALUE_3 = 2,
-    VALUE_4 = 3
+    value1 = 1,
+    value2 = 2,
+    value3 = 3,
+    value4 = 4
 };
 
 template <>
@@ -29,37 +29,38 @@ struct outpost::EnumRangeTrait<TestEnum>
     static constexpr TestEnum
     min()
     {
-        return TestEnum::VALUE_1;
+        return TestEnum::value1;
     }
 
     static constexpr TestEnum
     max()
     {
-        return TestEnum::VALUE_4;
+        return TestEnum::value4;
     }
 
-    static bool
+    static constexpr bool
     isValid(const TestEnum& t)
     {
-        return t <= outpost::EnumRangeTrait<TestEnum>::max();
+        return t <= outpost::EnumRangeTrait<TestEnum>::max()
+               && t >= outpost::EnumRangeTrait<TestEnum>::min();
     }
 };
 
 TEST(EnumRangeTest, testMin)
 {
-    TestEnum e = TestEnum::VALUE_1;
+    TestEnum e = TestEnum::value1;
     EXPECT_EQ(e, outpost::EnumRangeTrait<TestEnum>::min());
 }
 
 TEST(EnumRangeTest, testMax)
 {
-    TestEnum e = TestEnum::VALUE_4;
+    TestEnum e = TestEnum::value4;
     EXPECT_EQ(e, outpost::EnumRangeTrait<TestEnum>::max());
 }
 
 TEST(EnumRangeTest, testValid)
 {
-    TestEnum e = TestEnum::VALUE_2;
+    TestEnum e = TestEnum::value2;
     EXPECT_TRUE(outpost::EnumRangeTrait<TestEnum>::isValid(e));
 
     e = static_cast<TestEnum>(5U);
