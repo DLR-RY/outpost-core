@@ -19,14 +19,15 @@ rootpath = '../../'
 outpostpath = rootpath + '../../'
 modulepath = outpostpath + 'modules/'
 
-envGlobal = Environment(toolpath=[os.path.join(outpostpath, '../scons-build-tools/site_tools')],
-			            tools=[
-							'utils_buildformat',
-							'compiler_hosted_gcc',
-							'settings_buildpath',
-							'utils_common'
-						],
-				        ENV=os.environ)
+envGlobal = Environment(
+    toolpath=[os.path.join(outpostpath, '../scons-build-tools/site_tools')],
+    tools=[
+        'utils_buildformat',
+        'compiler_hosted_gcc',
+        'settings_buildpath',
+        'utils_common'
+    ],
+    ENV=os.environ)
 
 envGlobal['BASEPATH'] = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath(outpostpath + 'build/l3test/lua')
@@ -34,13 +35,16 @@ envGlobal['BUILDPATH'] = os.path.abspath(outpostpath + 'build/l3test/lua')
 # Binding code between Lua (written in C) and C++ has to use some C casts
 envGlobal.RemoveFromList('CXXFLAGS_warning', ['-Wold-style-cast'])
 
+envGlobal.SConscript([os.path.join(rootpath, "ext/SConscript")], exports="envGlobal")
+
 # -----------------------------------------------------------------------------
 # Build bitstream module
 
 env = envGlobal.Clone()
 
 bitstream_files = env.Glob('bitstream/*.cpp')
-bitstream_library = env.SharedLibrary(outpostpath + 'bin/lua/bitstream', bitstream_files, SHLIBPREFIX='')
+bitstream_library = env.SharedLibrary(
+    outpostpath + 'bin/lua/bitstream', bitstream_files, SHLIBPREFIX='')
 
 # -----------------------------------------------------------------------------
 # Build crc16 module
@@ -55,10 +59,11 @@ envGlobal = env
 
 env.Append(CCFLAGS=['-fPIC'])
 
-env.SConscript([
-	    os.path.join(modulepath, 'base/src/SConscript'),
-	    os.path.join(modulepath, 'time/src/SConscript'),
-	    os.path.join(modulepath, 'rtos/src/SConscript'),
+env.SConscript(
+    [
+        os.path.join(modulepath, 'base/src/SConscript'),
+        os.path.join(modulepath, 'time/src/SConscript'),
+        os.path.join(modulepath, 'rtos/src/SConscript'),
         os.path.join(modulepath, 'utils/src/SConscript'),
     ],
     exports='envGlobal')
