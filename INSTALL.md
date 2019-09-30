@@ -36,14 +36,14 @@ sudo apt-get install build-essential clang llvm libboost-dev libsqlite3-dev \
 
 Requires `lcov` >= 1.10.
 
-### Lua 5.2.3:
+### Lua 5.3:
 
 ```
 sudo apt-get install libreadline-dev
 
 wget http://www.lua.org/ftp/lua-5.2.3.tar.gz
-tar zxf lua-5.2.3.tar.gz
-cd lua-5.2.3
+tar zxf lua-5.3.4.tar.gz
+cd lua-5.3.4
 make linux
 sudo make linux install
 ```
@@ -53,9 +53,9 @@ sudo make linux install
 Busted is used for running the Lua based unit tests:
 
 ```
-wget http://luarocks.org/releases/luarocks-2.1.2.tar.gz
-tar zxf luarocks-2.1.2.tar.gz
-cd luarocks-2.1.2
+wget http://luarocks.org/releases/luarocks-3.2.0.tar.gz
+tar zxf luarocks-3.2.0.tar.gz
+cd luarocks-3.2.0
 ./configure
 make build
 sudo make install
