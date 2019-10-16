@@ -124,7 +124,7 @@ void
 Thread::yield()
 {
     // On Linux, this call always succeeds
-    pthread_yield();
+    sched_yield();
 }
 
 void
