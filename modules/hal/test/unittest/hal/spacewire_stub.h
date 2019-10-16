@@ -123,6 +123,12 @@ public:
      */
     std::list<Packet> mPacketsToReceive;
 
+    /*
+     * Simulates an SpWInterrupt
+     */
+    void
+    triggerSpWInterrupt(void);
+
 private:
     struct TransmitBufferEntry
     {

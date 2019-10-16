@@ -46,7 +46,7 @@ namespace comm
  *
  * \author  Muhammad Bassam
  */
-class RmapInitiator : public outpost::rtos::Thread
+class RmapInitiator : public outpost::rtos::Thread, public outpost::smpc::Subscriber
 {
     friend class TestingRmap;
 

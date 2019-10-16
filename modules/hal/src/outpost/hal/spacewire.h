@@ -10,12 +10,14 @@
  * Authors:
  * - 2013-2018, Fabian Greif (DLR RY-AVS)
  * - 2017-2018, Muhammad Bassam (DLR RY-AVS)
+ * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_HAL_SPACEWIRE_H
 #define OUTPOST_HAL_SPACEWIRE_H
 
 #include <outpost/base/slice.h>
+#include <outpost/smpc/topic.h>
 #include <outpost/time/duration.h>
 
 #include <stdint.h>
@@ -50,6 +52,14 @@ public:
             failure,
             timeout
         };
+    };
+
+    struct TimeCode
+    {
+        TimeCode(uint8_t value = 0, uint8_t control = 0) : mValue(value), mControl(control){};
+        // data contained in the corresponding lower bits.
+        uint8_t mValue;    // 6-bits
+        uint8_t mControl;  // 2-bits
     };
 
     /**
@@ -276,6 +286,19 @@ public:
      */
     virtual void
     flushReceiveBuffer() = 0;
+
+    /**
+     * To allow you to subscribe to the time code (SpW Interrupt)
+     * Not virtual as vtable may only be initialized with the constructor
+     */
+    outpost::smpc::Topic<TimeCode>&
+    getTimeCodeTopic()
+    {
+        return mTopic;
+    }
+
+protected:
+    outpost::smpc::Topic<TimeCode> mTopic;
 };
 
 }  // namespace hal
