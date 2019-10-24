@@ -191,7 +191,7 @@ public:
      * Create a sub-slice from the beginning of the slice.
      */
     inline Slice
-    first(LengthType firstElements)
+    first(LengthType firstElements) const
     {
         if (firstElements > mNumberOfElements)
         {
@@ -212,7 +212,7 @@ public:
      * end of the array.
      */
     inline Slice
-    skipFirst(LengthType numberOfElements)
+    skipFirst(LengthType numberOfElements) const
     {
         if (numberOfElements >= mNumberOfElements)
         {
@@ -228,7 +228,7 @@ public:
      * Create a sub-slice from the end of the slice.
      */
     inline Slice
-    last(LengthType lastElements)
+    last(LengthType lastElements) const
     {
         if (lastElements > mNumberOfElements)
         {
@@ -247,7 +247,7 @@ public:
      * the given number of elements from the end.
      */
     inline Slice
-    skipLast(LengthType numberOfElements)
+    skipLast(LengthType numberOfElements) const
     {
         if (numberOfElements >= mNumberOfElements)
         {
@@ -263,7 +263,7 @@ public:
      * Create a sub-slice from a starting index and a length.
      */
     inline Slice
-    subSlice(IndexType offset, LengthType length)
+    subSlice(IndexType offset, LengthType length) const
     {
         return first(offset + length).last(length);
     }
@@ -277,7 +277,7 @@ public:
      *      Last index which **is not included** in range.
      */
     inline Slice
-    subRange(IndexType firstIndex, IndexType lastIndex)
+    subRange(IndexType firstIndex, IndexType lastIndex) const
     {
         // TODO check that end is larger than start.
         return subSlice(firstIndex, lastIndex - firstIndex);
@@ -289,7 +289,7 @@ public:
     }
 
     inline gsl::span<ElementType>
-    asSpan()
+    asSpan() const
     {
         return gsl::span<ElementType>(mData, mNumberOfElements);
     }
