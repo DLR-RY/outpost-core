@@ -226,6 +226,14 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                     outpost::Slice<uint8_t> const& buffer,
                     outpost::time::Duration timeout)
 {
+    if (buffer.getNumberOfElements() > Buffer::bufferSize)
+    {
+        console_out("RMAP-Initiator: Requested size for read %u, maximal allowed size %u\n",
+                    length,
+                    Buffer::bufferSize);
+        return false;
+    }
+
     // Guard operation against concurrent accesses
     outpost::rtos::MutexGuard lock(mOperationLock);
     bool result = false;

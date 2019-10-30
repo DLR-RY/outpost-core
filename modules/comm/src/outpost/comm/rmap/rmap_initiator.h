@@ -82,9 +82,10 @@ public:
      * */
     struct Buffer
     {
+        static constexpr uint16_t bufferSize = 1024;
         Buffer() : mLength(0)
         {
-            memset(mData, 0, sizeof(mData));
+            memset(mData, 0, bufferSize);
         }
 
         bool
@@ -92,7 +93,7 @@ public:
         {
             bool result = false;
 
-            if (len < sizeof(mData))
+            if (len <= bufferSize)
             {
                 mLength = len;
                 memcpy(mData, buffer, mLength);
@@ -105,12 +106,12 @@ public:
         getData(uint8_t* buffer)
         {
             memcpy(buffer, mData, mLength);
-            memset(mData, 0, sizeof(mData));
+            memset(mData, 0, bufferSize);
             mLength = 0;
         }
 
     private:
-        uint8_t mData[1024];
+        uint8_t mData[bufferSize];
         uint16_t mLength;
     };
 
