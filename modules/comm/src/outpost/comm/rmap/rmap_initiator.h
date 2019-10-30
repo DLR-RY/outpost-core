@@ -26,6 +26,8 @@
 #include <outpost/support/heartbeat.h>
 #include <outpost/time/duration.h>
 
+#include <array>
+
 namespace outpost
 {
 namespace comm
@@ -85,7 +87,7 @@ public:
         static constexpr uint16_t bufferSize = 1024;
         Buffer() : mLength(0)
         {
-            memset(mData, 0, bufferSize);
+            mData.fill(0);
         }
 
         bool
@@ -96,7 +98,7 @@ public:
             if (len <= bufferSize)
             {
                 mLength = len;
-                memcpy(mData, buffer, mLength);
+                memcpy(mData.data(), buffer, mLength);
                 result = true;
             }
             return result;
@@ -105,13 +107,13 @@ public:
         void
         getData(uint8_t* buffer)
         {
-            memcpy(buffer, mData, mLength);
-            memset(mData, 0, bufferSize);
+            memcpy(buffer, mData.data(), mLength);
+            mData.fill(0);
             mLength = 0;
         }
 
     private:
-        uint8_t mData[bufferSize];
+        std::array<uint8_t, bufferSize> mData;
         uint16_t mLength;
     };
 
