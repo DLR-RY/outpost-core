@@ -78,6 +78,12 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                      outpost::Slice<const uint8_t> const& data,
                      outpost::time::Duration timeout)
 {
+    if (data.getNumberOfElements() == 0)
+    {
+        // the second write function also return without a message in this case
+        return false;
+    }
+
     // Guard operation against concurrent accesses
     outpost::rtos::MutexGuard lock(mOperationLock);
     bool result = false;
@@ -234,6 +240,12 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
         return false;
     }
 
+    if (buffer.getNumberOfElements() == 0)
+    {
+        // the second read function also return without a message in this case
+        return false;
+    }
+
     // Guard operation against concurrent accesses
     outpost::rtos::MutexGuard lock(mOperationLock);
     bool result = false;
@@ -313,6 +325,11 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
             else
             {
                 if (buffer.getNumberOfElements() < rply->getDataLength())
+                {
+                    console_out("RMAP-Initiator: Read reply with more data then requested\n");
+                    result = false;
+                }
+                else if (buffer.getNumberOfElements() > rply->getDataLength())
                 {
                     console_out("RMAP-Initiator: Read reply with insufficient data\n");
                     result = false;
