@@ -19,6 +19,26 @@
 
 using outpost::Slice;
 
+TEST(SliceTest, toUint8Slice)
+{
+    uint32_t data[4] = {0};
+
+    Slice<uint32_t> array(data);
+    Slice<uint8_t> array2 = array.asUint8Slice();
+    for (size_t i = 0; i < array2.getNumberOfElements(); i++)
+    {
+        array2[i] = 0xff;
+    }
+
+    EXPECT_EQ(0xffffffff, array[0]);
+    EXPECT_EQ(0xffffffff, array[1]);
+    EXPECT_EQ(0xffffffff, array[2]);
+    EXPECT_EQ(0xffffffff, array[3]);
+
+    EXPECT_EQ(false, std::is_const<Slice<uint32_t>::uint8Type>::value);
+    EXPECT_EQ(true, std::is_const<Slice<const uint32_t>::uint8Type>::value);
+}
+
 TEST(SliceTest, createFromCStyleArray)
 {
     uint8_t data[7];
