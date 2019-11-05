@@ -17,6 +17,7 @@
 #include <stddef.h>
 
 #include <gsl/span>
+#include <type_traits>
 
 namespace outpost
 {
@@ -47,6 +48,9 @@ public:
 
     using Iterator = pointer;
     using ReverseIterator = std::reverse_iterator<pointer>;
+
+    using uint8Type = typename std::
+            conditional<std::is_const<ElementType>::value, const uint8_t, uint8_t>::type;
 
     friend Slice<typename std::remove_const<ElementType>::type>;
     friend Slice<const ElementType>;
@@ -292,6 +296,17 @@ public:
     asSpan() const
     {
         return gsl::span<ElementType>(mData, mNumberOfElements);
+    }
+
+    // Including padding bytes
+    inline Slice<uint8Type>
+    asUint8Slice() const
+    {
+        // uint8Type required such that non const types will be "uint8_t" and const types "const
+        // uint8_t" The divisor just to be save when facing exotic architectures
+        return Slice<uint8Type>::unsafe(reinterpret_cast<uint8Type*>(mData),
+                                        mNumberOfElements
+                                                * (sizeof(ElementType) / sizeof(uint8Type)));
     }
 
 private:
