@@ -242,10 +242,7 @@ public:
      *      Actual remote memory address where the data is being written
      *
      * @param data
-     *      Pointer to the data bytes
-     *
-     * @param length
-     *      Length of the data bytes being written
+     *      A Slice containing the data to write
      *
      * @param timeout
      *      Timeout in case of blocking transaction, otherwise use
@@ -257,7 +254,7 @@ public:
     bool
     write(const char* targetNodeName,
           uint32_t memoryAddress,
-          outpost::Slice<const uint8_t> data,
+          outpost::Slice<const uint8_t> const& data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
     /**
@@ -274,10 +271,7 @@ public:
      *      Actual remote memory address where the data is being written
      *
      * @param data
-     *      Pointer to the data bytes
-     *
-     * @param length
-     *      Length of the data bytes being written
+     *      A Slice containing the data to write
      *
      * @param timeout
      *      Timeout in case of blocking transaction, otherwise use
@@ -289,7 +283,7 @@ public:
     bool
     write(RmapTargetNode& targetNode,
           uint32_t memoryAddress,
-          outpost::Slice<const uint8_t> data,
+          outpost::Slice<const uint8_t> const& data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
     /**
@@ -304,10 +298,7 @@ public:
      *      Actual remote memory address where the data is being written
      *
      * @param buffer
-     *      Pointer to the buffer where received data bytes will be stored
-     *
-     * @param length
-     *      Length of the data bytes being read
+     *      A Slice where received data bytes will be stored
      *
      * @param timeout
      *      Timeout for the SpW read operation
@@ -318,8 +309,7 @@ public:
     bool
     read(const char* targetNodeName,
          uint32_t memoryAddress,
-         uint8_t* buffer,
-         uint32_t length,
+         outpost::Slice<uint8_t> const& buffer,
          outpost::time::Duration timeout = outpost::time::Duration::maximum());
 
     /**
@@ -333,10 +323,7 @@ public:
      *      Actual remote memory address where the data is being written
      *
      * @param buffer
-     *      Pointer to the buffer where received data bytes will be stored
-     *
-     * @param length
-     *      Length of the data bytes being read
+     *      A Slice where received data bytes will be stored
      *
      * @param timeout
      *      Timeout for the SpW read operation
@@ -348,8 +335,7 @@ public:
     bool
     read(RmapTargetNode& rmapTargetNode,
          uint32_t memoryAddress,
-         uint8_t* buffer,
-         uint32_t length,
+         outpost::Slice<uint8_t> const& buffer,
          outpost::time::Duration timeout = outpost::time::Duration::maximum());
 
     //--------------------------------------------------------------------------

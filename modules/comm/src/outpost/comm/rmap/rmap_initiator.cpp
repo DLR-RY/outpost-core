@@ -53,7 +53,7 @@ RmapInitiator::~RmapInitiator()
 bool
 RmapInitiator::write(const char* targetNodeName,
                      uint32_t memoryAddress,
-                     outpost::Slice<const uint8_t> data,
+                     outpost::Slice<const uint8_t> const& data,
                      outpost::time::Duration timeout)
 {
     bool result = false;
@@ -75,7 +75,7 @@ RmapInitiator::write(const char* targetNodeName,
 bool
 RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                      uint32_t memoryAddress,
-                     outpost::Slice<const uint8_t> data,
+                     outpost::Slice<const uint8_t> const& data,
                      outpost::time::Duration timeout)
 {
     // Guard operation against concurrent accesses
@@ -201,8 +201,7 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
 bool
 RmapInitiator::read(const char* targetNodeName,
                     uint32_t memoryAddress,
-                    uint8_t* buffer,
-                    uint32_t length,
+                    outpost::Slice<uint8_t> const& buffer,
                     outpost::time::Duration timeout)
 {
     bool result = false;
@@ -212,9 +211,9 @@ RmapInitiator::read(const char* targetNodeName,
         if (targetNode)
         {
             // Exit if trying to read zero length
-            if (length != 0)
+            if (buffer.getNumberOfElements() != 0)
             {
-                result = read(*targetNode, memoryAddress, buffer, length, timeout);
+                result = read(*targetNode, memoryAddress, buffer, timeout);
             }
         }
     }
@@ -224,8 +223,7 @@ RmapInitiator::read(const char* targetNodeName,
 bool
 RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                     uint32_t memoryAddress,
-                    uint8_t* buffer,
-                    uint32_t length,
+                    outpost::Slice<uint8_t> const& buffer,
                     outpost::time::Duration timeout)
 {
     // Guard operation against concurrent accesses
@@ -273,7 +271,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     cmd->setReplyFlag();
     cmd->setExtendedAddress(0x00);
     cmd->setAddress(memoryAddress);
-    cmd->setDataLength(length);
+    cmd->setDataLength(buffer.getNumberOfElements());
 
     // InitiatorLogicalAddress might be updated in below
     cmd->setTargetInformation(rmapTargetNode);
@@ -306,7 +304,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
             }
             else
             {
-                if (length < rply->getDataLength())
+                if (buffer.getNumberOfElements() < rply->getDataLength())
                 {
                     console_out("RMAP-Initiator: Read reply with insufficient data\n");
                     result = false;
@@ -314,7 +312,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                 else
                 {
                     // Copy received data to the external buffer
-                    mRxData.getData(buffer);
+                    mRxData.getData(buffer.begin());
 
                     // Release the SpW buffer
 
