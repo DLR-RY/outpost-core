@@ -223,9 +223,8 @@ public:
     FP&
     operator/=(const FP& x)
     {
-        typedef long long int T2;
-        value = static_cast<int32_t>(((static_cast<T2>(value)) << PREC)
-                                     / (static_cast<T2>(x.value)));
+        value = static_cast<int32_t>(((static_cast<int64_t>(value)) << PREC)
+                                     / (static_cast<int64_t>(x.value)));
         return *this;
     }
 
@@ -234,6 +233,21 @@ public:
     {
         FP res(*this);
         return res /= x;
+    }
+
+    template <typename TT>
+    FP&
+    operator/=(const TT& x)
+    {
+        *this /= FP(x);
+        return (*this);
+    }
+
+    template <typename TT>
+    FP operator/(const TT& x) const
+    {
+        FP res(*this);
+        return res /= FP(x);
     }
 
     FP&
