@@ -164,7 +164,7 @@ public:
     FP&
     operator-=(const FP& x)
     {
-        value -= x.value;  // check
+        value -= x.value;
         return *this;
     }
 
@@ -301,22 +301,49 @@ public:
     {
         return (value > x.value);
     }
-    /** Equal */
+
+    template <typename TT>
+	bool
+	operator==(const TT& x) const
+	{
+		return (*this == FP(x));
+	}
     bool
     operator==(const FP& x) const
     {
         return value == x.value;
     }
+
+    template <typename TT>
+	bool
+	operator!=(const TT& x) const
+	{
+		return (*this != FP(x));
+	}
     bool
     operator!=(const FP& x) const
     {
         return value != x.value;
     }
+
+    template <typename TT>
+	bool
+	operator<=(const TT& x) const
+	{
+		return (*this <= FP(x));
+	}
     bool
     operator<=(const FP& x) const
     {
         return value <= x.value;
     }
+
+    template <typename TT>
+	bool
+	operator>=(const TT& x) const
+	{
+		return (*this >= FP(x));
+	}
     bool
     operator>=(const FP& x) const
     {
