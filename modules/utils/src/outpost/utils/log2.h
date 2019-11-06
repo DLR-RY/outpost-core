@@ -15,16 +15,16 @@
 #define OUTPOST_UTILS_LOG2_H_
 
 #include <assert.h>
-
 #include <stddef.h>
 
 namespace outpost
 {
-
-constexpr size_t Log2(size_t n);
-
-size_t dynamicLog2(size_t n);
-
+constexpr size_t
+Log2(size_t n)
+{
+    return ((n < 2) ? 0 : 1 + Log2(n / 2));
 }
+
+}  // namespace outpost
 
 #endif /* OUTPOST_UTILS_LOG2_H_ */

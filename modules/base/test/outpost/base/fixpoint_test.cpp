@@ -122,7 +122,7 @@ TEST(FixpointTest, assignmentOperators)
     double d = -1.75;
     float f = -2.5f;
     int16_t i16 = 125;
-    int32_t i32 = -(3 << 15);  // -1.5
+    int32_t i32 = -3;
 
     outpost::Fixpoint fp;
     fp = d;
@@ -135,11 +135,11 @@ TEST(FixpointTest, assignmentOperators)
     EXPECT_EQ(static_cast<double>(fp), 125.0);
 
     fp = i32;
-    EXPECT_EQ(static_cast<double>(fp), -1.50);
+    EXPECT_EQ(static_cast<double>(fp), -3.0);
 
     outpost::Fixpoint fp2;
     fp2 = fp;
-    EXPECT_EQ(static_cast<double>(fp2), -1.50);
+    EXPECT_EQ(static_cast<double>(fp2), -3.0);
 }
 
 TEST(FixpointTest, additionOperators)
@@ -147,7 +147,7 @@ TEST(FixpointTest, additionOperators)
     double d = -1.75;
     float f = -2.5f;
     int16_t i16 = 125;
-    int32_t i32 = -3;  // -1.5
+    int32_t i32 = -3;
 
     outpost::Fixpoint fp1(17.5);
     outpost::Fixpoint fp2(-16.5);
@@ -174,7 +174,7 @@ TEST(FixpointTest, additionOperators)
 TEST(FixpointTest, subtractionOperators)
 {
     double d = -1.75;
-    float f = -2.5;
+    float f = -2.5f;
     int16_t i16 = 125;
     int32_t i32 = -3;
 
@@ -240,22 +240,27 @@ TEST(FixpointTest, divisionOperators)
     outpost::Fixpoint fp2(-16.5);
 
     outpost::Fixpoint res = fp1 / fp2;
-    EXPECT_LE(static_cast<double>(res) + 1.06059f, 0.0001);
+    EXPECT_LE(static_cast<double>(res) + 1.06060, 0.0001);
+    EXPECT_GE(static_cast<double>(res) + 1.06060, -0.0001);
 
     res /= f;
-    EXPECT_LE(static_cast<double>(res) - 132.647f, 0.0001);
+    EXPECT_LE(static_cast<double>(res) - 132.6469, 0.0001);
+    EXPECT_GE(static_cast<double>(res) - 132.6469, -0.0001);
 
     res = fp1 / d;
     EXPECT_EQ(static_cast<double>(res), -10.0);
 
     res /= f;
-    EXPECT_LE(static_cast<double>(res) - 1250.69, 0.0001);
+    EXPECT_LE(static_cast<double>(res) - 1250.6870, 0.0001);
+    EXPECT_GE(static_cast<double>(res) - 1250.6870, -0.0001);
 
     res /= i16;
-    EXPECT_LE(static_cast<double>(res) - 10.055, 0.001);
+    EXPECT_LE(static_cast<double>(res) - 10.0055, 0.0001);
+    EXPECT_GE(static_cast<double>(res) - 10.0055, -0.0001);
 
     res = res / i32;
-    EXPECT_LE(static_cast<double>(res) + 3.33, 0.0001);
+    EXPECT_LE(static_cast<double>(res) + 3.3351, 0.0001);
+    EXPECT_GE(static_cast<double>(res) + 3.3351, -0.0001);
 }
 
 TEST(FixpointTest, shiftOperator)
@@ -305,6 +310,7 @@ TEST(FixpointTest, ltGtOperators)
 
     EXPECT_FALSE(fp1 < 0.0001);
     EXPECT_FALSE(fp1 < 122);
+    EXPECT_FALSE(fp1 < 123);
 
     EXPECT_TRUE(fp1 > fp2);
     EXPECT_TRUE(fp1 > fp3);
@@ -313,6 +319,8 @@ TEST(FixpointTest, ltGtOperators)
 
     EXPECT_TRUE(fp1 > 0.0001f);
     EXPECT_TRUE(fp1 > 122);
+
+    EXPECT_FALSE(fp1 > 123);
 }
 
 TEST(FixpointTest, lessOrEqualOperators)
@@ -360,4 +368,13 @@ TEST(FixpointTest, equalityOperators)
     outpost::Fixpoint fp4(f);
 
     EXPECT_EQ(fp3, fp4);
+}
+
+TEST(FixpointTest, absTest)
+{
+	outpost::Fixpoint fp1(1.125);
+	outpost::Fixpoint fp2(-1.678);
+
+	EXPECT_EQ(fp1.abs(), fp1);
+	EXPECT_EQ(fp2.abs(), fp2*(-1.0));
 }

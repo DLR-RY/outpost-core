@@ -14,6 +14,8 @@
 #ifndef OUTPOST_BASE_FIXPOINT_H_
 #define OUTPOST_BASE_FIXPOINT_H_
 
+#include <outpost/utils/pow.h>
+
 #include <stdint.h>
 #include <stdio.h>
 
@@ -133,7 +135,7 @@ public:
     FP&
     operator=(const int32_t& x)
     {
-        value = x;
+        value = static_cast<int32_t>(x * (1 << PREC));
         return *this;
     }
 
@@ -293,8 +295,7 @@ public:
     FP&
     operator*=(const FP& x)
     {
-        typedef long long int T2;
-        value = static_cast<int32_t>((static_cast<T2>(value) * static_cast<T2>(x.value)) >> PREC);
+        value = static_cast<int32_t>((static_cast<int64_t>(value) * static_cast<int64_t>(x.value)) >> PREC);
         return *this;
     }
 
@@ -591,7 +592,7 @@ public:
         value = x;
     }
 
-    static FP
+    static const FP
     toFixpoint(int32_t x)
     {
         FP res;
@@ -599,11 +600,19 @@ public:
         return res;
     }
 
+    static const FP MAX;
+    static const FP EPSILON;
+    static const FP MIN;
+
 private:
     int32_t value;
 };
 
 typedef FP<16> Fixpoint;
+
+template<unsigned PREC> const FP<PREC> FP<PREC>::MAX = FP<PREC>::toFixpoint(0xEFFFFFFF);
+template<unsigned PREC> const FP<PREC> FP<PREC>::EPSILON = FP<PREC>::toFixpoint(0x00000001);
+template<unsigned PREC> const FP<PREC> FP<PREC>::MIN = FP<PREC>::toFixpoint(0x00000001);
 
 }  // namespace outpost
 

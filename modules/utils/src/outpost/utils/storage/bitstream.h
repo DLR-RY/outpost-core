@@ -14,121 +14,188 @@
 #ifndef OUTPOST_UTILS_STORAGE_BITSTREAM_H_
 #define OUTPOST_UTILS_STORAGE_BITSTREAM_H_
 
+#include <outpost/utils/storage/serializable_object.h>
+
 namespace outpost
 {
-
-class Bitstream
+/**
+ * A class for pushing single bits to and reading from a stream of data.
+ */
+class Bitstream : outpost::SerializableObject
 {
 private:
-    static constexpr uint8_t headerSize = 2; // used for
-    outpost::Slice<uint8_t>& mData;
+    static constexpr uint8_t headerSize = 3;  // used for storing the bitstream length
+    outpost::Slice<uint8_t>& mData;           // Buffer for storing the bitstream
     uint16_t bytePointer;
     int8_t bitPointer;
+    bool isFull;
 
 public:
-    Bitstream(outpost::Slice<uint8_t>& byteArray, bool init = true) :
+    Bitstream(outpost::Slice<uint8_t>& byteArray) :
         mData(byteArray),
         bytePointer(headerSize),
-        bitPointer(7)
+        bitPointer(7),
+        isFull(false)
     {
-        if (init)
-        {
-            outpost::Serialize stream(mData);
-            stream.store<uint16_t>(bytePointer);
-        }
-        else
-        {
-            outpost::Deserialize stream(mData);
-            bytePointer = stream.read<uint16_t>();
-            bitPointer = 0;
-        }
+        isFull = mData.getNumberOfElements() <= bytePointer;
     }
 
+    /**
+     * Pushes one bit to the stream
+     * \param b
+     *     Bit value to push to the stream
+     */
     void
     pushBit(bool b)
     {
-        if (b)
+        if (!isFull)
         {
-            mData[bytePointer] |= (1 << bitPointer);
-        }
-        else
-        {
-            mData[bytePointer] &= ~(1 << bitPointer);
-        }
+            if (b)
+            {
+                mData[bytePointer] |= (1 << bitPointer);
+            }
+            else
+            {
+                mData[bytePointer] &= ~(1 << bitPointer);
+            }
 
-        bitPointer = bitPointer - 1;
+            bitPointer--;
 
-        if (bitPointer == -1)
-        {
-            bitPointer = 7;
-            bytePointer++;
+            if (bitPointer == -1)
+            {
+                bitPointer = 7;
+                bytePointer++;
+                isFull = mData.getNumberOfElements() <= bytePointer;
+            }
         }
     }
 
+    /**
+     * Grants bit-level access to the stream
+     *
+     * \param n
+     *     Bit in the stream to be accessed
+     * \retval True
+     *    If the nth bit of the stream is set
+     * \retval False
+     *    If the nth bit of the stream is not set or n is out of bounds
+     */
     inline bool
-    getBit(uint16_t n) const
+    getBit(uint32_t n) const
     {
-        uint16_t tmp_byte_pointer = bytePointer + headerSize;
-        if (n < ((tmp_byte_pointer << 3) + (7 - bitPointer)))
+        uint32_t offsetBytePointer = bytePointer - headerSize;
+        if (n < ((offsetBytePointer << 3) + (7 - bitPointer)))
         {
-            return ((mData[(n >> 3) + headerSize] & (1 << (7 - (n % 8)))) > 0);
+            return ((mData[(n >> 3) + headerSize] & (1 << (7 - (n & 7)))) > 0);
         }
 
         return 0;
     }
 
-    uint8_t
+    /**
+     * Grants byte-level access to the stream
+     *
+     * \param n
+     *     Byte to access
+     * \return Byte value at position n or 0 if n is out of range.
+     */
+    inline uint8_t
     getByte(uint16_t n) const
     {
-        return mData[n + headerSize];
+        if (n < bytePointer - headerSize)
+        {
+            return mData[n + headerSize];
+        }
+        return 0;
     }
 
-    uint16_t
+    /**
+     * The current size of the stream in bytes
+     * \return The current buffer length
+     */
+    inline uint16_t
     getSize() const
     {
         return bytePointer + (bitPointer < 7);
     }
 
-    void
-    print()
+    /**
+     * Get the size of the parameter.
+     *
+     * \return  Size of the parameter in bytes.
+     */
+    virtual size_t
+    getSerializedSize() const override
     {
-        for (int i = 0; i <= bytePointer - 1; i++)
-        {
-            std::cout << std::bitset<8>(mData[i]);
-            if(i > 0 && i % 16 == 0)
-            {
-            	std::cout << std::endl;
-            }
-            std::cout << "";
-        }
-
-        for (int i = 7; i > bitPointer; i--)
-        {
-            std::cout << (bool(mData[bytePointer] & 1 << i) > 0);
-        }
-
-        std::cout << std::endl;
+        return getSize();
     }
 
-    void
-    serialize()
+    /**
+     * Write parameter value onto the output stream.
+     *
+     * \param stream
+     *      Output stream
+     */
+    virtual void
+    serialize(Serialize& stream) const override
     {
-        outpost::Serialize stream(mData);
-        stream.store<uint16_t>(bytePointer);
+        serialize(stream, bytePointer);
     }
 
-    void
-    serialize(uint16_t maxSize)
+    /**
+     * Write parameter value onto the output stream.
+     *
+     * \param stream
+     *      Output stream
+     * \param maxLength
+     *      Maximum length of the resulting stream
+     */
+    virtual void
+    serialize(Serialize& stream, uint16_t maxLength) const
     {
-        if (maxSize < bytePointer)
+        if (maxLength > bytePointer)
         {
-            bytePointer = maxSize;
-            bitPointer = 7;
+            maxLength = bytePointer;
         }
-        serialize();
+
+        stream.store(bytePointer);
+        stream.store(bitPointer);
+
+        if (stream.getPointer() != &mData[0])
+        {
+            stream.store(mData.skipFirst(headerSize).first(maxLength - headerSize));
+        }
+        else
+        {
+            stream.skip(maxLength - headerSize);
+        }
+    }
+
+    /**
+     * Read parameter value from stream.
+     *
+     * \param stream
+     *      Input stream
+     * \retval  true    Parameter could be read and validated.
+     * \retval  false   Parameter validation failed.
+     */
+    virtual bool
+    deserialize(Deserialize& stream) override
+    {
+        bytePointer = stream.read<uint16_t>();
+        bitPointer = stream.read<int8_t>();
+        if (stream.getPointer() != &mData[0])
+        {
+            stream.readBuffer(&mData[headerSize], bytePointer-headerSize);
+        }
+        else
+        {
+            stream.skip(bytePointer);
+        }
+        return true;
     }
 };
 
 }  // namespace outpost
 
-#endif OUTPOST_UTILS_STORAGE_BITSTREAM_H_ */
+#endif /*OUTPOST_UTILS_STORAGE_BITSTREAM_H_ */
