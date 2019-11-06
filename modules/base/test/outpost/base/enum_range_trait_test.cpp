@@ -46,7 +46,7 @@ struct EnumRangeTrait<TestEnum>
         return outpost::isValidEnum(t);
     }
 };
-}
+}  // namespace outpost
 
 TEST(EnumRangeTest, testMin)
 {
