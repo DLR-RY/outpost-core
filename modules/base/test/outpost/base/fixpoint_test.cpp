@@ -70,9 +70,9 @@ TEST(FixpointTest, fixpointDefaultContructors)
     outpost::Fixpoint fp2(n16);
     EXPECT_EQ(fp2.getValue(), 135 << 16);
 
-    int32_t n32 = -35000;
+    int32_t n32 = -16000;
     outpost::Fixpoint fp3(n32);
-    EXPECT_EQ(fp3.getValue(), -35000);
+    EXPECT_EQ(fp3.getValue(), -1048576000);
 
     float f = 3.25f;
     outpost::Fixpoint fp4(f);
@@ -147,7 +147,7 @@ TEST(FixpointTest, additionOperators)
     double d = -1.75;
     float f = -2.5f;
     int16_t i16 = 125;
-    int32_t i32 = -(3 << 15);  // -1.5
+    int32_t i32 = -3;  // -1.5
 
     outpost::Fixpoint fp1(17.5);
     outpost::Fixpoint fp2(-16.5);
@@ -168,7 +168,7 @@ TEST(FixpointTest, additionOperators)
     EXPECT_EQ(static_cast<double>(res), 138.25);
 
     res = res + i32;
-    EXPECT_EQ(static_cast<double>(res), 136.75);
+    EXPECT_EQ(static_cast<double>(res), 135.25);
 }
 
 TEST(FixpointTest, subtractionOperators)
@@ -176,7 +176,7 @@ TEST(FixpointTest, subtractionOperators)
     double d = -1.75;
     float f = -2.5;
     int16_t i16 = 125;
-    int32_t i32 = -(3 << 15);
+    int32_t i32 = -3;
 
     outpost::Fixpoint fp1(17.5);
     outpost::Fixpoint fp2(-16.5);
@@ -197,7 +197,7 @@ TEST(FixpointTest, subtractionOperators)
     EXPECT_EQ(static_cast<double>(res), -103.25);
 
     res = res - i32;
-    EXPECT_EQ(static_cast<double>(res), -101.75);
+    EXPECT_EQ(static_cast<double>(res), -100.25);
 }
 
 TEST(FixpointTest, multiplicationOperators)
@@ -205,7 +205,7 @@ TEST(FixpointTest, multiplicationOperators)
     double d = -1.75;
     float f = -2.5f;
     int16_t i16 = 125;
-    int32_t i32 = -(3 << 15);
+    int32_t i32 = -1;
 
     outpost::Fixpoint fp1(17.5);
     outpost::Fixpoint fp2(-16.5);
@@ -226,7 +226,7 @@ TEST(FixpointTest, multiplicationOperators)
     EXPECT_EQ(static_cast<double>(res), 9570.3125);
 
     res = res * i32;
-    EXPECT_EQ(static_cast<double>(res), -14355.46875);
+    EXPECT_EQ(static_cast<double>(res), -9570.3125);
 }
 
 TEST(FixpointTest, divisionOperators)
@@ -234,7 +234,7 @@ TEST(FixpointTest, divisionOperators)
     double d = -1.75;
     float f = -0.008f;
     int16_t i16 = 125;
-    int32_t i32 = -(3 << 15);
+    int32_t i32 = -3;
 
     outpost::Fixpoint fp1(17.5);
     outpost::Fixpoint fp2(-16.5);
@@ -255,19 +255,19 @@ TEST(FixpointTest, divisionOperators)
     EXPECT_LE(static_cast<double>(res) - 10.055, 0.001);
 
     res = res / i32;
-    EXPECT_LE(static_cast<double>(res) + 6.667, 0.0001);
+    EXPECT_LE(static_cast<double>(res) + 3.33, 0.0001);
 }
 
 TEST(FixpointTest, shiftOperator)
 {
-    int32_t t = 0xFFFFFFFF;
+    int32_t t = 0xFFFF;
     outpost::Fixpoint fp(t);
 
     fp >>= 1;
-    EXPECT_EQ(fp.getValue(), t);
+    EXPECT_EQ(fp.getValue(), static_cast<int32_t>(0xFFFF8000));
 
     fp = fp >> 16;
-    EXPECT_EQ(fp.getValue(), t);
+    EXPECT_EQ(fp.getValue(), static_cast<int32_t>(0xFFFFFFFF));
 
     fp <<= 1;
     EXPECT_EQ(fp.getValue(), static_cast<int32_t>(0xFFFFFFFE));
@@ -282,6 +282,13 @@ TEST(FixpointTest, shiftOperator)
     outpost::Fixpoint fp3(1.5);
     fp3 <<= 3;
     EXPECT_EQ(static_cast<double>(fp3), 12.0);
+}
+
+TEST(FixpointTest, setValue)
+{
+    outpost::Fixpoint fp(125.0);
+    fp.setValue(0xFFFF8000);
+    EXPECT_EQ(static_cast<double>(fp), -0.5);
 }
 
 TEST(FixpointTest, ltGtOperators)

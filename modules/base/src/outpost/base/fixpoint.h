@@ -22,10 +22,10 @@ namespace outpost
 /**
  * Fixpoint numbers for fast arithmetic operations
  *
- * \tparam  PREC
+ * @tparam  PREC
  *      Precision, i.e. the number of  fractional bits to use.
  *
- * \author  Jan-Gerd Mess
+ * @author  Jan-Gerd Mess
  */
 template <unsigned PREC>
 class FP
@@ -47,7 +47,7 @@ public:
     {
     }
 
-    FP(int32_t x) : value(x)
+    FP(int32_t x) : value(x * (1 << PREC))
     {
     }
 
@@ -61,27 +61,26 @@ public:
 
     /**
      * Absolute value of the given number.
-     * \return Positive number with the same value
+     * @return Positive number with the same value
      */
     FP
     abs() const
     {
         if (value < 0)
         {
-            return FP(-value);
+            return FP::toFixpoint(-value);
         }
-        return FP(value);
+        return FP::toFixpoint(value);
     }
 
     /**
      * Explicit cast to int32_t including rounding.
      *
-     * \return Rounded int32_t
+     * @return Rounded int32_t
      */
     explicit operator int32_t()
     {
         uint8_t round = 0;
-
         if (((1 << (PREC - 1) & abs().getValue()) && value > 0)
             || (!(1 << (PREC - 1) & abs().getValue()) && value < 0))
         {
@@ -93,12 +92,12 @@ public:
     /**
      * Explicit cast to int16_t including rounding.
      *
-     * \return Rounded int16_t
+     * @return Rounded int16_t
      */
     explicit operator int16_t() const
     {
         uint8_t round = 0;
-        if (((1 << (PREC - 1) & abs().getValue()) && value > 0)
+        if ((((1 << (PREC - 1)) & abs().getValue()) && value > 0)
             || (!(1 << (PREC - 1) & abs().getValue()) && value < 0))
         {
             round = 1;
@@ -109,7 +108,7 @@ public:
     /**
      * Explicit cast to float
      *
-     * \return Value as float
+     * @return Value as float
      */
     explicit operator float() const
     {
@@ -119,7 +118,7 @@ public:
     /**
      * Explicit cast to double
      *
-     * \return Value as double
+     * @return Value as double
      */
     explicit operator double() const
     {
@@ -128,8 +127,8 @@ public:
 
     /**
      * Assignment operator from int32_t
-     * \param x Assigned value
-     * \return Value as fixpoint number
+     * @param x Assigned value
+     * @return Value as fixpoint number
      */
     FP&
     operator=(const int32_t& x)
@@ -140,8 +139,8 @@ public:
 
     /**
      * Assignment operator from int16_t
-     * \param x Assigned value
-     * \return Value as fixpoint number
+     * @param x Assigned value
+     * @return Value as fixpoint number
      */
     FP&
     operator=(const int16_t& x)
@@ -152,8 +151,8 @@ public:
 
     /**
      * Assignment operator from float
-     * \param x Assigned value
-     * \return Value as fixpoint number
+     * @param x Assigned value
+     * @return Value as fixpoint number
      */
     FP&
     operator=(const float& x)
@@ -164,8 +163,8 @@ public:
 
     /**
      * Assignment operator from double
-     * \param x Assigned value
-     * \return Value as fixpoint number
+     * @param x Assigned value
+     * @return Value as fixpoint number
      */
     FP&
     operator=(const double& x)
@@ -176,8 +175,8 @@ public:
 
     /**
      * Assignment operator for other fixpoint numbers
-     * \param x Assigned value
-     * \return Fixpoint number
+     * @param x Assigned value
+     * @return Fixpoint number
      */
     FP&
     operator=(const FP& x)
@@ -188,8 +187,8 @@ public:
 
     /**
      * Add assignment operator for fixpoint numbers
-     * \param x Summand
-     * \return Sum of the current and a second fixpoint number
+     * @param x Summand
+     * @return Sum of the current and a second fixpoint number
      */
     FP&
     operator+=(const FP& x)
@@ -200,8 +199,8 @@ public:
 
     /**
      * Add operator for fixpoint numbers
-     * \param x Summand
-     * \return Sum of the current and a second fixpoint number
+     * @param x Summand
+     * @return Sum of the current and a second fixpoint number
      */
     FP
     operator+(const FP& x) const
@@ -212,8 +211,8 @@ public:
 
     /**
      * Add assignment operator for arbitrary types. Casts to FP first.
-     * \param x Summand
-     * \return Sum of the current and the casted input number
+     * @param x Summand
+     * @return Sum of the current and the casted input number
      */
     template <typename TT>
     FP&
@@ -225,8 +224,8 @@ public:
 
     /**
      * Add operator for arbitrary types. Casts to FP first.
-     * \param x Summand
-     * \return Sum of the current and the casted input number
+     * @param x Summand
+     * @return Sum of the current and the casted input number
      */
     template <typename TT>
     FP
@@ -238,8 +237,8 @@ public:
 
     /**
      * Subtraction assignment operator for fixpoint numbers
-     * \param x Subtrahend
-     * \return Difference of the current and a second fixpoint number
+     * @param x Subtrahend
+     * @return Difference of the current and a second fixpoint number
      */
     FP&
     operator-=(const FP& x)
@@ -250,8 +249,8 @@ public:
 
     /**
      * Subtraction operator for arbitrary types. Casts to FP first.
-     * \param x Subtrahend
-     * \return Difference of the current and the casted input number
+     * @param x Subtrahend
+     * @return Difference of the current and the casted input number
      */
     FP
     operator-(const FP& x) const
@@ -262,8 +261,8 @@ public:
 
     /**
      * Subtract assignment operator for arbitrary types. Casts to FP first.
-     * \param x Subtrahend
-     * \return Difference of the current and the casted input number
+     * @param x Subtrahend
+     * @return Difference of the current and the casted input number
      */
     template <typename TT>
     FP&
@@ -275,8 +274,8 @@ public:
 
     /**
      * Subtract operator for arbitrary types. Casts to FP first.
-     * \param x Subtrahend
-     * \return Difference of the current and the casted input number
+     * @param x Subtrahend
+     * @return Difference of the current and the casted input number
      */
     template <typename TT>
     FP
@@ -288,8 +287,8 @@ public:
 
     /**
      * Multiplication assignment operator for fixpoint numbers
-     * \param x Factor
-     * \return Product of the current and a second fixpoint number
+     * @param x Factor
+     * @return Product of the current and a second fixpoint number
      */
     FP&
     operator*=(const FP& x)
@@ -301,8 +300,8 @@ public:
 
     /**
      * Multiplication operator for fixpoint numbers
-     * \param x Factor
-     * \return Product of the current and a second fixpoint number
+     * @param x Factor
+     * @return Product of the current and a second fixpoint number
      */
     FP operator*(const FP& x) const
     {
@@ -312,8 +311,8 @@ public:
 
     /**
      * Multiplication assignment operator for arbitrarily typed numbers
-     * \param x Factor
-     * \return Product of the current and the casted input number
+     * @param x Factor
+     * @return Product of the current and the casted input number
      */
     template <typename TT>
     FP&
@@ -325,8 +324,8 @@ public:
 
     /**
      * Multiplication operator for arbitrarily typed numbers
-     * \param x Factor
-     * \return Product of the current and the casted input number
+     * @param x Factor
+     * @return Product of the current and the casted input number
      */
     template <typename TT>
     FP operator*(const TT& x) const
@@ -337,8 +336,8 @@ public:
 
     /**
      * Division assignment operator for fixpoint numbers
-     * \param x Divisor
-     * \return Quotient of the current and a second fixpoint number
+     * @param x Divisor
+     * @return Quotient of the current and a second fixpoint number
      */
     FP&
     operator/=(const FP& x)
@@ -350,8 +349,8 @@ public:
 
     /**
      * Division operator for fixpoint numbers
-     * \param x Divisor
-     * \return Quotient of the current and a second fixpoint number
+     * @param x Divisor
+     * @return Quotient of the current and a second fixpoint number
      */
     FP
     operator/(const FP& x) const
@@ -362,8 +361,8 @@ public:
 
     /**
      * Division assignment operator for arbitrarily typed numbers
-     * \param x Divisor
-     * \return Quotient of the current and the casted input number
+     * @param x Divisor
+     * @return Quotient of the current and the casted input number
      */
     template <typename TT>
     FP&
@@ -375,8 +374,8 @@ public:
 
     /**
      * Division operator for arbitrarily typed numbers
-     * \param x Divisor
-     * \return Quotient of the current and the casted input number
+     * @param x Divisor
+     * @return Quotient of the current and the casted input number
      */
     template <typename TT>
     FP
@@ -388,8 +387,8 @@ public:
 
     /**
      * Shift left assignment operator
-     * \param x Number of bits to shift
-     * \return Fixpoint shifted by x bits
+     * @param x Number of bits to shift
+     * @return Fixpoint shifted by x bits
      */
     FP&
     operator<<=(const unsigned x)
@@ -400,8 +399,8 @@ public:
 
     /**
      * Shift left operator
-     * \param x Number of bits to shift
-     * \return Fixpoint shifted by x bits
+     * @param x Number of bits to shift
+     * @return Fixpoint shifted by x bits
      */
     FP
     operator<<(const unsigned x) const
@@ -412,8 +411,8 @@ public:
 
     /**
      * Shift right assignment operator
-     * \param x Number of bits to shift
-     * \return Fixpoint shifted by x bits
+     * @param x Number of bits to shift
+     * @return Fixpoint shifted by x bits
      */
     FP&
     operator>>=(const unsigned x)
@@ -424,8 +423,8 @@ public:
 
     /**
      * Shift right operator
-     * \param x Number of bits to shift
-     * \return Fixpoint shifted by x bits
+     * @param x Number of bits to shift
+     * @return Fixpoint shifted by x bits
      */
     FP
     operator>>(const unsigned x) const
@@ -436,8 +435,8 @@ public:
 
     /**
      * Less than operator for arbitrary types. Casts to FP first.
-     * \param x Number to compare to
-     * \return True iff the current value is less than x
+     * @param x Number to compare to
+     * @return True iff the current value is less than x
      */
     template <typename TT>
     bool
@@ -448,8 +447,8 @@ public:
 
     /**
      * Less than operator for other fixpoint numbers.
-     * \param x Number to compare to
-     * \return True iff the current value is less than x
+     * @param x Number to compare to
+     * @return True iff the current value is less than x
      */
     bool
     operator<(const FP& x) const
@@ -459,8 +458,8 @@ public:
 
     /**
      * Greater than operator for arbitrary types. Casts to FP first.
-     * \param x Number to compare to
-     * \return True iff the current value is greater than x
+     * @param x Number to compare to
+     * @return True iff the current value is greater than x
      */
     template <typename TT>
     bool
@@ -471,8 +470,8 @@ public:
 
     /**
      * Greater than operator for other fixpoint numbers.
-     * \param x Number to compare to
-     * \return True iff the current value is greater than x
+     * @param x Number to compare to
+     * @return True iff the current value is greater than x
      */
     bool
     operator>(const FP& x) const
@@ -482,8 +481,8 @@ public:
 
     /**
      * Equality operator for arbitrary types. Casts to FP first.
-     * \param x Number to compare to
-     * \return True iff the current value is equal to x
+     * @param x Number to compare to
+     * @return True iff the current value is equal to x
      */
     template <typename TT>
     bool
@@ -494,8 +493,8 @@ public:
 
     /**
      * Equality operator for other fixpoint numbers.
-     * \param x Number to compare to
-     * \return True iff the current value is equal to x
+     * @param x Number to compare to
+     * @return True iff the current value is equal to x
      */
     bool
     operator==(const FP& x) const
@@ -505,8 +504,8 @@ public:
 
     /**
      * Inequality operator for arbitrary types. Casts to FP first.
-     * \param x Number to compare to
-     * \return True iff the current value is not equal to x
+     * @param x Number to compare to
+     * @return True iff the current value is not equal to x
      */
     template <typename TT>
     bool
@@ -517,8 +516,8 @@ public:
 
     /**
      * Inequality operator for other fixpoint numbers.
-     * \param x Number to compare to
-     * \return True iff the current value is not equal to x
+     * @param x Number to compare to
+     * @return True iff the current value is not equal to x
      */
     bool
     operator!=(const FP& x) const
@@ -528,8 +527,8 @@ public:
 
     /**
      * Less than or equal to operator for arbitrary types. Casts to FP first.
-     * \param x Number to compare to
-     * \return True iff the current value is less than or equal to x
+     * @param x Number to compare to
+     * @return True iff the current value is less than or equal to x
      */
     template <typename TT>
     bool
@@ -540,8 +539,8 @@ public:
 
     /**
      * Less than or equal to operator for other fixpoint numbers.
-     * \param x Number to compare to
-     * \return True iff the current value is less than or equal to x.
+     * @param x Number to compare to
+     * @return True iff the current value is less than or equal to x.
      */
     bool
     operator<=(const FP& x) const
@@ -551,8 +550,8 @@ public:
 
     /**
      * Greater than or equal to operator for arbitrary types. Casts to FP first.
-     * \param x Number to compare to
-     * \return True iff the current value is greater than or equal to x
+     * @param x Number to compare to
+     * @return True iff the current value is greater than or equal to x
      */
     template <typename TT>
     bool
@@ -563,8 +562,8 @@ public:
 
     /**
      * Greater than or equal to operator for other fixpoint numbers.
-     * \param x Number to compare to
-     * \return True iff the current value is greater than or equal to x
+     * @param x Number to compare to
+     * @return True iff the current value is greater than or equal to x
      */
     bool
     operator>=(const FP& x) const
@@ -573,13 +572,31 @@ public:
     }
 
     /**
-     * Getter the raw underlying int32_tv value.
-     * \return Raw underlying value
+     * Getter for the raw underlying int32_tv value.
+     * @return Raw underlying value
      */
     int32_t
     getValue()
     {
         return value;
+    }
+
+    /**
+     * Setter for the raw underlying int32_tv value.
+     * @param x New raw value
+     */
+    void
+    setValue(int32_t x)
+    {
+        value = x;
+    }
+
+    static FP
+    toFixpoint(int32_t x)
+    {
+        FP res;
+        res.value = x;
+        return res;
     }
 
 private:
