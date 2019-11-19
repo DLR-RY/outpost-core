@@ -372,9 +372,9 @@ TEST(FixpointTest, equalityOperators)
 
 TEST(FixpointTest, absTest)
 {
-	outpost::Fixpoint fp1(1.125);
-	outpost::Fixpoint fp2(-1.678);
+    outpost::Fixpoint fp1(1.125);
+    outpost::Fixpoint fp2(-1.678);
 
-	EXPECT_EQ(fp1.abs(), fp1);
-	EXPECT_EQ(fp2.abs(), fp2*(-1.0));
+    EXPECT_EQ(fp1.abs(), fp1);
+    EXPECT_EQ(fp2.abs(), fp2 * (-1.0));
 }

@@ -24,20 +24,25 @@ namespace outpost
 class Bitstream : outpost::SerializableObject
 {
 private:
-    static constexpr uint8_t headerSize = 3;  // used for storing the bitstream length
-    outpost::Slice<uint8_t>& mData;           // Buffer for storing the bitstream
+    outpost::Slice<uint8_t>& mData;  // Buffer for storing the bitstream
     uint16_t bytePointer;
     int8_t bitPointer;
-    bool isFull;
+    static constexpr uint8_t headerSize = sizeof(bytePointer) + sizeof(bitPointer);
 
 public:
     Bitstream(outpost::Slice<uint8_t>& byteArray) :
         mData(byteArray),
         bytePointer(headerSize),
-        bitPointer(7),
-        isFull(false)
+        bitPointer(7)
     {
-        isFull = mData.getNumberOfElements() <= bytePointer;
+    }
+
+    ~Bitstream() = default;
+
+    bool
+    isFull() const
+    {
+        return mData.getNumberOfElements() <= bytePointer;
     }
 
     /**
@@ -48,7 +53,7 @@ public:
     void
     pushBit(bool b)
     {
-        if (!isFull)
+        if (!isFull())
         {
             if (b)
             {
@@ -65,7 +70,6 @@ public:
             {
                 bitPointer = 7;
                 bytePointer++;
-                isFull = mData.getNumberOfElements() <= bytePointer;
             }
         }
     }
@@ -116,7 +120,7 @@ public:
     inline uint16_t
     getSize() const
     {
-        return bytePointer + (bitPointer < 7);
+        return bytePointer + (bitPointer < 7) - headerSize;
     }
 
     /**
@@ -127,7 +131,7 @@ public:
     virtual size_t
     getSerializedSize() const override
     {
-        return getSize();
+        return getSize() + headerSize;
     }
 
     /**
@@ -182,17 +186,23 @@ public:
     virtual bool
     deserialize(Deserialize& stream) override
     {
-        bytePointer = stream.read<uint16_t>();
-        bitPointer = stream.read<int8_t>();
-        if (stream.getPointer() != &mData[0])
+        uint16_t bytePointer_tmp = stream.read<uint16_t>();
+        uint16_t bitPointer_tmp = stream.read<int8_t>();
+        if (bytePointer_tmp < mData.getNumberOfElements())
         {
-            stream.readBuffer(&mData[headerSize], bytePointer-headerSize);
+            bytePointer = bytePointer_tmp;
+            bitPointer = bitPointer_tmp;
+            if (stream.getPointer() != &mData[0])
+            {
+                stream.readBuffer(&mData[headerSize], bytePointer - headerSize);
+            }
+            else
+            {
+                stream.skip(bytePointer - headerSize);
+            }
+            return true;
         }
-        else
-        {
-            stream.skip(bytePointer);
-        }
-        return true;
+        return false;
     }
 };
 

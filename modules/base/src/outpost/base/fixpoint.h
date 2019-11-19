@@ -295,7 +295,8 @@ public:
     FP&
     operator*=(const FP& x)
     {
-        value = static_cast<int32_t>((static_cast<int64_t>(value) * static_cast<int64_t>(x.value)) >> PREC);
+        value = static_cast<int32_t>((static_cast<int64_t>(value) * static_cast<int64_t>(x.value))
+                                     >> PREC);
         return *this;
     }
 
@@ -610,9 +611,12 @@ private:
 
 typedef FP<16> Fixpoint;
 
-template<unsigned PREC> const FP<PREC> FP<PREC>::MAX = FP<PREC>::toFixpoint(0xEFFFFFFF);
-template<unsigned PREC> const FP<PREC> FP<PREC>::EPSILON = FP<PREC>::toFixpoint(0x00000001);
-template<unsigned PREC> const FP<PREC> FP<PREC>::MIN = FP<PREC>::toFixpoint(0x00000001);
+template <unsigned PREC>
+const FP<PREC> FP<PREC>::MAX = FP<PREC>::toFixpoint(0xEFFFFFFF);
+template <unsigned PREC>
+const FP<PREC> FP<PREC>::EPSILON = FP<PREC>::toFixpoint(0x00000001);
+template <unsigned PREC>
+const FP<PREC> FP<PREC>::MIN = FP<PREC>::toFixpoint(0x00000001);
 
 }  // namespace outpost
 
