@@ -23,8 +23,10 @@ enum class TestEnum : uint8_t
     value4 = 4
 };
 
+namespace outpost
+{
 template <>
-struct outpost::EnumRangeTrait<TestEnum>
+struct EnumRangeTrait<TestEnum>
 {
     static constexpr TestEnum
     min()
@@ -44,6 +46,7 @@ struct outpost::EnumRangeTrait<TestEnum>
         return outpost::isValidEnum(t);
     }
 };
+}  // namespace outpost
 
 TEST(EnumRangeTest, testMin)
 {
