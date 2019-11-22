@@ -17,17 +17,100 @@
 #define OUTPOST_HAL_SPACEWIRE_H
 
 #include <outpost/base/slice.h>
-#include <outpost/smpc/topic.h>
+#include <outpost/rtos.h>
+#include <outpost/rtos/queue.h>
 #include <outpost/time/duration.h>
 
 #include <stdint.h>
 
+#include <array>
 #include <cstddef>
 
 namespace outpost
 {
 namespace hal
 {
+struct TimeCode
+{
+    // data contained in the corresponding lower bits.
+    uint8_t mValue;    // 6-bits
+    uint8_t mControl;  // 2-bits
+};
+
+/**
+ * An explicit Timecode/SpWInterrupt Dispatcher class such we don't get template parameters into
+ * SpaceWire
+ */
+class TimeCodeDispatcherInterface
+{
+public:
+    TimeCodeDispatcherInterface() = default;
+    virtual ~TimeCodeDispatcherInterface() = default;
+
+    /**
+     * Dispatches a timecode to the Listener
+     * This function shall be save to call within an ISR.
+     *
+     * @param tc the timecode(SpW Interrupt to dispatch
+     */
+    virtual void
+    dispatchTimeCode(const TimeCode& tc) = 0;
+
+    /**
+     * Add a listener for timecode
+     * @param queue the queue to add
+     * @return false if queue == nullptr or all places for Listener are filled
+     */
+    virtual bool
+    addListener(outpost::rtos::Queue<TimeCode>* queue) = 0;
+};
+
+template <uint32_t numberOfQueues>  // how many queues can be included
+class TimeCodeDispatcher : public TimeCodeDispatcherInterface
+{
+public:
+    TimeCodeDispatcher() : mNumberOfListeners(0)
+    {
+        mListener.fill(nullptr);
+    };
+    virtual ~TimeCodeDispatcher() = default;
+
+    virtual void
+    dispatchTimeCode(const TimeCode& tc)
+    {
+        // For one we are in a ISR and also nNumberOfListener only increments to
+        // we don't need any mutex as worst case a just added listener don't get a notify.
+        for (uint32_t i = 0; i < mNumberOfListeners; i++)
+        {
+            mListener[i]->send(tc);
+        }
+    }
+
+    virtual bool
+    addListener(outpost::rtos::Queue<TimeCode>* queue)
+    {
+        if (queue == nullptr)
+        {
+            return false;
+        }
+
+        outpost::rtos::MutexGuard lock(mMutex);
+        if (mNumberOfListeners >= numberOfQueues)
+        {
+            return false;
+        }
+
+        mListener[mNumberOfListeners] = queue;
+        mNumberOfListeners++;
+        return true;
+    }
+
+private:
+    std::array<outpost::rtos::Queue<TimeCode>*, numberOfQueues> mListener;
+    uint32_t mNumberOfListeners;
+    outpost::rtos::Mutex mMutex;
+};
+
 /**
  * SpaceWire Interface
  *
@@ -52,14 +135,6 @@ public:
             failure,
             timeout
         };
-    };
-
-    struct TimeCode
-    {
-        TimeCode(uint8_t value = 0, uint8_t control = 0) : mValue(value), mControl(control){};
-        // data contained in the corresponding lower bits.
-        uint8_t mValue;    // 6-bits
-        uint8_t mControl;  // 2-bits
     };
 
     /**
@@ -200,7 +275,7 @@ public:
         outpost::Slice<const uint8_t> mData;
         EndMarker mEnd;
     };
-
+    SpaceWire(TimeCodeDispatcherInterface& tcd) : mTCD(tcd){};
     virtual ~SpaceWire();
 
     /**
@@ -288,17 +363,18 @@ public:
     flushReceiveBuffer() = 0;
 
     /**
-     * To allow you to subscribe to the time code (SpW Interrupt)
-     * Not virtual as vtable may only be initialized with the constructor
+     * Add a listener for timecode
+     * @param queue the queue to add
+     * @return false if queue == nullptr or all places for Listener are filled
      */
-    outpost::smpc::Topic<TimeCode>&
-    getTimeCodeTopic()
+    bool
+    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue)
     {
-        return mTopic;
+        return mTCD.addListener(queue);
     }
 
 protected:
-    outpost::smpc::Topic<TimeCode> mTopic;
+    TimeCodeDispatcherInterface& mTCD;
 };
 
 }  // namespace hal

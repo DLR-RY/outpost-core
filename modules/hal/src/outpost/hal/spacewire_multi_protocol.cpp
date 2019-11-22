@@ -11,9 +11,9 @@
  * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
-#include "spacewire_dispatcher.h"
+#include "spacewire_multi_protocol.h"
 
-#include <outpost/rtos/clock.h>
+#include <outpost/utils/minmax.h>
 
 namespace outpost
 {
@@ -21,11 +21,10 @@ namespace hal
 {
 template <uint32_t numberOfQueues, uint32_t maxPacketSize>
 bool
-SpacewireDispatcher<numberOfQueues, maxPacketSize>::send(
+SpacewireMultiProtocol<numberOfQueues, maxPacketSize>::send(
         const outpost::Slice<const uint8_t>& buffer, outpost::time::Duration timeout)
 {
-    outpost::rtos::SystemClock clock;
-    outpost::time::SpacecraftElapsedTime start = clock.now();
+    outpost::time::SpacecraftElapsedTime start = mClock.now();
     SpaceWire::TransmitBuffer* transmitBuffer;
     auto result = mReceiver.mSpw.requestBuffer(transmitBuffer, timeout);
     if (result != SpaceWire::Result::Type::success)
@@ -44,7 +43,7 @@ SpacewireDispatcher<numberOfQueues, maxPacketSize>::send(
         transmitBuffer->setLength(buffer.getNumberOfElements());
     }
 
-    outpost::time::SpacecraftElapsedTime now = clock.now();
+    outpost::time::SpacecraftElapsedTime now = mClock.now();
     if (now > start + timeout)
     {
         return false;
@@ -60,7 +59,7 @@ SpacewireDispatcher<numberOfQueues, maxPacketSize>::send(
 
 template <uint32_t numberOfQueues, uint32_t maxPacketSize>
 uint32_t
-SpacewireDispatcher<numberOfQueues, maxPacketSize>::SpaceWireReceiver::receive(
+SpacewireMultiProtocol<numberOfQueues, maxPacketSize>::SpaceWireReceiver::receive(
         outpost::Slice<uint8_t>& buffer, outpost::time::Duration timeout)
 {
     SpaceWire::ReceiveBuffer receiveBuffer;
@@ -72,14 +71,8 @@ SpacewireDispatcher<numberOfQueues, maxPacketSize>::SpaceWireReceiver::receive(
 
     uint32_t receivedSize = receiveBuffer.getLength();
 
-    if (receivedSize > buffer.getNumberOfElements())
-    {
-        memcpy(&buffer[0], &receiveBuffer.getData()[0], buffer.getNumberOfElements());
-    }
-    else
-    {
-        memcpy(&buffer[0], &receiveBuffer.getData()[0], receivedSize);
-    }
+    uint32_t copySize = outpost::utils::min<uint32_t>(receivedSize, buffer.getNumberOfElements());
+    memcpy(&buffer[0], &receiveBuffer.getData()[0], copySize);
 
     mSpw.releaseBuffer(receiveBuffer);
     return receivedSize;

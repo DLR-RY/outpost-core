@@ -158,6 +158,8 @@ private:
     bool mOpen;
     bool mUp;
 
+    outpost::hal::TimeCodeDispatcher<1> mTCD;
+
     /**
      * Mapping between the transmit buffer given to the user and its storage
      * location.

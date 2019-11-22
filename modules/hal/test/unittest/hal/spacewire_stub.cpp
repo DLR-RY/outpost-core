@@ -17,6 +17,7 @@
 using unittest::hal::SpaceWireStub;
 
 SpaceWireStub::SpaceWireStub(size_t maximumLength) :
+    SpaceWire(mTCD),
     mMaximumLength(maximumLength),
     mOpen(false),
     mUp(false)
@@ -142,6 +143,6 @@ SpaceWireStub::flushReceiveBuffer()
 void
 SpaceWireStub::triggerSpWInterrupt(void)
 {
-    outpost::hal::SpaceWire::TimeCode tc;
-    mTopic.publish(tc);
+    outpost::hal::TimeCode tc;
+    mTCD.dispatchTimeCode(tc);
 }
