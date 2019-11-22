@@ -16,6 +16,7 @@
 
 #include "protocol_dispatcher.h"
 #include "spacewire.h"
+#include <array>
 
 namespace outpost
 {
@@ -24,7 +25,7 @@ namespace hal
 template <uint32_t numberOfQueues,  // how many queues can be included
           uint32_t maxPacketSize    // max number of bytes a received package can contain
           >
-class SpacewireDispatcher : public ProtocolDispatcher<uint8_t, 1, numberOfQueues, maxPacketSize>
+class SpacewireDispatcher : public ProtocolDispatcher<uint8_t, numberOfQueues>
 {
 public:
     SpacewireDispatcher(SpaceWire& spw,
@@ -32,8 +33,8 @@ public:
                         size_t stackSize,
                         char* threadName,
                         outpost::support::parameter::HeartbeatSource heartbeatSource) :
-        outpost::hal::ProtocolDispatcher<uint8_t, 1, numberOfQueues, maxPacketSize>(
-                mReceiver, priority, stackSize, threadName, heartbeatSource),
+        outpost::hal::ProtocolDispatcher<uint8_t,numberOfQueues>(
+                mReceiver, outpost::asSlice(mBuffer), 1, priority, stackSize, threadName, heartbeatSource),
         mReceiver(spw){
 
         };
@@ -81,6 +82,8 @@ private:
     };
     // use the receiver also to store the spw object for send.
     SpaceWireReceiver mReceiver;
+
+    std::array<uint8_t,maxPacketSize> mBuffer;
 };
 
 }  // namespace hal

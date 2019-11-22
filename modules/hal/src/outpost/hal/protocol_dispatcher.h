@@ -52,9 +52,7 @@ public:
 
 template <typename protocolType,    // pod and must support operator=, operator==, and default
                                     // constructor
-          uint32_t offset,          // number in bytes before protocol type
-          uint32_t numberOfQueues,  // how many queues can be included
-          uint32_t maxPacketSize    // max number of bytes a received package can contain
+          uint32_t numberOfQueues  // how many queues can be included
           >
 class ProtocolDispatcher : public outpost::rtos::Thread
 {
@@ -64,7 +62,18 @@ class ProtocolDispatcher : public outpost::rtos::Thread
     friend class ProtocolDispatcherTest;  // that test can call handle package
 
 public:
+    /**
+     * @param receiver        the object used to receive packages
+     * @param buffer	      buffer for the received packages, should be equal or larger than the largest package that can be received, or data will be dropped, memory shall not used by any other
+     * @param offset	      number of bytes before the protocol identifier
+     * @param priority        see outpost::rtos::Thread
+     * @param stackSize       see outpost::rtos::Thread
+     * @param threadName      see outpost::rtos::Thread
+     * @param heartbeatSource heartbeat id for the worker thread
+     */
     ProtocolDispatcher(Receiver& receiver,
+    				   outpost::Slice<uint8_t> buffer,
+					   uint32_t offSet,
                        uint8_t priority,
                        size_t stackSize,
                        char* threadName,
@@ -76,6 +85,8 @@ public:
         mNumberOfUnmatchedPackages(0),
         mNumberOfPartialPackages(0),
         mNumberOfOverflowedBytes(0),
+		mBuffer(buffer),
+		mOffset(offSet),
         mHeartbeatSource(heartbeatSource)
     {
     }
@@ -327,13 +338,14 @@ private:
     handlePackage()
     {
         uint32_t readBytes = 0;
-        readBytes = mReceiver.receive(outpost::asSlice(mBuffer), waitTime);
+        outpost::Slice<uint8_t> tmp = mBuffer; // for safety such the the length cannot be changed
+        readBytes = mReceiver.receive(tmp, waitTime);
         if (readBytes > 0)  // 0 -> timeout
         {
             outpost::rtos::MutexGuard lock(mMutex);
-            if (readBytes > maxPacketSize)
+            if (readBytes > mBuffer.getNumberOfElements())
             {
-                uint32_t cut = readBytes - maxPacketSize;
+                uint32_t cut = readBytes - mBuffer.getNumberOfElements();
                 mNumberOfPartialPackages++;
                 mNumberOfOverflowedBytes += cut;
             }
@@ -341,7 +353,7 @@ private:
             protocolType id;
             // we are conservative so we assume protocolType need an alignment but is not given
             // aligned in buffer
-            memcpy(&id, &mBuffer[offset], sizeof(protocolType));
+            memcpy(&id, &mBuffer[mOffset], sizeof(protocolType));
 
             bool found = false;
             bool dropped = true;
@@ -387,9 +399,9 @@ private:
             // minimum of readBytes, buffer length and maxPacketSize
             uint32_t effectiveSize =
                     (readBytes < sharedBuffer.getLength()) ? readBytes : sharedBuffer.getLength();
-            effectiveSize = effectiveSize < maxPacketSize ? effectiveSize : maxPacketSize;
+            effectiveSize = effectiveSize < mBuffer.getNumberOfElements() ? effectiveSize : mBuffer.getNumberOfElements();
 
-            memcpy(sharedBuffer->getPointer(), mBuffer, effectiveSize);
+            memcpy(&sharedBuffer->getPointer()[0], &mBuffer[0], effectiveSize);
             outpost::utils::SharedChildPointer child;
             sharedBuffer.getChild(child, 0, 0, effectiveSize);
             if (!listener.mDropPartial || effectiveSize >= readBytes)
@@ -429,7 +441,8 @@ private:
     uint32_t mNumberOfOverflowedBytes;
     outpost::rtos::Mutex mMutex;
 
-    uint8_t mBuffer[maxPacketSize];
+    outpost::Slice<uint8_t> mBuffer;
+    const uint32_t mOffset;
 
     const outpost::support::parameter::HeartbeatSource mHeartbeatSource;
 };
