@@ -111,12 +111,27 @@ private:
     outpost::rtos::Mutex mMutex;
 };
 
+class TimeCodeProvider
+{
+public:
+    TimeCodeProvider() = default;
+    virtual ~TimeCodeProvider() = default;
+
+    /**
+     * Add a listener for timecode
+     * @param queue the queue to add
+     * @return false if queue == nullptr or all places for Listener are filled
+     */
+    virtual bool
+    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue) = 0;
+};
+
 /**
  * SpaceWire Interface
  *
  * \author    Fabian Greif
  */
-class SpaceWire
+class SpaceWire : public TimeCodeProvider
 {
 public:
     enum EndMarker
@@ -275,7 +290,6 @@ public:
         outpost::Slice<const uint8_t> mData;
         EndMarker mEnd;
     };
-    SpaceWire(TimeCodeDispatcherInterface& tcd) : mTCD(tcd){};
     virtual ~SpaceWire();
 
     /**
@@ -367,14 +381,8 @@ public:
      * @param queue the queue to add
      * @return false if queue == nullptr or all places for Listener are filled
      */
-    bool
-    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue)
-    {
-        return mTCD.addListener(queue);
-    }
-
-protected:
-    TimeCodeDispatcherInterface& mTCD;
+    virtual bool
+    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue) = 0;
 };
 
 }  // namespace hal

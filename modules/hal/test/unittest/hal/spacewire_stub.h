@@ -111,6 +111,12 @@ public:
         return mReceiveBuffers.empty();
     }
 
+    bool
+    addTimeCodeListener(outpost::rtos::Queue<outpost::hal::TimeCode>* queue)
+    {
+        return mTCD.addListener(queue);
+    }
+
     /**
      * Filled with all packets sent through SpaceWire interface.
      */

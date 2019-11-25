@@ -25,7 +25,8 @@ namespace outpost
 {
 namespace hal
 {
-class SpaceWireMultiProtocolInterface : public virtual ProtocolDispatcherInterface<uint8_t>
+class SpaceWireMultiProtocolInterface : public virtual ProtocolDispatcherInterface<uint8_t>,
+                                        public TimeCodeProvider
 {
 public:
     SpaceWireMultiProtocolInterface() = default;
@@ -44,14 +45,6 @@ public:
     virtual bool
     send(const outpost::Slice<const uint8_t>& buffer,
          outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
-
-    /**
-     * Add a listener for timecode
-     * @param queue the queue to add
-     * @return false if queue == nullptr or all places for Listener are filled
-     */
-    virtual bool
-    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue) = 0;
 };
 
 template <uint32_t numberOfQueues,       // how many queues can be included

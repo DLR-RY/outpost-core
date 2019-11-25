@@ -17,7 +17,6 @@
 using unittest::hal::SpaceWireStub;
 
 SpaceWireStub::SpaceWireStub(size_t maximumLength) :
-    SpaceWire(mTCD),
     mMaximumLength(maximumLength),
     mOpen(false),
     mUp(false)
