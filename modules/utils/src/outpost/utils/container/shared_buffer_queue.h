@@ -120,7 +120,7 @@ public:
      *otherwise.
      */
     bool
-    isEmpty()
+    isEmpty() override
     {
         outpost::rtos::MutexGuard lock(mMutex);
         for (size_t i = 0; i < N; i++)
@@ -138,7 +138,7 @@ public:
      * \return Returns true if data can be sent to the queue, false otherwise.
      */
     bool
-    isFull()
+    isFull() override
     {
         outpost::rtos::MutexGuard lock(mMutex);
         /*for (size_t i = 0; i < N; i++)
