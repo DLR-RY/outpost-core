@@ -48,18 +48,14 @@ envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), expor
 envGlobal['CXXFLAGS_language'] = ['-std=c++0x']
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports='envGlobal')
 
-
 env = envGlobal.Clone()
-
-env.Append(CPPPATH=[
-    os.path.join(rootpath, 'modules/support/default'),
-])
 
 env.AppendUnique(LIBS=[
     'outpost_smpc',   
     'outpost_time',
     'outpost_rtos',
     'outpost_utils',
+    'outpost_support',
 ])
 
 files  = env.Glob('*.cpp')
