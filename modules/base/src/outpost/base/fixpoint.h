@@ -83,10 +83,12 @@ public:
     explicit operator int32_t()
     {
         uint8_t round = 0;
-        if (((1 << (PREC - 1) & abs().getValue()) && value > 0)
-            || (!(1 << (PREC - 1) & abs().getValue()) && value < 0))
+        if (value > 0 && ((1 << (PREC - 1)) & value))
         {
             round = 1;
+        } else if (value < 0 && ((1 << (PREC - 1)) & value) && (((1 << (PREC - 1))-1) & value))
+        {
+        	round = 1;
         }
         return static_cast<int32_t>(value >> PREC) + round;
     }
@@ -99,10 +101,12 @@ public:
     explicit operator int16_t() const
     {
         uint8_t round = 0;
-        if ((((1 << (PREC - 1)) & abs().getValue()) && value > 0)
-            || (!(1 << (PREC - 1) & abs().getValue()) && value < 0))
+        if (value > 0 && ((1 << (PREC - 1)) & value))
         {
             round = 1;
+        } else if (value < 0 && ((1 << (PREC - 1)) & value) && (((1 << (PREC - 1))-1) & value))
+        {
+        	round = 1;
         }
         return static_cast<int16_t>(value >> PREC) + round;
     }

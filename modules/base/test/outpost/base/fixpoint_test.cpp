@@ -115,6 +115,17 @@ TEST(FixpointTest, castingOperators)
     EXPECT_EQ(static_cast<int16_t>(fp4), -4);
     EXPECT_EQ(static_cast<float>(fp4), -3.5f);
     EXPECT_EQ(static_cast<double>(fp4), -3.5);
+
+    d = -38.0;
+    outpost::Fixpoint fp5(d);
+    EXPECT_EQ(static_cast<double>(fp5), -38.0);
+    EXPECT_EQ(static_cast<int16_t>(fp5), -38);
+
+    d = -6.75;
+    outpost::Fixpoint fp6(d);
+    EXPECT_EQ(static_cast<double>(fp6), -6.75);
+    EXPECT_EQ(static_cast<int16_t>(fp6), -7);
+
 }
 
 TEST(FixpointTest, assignmentOperators)

@@ -303,4 +303,35 @@ TEST_F(TransformTest, InPlaceConstantTest)
     EXPECT_LT(mse, 7.0f);
 }
 
+TEST_F(TransformTest, ReorderTest)
+{
+	for(uint16_t i = 0; i < 64; i++)
+	{
+		inputBuffer[i] = i;
+
+	}
+
+	outpost::compression::LeGall53Wavelet::forwardTransform(inputBuffer, intermediateBuffer, 64);
+
+	for(uint16_t i = 0; i < 64; i++)
+	{
+		inputBuffer[i] = i;
+
+	}
+	outpost::compression::LeGall53Wavelet::forwardTransformInPlace(inputBuffer, 64);
+
+	for(uint16_t i = 0; i < 64; i++)
+	{
+		outputBuffer[i] = inputBuffer[i];
+	}
+
+	outpost::compression::LeGall53Wavelet::reorder(outputBuffer, 64);
+	int16_t* p = reinterpret_cast<int16_t*>(outputBuffer);
+
+	for(uint16_t i = 0; i < 64; i++)
+	{
+		EXPECT_EQ(static_cast<int16_t>(intermediateBuffer[i]), p[i]);
+	}
+}
+
 }  // namespace transform_test
