@@ -16,12 +16,15 @@
 
 #include "protocol_dispatcher.h"
 
+#include <outpost/utils/minmax.h>
+
 #include <string.h>  // for memcpy
 
 namespace outpost
 {
 namespace hal
 {
+
 template <typename protocolType, uint32_t numberOfQueues>
 bool
 ProtocolDispatcher<protocolType, numberOfQueues>::setDefaultQueue(
@@ -251,12 +254,8 @@ ProtocolDispatcher<protocolType, numberOfQueues>::insertIntoQueue(
     outpost::utils::SharedBufferPointer sharedBuffer;
     if (listener.mPool->allocate(sharedBuffer))
     {
-        // minimum of readBytes, buffer length and maxPacketSize
-        uint32_t effectiveSize = (readBytes < sharedBuffer.getLength()) ? readBytes
-                                                                        : sharedBuffer.getLength();
-        effectiveSize = effectiveSize < mBuffer.getNumberOfElements()
-                                ? effectiveSize
-                                : mBuffer.getNumberOfElements();
+        uint32_t effectiveSize = outpost::utils::min<uint32_t>(
+                readBytes, sharedBuffer.getLength(), mBuffer.getNumberOfElements());
 
         memcpy(&sharedBuffer->getPointer()[0], &mBuffer[0], effectiveSize);
         outpost::utils::SharedChildPointer child;

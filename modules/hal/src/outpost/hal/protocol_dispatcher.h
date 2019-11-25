@@ -28,6 +28,8 @@
 
 #include <array>
 
+class ProtocolDispatcherTest;
+
 namespace outpost
 {
 namespace hal
@@ -39,11 +41,7 @@ template <typename protocolType,   // pod and must support operator=, operator==
 class ProtocolDispatcher : public outpost::rtos::Thread,
                            public virtual ProtocolDispatcherInterface<protocolType>
 {
-    static constexpr outpost::time::Duration waitTime = outpost::time::Seconds(10);
-    static constexpr outpost::time::Duration tolerance = outpost::time::Seconds(1);
-
-    friend class ProtocolDispatcherTest;  // that test can call handle package
-
+    friend class ::ProtocolDispatcherTest;  // that test can call handle package
 public:
     /**
      * @param receiver        the object used to receive packages
@@ -190,7 +188,7 @@ public:
 
 protected:
     void
-    run();
+    run() override;
 
 private:
     struct Listener
