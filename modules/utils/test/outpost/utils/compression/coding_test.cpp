@@ -10,7 +10,7 @@
 #include <outpost/base/fixpoint.h>
 #include <outpost/base/slice.h>
 #include <outpost/utils/compression/legall_wavelet.h>
-#include <outpost/utils/compression/nls_transformer.h>
+#include <outpost/utils/compression/nls_encoder.h>
 #include <outpost/utils/storage/bitstream.h>
 
 #include <gmock/gmock.h>
@@ -53,7 +53,7 @@ public:
     {
     }
 
-    outpost::compression::NLSTransformer transformer;
+    outpost::compression::NLSEncoder encoder;
 };
 
 TEST_F(CodingTest, ConstantTest)
@@ -68,7 +68,7 @@ TEST_F(CodingTest, ConstantTest)
 
     outpost::Bitstream bitstream(bitStreamData);
 
-    transformer.forward(inputBuffer, bufferLength, bitstream);
+    encoder.encode(inputBuffer, bufferLength, bitstream);
     outpost::Serialize s_stream(bitStreamData);
     bitstream.serialize(s_stream);
 
@@ -80,7 +80,7 @@ TEST_F(CodingTest, ConstantTest)
     bitstream_out.deserialize(stream);
 
     size_t outBufferLength;
-    transformer.backward(bitstream_out, outputBuffer, outBufferLength);
+    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
 
     ASSERT_EQ(outBufferLength, bufferLength);
     for (size_t i = 0; i < outBufferLength; i++)
@@ -101,7 +101,7 @@ TEST_F(CodingTest, ConstantTestWithCompression)
 
     outpost::Bitstream bitstream_in(bitStreamData);
 
-    transformer.forward(inputBuffer, bufferLength, bitstream_in);
+    encoder.encode(inputBuffer, bufferLength, bitstream_in);
     outpost::Serialize s_stream(bitStreamData);
     bitstream_in.serialize(s_stream);
 
@@ -113,7 +113,7 @@ TEST_F(CodingTest, ConstantTestWithCompression)
     bitstream_out.deserialize(stream);
 
     size_t outBufferLength;
-    transformer.backward(bitstream_out, outputBuffer, outBufferLength);
+    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
 
     ASSERT_EQ(outBufferLength, bufferLength);
     for (size_t i = 0; i < outBufferLength; i++)
@@ -133,7 +133,7 @@ TEST_F(CodingTest, LinearTest)
 
     outpost::Bitstream bitstream(bitStreamData);
 
-    transformer.forward(inputBuffer, bufferLength, bitstream);
+    encoder.encode(inputBuffer, bufferLength, bitstream);
 
     EXPECT_LE(bitstream.getSize(), 2 * bufferLength);
     memset(&bitStreamBuffer[bitstream.getSerializedSize()],
@@ -145,7 +145,7 @@ TEST_F(CodingTest, LinearTest)
     bitstream_out.deserialize(stream);
 
     size_t outBufferLength;
-    transformer.backward(bitstream_out, outputBuffer, outBufferLength);
+    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
 
     ASSERT_EQ(outBufferLength, bufferLength);
     for (size_t i = 0; i < outBufferLength; i++)
@@ -177,7 +177,7 @@ TEST_F(CodingTest, LinearTestWithCompression)
 
     outpost::Bitstream bitstream_in(bitStreamData);
 
-    transformer.forward(inputBuffer, bufferLength, bitstream_in);
+    encoder.encode(inputBuffer, bufferLength, bitstream_in);
 
     EXPECT_EQ(bitstream_in.getSerializedSize(), 107U);
     outpost::Serialize s_stream(bitStreamData);
@@ -193,7 +193,7 @@ TEST_F(CodingTest, LinearTestWithCompression)
     bitstream_out.deserialize(stream);
 
     size_t outBufferLength;
-    transformer.backward(bitstream_out, outputBuffer, outBufferLength);
+    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
 
     ASSERT_EQ(outBufferLength, bufferLength);
     double mse = 0.0f;
@@ -223,7 +223,7 @@ TEST_F(CodingTest, WaveletTest)
 
     outpost::Bitstream bitstream(bitStreamData);
 
-    transformer.forward(inBuffer, bufferLength, bitstream);
+    encoder.encode(inBuffer, bufferLength, bitstream);
 
     EXPECT_LE(bitstream.getSize(), 2 * bufferLength);
     memset(&bitStreamBuffer[bitstream.getSerializedSize()],
@@ -235,7 +235,7 @@ TEST_F(CodingTest, WaveletTest)
     bitstream_out.deserialize(stream);
 
     size_t outBufferLength;
-    transformer.backward(bitstream_out, outputBuffer, outBufferLength);
+    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
 
     ASSERT_EQ(outBufferLength, bufferLength);
     for (uint32_t i = 0; i < outBufferLength; i++)
@@ -278,7 +278,7 @@ TEST_F(CodingTest, WaveletTestWithCompression)
 
     outpost::Bitstream bitstream(bitStreamData);
 
-    transformer.forward(inBuffer, bufferLength, bitstream);
+    encoder.encode(inBuffer, bufferLength, bitstream);
     EXPECT_EQ(bitstream.getSize(), 20U);
     outpost::Serialize s_stream(bitStreamData);
     bitstream.serialize(s_stream, 19U);
@@ -291,7 +291,7 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     bitstream_out.deserialize(d_stream);
 
     size_t outBufferLength;
-    transformer.backward(bitstream_out, outputBuffer, outBufferLength);
+    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
 
     ASSERT_EQ(outBufferLength, bufferLength);
     for (uint32_t i = 0; i < outBufferLength; i++)

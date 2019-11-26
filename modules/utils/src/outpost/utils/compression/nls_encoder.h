@@ -11,8 +11,8 @@
  * - 2015-2019, Jan-Gerd Mess (DLR RY-AVS)
  */
 
-#ifndef OUTPOST_UTILS_COMPRESSION_NLS_TRANSFORM_H_
-#define OUTPOST_UTILS_COMPRESSION_NLS_TRANSFORM_H_
+#ifndef OUTPOST_UTILS_COMPRESSION_NLS_ENCODER_H_
+#define OUTPOST_UTILS_COMPRESSION_NLS_ENCODER_H_
 
 #include <outpost/base/slice.h>
 #include <outpost/utils/storage/bitstream.h>
@@ -30,7 +30,7 @@ namespace compression
  * For the complete compression scheme, see:
  * https://elib.dlr.de/112826/
  */
-class NLSTransformer
+class NLSEncoder
 {
 private:
     static constexpr uint16_t MAX_LENGTH = 4096U;
@@ -60,35 +60,84 @@ public:
         MN14
     };
 
-    NLSTransformer() = default;
+    NLSEncoder() = default;
 
-    ~NLSTransformer() = default;
+    ~NLSEncoder() = default;
 
+    /**
+     * Forward No List SPIHT transform
+     * WARNING: For handling bits correcty, the input buffer values will, after encoding the sign
+     * bits, be converted to their absolute values.
+     * @param inBuffer
+     *     Input buffer to be encoded
+     * @param inBufferLength
+     *     Number of elements in the inBuffer
+     * @param outBuffer
+     *     Bitstream to write the encoding to
+     */
     void
-    forward(int16_t* inBuffer, size_t inBufferLength, outpost::Bitstream& outBuffer);
+    encode(int16_t* inBuffer, size_t inBufferLength, outpost::Bitstream& outBuffer);
 
+    /**
+     * Forward No List SPIHT transform
+     * WARNING: For handling bits correcty, the input buffer values will, after encoding the sign
+     * bits, be converted to their absolute values.
+     * @param inBuffer
+     *     Input buffer to be encoded
+     * @param inBufferLength
+     *     Number of elements in the inBuffer
+     * @param outBuffer
+     *     Bitstream to write the encoding to
+     * @param dcComponents
+     *     Number of components that are not encoded but rather prepend the stream
+     * @param maxBytes
+     *     Maximum number of bytes to write to outBuffer
+     */
     void
-    forward(int16_t* inBuffer,
-            size_t inBufferLength,
-            outpost::Bitstream& outBuffer,
-            uint8_t dcComponents,
-            size_t maxBytes);
+    encode(int16_t* inBuffer,
+           size_t inBufferLength,
+           outpost::Bitstream& outBuffer,
+           uint8_t dcComponents,
+           size_t maxBytes);
 
+    /**
+     * Backward transform from a No List SPIHT encoded bitstream to int16_t
+     * @param inBuffer
+     *     NLS encoded bitstream
+     * @param outBuffer
+     *     Result buffer
+     * @param outBufferLength
+     *     Length of the resulting buffer
+     */
     void
-    backward(outpost::Bitstream& inBuffer, int16_t* outBuffer, size_t& outBufferLength);
+    decode(outpost::Bitstream& inBuffer, int16_t* outBuffer, size_t& outBufferLength);
 
     Marker mark[MAX_LENGTH];
     int16_t dmax[MAX_LENGTH / 2];
     int16_t gmax[MAX_LENGTH / 4];
 
 private:
+    /**
+     * Push MN markings down the marker tree
+     * @param pI
+     *     Starting index
+     * @param pBufferLength
+     *     Length of the mark buffer
+     */
     void
-    push(uint16_t p_I, size_t p_BufferLength);
+    push(uint16_t pI, size_t pBufferLength);
 
+    /**
+     * Number of coefficients to skip during is and ref passes depending on the current marker
+     * @param pM
+     *     Current marker
+     * @return
+     *     Number of coefficients to skip
+     */
     inline static uint16_t
-    skip(Marker p_M)
+    skip(Marker pM)
     {
-        switch (p_M)
+        switch (pM)
         {
             case MIP:
             case MNP:
@@ -114,10 +163,17 @@ private:
         }
     }
 
+    /**
+     * Number of coefficients to skip during the is pass depending on the current marker
+     * @param pM
+     *     Current marker
+     * @return
+     *     Number of coefficients to skip
+     */
     inline static uint16_t
-    isSkip(Marker p_M)
+    isSkip(Marker pM)
     {
-        switch (p_M)
+        switch (pM)
         {
             case MCP:
             case NM: return 1;
@@ -147,4 +203,4 @@ private:
 }  // namespace compression
 }  // namespace outpost
 
-#endif /* OUTPOST_UTILS_COMPRESSION_NLS_TRANSFORM_H_ */
+#endif /* OUTPOST_UTILS_COMPRESSION_NLS_ENCODER_H_ */

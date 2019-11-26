@@ -11,7 +11,7 @@
  * - 2015-2019, Jan-Gerd Mess (DLR RY-AVS)
  */
 
-#include "nls_transformer.h"
+#include "nls_encoder.h"
 
 #include <outpost/utils/log2.h>
 
@@ -23,17 +23,17 @@ namespace outpost
 namespace compression
 {
 void
-NLSTransformer::forward(int16_t* inBuffer, size_t inBufferLength, Bitstream& outBuffer)
+NLSEncoder::encode(int16_t* inBuffer, size_t inBufferLength, Bitstream& outBuffer)
 {
-    forward(inBuffer, inBufferLength, outBuffer, 2, 0);
+    encode(inBuffer, inBufferLength, outBuffer, 2, 0);
 }
 
 void
-NLSTransformer::forward(int16_t* inBuffer,
-                        size_t inBufferLength,
-                        Bitstream& outBuffer,
-                        uint8_t dcComponents,
-                        size_t maxBytes)
+NLSEncoder::encode(int16_t* inBuffer,
+                   size_t inBufferLength,
+                   Bitstream& outBuffer,
+                   uint8_t dcComponents,
+                   size_t maxBytes)
 {
     if (maxBytes == 0)
     {
@@ -242,19 +242,19 @@ NLSTransformer::forward(int16_t* inBuffer,
 }
 
 void
-NLSTransformer::push(uint16_t p_I, size_t p_BufferLength)
+NLSEncoder::push(uint16_t pI, size_t pBufferLength)
 {
-    p_I = p_I << 1;
+    pI = pI << 1;
     uint8_t offset = 0;
-    while (p_I < p_BufferLength)
+    while (pI < pBufferLength)
     {
-        mark[p_I] = Marker(MN2 + offset++);
-        p_I = p_I << 1;
+        mark[pI] = Marker(MN2 + offset++);
+        pI = pI << 1;
     }
 }
 
 void
-NLSTransformer::backward(Bitstream& inBuffer, int16_t* outBuffer, size_t& outBufferLength)
+NLSEncoder::decode(Bitstream& inBuffer, int16_t* outBuffer, size_t& outBufferLength)
 {
     int8_t n;
     uint8_t dcComponents;

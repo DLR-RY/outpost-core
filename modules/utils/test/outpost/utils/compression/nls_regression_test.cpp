@@ -11,7 +11,7 @@
 
 #include <outpost/base/fixpoint.h>
 #include <outpost/base/slice.h>
-#include <outpost/utils/compression/nls_transformer.h>
+#include <outpost/utils/compression/nls_encoder.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -51,7 +51,7 @@ public:
     {
     }
 
-    outpost::compression::NLSTransformer transformer;
+    outpost::compression::NLSEncoder encoder;
 };
 
 TEST_F(NLSRegressionTest, Test_Dataset1)
@@ -59,7 +59,7 @@ TEST_F(NLSRegressionTest, Test_Dataset1)
     memcpy(inputBuffer, regression_input1, 4096 * sizeof(int16_t));
     outpost::Bitstream bitstream(bitStreamSlice);
 
-    transformer.forward(inputBuffer, bufferLength, bitstream);
+    encoder.encode(inputBuffer, bufferLength, bitstream);
     outpost::Serialize s_stream(bitStreamSlice);
     bitstream.serialize(s_stream);
 
@@ -70,7 +70,7 @@ TEST_F(NLSRegressionTest, Test_Dataset1)
     bitstream_out.deserialize(stream);
 
     size_t outBufferLength;
-    transformer.backward(bitstream_out, outputBuffer, outBufferLength);
+    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
 
     ASSERT_EQ(outBufferLength, bufferLength);
     for (size_t i = 0; i < outBufferLength; i++)
@@ -84,7 +84,7 @@ TEST_F(NLSRegressionTest, Test_Dataset2)
     memcpy(inputBuffer, regression_input2, 4096 * sizeof(int16_t));
     outpost::Bitstream bitstream(bitStreamSlice);
 
-    transformer.forward(inputBuffer, bufferLength, bitstream);
+    encoder.encode(inputBuffer, bufferLength, bitstream);
     outpost::Serialize s_stream(bitStreamSlice);
     bitstream.serialize(s_stream);
 
@@ -95,7 +95,7 @@ TEST_F(NLSRegressionTest, Test_Dataset2)
     bitstream_out.deserialize(stream);
 
     size_t outBufferLength;
-    transformer.backward(bitstream_out, outputBuffer, outBufferLength);
+    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
 
     ASSERT_EQ(outBufferLength, bufferLength);
     for (size_t i = 0; i < outBufferLength; i++)

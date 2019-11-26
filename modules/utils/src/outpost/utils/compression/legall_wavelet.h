@@ -36,6 +36,8 @@ public:
      * Forward transformation
      * @param inBuffer
      *     Pointer to an array of FP<16> that shall be transformed to wavelet coefficients.
+     *     WARNING: The array will also be used as a temporary buffer, its contents are subject to
+     * change!
      * @param bufferLength
      *     Number of elements in inBuffer, which also equals the resulting number of elements in
      * outBuffer
