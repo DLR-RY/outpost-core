@@ -26,6 +26,7 @@ struct TimeCode
     uint8_t mValue;    // 6-bits
     uint8_t mControl;  // 2-bits
 };
+
 }  // namespace hal
 }  // namespace outpost
 
