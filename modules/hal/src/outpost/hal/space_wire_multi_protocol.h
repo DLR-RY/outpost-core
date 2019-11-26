@@ -15,6 +15,7 @@
 #define OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_H_
 
 #include "protocol_dispatcher.h"
+#include "protocol_dispatcher_thread.h"
 #include "spacewire.h"
 
 #include <outpost/time/clock.h>
@@ -50,29 +51,30 @@ public:
 template <uint32_t numberOfQueues,       // how many queues can be included
           uint32_t maxPacketSize = 4500  // max number of bytes a received package can contain
           >
-class SpacewireMultiProtocol : public ProtocolDispatcher<uint8_t, numberOfQueues>,
+class SpaceWireMultiProtocol : public ProtocolDispatcher<uint8_t, numberOfQueues>,
                                public SpaceWireMultiProtocolInterface
 {
 public:
-    SpacewireMultiProtocol(SpaceWire& spw,
+    SpaceWireMultiProtocol(SpaceWire& spw,
                            uint8_t priority,
                            size_t stackSize,
                            char* threadName,
                            outpost::support::parameter::HeartbeatSource heartbeatSource,
                            outpost::time::Clock& clock) :
-        outpost::hal::ProtocolDispatcher<uint8_t, numberOfQueues>(mReceiver,
-                                                                  outpost::asSlice(mBuffer),
-                                                                  1,
-                                                                  priority,
-                                                                  stackSize,
-                                                                  threadName,
-                                                                  heartbeatSource),
+        outpost::hal::ProtocolDispatcher<uint8_t, numberOfQueues>(1),
+        mThread(*this,
+                mReceiver,
+                outpost::asSlice(mBuffer),
+                priority,
+                stackSize,
+                threadName,
+                heartbeatSource),
         mReceiver(spw),
         mClock(clock){
 
         };
 
-    virtual ~SpacewireMultiProtocol() = default;
+    virtual ~SpaceWireMultiProtocol() = default;
 
     /**
      * Send the contents of buffer
@@ -95,7 +97,13 @@ public:
      * @return false if queue == nullptr or all places for Listener are filled
      */
     virtual bool
-    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue);
+    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue) override;
+
+    /**
+     * Starts the underlying thread, call after SpW is opened
+     */
+    void
+    start();
 
 private:
     // As an private inner class so we don't expose an unchecked receive
@@ -121,6 +129,9 @@ private:
 
         SpaceWire& mSpw;
     };
+
+    outpost::hal::ProtocolDispatcherThread mThread;
+
     // use the receiver also to store the spw object for send.
     SpaceWireReceiver mReceiver;
 
@@ -131,5 +142,7 @@ private:
 
 }  // namespace hal
 }  // namespace outpost
+
+#include "space_wire_multi_protocol_impl.h"
 
 #endif /* MODULES_HAL_SRC_OUTPOST_HAL_SPACEWIRE_DISPATCHER_H_ */

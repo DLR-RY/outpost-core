@@ -32,6 +32,7 @@ ProtocolDispatcher<protocolType, numberOfQueues>::setDefaultQueue(
         outpost::utils::SharedBufferQueueBase* queue,
         bool dropPartial)
 {
+    outpost::rtos::MutexGuard lock(mMutex);
     if (queue == nullptr || pool == nullptr)
     {
         return false;
@@ -104,6 +105,7 @@ template <typename protocolType, uint32_t numberOfQueues>
 inline uint32_t
 ProtocolDispatcher<protocolType, numberOfQueues>::getNumberOfDroppedPackages()
 {
+    outpost::rtos::MutexGuard lock(mMutex);
     return mNumberOfDroppedPackages;
 }
 
@@ -111,6 +113,7 @@ template <typename protocolType, uint32_t numberOfQueues>
 inline uint32_t
 ProtocolDispatcher<protocolType, numberOfQueues>::getNumberOfPartialPackages()
 {
+    outpost::rtos::MutexGuard lock(mMutex);
     return mNumberOfPartialPackages;
 }
 
@@ -136,6 +139,7 @@ template <typename protocolType, uint32_t numberOfQueues>
 inline uint32_t
 ProtocolDispatcher<protocolType, numberOfQueues>::getNumberOfOverflowedBytes()
 {
+    outpost::rtos::MutexGuard lock(mMutex);
     return mNumberOfOverflowedBytes;
 }
 
@@ -161,6 +165,7 @@ template <typename protocolType, uint32_t numberOfQueues>
 inline uint32_t
 ProtocolDispatcher<protocolType, numberOfQueues>::getNumberOfUnmatchedPackages()
 {
+    outpost::rtos::MutexGuard lock(mMutex);
     return mNumberOfUnmatchedPackages;
 }
 
@@ -187,37 +192,39 @@ ProtocolDispatcher<protocolType, numberOfQueues>::resetErrorCounters()
 
 template <typename protocolType, uint32_t numberOfQueues>
 void
-ProtocolDispatcher<protocolType, numberOfQueues>::handlePackage()
+ProtocolDispatcher<protocolType, numberOfQueues>::handlePackage(
+        const outpost::Slice<const uint8_t>& package, uint32_t readBytes)
 {
-    uint32_t readBytes = 0;
-    outpost::Slice<uint8_t> tmp = mBuffer;  // for safety such the the length cannot be changed
-    readBytes = mReceiver.receive(tmp, mWaitTime);
-    if (readBytes > 0)  // 0 -> timeout
+    if (readBytes > 0)  // just to be save
     {
         outpost::rtos::MutexGuard lock(mMutex);
-        if (readBytes > mBuffer.getNumberOfElements())
+        if (readBytes > package.getNumberOfElements())
         {
-            uint32_t cut = readBytes - mBuffer.getNumberOfElements();
+            uint32_t cut = readBytes - package.getNumberOfElements();
             mNumberOfPartialPackages++;
             mNumberOfOverflowedBytes += cut;
         }
 
-        protocolType id;
-        // we are conservative so we assume protocolType need an alignment but is not given
-        // aligned in buffer
-        memcpy(&id, &mBuffer[mOffset], sizeof(protocolType));
-
-        bool found = false;
         bool dropped = true;
-
-        for (unsigned int i = 0; i < mNumberOfListeners; i++)
+        bool found = false;
+        uint32_t effectiveLength =
+                outpost::utils::min<uint32_t>(package.getNumberOfElements(), readBytes);
+        if (effectiveLength >= mOffset + sizeof(protocolType))
         {
-            if (mListeners[i].mId == id)
+            protocolType id;
+            // we are conservative so we assume protocolType need an alignment but is not given
+            // aligned in buffer
+            memcpy(&id, &package[mOffset], sizeof(protocolType));
+
+            for (unsigned int i = 0; i < mNumberOfListeners; i++)
             {
-                found = true;
-                if (insertIntoQueue(mListeners[i], readBytes))
+                if (mListeners[i].mId == id)
                 {
-                    dropped = false;
+                    found = true;
+                    if (insertIntoQueue(mListeners[i], package, readBytes))
+                    {
+                        dropped = false;
+                    }
                 }
             }
         }
@@ -226,7 +233,7 @@ ProtocolDispatcher<protocolType, numberOfQueues>::handlePackage()
         {
             if (mDefaultListener.mQueue != nullptr)
             {
-                if (insertIntoQueue(mDefaultListener, readBytes))
+                if (insertIntoQueue(mDefaultListener, package, readBytes))
                 {
                     dropped = false;
                 }
@@ -247,7 +254,9 @@ ProtocolDispatcher<protocolType, numberOfQueues>::handlePackage()
 template <typename protocolType, uint32_t numberOfQueues>
 bool
 ProtocolDispatcher<protocolType, numberOfQueues>::insertIntoQueue(
-        ProtocolDispatcher<protocolType, numberOfQueues>::Listener& listener, uint32_t readBytes)
+        ProtocolDispatcher<protocolType, numberOfQueues>::Listener& listener,
+        const outpost::Slice<const uint8_t>& package,
+        uint32_t readBytes)
 {
     bool inserted = false;
 
@@ -255,9 +264,9 @@ ProtocolDispatcher<protocolType, numberOfQueues>::insertIntoQueue(
     if (listener.mPool->allocate(sharedBuffer))
     {
         uint32_t effectiveSize = outpost::utils::min<uint32_t>(
-                readBytes, sharedBuffer.getLength(), mBuffer.getNumberOfElements());
+                readBytes, sharedBuffer.getLength(), package.getNumberOfElements());
 
-        memcpy(&sharedBuffer->getPointer()[0], &mBuffer[0], effectiveSize);
+        memcpy(&sharedBuffer->getPointer()[0], &package[0], effectiveSize);
         outpost::utils::SharedChildPointer child;
         sharedBuffer.getChild(child, 0, 0, effectiveSize);
         if (!listener.mDropPartial || effectiveSize >= readBytes)
@@ -284,17 +293,6 @@ ProtocolDispatcher<protocolType, numberOfQueues>::insertIntoQueue(
     }
     return inserted;
 };
-
-template <typename protocolType, uint32_t numberOfQueues>
-void
-ProtocolDispatcher<protocolType, numberOfQueues>::run()
-{
-    while (true)
-    {
-        outpost::support::Heartbeat::send(mHeartbeatSource, mWaitTime + mTolerance);
-        handlePackage();
-    }
-}
 
 }  // namespace hal
 }  // namespace outpost

@@ -11,7 +11,10 @@
  * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
-#include "spacewire_multi_protocol.h"
+#ifndef OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_IMPL_H_
+#define OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_IMPL_H_
+
+#include "space_wire_multi_protocol.h"
 
 #include <outpost/utils/minmax.h>
 
@@ -21,7 +24,7 @@ namespace hal
 {
 template <uint32_t numberOfQueues, uint32_t maxPacketSize>
 bool
-SpacewireMultiProtocol<numberOfQueues, maxPacketSize>::send(
+SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::send(
         const outpost::Slice<const uint8_t>& buffer, outpost::time::Duration timeout)
 {
     outpost::time::SpacecraftElapsedTime start = mClock.now();
@@ -59,7 +62,7 @@ SpacewireMultiProtocol<numberOfQueues, maxPacketSize>::send(
 
 template <uint32_t numberOfQueues, uint32_t maxPacketSize>
 uint32_t
-SpacewireMultiProtocol<numberOfQueues, maxPacketSize>::SpaceWireReceiver::receive(
+SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::SpaceWireReceiver::receive(
         outpost::Slice<uint8_t>& buffer, outpost::time::Duration timeout)
 {
     SpaceWire::ReceiveBuffer receiveBuffer;
@@ -78,5 +81,27 @@ SpacewireMultiProtocol<numberOfQueues, maxPacketSize>::SpaceWireReceiver::receiv
     return receivedSize;
 }
 
+template <uint32_t numberOfQueues, uint32_t maxPacketSize>
+void
+SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::start()
+{
+    mThread.start();
+}
+
+/**
+ * Add a listener for timecode
+ * @param queue the queue to add
+ * @return false if queue == nullptr or all places for Listener are filled
+ */
+template <uint32_t numberOfQueues, uint32_t maxPacketSize>
+bool
+SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::addTimeCodeListener(
+        outpost::rtos::Queue<TimeCode>* queue)
+{
+    return mReceiver.mSpw.addTimeCodeListener(queue);
+}
+
 }  // namespace hal
 }  // namespace outpost
+
+#endif

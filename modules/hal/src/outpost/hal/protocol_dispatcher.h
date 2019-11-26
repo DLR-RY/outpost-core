@@ -28,8 +28,6 @@
 
 #include <array>
 
-class ProtocolDispatcherTest;
-
 namespace outpost
 {
 namespace hal
@@ -38,47 +36,19 @@ template <typename protocolType,   // pod and must support operator=, operator==
                                    // constructor
           uint32_t numberOfQueues  // how many queues can be included
           >
-class ProtocolDispatcher : public outpost::rtos::Thread,
-                           public virtual ProtocolDispatcherInterface<protocolType>
+class ProtocolDispatcher : public virtual ProtocolDispatcherInterface<protocolType>
 {
-    friend class ::ProtocolDispatcherTest;  // that test can call handle package
 public:
     /**
-     * @param receiver        the object used to receive packages
-     * @param buffer	      buffer for the received packages, should be equal or larger than the
-     * largest package that can be received, or data will be dropped, memory shall not used by any
-     * other
      * @param offset	      number of bytes before the protocol identifier
-     * @param priority        see outpost::rtos::Thread
-     * @param stackSize       see outpost::rtos::Thread
-     * @param threadName      see outpost::rtos::Thread
-     * @param heartbeatSource heartbeat id for the worker thread
-     * @param waitTime		  Time to wait on a receive (i.e. roughly max the time between
-     * heartbeats)
-     * @param tolerance		  Small time addition to insert data into the queues, must be larger than
-     * zero)
      */
-    ProtocolDispatcher(ReceiverInterface& receiver,
-                       outpost::Slice<uint8_t> buffer,
-                       uint32_t offSet,
-                       uint8_t priority,
-                       size_t stackSize,
-                       char* threadName,
-                       outpost::support::parameter::HeartbeatSource heartbeatSource,
-                       outpost::time::Duration waitTime = outpost::time::Seconds(10),
-                       outpost::time::Duration tolerance = outpost::time::Seconds(1)) :
-        outpost::rtos::Thread(priority, stackSize, threadName),
-        mReceiver(receiver),
+    ProtocolDispatcher(uint32_t offSet) :
         mNumberOfListeners(0),
         mNumberOfDroppedPackages(0),
         mNumberOfUnmatchedPackages(0),
         mNumberOfPartialPackages(0),
         mNumberOfOverflowedBytes(0),
-        mBuffer(buffer),
-        mOffset(offSet),
-        mHeartbeatSource(heartbeatSource),
-        mWaitTime(waitTime),
-        mTolerance(tolerance)
+        mOffset(offSet)
     {
     }
 
@@ -186,9 +156,14 @@ public:
     inline void
     resetErrorCounters() override;
 
-protected:
+    /**
+     * Handles a package
+     * @param package	The buffer containing the package
+     * @param readBytes	The number of bytes in the packages may be larger then the buffer, in that
+     * case the package has been cut
+     */
     void
-    run() override;
+    handlePackage(const outpost::Slice<const uint8_t>& package, uint32_t readBytes) override;
 
 private:
     struct Listener
@@ -210,13 +185,10 @@ private:
         bool mDropPartial;
     };
 
-    void
-    handlePackage();
-
     bool
-    insertIntoQueue(Listener& listener, uint32_t readBytes);
-
-    ReceiverInterface& mReceiver;
+    insertIntoQueue(Listener& listener,
+                    const outpost::Slice<const uint8_t>& package,
+                    uint32_t readBytes);
 
     // one additional for the match rest one
     std::array<Listener, numberOfQueues> mListeners;
@@ -228,13 +200,7 @@ private:
     uint32_t mNumberOfOverflowedBytes;
     outpost::rtos::Mutex mMutex;
 
-    outpost::Slice<uint8_t> mBuffer;
     const uint32_t mOffset;
-
-    const outpost::support::parameter::HeartbeatSource mHeartbeatSource;
-
-    const outpost::time::Duration mWaitTime;
-    const outpost::time::Duration mTolerance;
 };
 
 }  // namespace hal
