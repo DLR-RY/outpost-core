@@ -86,9 +86,10 @@ public:
         if (value > 0 && ((1 << (PREC - 1)) & value))
         {
             round = 1;
-        } else if (value < 0 && ((1 << (PREC - 1)) & value) && (((1 << (PREC - 1))-1) & value))
+        }
+        else if (value < 0 && ((1 << (PREC - 1)) & value) && (((1 << (PREC - 1)) - 1) & value))
         {
-        	round = 1;
+            round = 1;
         }
         return static_cast<int32_t>(value >> PREC) + round;
     }
@@ -104,9 +105,10 @@ public:
         if (value > 0 && ((1 << (PREC - 1)) & value))
         {
             round = 1;
-        } else if (value < 0 && ((1 << (PREC - 1)) & value) && (((1 << (PREC - 1))-1) & value))
+        }
+        else if (value < 0 && ((1 << (PREC - 1)) & value) && (((1 << (PREC - 1)) - 1) & value))
         {
-        	round = 1;
+            round = 1;
         }
         return static_cast<int16_t>(value >> PREC) + round;
     }

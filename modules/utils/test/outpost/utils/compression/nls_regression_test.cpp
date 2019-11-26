@@ -16,8 +16,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <unittest/utils/compression/reorder_stub.h>
-
 #include <inttypes.h>
 
 using namespace testing;

@@ -198,6 +198,7 @@ TEST(BistreamTest, serializeAndCut)
 
     outpost::Serialize stream_ext(data_out);
     bitstream.serialize(stream_ext, 4);
+    ref[1] = 4;
     EXPECT_ARRAY_EQ(uint8_t, ref, buffer_out, ARRAY_LENGTH);
 }
 

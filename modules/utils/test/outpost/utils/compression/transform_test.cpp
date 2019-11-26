@@ -15,7 +15,6 @@
 #include <gtest/gtest.h>
 
 #include <unittest/harness.h>
-#include <unittest/utils/compression/reorder_stub.h>
 
 #include <math.h>
 
@@ -241,7 +240,7 @@ TEST_F(TransformTest, InPlaceTest)
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(inputBuffer, maxBufferLength);
 
-    unittest::compression::ReorderStub::reorder(inputBuffer, maxBufferLength);
+    outpost::compression::LeGall53Wavelet::reorder(inputBuffer, maxBufferLength);
     int16_t* reorderd_buffer = reinterpret_cast<int16_t*>(inputBuffer);
 
     double double_reordered_buffer[maxBufferLength];
@@ -277,7 +276,7 @@ TEST_F(TransformTest, InPlaceConstantTest)
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(inputBuffer, maxBufferLength);
 
-    unittest::compression::ReorderStub::reorder(inputBuffer, maxBufferLength);
+    outpost::compression::LeGall53Wavelet::reorder(inputBuffer, maxBufferLength);
     int16_t* reorderd_buffer = reinterpret_cast<int16_t*>(inputBuffer);
 
     double double_reordered_buffer[maxBufferLength];
@@ -305,33 +304,31 @@ TEST_F(TransformTest, InPlaceConstantTest)
 
 TEST_F(TransformTest, ReorderTest)
 {
-	for(uint16_t i = 0; i < 64; i++)
-	{
-		inputBuffer[i] = i;
+    for (uint16_t i = 0; i < 64; i++)
+    {
+        inputBuffer[i] = i;
+    }
 
-	}
+    outpost::compression::LeGall53Wavelet::forwardTransform(inputBuffer, intermediateBuffer, 64);
 
-	outpost::compression::LeGall53Wavelet::forwardTransform(inputBuffer, intermediateBuffer, 64);
+    for (uint16_t i = 0; i < 64; i++)
+    {
+        inputBuffer[i] = i;
+    }
+    outpost::compression::LeGall53Wavelet::forwardTransformInPlace(inputBuffer, 64);
 
-	for(uint16_t i = 0; i < 64; i++)
-	{
-		inputBuffer[i] = i;
+    for (uint16_t i = 0; i < 64; i++)
+    {
+        outputBuffer[i] = inputBuffer[i];
+    }
 
-	}
-	outpost::compression::LeGall53Wavelet::forwardTransformInPlace(inputBuffer, 64);
+    outpost::compression::LeGall53Wavelet::reorder(outputBuffer, 64);
+    int16_t* p = reinterpret_cast<int16_t*>(outputBuffer);
 
-	for(uint16_t i = 0; i < 64; i++)
-	{
-		outputBuffer[i] = inputBuffer[i];
-	}
-
-	outpost::compression::LeGall53Wavelet::reorder(outputBuffer, 64);
-	int16_t* p = reinterpret_cast<int16_t*>(outputBuffer);
-
-	for(uint16_t i = 0; i < 64; i++)
-	{
-		EXPECT_EQ(static_cast<int16_t>(intermediateBuffer[i]), p[i]);
-	}
+    for (uint16_t i = 0; i < 64; i++)
+    {
+        EXPECT_EQ(static_cast<int16_t>(intermediateBuffer[i]), p[i]);
+    }
 }
 
 }  // namespace transform_test

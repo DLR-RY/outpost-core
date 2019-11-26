@@ -118,10 +118,10 @@ void LeGall53Wavelet::forwardTransformInPlace(FP<16>* inBuffer, size_t inBufferL
 
 void LeGall53Wavelet::reorder(FP<16>* inBuffer, size_t inBufferLength)
 {
-	for(size_t i = 0; i < inBufferLength; i++)
-	{
-		inBuffer[i] = FP<16>(static_cast<int16_t>(inBuffer[i]));
-	}
+    for (size_t i = 0; i < inBufferLength; i++)
+    {
+        inBuffer[i] = FP<16>(static_cast<int16_t>(inBuffer[i]));
+    }
 
     int16_t* outputBuffer = reinterpret_cast<int16_t*>(inBuffer);
     size_t index = 2;
@@ -130,7 +130,7 @@ void LeGall53Wavelet::reorder(FP<16>* inBuffer, size_t inBufferLength)
     {
         for (size_t i = step; i < inBufferLength; i += 2 * step)
         {
-            outputBuffer[index] = inBuffer[i].getValue()>>16;
+            outputBuffer[index] = inBuffer[i].getValue() >> 16;
             index += 2;
         }
     }

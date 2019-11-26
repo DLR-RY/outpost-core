@@ -16,8 +16,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <unittest/utils/compression/reorder_stub.h>
-
 using namespace testing;
 using namespace outpost;
 
@@ -183,7 +181,7 @@ TEST_F(CodingTest, LinearTestWithCompression)
 
     EXPECT_EQ(bitstream_in.getSerializedSize(), 107U);
     outpost::Serialize s_stream(bitStreamData);
-    bitstream_in.serialize(s_stream, 83);
+    bitstream_in.serialize(s_stream, 93);
 
     EXPECT_LE(bitstream_in.getSize(), 2 * bufferLength);
     memset(&bitStreamBuffer[bitstream_in.getSerializedSize()],
@@ -220,7 +218,7 @@ TEST_F(CodingTest, WaveletTest)
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletInputBuffer,
                                                                    bufferLength);
-    unittest::compression::ReorderStub::reorder(waveletInputBuffer, bufferLength);
+    outpost::compression::LeGall53Wavelet::reorder(waveletInputBuffer, bufferLength);
     int16_t* inBuffer = reinterpret_cast<int16_t*>(waveletInputBuffer);
 
     outpost::Bitstream bitstream(bitStreamData);
@@ -275,15 +273,15 @@ TEST_F(CodingTest, WaveletTestWithCompression)
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletInputBuffer,
                                                                    bufferLength);
-    unittest::compression::ReorderStub::reorder(waveletInputBuffer, bufferLength);
+    outpost::compression::LeGall53Wavelet::reorder(waveletInputBuffer, bufferLength);
     int16_t* inBuffer = reinterpret_cast<int16_t*>(waveletInputBuffer);
 
     outpost::Bitstream bitstream(bitStreamData);
 
     transformer.forward(inBuffer, bufferLength, bitstream);
-    EXPECT_EQ(bitstream.getSize(), 25U);
+    EXPECT_EQ(bitstream.getSize(), 20U);
     outpost::Serialize s_stream(bitStreamData);
-    bitstream.serialize(s_stream, 23U);
+    bitstream.serialize(s_stream, 19U);
 
     EXPECT_LE(bitstream.getSize(), 2 * bufferLength);
     memset(&bitStreamBuffer[bitstream.getSize()], 0, 2 * bufferLength - bitstream.getSize());
@@ -298,7 +296,7 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     ASSERT_EQ(outBufferLength, bufferLength);
     for (uint32_t i = 0; i < outBufferLength; i++)
     {
-        EXPECT_LE(std::abs(outputBuffer[i]) - std::abs(inBuffer[i]), 1.0f);
+        EXPECT_LE(std::abs(std::abs(outputBuffer[i]) - std::abs(inBuffer[i])), 2U);
     }
 
     double doubleInBuffer[bufferLength];
@@ -315,8 +313,8 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     {
         mse += (std::abs(outBuffer[i]) - std::abs(inputReference[i]))
                * (std::abs(outBuffer[i]) - std::abs(inputReference[i]));
-        EXPECT_LE(std::abs(outBuffer[i]) - std::abs(inputReference[i]), 2.0f);
+        EXPECT_LE(std::abs(std::abs(outBuffer[i]) - std::abs(inputReference[i])), 3.0f);
     }
     mse /= bufferLength;
-    EXPECT_LE(mse, 0.75f);
+    EXPECT_LE(mse, 3.0f);
 }

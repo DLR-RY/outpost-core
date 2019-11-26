@@ -125,7 +125,6 @@ TEST(FixpointTest, castingOperators)
     outpost::Fixpoint fp6(d);
     EXPECT_EQ(static_cast<double>(fp6), -6.75);
     EXPECT_EQ(static_cast<int16_t>(fp6), -7);
-
 }
 
 TEST(FixpointTest, assignmentOperators)

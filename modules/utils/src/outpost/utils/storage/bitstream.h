@@ -162,7 +162,7 @@ public:
             maxLength = bytePointer;
         }
 
-        stream.store(bytePointer);
+        stream.store(maxLength);
         stream.store(bitPointer);
 
         if (stream.getPointer() != &mData[0])
