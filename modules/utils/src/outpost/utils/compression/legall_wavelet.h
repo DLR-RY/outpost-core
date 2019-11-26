@@ -15,6 +15,7 @@
 #define OUTPOST_UTILS_COMPRESSION_LEGALL_WAVELET_H
 
 #include <outpost/base/fixpoint.h>
+#include <outpost/base/slice.h>
 #include <outpost/utils/log2.h>
 
 namespace outpost
@@ -33,7 +34,8 @@ class LeGall53Wavelet
 {
 public:
     /**
-     * Forward transformation
+     * Runtime optimized forward transformation using two buffers.
+     * Lowpass coefficients will always occur before highpass coefficients.
      * @param inBuffer
      *     Pointer to an array of FP<16> that shall be transformed to wavelet coefficients.
      *     WARNING: The array will also be used as a temporary buffer, its contents are subject to
@@ -45,23 +47,24 @@ public:
      *     Pointer to store the resulting transformed data. Needs to be able to store bufferLength
      * elements.
      */
-    static void forwardTransform(FP<16>* inBuffer, FP<16>* outBuffer, size_t bufferLength);
+    static void forwardTransform(outpost::Slice<FP<16>> inBuffer, outpost::Slice<FP<16>> outBuffer);
 
     /**
-     * Forward transformation in place, requiring only one buffer but with a different ordering of
-     * coefficients.
+     * Memory-optimized forward transformation requiring only one buffer.
+     * Coefficients are stored according to the lifting-scheme (i.e. interleaving high- and lowpass
+     * coefficients). In order to be NLS encoded, a call to reorder is required.
      * @param inBuffer
      *     Pointer to an array of FP<16> that shall be transformed to wavelet coefficients.
      * @param length
      *     Number of elements in inBuffer
      */
-    static void forwardTransformInPlace(FP<16>* inBuffer, size_t length);
+    static void forwardTransformInPlace(outpost::Slice<FP<16>> inBuffer);
 
     /**
      * Reorders the coefficients after in place transformation for further coding by using the bits
      * after the comma.
      */
-    static void reorder(FP<16>* inBuffer, size_t inBufferLength);
+    static void reorder(outpost::Slice<FP<16>> inBuffer);
 
     /**
      * Backward transformation for ground use (i.e. using floating point numbers)
@@ -75,7 +78,7 @@ public:
      * elements.
      */
     static void
-    backwardTransform(double* inBuffer, double* outBuffer, size_t bufferLength);
+    backwardTransform(outpost::Slice<double> inBuffer, outpost::Slice<double> outBuffer);
 
 private:
     // Forward lowpass coefficients

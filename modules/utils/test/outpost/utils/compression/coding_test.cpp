@@ -19,18 +19,23 @@
 using namespace testing;
 using namespace outpost;
 
-static constexpr size_t bufferLength = 64U;
+namespace coding_test
+{
+constexpr size_t bufferLength = 64U;
 
-static outpost::FP<16> waveletInputBuffer[bufferLength];
-static int16_t inputBuffer[bufferLength];
-static int16_t inputReference[bufferLength];
-static uint8_t bitStreamBuffer[2 * bufferLength];
-static int16_t outputBuffer[bufferLength];
-static double outBuffer[bufferLength];
+outpost::FP<16> waveletInputBuffer[bufferLength];
+outpost::Slice<FP<16>> waveletData(waveletInputBuffer);
 
-static outpost::Slice<int16_t> inputData(inputBuffer);
-static outpost::Slice<uint8_t> bitStreamData(bitStreamBuffer);
-static outpost::Slice<int16_t> outputData(outputBuffer);
+int16_t inputBuffer[bufferLength];
+int16_t inputReference[bufferLength];
+uint8_t bitStreamBuffer[2 * bufferLength];
+int16_t outputBuffer[bufferLength];
+double outBuffer[bufferLength];
+outpost::Slice<double> outSlice(outBuffer);
+
+outpost::Slice<int16_t> inputData(inputBuffer);
+outpost::Slice<uint8_t> bitStreamData(bitStreamBuffer);
+outpost::Slice<int16_t> outputData(outputBuffer);
 
 class CodingTest : public ::testing::Test
 {
@@ -216,9 +221,8 @@ TEST_F(CodingTest, WaveletTest)
         waveletInputBuffer[i] = static_cast<int16_t>(i + 1024U);
     }
 
-    outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletInputBuffer,
-                                                                   bufferLength);
-    outpost::compression::LeGall53Wavelet::reorder(waveletInputBuffer, bufferLength);
+    outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletData);
+    outpost::compression::LeGall53Wavelet::reorder(waveletData);
     int16_t* inBuffer = reinterpret_cast<int16_t*>(waveletInputBuffer);
 
     outpost::Bitstream bitstream(bitStreamData);
@@ -249,8 +253,8 @@ TEST_F(CodingTest, WaveletTest)
         doubleInBuffer[i] = static_cast<double>(outputBuffer[i]);
     }
 
-    outpost::compression::LeGall53Wavelet::backwardTransform(
-            doubleInBuffer, outBuffer, bufferLength);
+    outpost::compression::LeGall53Wavelet::backwardTransform(outpost::Slice<double>(doubleInBuffer),
+                                                             outSlice);
 
     double mse = 0.0f;
     for (uint32_t i = 0; i < outBufferLength; i++)
@@ -271,9 +275,8 @@ TEST_F(CodingTest, WaveletTestWithCompression)
         waveletInputBuffer[i] = static_cast<int16_t>(3U * i + 1024U);
     }
 
-    outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletInputBuffer,
-                                                                   bufferLength);
-    outpost::compression::LeGall53Wavelet::reorder(waveletInputBuffer, bufferLength);
+    outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletData);
+    outpost::compression::LeGall53Wavelet::reorder(waveletData);
     int16_t* inBuffer = reinterpret_cast<int16_t*>(waveletInputBuffer);
 
     outpost::Bitstream bitstream(bitStreamData);
@@ -305,8 +308,8 @@ TEST_F(CodingTest, WaveletTestWithCompression)
         doubleInBuffer[i] = static_cast<double>(outputBuffer[i]);
     }
 
-    outpost::compression::LeGall53Wavelet::backwardTransform(
-            doubleInBuffer, outBuffer, bufferLength);
+    outpost::compression::LeGall53Wavelet::backwardTransform(outpost::Slice<double>(doubleInBuffer),
+                                                             outSlice);
 
     double mse = 0.0f;
     for (uint32_t i = 0; i < outBufferLength; i++)
@@ -318,3 +321,5 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     mse /= bufferLength;
     EXPECT_LE(mse, 3.0f);
 }
+
+}  // namespace coding_test

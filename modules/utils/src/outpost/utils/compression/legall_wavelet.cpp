@@ -19,9 +19,10 @@ namespace outpost
 {
 namespace compression
 {
-void LeGall53Wavelet::forwardTransform(FP<16>* inBuffer, FP<16>* outBuffer, size_t bufferLength)
+void LeGall53Wavelet::forwardTransform(outpost::Slice<FP<16>> inBuffer,
+                                       outpost::Slice<FP<16>> outBuffer)
 {
-    size_t halfBufferLength = bufferLength;
+    size_t halfBufferLength = inBuffer.getNumberOfElements();
 
     size_t step, steps;
     for (step = 0; halfBufferLength > 2; step++)
@@ -51,7 +52,7 @@ void LeGall53Wavelet::forwardTransform(FP<16>* inBuffer, FP<16>* outBuffer, size
                                               + g1 * inBuffer[2 * halfBufferLength - 1]
                                               + g2 * inBuffer[0];
 
-        FP<16>* tmp = inBuffer;
+        outpost::Slice<FP<16>> tmp = inBuffer;
         inBuffer = outBuffer;
         outBuffer = tmp;
     }
@@ -59,7 +60,7 @@ void LeGall53Wavelet::forwardTransform(FP<16>* inBuffer, FP<16>* outBuffer, size
     steps = step;
     if (step % 2)
     {
-        FP<16>* tmp = inBuffer;
+        outpost::Slice<FP<16>> tmp = inBuffer;
         inBuffer = outBuffer;
         outBuffer = tmp;
         step = 2;
@@ -67,7 +68,7 @@ void LeGall53Wavelet::forwardTransform(FP<16>* inBuffer, FP<16>* outBuffer, size
     else
     {
         step = 1;
-        memcpy(outBuffer, inBuffer, 16);
+        memcpy(&outBuffer[0], &inBuffer[0], 16);
     }
 
     for (; step < steps; step += 2)
@@ -76,9 +77,10 @@ void LeGall53Wavelet::forwardTransform(FP<16>* inBuffer, FP<16>* outBuffer, size
     }
 }
 
-void LeGall53Wavelet::forwardTransformInPlace(FP<16>* inBuffer, size_t inBufferLength)
+void LeGall53Wavelet::forwardTransformInPlace(outpost::Slice<FP<16>> inBuffer)
 {
-    int16_t length = inBufferLength;
+    int16_t length = inBuffer.getNumberOfElements();
+    uint16_t inBufferLength = inBuffer.getNumberOfElements();
     for (uint16_t step = 0; length >= 3; step++)
     {
         FP<16> tmpBuffer[3] = {inBuffer[0], inBuffer[1 << step], inBuffer[2 << step]};
@@ -116,39 +118,40 @@ void LeGall53Wavelet::forwardTransformInPlace(FP<16>* inBuffer, size_t inBufferL
     }
 }
 
-void LeGall53Wavelet::reorder(FP<16>* inBuffer, size_t inBufferLength)
+void LeGall53Wavelet::reorder(outpost::Slice<FP<16>> inBuffer)
 {
-    for (size_t i = 0; i < inBufferLength; i++)
+    for (size_t i = 0; i < inBuffer.getNumberOfElements(); i++)
     {
         inBuffer[i] = FP<16>(static_cast<int16_t>(inBuffer[i]));
     }
 
-    int16_t* outputBuffer = reinterpret_cast<int16_t*>(inBuffer);
+    int16_t* outputBuffer = reinterpret_cast<int16_t*>(inBuffer.begin());
     size_t index = 2;
     outputBuffer[0] = static_cast<int16_t>(inBuffer[0]);
-    for (size_t step = inBufferLength >> 1; step >= 1; step >>= 1)
+    for (size_t step = inBuffer.getNumberOfElements() >> 1; step >= 1; step >>= 1)
     {
-        for (size_t i = step; i < inBufferLength; i += 2 * step)
+        for (size_t i = step; i < inBuffer.getNumberOfElements(); i += 2 * step)
         {
             outputBuffer[index] = inBuffer[i].getValue() >> 16;
             index += 2;
         }
     }
 
-    for (size_t i = 0; i < inBufferLength; i++)
+    for (size_t i = 0; i < inBuffer.getNumberOfElements(); i++)
     {
         outputBuffer[i] = outputBuffer[2 * i];
     }
 }
 
 void
-LeGall53Wavelet::backwardTransform(double* inBuffer, double* outBuffer, size_t bufferLength)
+LeGall53Wavelet::backwardTransform(outpost::Slice<double> inBuffer,
+                                   outpost::Slice<double> outBuffer)
 {
     size_t halfBufferLength;
 
-    for (size_t j = Log2(bufferLength) - 1; j >= 1; j--)
+    for (size_t j = Log2(inBuffer.getNumberOfElements()) - 1; j >= 1; j--)
     {
-        halfBufferLength = bufferLength >> j;
+        halfBufferLength = inBuffer.getNumberOfElements() >> j;
         outBuffer[0] = ih1 * inBuffer[halfBufferLength - 1] + ih0 * inBuffer[halfBufferLength]
                        + ih2 * inBuffer[2 * halfBufferLength - 1];
         outBuffer[1] = ig3 * inBuffer[halfBufferLength - 1] + ig1 * inBuffer[0]
