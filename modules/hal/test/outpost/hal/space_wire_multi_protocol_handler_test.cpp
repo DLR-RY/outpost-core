@@ -11,20 +11,20 @@
  * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
-#include <outpost/hal/space_wire_multi_protocol.h>
+#include <outpost/hal/space_wire_multi_protocol_handler.h>
 #include <outpost/rtos.h>
 #include <outpost/support/heartbeat.h>
 
 #include <unittest/hal/spacewire_stub.h>
 #include <unittest/harness.h>
 
-TEST(SpaceWireMultiProtocolTest, construct)
+TEST(SpaceWireMultiProtocolHandlerTest, construct)
 {
     char name[] = "test";
     outpost::rtos::SystemClock clock;
     unittest::hal::SpaceWireStub spw(4500);
-    outpost::hal::SpaceWireMultiProtocol<2> spwmp(
+    outpost::hal::SpaceWireMultiProtocolHandler<2> spwmp(
             spw, 1, 1024, name, outpost::support::parameter::HeartbeatSource::default0, clock);
-    outpost::hal::SpaceWireMultiProtocolInterface& ref = spwmp;
+    outpost::hal::SpaceWireMultiProtocolHandlerInterface& ref = spwmp;
     (void) ref;
 }

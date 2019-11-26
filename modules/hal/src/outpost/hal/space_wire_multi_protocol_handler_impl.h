@@ -11,10 +11,10 @@
  * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
-#ifndef OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_IMPL_H_
-#define OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_IMPL_H_
+#ifndef OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_HANDLER_IMPL_H_
+#define OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_HANDLER_IMPL_H_
 
-#include "space_wire_multi_protocol.h"
+#include "space_wire_multi_protocol_handler.h"
 
 #include <outpost/utils/minmax.h>
 
@@ -24,12 +24,12 @@ namespace hal
 {
 template <uint32_t numberOfQueues, uint32_t maxPacketSize>
 bool
-SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::send(
+SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::send(
         const outpost::Slice<const uint8_t>& buffer, outpost::time::Duration timeout)
 {
     outpost::time::SpacecraftElapsedTime start = mClock.now();
     SpaceWire::TransmitBuffer* transmitBuffer;
-    auto result = mReceiver.mSpw.requestBuffer(transmitBuffer, timeout);
+    auto result = mSpWHandle.getSpaceWire().requestBuffer(transmitBuffer, timeout);
     if (result != SpaceWire::Result::Type::success)
     {
         return false;
@@ -46,23 +46,27 @@ SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::send(
         transmitBuffer->setLength(buffer.getNumberOfElements());
     }
 
-    outpost::time::SpacecraftElapsedTime now = mClock.now();
-    if (now > start + timeout)
+    if (timeout != outpost::time::Duration::zero())
     {
-        return false;
-    }
-    else
-    {
-        timeout = timeout - (now - start);
+        // update remaining timeout unless we are in non-blocking anyways
+        outpost::time::SpacecraftElapsedTime now = mClock.now();
+        if (now > start + timeout)
+        {
+            return false;
+        }
+        else
+        {
+            timeout = timeout - (now - start);
+        }
     }
 
-    result = mReceiver.mSpw.send(transmitBuffer, timeout);
+    result = mSpWHandle.getSpaceWire().send(transmitBuffer, timeout);
     return result == SpaceWire::Result::Type::success;
 }
 
 template <uint32_t numberOfQueues, uint32_t maxPacketSize>
 uint32_t
-SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::SpaceWireReceiver::receive(
+SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::SpaceWireHandle::receive(
         outpost::Slice<uint8_t>& buffer, outpost::time::Duration timeout)
 {
     SpaceWire::ReceiveBuffer receiveBuffer;
@@ -82,8 +86,15 @@ SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::SpaceWireReceiver::receiv
 }
 
 template <uint32_t numberOfQueues, uint32_t maxPacketSize>
+inline SpaceWire&
+SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::SpaceWireHandle::getSpaceWire()
+{
+    return mSpw;
+}
+
+template <uint32_t numberOfQueues, uint32_t maxPacketSize>
 void
-SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::start()
+SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::start()
 {
     mThread.start();
 }
@@ -95,10 +106,10 @@ SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::start()
  */
 template <uint32_t numberOfQueues, uint32_t maxPacketSize>
 bool
-SpaceWireMultiProtocol<numberOfQueues, maxPacketSize>::addTimeCodeListener(
+SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::addTimeCodeListener(
         outpost::rtos::Queue<TimeCode>* queue)
 {
-    return mReceiver.mSpw.addTimeCodeListener(queue);
+    return mSpWHandle.getSpaceWire().addTimeCodeListener(queue);
 }
 
 }  // namespace hal
