@@ -33,6 +33,7 @@ int16_t outputBuffer[bufferLength];
 double outBuffer[bufferLength];
 outpost::Slice<double> outSlice(outBuffer);
 
+outpost::Slice<int16_t> inputReferenceData(inputReference);
 outpost::Slice<int16_t> inputData(inputBuffer);
 outpost::Slice<uint8_t> bitStreamData(bitStreamBuffer);
 outpost::Slice<int16_t> outputData(outputBuffer);
@@ -73,7 +74,7 @@ TEST_F(CodingTest, ConstantTest)
 
     outpost::Bitstream bitstream(bitStreamData);
 
-    encoder.encode(inputBuffer, bufferLength, bitstream);
+    encoder.encode(inputData, bitstream);
     outpost::Serialize s_stream(bitStreamData);
     bitstream.serialize(s_stream);
 
@@ -84,13 +85,12 @@ TEST_F(CodingTest, ConstantTest)
     outpost::Deserialize stream(bitStreamData);
     bitstream_out.deserialize(stream);
 
-    size_t outBufferLength;
-    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
+    outpost::Slice<int16_t> res = encoder.decode(bitstream_out, outputData);
 
-    ASSERT_EQ(outBufferLength, bufferLength);
-    for (size_t i = 0; i < outBufferLength; i++)
+    ASSERT_EQ(res.getNumberOfElements(), bufferLength);
+    for (size_t i = 0; i < bufferLength; i++)
     {
-        EXPECT_EQ(outputBuffer[i], inputReference[i]);
+        EXPECT_EQ(res[i], inputReference[i]);
     }
 }
 
@@ -106,7 +106,7 @@ TEST_F(CodingTest, ConstantTestWithCompression)
 
     outpost::Bitstream bitstream_in(bitStreamData);
 
-    encoder.encode(inputBuffer, bufferLength, bitstream_in);
+    encoder.encode(inputData, bitstream_in);
     outpost::Serialize s_stream(bitStreamData);
     bitstream_in.serialize(s_stream);
 
@@ -117,13 +117,12 @@ TEST_F(CodingTest, ConstantTestWithCompression)
     outpost::Deserialize stream(bitStreamData);
     bitstream_out.deserialize(stream);
 
-    size_t outBufferLength;
-    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
+    outpost::Slice<int16_t> res = encoder.decode(bitstream_out, outputData);
 
-    ASSERT_EQ(outBufferLength, bufferLength);
-    for (size_t i = 0; i < outBufferLength; i++)
+    ASSERT_EQ(res.getNumberOfElements(), bufferLength);
+    for (size_t i = 0; i < bufferLength; i++)
     {
-        uint16_t dif = std::abs(outputBuffer[i] - inputReference[i]);
+        uint16_t dif = std::abs(res[i] - inputReference[i]);
         EXPECT_LE(dif, 16U);
     }
 }
@@ -138,7 +137,7 @@ TEST_F(CodingTest, LinearTest)
 
     outpost::Bitstream bitstream(bitStreamData);
 
-    encoder.encode(inputBuffer, bufferLength, bitstream);
+    encoder.encode(inputData, bitstream);
 
     EXPECT_LE(bitstream.getSize(), 2 * bufferLength);
     memset(&bitStreamBuffer[bitstream.getSerializedSize()],
@@ -149,13 +148,12 @@ TEST_F(CodingTest, LinearTest)
     outpost::Deserialize stream(bitStreamData);
     bitstream_out.deserialize(stream);
 
-    size_t outBufferLength;
-    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
+    outpost::Slice<int16_t> res = encoder.decode(bitstream_out, outputData);
 
-    ASSERT_EQ(outBufferLength, bufferLength);
-    for (size_t i = 0; i < outBufferLength; i++)
+    ASSERT_EQ(res.getNumberOfElements(), bufferLength);
+    for (size_t i = 0; i < bufferLength; i++)
     {
-        EXPECT_EQ(outputBuffer[i], inputReference[i]);
+        EXPECT_EQ(res[i], inputReference[i]);
     }
 }
 
@@ -182,7 +180,7 @@ TEST_F(CodingTest, LinearTestWithCompression)
 
     outpost::Bitstream bitstream_in(bitStreamData);
 
-    encoder.encode(inputBuffer, bufferLength, bitstream_in);
+    encoder.encode(inputData, bitstream_in);
 
     EXPECT_EQ(bitstream_in.getSerializedSize(), 107U);
     outpost::Serialize s_stream(bitStreamData);
@@ -197,16 +195,15 @@ TEST_F(CodingTest, LinearTestWithCompression)
     outpost::Deserialize stream(bitStreamData);
     bitstream_out.deserialize(stream);
 
-    size_t outBufferLength;
-    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
+    outpost::Slice<int16_t> res = encoder.decode(bitstream_out, outputData);
 
-    ASSERT_EQ(outBufferLength, bufferLength);
+    ASSERT_EQ(res.getNumberOfElements(), bufferLength);
     double mse = 0.0f;
-    for (uint32_t i = 0; i < outBufferLength; i++)
+    for (uint32_t i = 0; i < bufferLength; i++)
     {
-        mse += std::abs(outputBuffer[i] - inputReference[i])
-               * std::abs(outputBuffer[i] - inputReference[i]);
-        uint16_t dif = std::abs(outputBuffer[i] - inputReference[i]);
+        mse += std::abs(res[i] - inputReference[i])
+               * std::abs(res[i] - inputReference[i]);
+        uint16_t dif = std::abs(res[i] - inputReference[i]);
         EXPECT_LE(dif, 5U);
     }
     mse /= bufferLength;
@@ -222,12 +219,11 @@ TEST_F(CodingTest, WaveletTest)
     }
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletData);
-    outpost::compression::LeGall53Wavelet::reorder(waveletData);
-    int16_t* inBuffer = reinterpret_cast<int16_t*>(waveletInputBuffer);
+    outpost::Slice<int16_t> inBuffer = outpost::compression::LeGall53Wavelet::reorder(waveletData);
 
     outpost::Bitstream bitstream(bitStreamData);
 
-    encoder.encode(inBuffer, bufferLength, bitstream);
+    encoder.encode(inBuffer, bitstream);
 
     EXPECT_LE(bitstream.getSize(), 2 * bufferLength);
     memset(&bitStreamBuffer[bitstream.getSerializedSize()],
@@ -238,26 +234,25 @@ TEST_F(CodingTest, WaveletTest)
     outpost::Deserialize stream(bitStreamData);
     bitstream_out.deserialize(stream);
 
-    size_t outBufferLength;
-    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
+    outpost::Slice<int16_t> res = encoder.decode(bitstream_out, outputData);
 
-    ASSERT_EQ(outBufferLength, bufferLength);
-    for (uint32_t i = 0; i < outBufferLength; i++)
+    ASSERT_EQ(res.getNumberOfElements(), bufferLength);
+    for (uint32_t i = 0; i < bufferLength; i++)
     {
-        EXPECT_EQ(std::abs(outputBuffer[i]), std::abs(inBuffer[i]));
+        EXPECT_EQ(std::abs(res[i]), std::abs(inBuffer[i]));
     }
 
     double doubleInBuffer[bufferLength];
     for (uint32_t i = 0; i < bufferLength; i++)
     {
-        doubleInBuffer[i] = static_cast<double>(outputBuffer[i]);
+        doubleInBuffer[i] = static_cast<double>(res[i]);
     }
 
     outpost::compression::LeGall53Wavelet::backwardTransform(outpost::Slice<double>(doubleInBuffer),
                                                              outSlice);
 
     double mse = 0.0f;
-    for (uint32_t i = 0; i < outBufferLength; i++)
+    for (uint32_t i = 0; i < bufferLength; i++)
     {
         mse += (std::abs(outBuffer[i]) - std::abs(inputReference[i]))
                * (std::abs(outBuffer[i]) - std::abs(inputReference[i]));
@@ -276,12 +271,11 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     }
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletData);
-    outpost::compression::LeGall53Wavelet::reorder(waveletData);
-    int16_t* inBuffer = reinterpret_cast<int16_t*>(waveletInputBuffer);
+    outpost::Slice<int16_t> inBuffer = outpost::compression::LeGall53Wavelet::reorder(waveletData);
 
     outpost::Bitstream bitstream(bitStreamData);
 
-    encoder.encode(inBuffer, bufferLength, bitstream);
+    encoder.encode(inBuffer, bitstream);
     EXPECT_EQ(bitstream.getSize(), 20U);
     outpost::Serialize s_stream(bitStreamData);
     bitstream.serialize(s_stream, 19U);
@@ -293,11 +287,10 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     outpost::Deserialize d_stream(bitStreamData);
     bitstream_out.deserialize(d_stream);
 
-    size_t outBufferLength;
-    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
+    outpost::Slice<int16_t> res = encoder.decode(bitstream_out, outputData);
 
-    ASSERT_EQ(outBufferLength, bufferLength);
-    for (uint32_t i = 0; i < outBufferLength; i++)
+    ASSERT_EQ(res.getNumberOfElements(), bufferLength);
+    for (uint32_t i = 0; i < bufferLength; i++)
     {
         EXPECT_LE(std::abs(std::abs(outputBuffer[i]) - std::abs(inBuffer[i])), 2U);
     }
@@ -312,7 +305,7 @@ TEST_F(CodingTest, WaveletTestWithCompression)
                                                              outSlice);
 
     double mse = 0.0f;
-    for (uint32_t i = 0; i < outBufferLength; i++)
+    for (uint32_t i = 0; i < bufferLength; i++)
     {
         mse += (std::abs(outBuffer[i]) - std::abs(inputReference[i]))
                * (std::abs(outBuffer[i]) - std::abs(inputReference[i]));

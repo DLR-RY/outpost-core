@@ -23,21 +23,20 @@ namespace outpost
 namespace compression
 {
 void
-NLSEncoder::encode(int16_t* inBuffer, size_t inBufferLength, Bitstream& outBuffer)
+NLSEncoder::encode(outpost::Slice<int16_t> inBuffer, Bitstream& outBuffer)
 {
-    encode(inBuffer, inBufferLength, outBuffer, 2, 0);
+    encode(inBuffer, outBuffer, 2, 0);
 }
 
 void
-NLSEncoder::encode(int16_t* inBuffer,
-                   size_t inBufferLength,
+NLSEncoder::encode(outpost::Slice<int16_t> inBuffer,
                    Bitstream& outBuffer,
                    uint8_t dcComponents,
                    size_t maxBytes)
 {
     if (maxBytes == 0)
     {
-        maxBytes = inBufferLength << 1;
+        maxBytes = inBuffer.getNumberOfElements() << 1;
     }
 
     // Setup the maximum descendant and granddescendant arrays
@@ -53,7 +52,7 @@ NLSEncoder::encode(int16_t* inBuffer,
         }
     }
 
-    for (uint16_t i = inBufferLength - 1; i >= 2; i -= 2)
+    for (uint16_t i = inBuffer.getNumberOfElements() - 1; i >= 2; i -= 2)
     {
         if (std::abs(inBuffer[i]) > max)
         {
@@ -64,7 +63,7 @@ NLSEncoder::encode(int16_t* inBuffer,
         {
             max = std::abs(inBuffer[i - 1]);
         }
-        if (i<inBufferLength>> 1)
+        if (i<inBuffer.getNumberOfElements()>> 1)
         {
             dmax[i >> 1] = std::max<int16_t>(std::max<int16_t>(int16_t(std::abs(inBuffer[i - 1])),
                                                                int16_t(std::abs(inBuffer[i]))),
@@ -77,7 +76,7 @@ NLSEncoder::encode(int16_t* inBuffer,
         }
     }
 
-    for (uint16_t i = 1; i<inBufferLength>> 2; i++)
+    for (uint16_t i = 1; i<inBuffer.getNumberOfElements()>> 2; i++)
     {
         gmax[i] = std::max<int16_t>(dmax[i << 1], dmax[(i << 1) + 1]);
     }
@@ -99,7 +98,7 @@ NLSEncoder::encode(int16_t* inBuffer,
     }
 
     // Put the number of coefficients in the output stream
-    size_t exponent = Log2(inBufferLength);
+    size_t exponent = Log2(inBuffer.getNumberOfElements());
     for (int8_t i = 3; i >= 0; i--)
     {
         size_t tmp = static_cast<size_t>(1 << i) & exponent;
@@ -116,10 +115,10 @@ NLSEncoder::encode(int16_t* inBuffer,
     for (; i < dcComponents << 1; i++)
     {
         mark[i] = MD;
-        push(i, inBufferLength);
+        push(i, inBuffer.getNumberOfElements());
     }
 
-    for (; i < inBufferLength; i++)
+    for (; i < inBuffer.getNumberOfElements(); i++)
     {
         mark[i] = NM;
     }
@@ -129,7 +128,7 @@ NLSEncoder::encode(int16_t* inBuffer,
     {
         // Insignificant Pixel Pass
         uint16_t j = 0;
-        while (j < inBufferLength)
+        while (j < inBuffer.getNumberOfElements())
         {
             // If the coefficient is not yet tested, test it for significance
             if (mark[j] == MIP)
@@ -160,7 +159,7 @@ NLSEncoder::encode(int16_t* inBuffer,
 
         // Insignificant Set Pass
         j = 0;
-        while (j < inBufferLength)
+        while (j < inBuffer.getNumberOfElements())
         {
             // Iterate over sets and inspect coefficients marked  MD, MG and MCP
             if (mark[j] == MD)
@@ -170,7 +169,7 @@ NLSEncoder::encode(int16_t* inBuffer,
                 if (sig)
                 {
                     mark[j] = mark[j + 1] = MCP;
-                    if (static_cast<size_t>(j << 1) < inBufferLength)
+                    if (static_cast<size_t>(j << 1) < inBuffer.getNumberOfElements())
                     {
                         mark[j << 1] = MG;
                     }
@@ -187,8 +186,8 @@ NLSEncoder::encode(int16_t* inBuffer,
                 if (sig)
                 {
                     mark[j] = mark[j + 2] = MD;
-                    push(j, inBufferLength);
-                    push(j + 2, inBufferLength);
+                    push(j, inBuffer.getNumberOfElements());
+                    push(j + 2, inBuffer.getNumberOfElements());
                 }
                 else
                 {
@@ -225,7 +224,7 @@ NLSEncoder::encode(int16_t* inBuffer,
 
         // Refinement Pass
         j = 0;
-        while (j < inBufferLength)
+        while (j < inBuffer.getNumberOfElements())
         {
             // Push significant coefficients to the output stream
             if (mark[j] == MSP)
@@ -269,8 +268,7 @@ NLSEncoder::push(uint16_t pI, size_t pBufferLength)
     }
 }
 
-void
-NLSEncoder::decode(Bitstream& inBuffer, int16_t* outBuffer, size_t& outBufferLength)
+outpost::Slice<int16_t> NLSEncoder::decode(Bitstream& inBuffer, outpost::Slice<int16_t> outBuffer)
 {
     int8_t n;
     uint8_t dcComponents;
@@ -278,10 +276,10 @@ NLSEncoder::decode(Bitstream& inBuffer, int16_t* outBuffer, size_t& outBufferLen
     dcComponents = inBuffer.getByte(0) & 0x0F;
     uint16_t s = 1 << n;
 
-    outBufferLength = 1 << ((inBuffer.getByte(1) >> 4) & 0x0F);
-    if (outBufferLength < 8)
+    size_t outBufferLength = 1 << ((inBuffer.getByte(1) >> 4) & 0x0F);
+    if (outBufferLength < 8 || outBuffer.getNumberOfElements() < outBufferLength)
     {
-        return;
+        return outpost::Slice<int16_t>::empty();
     }
     bool signs[MAX_LENGTH];
 
@@ -430,6 +428,8 @@ NLSEncoder::decode(Bitstream& inBuffer, int16_t* outBuffer, size_t& outBufferLen
         n--;
         s = s >> 1;
     }
+
+    return outBuffer.first(outBufferLength);
 }
 
 }  // namespace compression

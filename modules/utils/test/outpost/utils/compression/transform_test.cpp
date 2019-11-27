@@ -248,8 +248,7 @@ TEST_F(TransformTest, InPlaceTest)
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(inputData);
 
-    outpost::compression::LeGall53Wavelet::reorder(inputData);
-    int16_t* reorderd_buffer = reinterpret_cast<int16_t*>(inputBuffer);
+    outpost::Slice<int16_t> reorderd_buffer = outpost::compression::LeGall53Wavelet::reorder(inputData);
 
     double double_reordered_buffer[maxBufferLength];
     for (size_t i = 0; i < maxBufferLength; i++)
@@ -284,8 +283,7 @@ TEST_F(TransformTest, InPlaceConstantTest)
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(inputData);
 
-    outpost::compression::LeGall53Wavelet::reorder(inputData);
-    int16_t* reorderd_buffer = reinterpret_cast<int16_t*>(inputBuffer);
+    outpost::Slice<int16_t> reorderd_buffer = outpost::compression::LeGall53Wavelet::reorder(inputData);
 
     double double_reordered_buffer[maxBufferLength];
     for (size_t i = 0; i < maxBufferLength; i++)
@@ -332,8 +330,7 @@ TEST_F(TransformTest, ReorderTest)
         outputBuffer[i] = inputBuffer[i];
     }
 
-    outpost::compression::LeGall53Wavelet::reorder(outputData.first(bufferLength));
-    int16_t* p = reinterpret_cast<int16_t*>(outputBuffer);
+    outpost::Slice<int16_t> p = outpost::compression::LeGall53Wavelet::reorder(outputData.first(bufferLength));
 
     for (uint16_t i = 0; i < bufferLength; i++)
     {

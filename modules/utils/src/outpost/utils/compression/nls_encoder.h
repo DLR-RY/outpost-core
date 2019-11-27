@@ -78,13 +78,11 @@ public:
      * bits, be converted to their absolute values.
      * @param inBuffer
      *     Input buffer to be encoded
-     * @param inBufferLength
-     *     Number of elements in the inBuffer
      * @param outBuffer
      *     Bitstream to write the encoding to
      */
     void
-    encode(int16_t* inBuffer, size_t inBufferLength, outpost::Bitstream& outBuffer);
+    encode(outpost::Slice<int16_t> inBuffer, outpost::Bitstream& outBuffer);
 
     /**
      * Forward No List SPIHT transform
@@ -92,8 +90,6 @@ public:
      * bits, be converted to their absolute values.
      * @param inBuffer
      *     Input buffer to be encoded
-     * @param inBufferLength
-     *     Number of elements in the inBuffer
      * @param outBuffer
      *     Bitstream to write the encoding to
      * @param dcComponents
@@ -102,8 +98,7 @@ public:
      *     Maximum number of bytes to write to outBuffer
      */
     void
-    encode(int16_t* inBuffer,
-           size_t inBufferLength,
+    encode(outpost::Slice<int16_t> inBuffer,
            outpost::Bitstream& outBuffer,
            uint8_t dcComponents,
            size_t maxBytes);
@@ -114,11 +109,11 @@ public:
      *     NLS encoded bitstream
      * @param outBuffer
      *     Result buffer
-     * @param outBufferLength
+     * @return
      *     Length of the resulting buffer
      */
-    void
-    decode(outpost::Bitstream& inBuffer, int16_t* outBuffer, size_t& outBufferLength);
+    outpost::Slice<int16_t>
+    decode(outpost::Bitstream& inBuffer, outpost::Slice<int16_t> outBuffer);
 
     Marker mark[MAX_LENGTH];
     int16_t dmax[MAX_LENGTH / 2];

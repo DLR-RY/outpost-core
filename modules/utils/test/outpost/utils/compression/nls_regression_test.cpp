@@ -24,8 +24,10 @@ using namespace outpost;
 static constexpr size_t bufferLength = 4096U;
 
 static int16_t outputBuffer[bufferLength];
+static outpost::Slice<int16_t> outputData(outputBuffer);
 
 static int16_t inputBuffer[bufferLength];
+static outpost::Slice<int16_t> inputData(inputBuffer);
 
 static uint8_t bitStreamBuffer[2 * bufferLength];
 static outpost::Slice<uint8_t> bitStreamSlice(bitStreamBuffer);
@@ -59,7 +61,7 @@ TEST_F(NLSRegressionTest, Test_Dataset1)
     memcpy(inputBuffer, regression_input1, 4096 * sizeof(int16_t));
     outpost::Bitstream bitstream(bitStreamSlice);
 
-    encoder.encode(inputBuffer, bufferLength, bitstream);
+    encoder.encode(inputData, bitstream);
     outpost::Serialize s_stream(bitStreamSlice);
     bitstream.serialize(s_stream);
 
@@ -69,13 +71,12 @@ TEST_F(NLSRegressionTest, Test_Dataset1)
     outpost::Deserialize stream(bitStreamSlice);
     bitstream_out.deserialize(stream);
 
-    size_t outBufferLength;
-    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
+    outpost::Slice<int16_t> res = encoder.decode(bitstream_out, outputData);
 
-    ASSERT_EQ(outBufferLength, bufferLength);
-    for (size_t i = 0; i < outBufferLength; i++)
+    ASSERT_EQ(res.getNumberOfElements(), bufferLength);
+    for (size_t i = 0; i < bufferLength; i++)
     {
-        EXPECT_EQ(outputBuffer[i], regression_input1[i]);
+        EXPECT_EQ(res[i], regression_input1[i]);
     }
 }
 
@@ -84,7 +85,7 @@ TEST_F(NLSRegressionTest, Test_Dataset2)
     memcpy(inputBuffer, regression_input2, 4096 * sizeof(int16_t));
     outpost::Bitstream bitstream(bitStreamSlice);
 
-    encoder.encode(inputBuffer, bufferLength, bitstream);
+    encoder.encode(inputData, bitstream);
     outpost::Serialize s_stream(bitStreamSlice);
     bitstream.serialize(s_stream);
 
@@ -94,12 +95,11 @@ TEST_F(NLSRegressionTest, Test_Dataset2)
     outpost::Deserialize stream(bitStreamSlice);
     bitstream_out.deserialize(stream);
 
-    size_t outBufferLength;
-    encoder.decode(bitstream_out, outputBuffer, outBufferLength);
+    outpost::Slice<int16_t> res = encoder.decode(bitstream_out, outputData);
 
-    ASSERT_EQ(outBufferLength, bufferLength);
-    for (size_t i = 0; i < outBufferLength; i++)
+    ASSERT_EQ(res.getNumberOfElements(), bufferLength);
+    for (size_t i = 0; i < bufferLength; i++)
     {
-        EXPECT_EQ(outputBuffer[i], regression_input2[i]);
+        EXPECT_EQ(res[i], regression_input2[i]);
     }
 }
