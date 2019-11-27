@@ -40,6 +40,7 @@ NLSEncoder::encode(int16_t* inBuffer,
         maxBytes = inBufferLength << 1;
     }
 
+    // Setup the maximum descendant and granddescendant arrays
     dmax[0] = 0;
     gmax[0] = 0;
 
@@ -81,27 +82,31 @@ NLSEncoder::encode(int16_t* inBuffer,
         gmax[i] = std::max<int16_t>(dmax[i << 1], dmax[(i << 1) + 1]);
     }
 
+    // Calculate the number of bitplanes
     int8_t n = Log2(max);
-
     uint16_t s = 1 << n;
+
+    // Put the number of bitplanes in the output stream
     for (int8_t i = 3; i >= 0; i--)
     {
         outBuffer.pushBit(static_cast<uint16_t>(1 << i) & n);
     }
 
+    // Put the number of DC components in the output stream
     for (int8_t i = 3; i >= 0; i--)
     {
         outBuffer.pushBit(static_cast<uint8_t>(1 << i) & dcComponents);
     }
 
+    // Put the number of coefficients in the output stream
     size_t exponent = Log2(inBufferLength);
-
     for (int8_t i = 3; i >= 0; i--)
     {
         size_t tmp = static_cast<size_t>(1 << i) & exponent;
         outBuffer.pushBit(tmp > 0);
     }
 
+    // Initialize the state marker table
     uint16_t i = 0;
     for (; i < dcComponents; i++)
     {
@@ -119,14 +124,18 @@ NLSEncoder::encode(int16_t* inBuffer,
         mark[i] = NM;
     }
 
+    // Iterate over all bitplanes
     while (n >= 0)
     {
-        // IP Pass
+        // Insignificant Pixel Pass
         uint16_t j = 0;
         while (j < inBufferLength)
         {
+            // If the coefficient is not yet tested, test it for significance
             if (mark[j] == MIP)
             {
+                // If the coefficient is significant, mark it MNP and push this information and its
+                // sign bit to the output stream
                 bool sig = std::abs(inBuffer[j]) >= s;
                 outBuffer.pushBit(sig);
                 if (sig)
@@ -143,15 +152,17 @@ NLSEncoder::encode(int16_t* inBuffer,
             }
         }
 
+        // Break if the maximum number of output bytes is reached.
         if (outBuffer.getSize() > maxBytes)
         {
             break;
         }
 
-        // IS Pass
+        // Insignificant Set Pass
         j = 0;
         while (j < inBufferLength)
         {
+            // Iterate over sets and inspect coefficients marked  MD, MG and MCP
             if (mark[j] == MD)
             {
                 bool sig = dmax[j >> 1] >= s;
@@ -206,20 +217,23 @@ NLSEncoder::encode(int16_t* inBuffer,
             }
         }
 
+        // Break if the maximum number of output bytes is reached.
         if (outBuffer.getSize() > maxBytes)
         {
             break;
         }
 
-        // Ref Pass
+        // Refinement Pass
         j = 0;
         while (j < inBufferLength)
         {
+            // Push significant coefficients to the output stream
             if (mark[j] == MSP)
             {
                 outBuffer.pushBit((inBuffer[j] & s) > 0);
                 j++;
             }
+            // Newly identified significant coefficients shall be refined in the next pass
             else if (mark[j] == MNP)
             {
                 mark[j] = MSP;
@@ -231,13 +245,15 @@ NLSEncoder::encode(int16_t* inBuffer,
             }
         }
 
-        n--;
-        s = s >> 1;
-
+        // Break if the maximum number of output bytes is reached.
         if (outBuffer.getSize() > maxBytes)
         {
             break;
         }
+
+        // Calculate the next bitplane
+        n--;
+        s = s >> 1;
     }
 }
 

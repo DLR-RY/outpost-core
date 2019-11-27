@@ -24,19 +24,24 @@ void LeGall53Wavelet::forwardTransform(outpost::Slice<FP<16>> inBuffer,
 {
     size_t halfBufferLength = inBuffer.getNumberOfElements();
 
-    size_t step, steps;
+    size_t step;
+    // Perform log2 passes, bisecting the buffer after each pass
     for (step = 0; halfBufferLength > 2; step++)
     {
+        // Calculate high- and lowpass coefficients for the general case
         halfBufferLength = halfBufferLength >> 1;
         for (size_t i = 0; i < halfBufferLength - 2; i++)
         {
+            // Lowpass
             outBuffer[i] = h0 * inBuffer[2 * i] + h1 * inBuffer[2 * i + 1]
                            + h2 * inBuffer[2 * i + 2] + h3 * inBuffer[2 * i + 3]
                            + h4 * inBuffer[2 * i + 4];
+            // Highpass
             outBuffer[i + halfBufferLength] =
                     g0 * inBuffer[2 * i] + g1 * inBuffer[2 * i + 1] + g2 * inBuffer[2 * i + 2];
         }
 
+        // Handle lapping cases
         outBuffer[halfBufferLength - 2] =
                 h0 * inBuffer[2 * halfBufferLength - 4] + h1 * inBuffer[2 * halfBufferLength - 3]
                 + h2 * inBuffer[2 * halfBufferLength - 2] + h3 * inBuffer[2 * halfBufferLength - 1]
@@ -52,12 +57,15 @@ void LeGall53Wavelet::forwardTransform(outpost::Slice<FP<16>> inBuffer,
                                               + g1 * inBuffer[2 * halfBufferLength - 1]
                                               + g2 * inBuffer[0];
 
+        // Swap buffers for the subsequent pass
         outpost::Slice<FP<16>> tmp = inBuffer;
         inBuffer = outBuffer;
         outBuffer = tmp;
     }
 
-    steps = step;
+    // With coefficients of different levels spread through both buffers, these need to be copied to
+    // outBuffer
+    size_t steps = step;
     if (step % 2)
     {
         outpost::Slice<FP<16>> tmp = inBuffer;
@@ -81,28 +89,31 @@ void LeGall53Wavelet::forwardTransformInPlace(outpost::Slice<FP<16>> inBuffer)
 {
     int16_t length = inBuffer.getNumberOfElements();
     uint16_t inBufferLength = inBuffer.getNumberOfElements();
+
+    // Perform log2 passes, bisecting the buffer after each pass
     for (uint16_t step = 0; length >= 3; step++)
     {
+        // Temporarily save these for handling of lapping cases
         FP<16> tmpBuffer[3] = {inBuffer[0], inBuffer[1 << step], inBuffer[2 << step]};
 
-        for (size_t i = 0; (i + 4) << step < inBufferLength; i += 2)
+        // Calculate highpass and lowpass coefficients using the lifting scheme
+        for (size_t i = 0; ((i + 4) << step) < inBufferLength; i += 2)
         {
             inBuffer[(i << step)] = h0 * inBuffer[i << step] + h1 * inBuffer[(i + 1) << step]
                                     + h2 * inBuffer[(i + 2) << step]
                                     + h3 * inBuffer[(i + 3) << step]
                                     + h4 * inBuffer[(i + 4) << step];
             inBuffer[(i + 1) << step] =
-                    ip_g0 * inBuffer[i << step] + ip_g1 * inBuffer[(i + 1) << step]
-                    + ip_g2 * inBuffer[(i + 2) << step] + ip_g3 * inBuffer[(i + 3) << step]
-                    + ip_g4 * inBuffer[(i + 4) << step];
+                    ip_g0 * inBuffer[i << step] + ip_g2 * inBuffer[(i + 2) << step]
+                    + ip_g3 * inBuffer[(i + 3) << step] + ip_g4 * inBuffer[(i + 4) << step];
         }
+        // Handle corner cases with lapping coefficients.
         inBuffer[inBufferLength - (4 << step)] = h0 * inBuffer[inBufferLength - (4 << step)]
                                                  + h1 * inBuffer[inBufferLength - (3 << step)]
                                                  + h2 * inBuffer[inBufferLength - (2 << step)]
                                                  + h3 * inBuffer[inBufferLength - (1 << step)]
                                                  + h4 * tmpBuffer[0];
         inBuffer[inBufferLength - (3 << step)] = ip_g0 * inBuffer[inBufferLength - (4 << step)]
-                                                 + ip_g1 * inBuffer[inBufferLength - (3 << step)]
                                                  + ip_g2 * inBuffer[inBufferLength - (2 << step)]
                                                  + ip_g3 * inBuffer[inBufferLength - (1 << step)]
                                                  + ip_g4 * tmpBuffer[0];
@@ -111,15 +122,16 @@ void LeGall53Wavelet::forwardTransformInPlace(outpost::Slice<FP<16>> inBuffer)
                                                  + h2 * tmpBuffer[0] + h3 * tmpBuffer[1]
                                                  + h4 * tmpBuffer[2];
         inBuffer[inBufferLength - (1 << step)] = ip_g0 * inBuffer[inBufferLength - (2 << step)]
-                                                 + ip_g1 * inBuffer[inBufferLength - (1 << step)]
                                                  + ip_g2 * tmpBuffer[0] + ip_g3 * tmpBuffer[1]
                                                  + ip_g4 * tmpBuffer[2];
         length >>= 1;
     }
 }
 
-void LeGall53Wavelet::reorder(outpost::Slice<FP<16>> inBuffer)
+outpost::Slice<int16_t> LeGall53Wavelet::reorder(outpost::Slice<FP<16>> inBuffer)
 {
+    // First, round the coefficients. Otherwise, the decimal places cannot be used as temporary
+    // memory
     for (size_t i = 0; i < inBuffer.getNumberOfElements(); i++)
     {
         inBuffer[i] = FP<16>(static_cast<int16_t>(inBuffer[i]));
@@ -128,19 +140,23 @@ void LeGall53Wavelet::reorder(outpost::Slice<FP<16>> inBuffer)
     int16_t* outputBuffer = reinterpret_cast<int16_t*>(inBuffer.begin());
     size_t index = 2;
     outputBuffer[0] = static_cast<int16_t>(inBuffer[0]);
+    // From left to right, cast the coefficients to int16_t for transmission and bring in the right
+    // order for encoding
     for (size_t step = inBuffer.getNumberOfElements() >> 1; step >= 1; step >>= 1)
     {
         for (size_t i = step; i < inBuffer.getNumberOfElements(); i += 2 * step)
         {
-            outputBuffer[index] = inBuffer[i].getValue() >> 16;
+            outputBuffer[index] = (inBuffer[i].getValue() >> 16) & 0xFFFF;
             index += 2;
         }
     }
 
-    for (size_t i = 0; i < inBuffer.getNumberOfElements(); i++)
+    for (size_t i = 1; i < inBuffer.getNumberOfElements(); i++)
     {
         outputBuffer[i] = outputBuffer[2 * i];
     }
+
+    return outpost::Slice<int16_t>::unsafe(outputBuffer, inBuffer.getNumberOfElements());
 }
 
 void

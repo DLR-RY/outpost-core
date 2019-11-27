@@ -36,15 +36,23 @@ private:
     static constexpr uint16_t MAX_LENGTH = 4096U;
 
 public:
+    // State table markers
     enum Marker
     {
-        NM,
-        MIP,
-        MNP,
-        MSP,
-        MCP,
-        MD,
-        MG,
+        NM,   // Not marked
+        MIP,  // The coefficient is insignificant or untested for this bitplane
+        MNP,  // The coefficient is newly significant so it will not be refined for this bitplane
+        MSP,  // The coefficient is significant and will be refined in this bitplane
+        MCP,  // Like MIP, but applied during partitioning in the IS pass leading to an immediate
+              // test for significance
+        MD,   // The coefficient is the first (lowest index) child in a set consisting of all
+              // descendants of its parent
+        MG,   // The coefficient is the first (lowest index) grandchild in  a set consisting of all
+              // granddescendants of its grandparent coefficient, not including the grandparent
+              // itself or its children
+
+        // MN*: Used on the leading node of each lower level of an
+        // insignificance tree
         MN2,
         MN3,
         MN4,
@@ -118,7 +126,7 @@ public:
 
 private:
     /**
-     * Push MN markings down the marker tree
+     * Push increasing MN* markings in the state marker table down the tree of coefficients
      * @param pI
      *     Starting index
      * @param pBufferLength
@@ -128,7 +136,7 @@ private:
     push(uint16_t pI, size_t pBufferLength);
 
     /**
-     * Number of coefficients to skip during is and ref passes depending on the current marker
+     * Number of coefficients to skip during IP and REF passes depending on the current marker
      * @param pM
      *     Current marker
      * @return
@@ -164,7 +172,7 @@ private:
     }
 
     /**
-     * Number of coefficients to skip during the is pass depending on the current marker
+     * Number of coefficients to skip during the IS pass depending on the current marker
      * @param pM
      *     Current marker
      * @return

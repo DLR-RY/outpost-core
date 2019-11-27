@@ -64,7 +64,7 @@ public:
      * Reorders the coefficients after in place transformation for further coding by using the bits
      * after the comma.
      */
-    static void reorder(outpost::Slice<FP<16>> inBuffer);
+    static outpost::Slice<int16_t> reorder(outpost::Slice<FP<16>> inBuffer);
 
     /**
      * Backward transformation for ground use (i.e. using floating point numbers)
