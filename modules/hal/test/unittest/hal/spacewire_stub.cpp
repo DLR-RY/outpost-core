@@ -138,3 +138,10 @@ SpaceWireStub::flushReceiveBuffer()
 {
     // Do nothing
 }
+
+void
+SpaceWireStub::triggerSpWInterrupt(void)
+{
+    outpost::hal::TimeCode tc;
+    mTCD.dispatchTimeCode(tc);
+}

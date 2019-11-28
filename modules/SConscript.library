@@ -22,9 +22,9 @@ envGlobal.SConscript([
         'time/src/SConscript',
         'rtos/src/SConscript',
         'utils/src/SConscript',
-        'hal/src/SConscript',
         'smpc/src/SConscript',
         'support/src/SConscript',
+        'hal/src/SConscript',
         'comm/src/SConscript',
     ],
     exports='envGlobal')

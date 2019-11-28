@@ -111,6 +111,12 @@ public:
         return mReceiveBuffers.empty();
     }
 
+    bool
+    addTimeCodeListener(outpost::rtos::Queue<outpost::hal::TimeCode>* queue)
+    {
+        return mTCD.addListener(queue);
+    }
+
     /**
      * Filled with all packets sent through SpaceWire interface.
      */
@@ -122,6 +128,12 @@ public:
      * Fill with data before starting the operation.
      */
     std::list<Packet> mPacketsToReceive;
+
+    /*
+     * Simulates an SpWInterrupt
+     */
+    void
+    triggerSpWInterrupt(void);
 
 private:
     struct TransmitBufferEntry
@@ -151,6 +163,8 @@ private:
     const size_t mMaximumLength;
     bool mOpen;
     bool mUp;
+
+    outpost::hal::TimeCodeDispatcher<1> mTCD;
 
     /**
      * Mapping between the transmit buffer given to the user and its storage

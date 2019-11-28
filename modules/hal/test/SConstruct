@@ -37,6 +37,11 @@ else:
     envGlobal.Tool('compiler_hosted_llvm')
     envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
+
+envGlobal.Append(CPPPATH=[
+    os.path.join(rootpath, 'modules/support/default'),
+])
+
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
 # The tests use C++11
@@ -46,9 +51,11 @@ envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports=
 env = envGlobal.Clone()
 
 env.AppendUnique(LIBS=[
+    'outpost_smpc',   
     'outpost_time',
     'outpost_rtos',
     'outpost_utils',
+    'outpost_support',
 ])
 
 files  = env.Glob('*.cpp')

@@ -10,16 +10,23 @@
  * Authors:
  * - 2013-2018, Fabian Greif (DLR RY-AVS)
  * - 2017-2018, Muhammad Bassam (DLR RY-AVS)
+ * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_HAL_SPACEWIRE_H
 #define OUTPOST_HAL_SPACEWIRE_H
 
+#include "timecode_dispatcher.h"
+#include "timecode_provider.h"
+
 #include <outpost/base/slice.h>
+#include <outpost/rtos.h>
+#include <outpost/rtos/queue.h>
 #include <outpost/time/duration.h>
 
 #include <stdint.h>
 
+#include <array>
 #include <cstddef>
 
 namespace outpost
@@ -31,7 +38,7 @@ namespace hal
  *
  * \author    Fabian Greif
  */
-class SpaceWire
+class SpaceWire : public TimeCodeProvider
 {
 public:
     enum EndMarker
@@ -190,7 +197,6 @@ public:
         outpost::Slice<const uint8_t> mData;
         EndMarker mEnd;
     };
-
     virtual ~SpaceWire();
 
     /**
@@ -276,6 +282,14 @@ public:
      */
     virtual void
     flushReceiveBuffer() = 0;
+
+    /**
+     * Add a listener for timecode
+     * @param queue the queue to add
+     * @return false if queue == nullptr or all places for Listener are filled
+     */
+    virtual bool
+    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue) = 0;
 };
 
 }  // namespace hal
