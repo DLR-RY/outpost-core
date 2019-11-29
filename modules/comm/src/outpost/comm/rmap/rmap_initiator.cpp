@@ -49,7 +49,7 @@ RmapInitiator::~RmapInitiator()
 {
 }
 
-bool
+RmapResult
 RmapInitiator::write(const char* targetNodeName,
                      const RMapOptions& options,
                      uint32_t memoryAddress,
@@ -57,7 +57,8 @@ RmapInitiator::write(const char* targetNodeName,
                      outpost::Slice<const uint8_t> const& data,
                      outpost::time::Duration timeout)
 {
-    bool result = false;
+    RmapResult result;
+    result.mResult = RmapResultType::invalidParameters;
     if (mTargetNodes)
     {
         RmapTargetNode* targetNode = mTargetNodes->getTargetNode(targetNodeName);
@@ -74,7 +75,7 @@ RmapInitiator::write(const char* targetNodeName,
     return result;
 }
 
-bool
+RmapResult
 RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                      const RMapOptions& options,
                      uint32_t memoryAddress,
@@ -82,15 +83,16 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                      outpost::Slice<const uint8_t> const& data,
                      outpost::time::Duration timeout)
 {
+    RmapResult result;
     if (data.getNumberOfElements() == 0)
     {
         // the second write function also return without a message in this case
-        return false;
+        result.mResult = RmapResultType::invalidParameters;
+        return result;
     }
 
     RmapTransaction* transaction = nullptr;
 
-    bool result = false;
     bool sendSuccesful = false;
     // mutex guarded scope to guard the transaction setup
     {
@@ -99,6 +101,13 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
 
         // Using existing free element from the transaction list
         transaction = mTransactionsList.getFreeTransaction();
+
+        if (transaction == nullptr)
+        {
+            result.mResult = RmapResultType::noFreeTransactions;
+            return result;
+        }
+
         RmapPacket* cmd = transaction->getCommandPacket();
 
         // Packet configuration
@@ -147,10 +156,10 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
         cmd->setTargetInformation(rmapTargetNode);
         transaction->setTimeoutDuration(timeout);
 
+        // Transaction will be initiated and sent through the SpW interface
         sendSuccesful = sendPacket(transaction, data);
     }  // MutexGuard scope
 
-    // Transaction will be initiated and sent through the SpW interface
     if (sendSuccesful)
     {
         // If reply is expected
@@ -168,18 +177,20 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                             "transaction %u\n",
                             transaction->getTransactionID());
 
-                result = false;
+                result.mResult = RmapResultType::timeout;
             }
             // Command sent and reply received
             else if (transaction->getState() == RmapTransaction::replyReceived)
             {
                 RmapPacket* rply = transaction->getReplyPacket();
 
+                result.mErrorCode =
+                        static_cast<RmapReplyStatus::ErrorStatusCodes>(rply->getStatus());
                 if (rply->getStatus() == RmapReplyStatus::commandExecutedSuccessfully)
                 {
                     console_out("RMAP-Initiator: reply received with success\n");
 
-                    result = true;
+                    result.mResult = RmapResultType::success;
                 }
                 else
                 {
@@ -188,7 +199,7 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                     RmapReplyStatus::replyStatus(
                             static_cast<RmapReplyStatus::ErrorStatusCodes>(rply->getStatus()));
 
-                    result = false;
+                    result.mResult = RmapResultType::executionFailed;
                 }
             }
         }
@@ -197,15 +208,21 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
             if (transaction->getState() == RmapTransaction::initiated)
             {
                 // Command was sent successfully
-                result = true;
+                result.mResult = RmapResultType::success;
             }
             else
             {
                 // Command was not sent successfully
                 console_out("RMAP-Initiator: transaction could not be initiated\n");
-                result = false;
+                result.mResult = RmapResultType::sendFailed;
             }
         }
+    }
+    else
+    {
+        // Command was not sent successfully
+        console_out("RMAP-Initiator: transaction could not be initiated, failed to send command\n");
+        result.mResult = RmapResultType::sendFailed;
     }
 
     // Delete the transaction from the list
@@ -213,7 +230,7 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
     return result;
 }
 
-bool
+RmapResult
 RmapInitiator::read(const char* targetNodeName,
                     const RMapOptions& options,
                     uint32_t memoryAddress,
@@ -221,7 +238,8 @@ RmapInitiator::read(const char* targetNodeName,
                     outpost::Slice<uint8_t> const& buffer,
                     outpost::time::Duration timeout)
 {
-    bool result = false;
+    RmapResult result;
+    result.mResult = RmapResultType::invalidParameters;
     if (mTargetNodes)
     {
         RmapTargetNode* targetNode = mTargetNodes->getTargetNode(targetNodeName);
@@ -238,7 +256,7 @@ RmapInitiator::read(const char* targetNodeName,
     return result;
 }
 
-bool
+RmapResult
 RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                     const RMapOptions& options,
                     uint32_t memoryAddress,
@@ -246,21 +264,23 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                     outpost::Slice<uint8_t> const& buffer,
                     outpost::time::Duration timeout)
 {
+    RmapResult result;
     if (buffer.getNumberOfElements() > Buffer::bufferSize)
     {
         console_out("RMAP-Initiator: Requested size for read %u, maximal allowed size %u\n",
                     length,
                     Buffer::bufferSize);
-        return false;
+        result.mResult = RmapResultType::invalidParameters;
+        return result;
     }
 
     if (buffer.getNumberOfElements() == 0)
     {
         // the second read function also return without a message in this case
-        return false;
+        result.mResult = RmapResultType::invalidParameters;
+        return result;
     }
 
-    bool result = false;
     RmapTransaction* transaction = nullptr;
     bool sendSuccesful = false;
 
@@ -271,10 +291,11 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
 
         transaction = mTransactionsList.getFreeTransaction();
 
-        if (!transaction)
+        if (transaction == nullptr)
         {
             console_out("RMAP-Initiator: All transactions are in use\n");
-            return false;
+            result.mResult = RmapResultType::noFreeTransactions;
+            return result;
         }
 
         RmapPacket* cmd = transaction->getCommandPacket();
@@ -338,23 +359,25 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
         {
             RmapPacket* rply = transaction->getReplyPacket();
             uint8_t replyStatus = rply->getStatus();
+            result.mErrorCode = static_cast<RmapReplyStatus::ErrorStatusCodes>(replyStatus);
 
             if (replyStatus != RmapReplyStatus::commandExecutedSuccessfully)
             {
                 console_out("RMAP-Initiator: Command not executed successfully: %u\n", replyStatus);
-                result = false;
+                result.mResult = RmapResultType::executionFailed;
             }
             else
             {
+                result.mReadbytes = rply->getDataLength();
                 if (buffer.getNumberOfElements() < rply->getDataLength())
                 {
                     console_out("RMAP-Initiator: Read reply with more data then requested\n");
-                    result = false;
+                    result.mResult = RmapResultType::invalidReply;
                 }
                 else if (buffer.getNumberOfElements() > rply->getDataLength())
                 {
                     console_out("RMAP-Initiator: Read reply with insufficient data\n");
-                    result = false;
+                    result.mResult = RmapResultType::replyTooShort;
                 }
                 else
                 {
@@ -363,20 +386,20 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
 
                     // Release the SpW buffer
 
-                    result = true;
+                    result.mResult = RmapResultType::success;
                 }
             }
         }
         else
         {
             console_out("RMAP-Initiator: Timeout\n");
-            result = false;
+            result.mResult = RmapResultType::timeout;
         }
     }
     else
     {
         console_out("RMAP-Initiator: Transaction could not be initiated\n");
-        result = false;
+        result.mResult = RmapResultType::sendFailed;
     }
 
     // Delete the transaction from the list

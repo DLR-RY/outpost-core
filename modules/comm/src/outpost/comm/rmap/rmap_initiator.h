@@ -18,6 +18,7 @@
 
 #include "rmap_options.h"
 #include "rmap_packet.h"
+#include "rmap_result.h"
 #include "rmap_status.h"
 #include "rmap_transaction.h"
 
@@ -260,9 +261,10 @@ public:
      *      outpost::time::Duration::zero()
      *
      * @return
-     *      True in case of successful operations, false for any errors encountered
+     *      Description of the result, will implicitly cast to true in success case and false
+     * otherwise
      */
-    bool
+    RmapResult
     write(const char* targetNodeName,
           const RMapOptions& options,
           uint32_t memoryAddress,
@@ -297,9 +299,10 @@ public:
      *      outpost::time::Duration::zero()
      *
      * @return
-     *      True in case of successful operations, false for any errors encountered
+     *      Description of the result, will implicitly cast to true in success case and false
+     * otherwise
      */
-    bool
+    RmapResult
     write(RmapTargetNode& targetNode,
           const RMapOptions& options,
           uint32_t memoryAddress,
@@ -331,9 +334,10 @@ public:
      *      Timeout for the SpW read operation
      *
      * @return
-     *      True in case of successful operations, false for any errors encountered
+     *      Description of the result, will implicitly cast to true in success case and false
+     * otherwise
      */
-    bool
+    RmapResult
     read(const char* targetNodeName,
          const RMapOptions& options,
          uint32_t memoryAddress,
@@ -364,10 +368,11 @@ public:
      *      Timeout for the SpW read operation
      *
      * @return
-     *      True in case of successful operations, false for any errors encountered
+     *      Description of the result, will implicitly cast to true in success case and false
+     * otherwise
      */
 
-    bool
+    RmapResult
     read(RmapTargetNode& rmapTargetNode,
          const RMapOptions& options,
          uint32_t memoryAddress,
@@ -439,8 +444,8 @@ private:
     hal::SpaceWire& mSpW;
     RmapTargetsList* mTargetNodes;
     outpost::rtos::Mutex mOperationLock;
-    uint8_t mInitiatorLogicalAddress;
-    bool mStopped;
+    const uint8_t mInitiatorLogicalAddress;
+    volatile bool mStopped;
     uint16_t mTransactionId;
     TransactionsList mTransactionsList;
 
