@@ -481,11 +481,13 @@ TEST_F(RmapTest, shouldSendHigherLevelWriteCommandPacket)
     EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
 
     // Send RMAP command to read from the target
-    mRmapInitiator.unsetIncrementMode();
-    mRmapInitiator.unsetVerifyMode();
-    mRmapInitiator.unsetReplyMode();
+    RMapOptions options;
+    options.mIncrementMode = false;
+    options.mReplyMode = false;
+    options.mVerifyMode = false;
 
-    EXPECT_TRUE(mRmapInitiator.write(targetName, 0x1000, outpost::asSlice(dataToSend)));
+    EXPECT_TRUE(
+            mRmapInitiator.write(targetName, options, 0x1000, 0x00, outpost::asSlice(dataToSend)));
 
     size_t expectedSize = 1;
 

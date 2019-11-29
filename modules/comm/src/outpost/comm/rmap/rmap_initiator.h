@@ -10,12 +10,13 @@
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  * - 2017, Fabian Greif (DLR RY-AVS)
- * - 2018, Jan Malburg (DLR RY-AVS)
+ * - 2018 - 2019, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_COMM_RMAP_INITIATOR_H_
 #define OUTPOST_COMM_RMAP_INITIATOR_H_
 
+#include "rmap_options.h"
 #include "rmap_packet.h"
 #include "rmap_status.h"
 #include "rmap_transaction.h"
@@ -183,7 +184,7 @@ public:
             }
             else
             {
-                return NULL;
+                return nullptr;
             }
         }
 
@@ -215,7 +216,7 @@ public:
                     return &mTransactions[i];
                 }
             }
-            return NULL;
+            return nullptr;
         }
 
         RmapTransaction mTransactions[rmap::maxConcurrentTransactions];
@@ -227,7 +228,8 @@ public:
                   RmapTargetsList* list,
                   uint8_t priority,
                   size_t stackSize,
-                  outpost::support::parameter::HeartbeatSource heartbeatSource);
+                  outpost::support::parameter::HeartbeatSource heartbeatSource,
+                  uint8_t initiatorLogicalAddress = rmap::defaultLogicalAddress);
     ~RmapInitiator();
 
     /**
@@ -241,8 +243,14 @@ public:
      *      Name of the target which is commands, targets are preinitialized list
      *      and searched against the name provided
      *
+     * @param options
+     *      contains the options with which the command is executed
+     *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
+     *
+     * @param extendedMemoryAddress
+     *      The MSB of the (40Bit) remote memory address
      *
      * @param data
      *      A Slice containing the data to write
@@ -256,7 +264,9 @@ public:
      */
     bool
     write(const char* targetNodeName,
+          const RMapOptions& options,
           uint32_t memoryAddress,
+          uint8_t extendedMemoryAdress,
           outpost::Slice<const uint8_t> const& data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
@@ -270,8 +280,14 @@ public:
      * @param targetNode
      *      Reference to the target node object found from the list
      *
+     * @param options
+     *      contains the options with which the command is executed
+     *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
+     *
+     * @param extendedMemoryAddress
+     *      The MSB of the (40Bit) remote memory address
      *
      * @param data
      *      A Slice containing the data to write
@@ -285,7 +301,9 @@ public:
      */
     bool
     write(RmapTargetNode& targetNode,
+          const RMapOptions& options,
           uint32_t memoryAddress,
+          uint8_t extendedMemoryAdress,
           outpost::Slice<const uint8_t> const& data,
           outpost::time::Duration timeout = outpost::time::Seconds(1));
 
@@ -297,8 +315,14 @@ public:
      *      Name of the target which is commands, targets are preinitialized list
      *      and searched against the name provided
      *
+     * @param options
+     *      contains the options with which the command is executed
+     *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
+     *
+     * @param extendedMemoryAddress
+     *      The MSB of the (40Bit) remote memory address
      *
      * @param buffer
      *      A Slice where received data bytes will be stored
@@ -311,7 +335,9 @@ public:
      */
     bool
     read(const char* targetNodeName,
+         const RMapOptions& options,
          uint32_t memoryAddress,
+         uint8_t extendedMemoryAdress,
          outpost::Slice<uint8_t> const& buffer,
          outpost::time::Duration timeout = outpost::time::Duration::maximum());
 
@@ -322,8 +348,14 @@ public:
      * @param targetNode
      *      Reference to the target node object found from the list
      *
+     * @param options
+     *      contains the options with which the command is executed
+     *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
+     *
+     * @param extendedMemoryAddress
+     *      The MSB of the (40Bit) remote memory address
      *
      * @param buffer
      *      A Slice where received data bytes will be stored
@@ -337,70 +369,13 @@ public:
 
     bool
     read(RmapTargetNode& rmapTargetNode,
+         const RMapOptions& options,
          uint32_t memoryAddress,
+         uint8_t extendedMemoryAdress,
          outpost::Slice<uint8_t> const& buffer,
          outpost::time::Duration timeout = outpost::time::Duration::maximum());
 
     //--------------------------------------------------------------------------
-    inline bool
-    isReplyModeSet() const
-    {
-        return mReplyMode;
-    }
-
-    inline void
-    setReplyMode()
-    {
-        mReplyMode = true;
-    }
-
-    inline void
-    unsetReplyMode()
-    {
-        mReplyMode = false;
-    }
-
-    inline bool
-    isIncrementMode() const
-    {
-        return mIncrementMode;
-    }
-
-    inline void
-    setIncrementMode()
-    {
-        mIncrementMode = true;
-    }
-
-    inline void
-    unsetIncrementMode()
-    {
-        mIncrementMode = false;
-    }
-
-    inline bool
-    isVerifyMode() const
-    {
-        return mVerifyMode;
-    }
-
-    inline void
-    setVerifyMode()
-    {
-        mVerifyMode = true;
-    }
-
-    inline void
-    unsetVerifyMode()
-    {
-        mVerifyMode = false;
-    }
-
-    inline void
-    setInitiatorLogicalAddress(uint8_t initiatorLogicalAddress)
-    {
-        mInitiatorLogicalAddress = initiatorLogicalAddress;
-    }
 
     inline size_t
     getActiveTransactions()
@@ -465,9 +440,6 @@ private:
     RmapTargetsList* mTargetNodes;
     outpost::rtos::Mutex mOperationLock;
     uint8_t mInitiatorLogicalAddress;
-    bool mIncrementMode;
-    bool mVerifyMode;
-    bool mReplyMode;
     bool mStopped;
     uint16_t mTransactionId;
     TransactionsList mTransactionsList;
