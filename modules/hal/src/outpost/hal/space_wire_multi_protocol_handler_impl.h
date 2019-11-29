@@ -44,6 +44,7 @@ SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::send(
     {
         memcpy(&transmitBuffer->getData()[0], &buffer[0], buffer.getNumberOfElements());
         transmitBuffer->setLength(buffer.getNumberOfElements());
+        transmitBuffer->setEndMarker(outpost::hal::SpaceWire::EndMarker::eop);
     }
 
     if (timeout != outpost::time::Duration::zero())
