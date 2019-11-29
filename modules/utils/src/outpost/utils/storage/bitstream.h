@@ -157,13 +157,20 @@ public:
     virtual void
     serialize(Serialize& stream, uint16_t maxLength) const
     {
-        if (maxLength > bytePointer)
+        uint16_t tmpBytePointer = maxLength;
+        uint8_t tmpBitPointer = bitPointer;
+        if (tmpBytePointer > bytePointer)
         {
-            maxLength = bytePointer;
+            tmpBytePointer = bytePointer;
+        }
+        else if (tmpBytePointer < bytePointer)
+        {
+            tmpBytePointer++;
+            tmpBitPointer = 7;
         }
 
-        stream.store(bytePointer);
-        stream.store(bitPointer);
+        stream.store(tmpBytePointer);
+        stream.store(tmpBitPointer);
 
         if (stream.getPointer() != &mData[0])
         {
