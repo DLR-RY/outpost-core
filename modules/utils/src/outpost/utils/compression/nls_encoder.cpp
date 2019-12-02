@@ -14,6 +14,7 @@
 #include "nls_encoder.h"
 
 #include <outpost/utils/log2.h>
+#include <outpost/utils/minmax.h>
 
 #include <algorithm>
 #include <iostream>
@@ -65,20 +66,19 @@ NLSEncoder::encode(outpost::Slice<int16_t> inBuffer,
         }
         if (i<inBuffer.getNumberOfElements()>> 1)
         {
-            dmax[i >> 1] = std::max<int16_t>(std::max<int16_t>(int16_t(std::abs(inBuffer[i - 1])),
-                                                               int16_t(std::abs(inBuffer[i]))),
-                                             std::max<int16_t>(dmax[i], dmax[i - 1]));
+            dmax[i >> 1] = outpost::utils::max<int16_t>(
+                    std::abs(inBuffer[i - 1]), std::abs(inBuffer[i]), dmax[i], dmax[i - 1]);
         }
         else
         {
-            dmax[i >> 1] = std::max<int16_t>(int16_t(std::abs(inBuffer[i - 1])),
-                                             int16_t(std::abs(inBuffer[i])));
+            dmax[i >> 1] =
+                    outpost::utils::max<int16_t>(std::abs(inBuffer[i - 1]), std::abs(inBuffer[i]));
         }
     }
 
     for (uint16_t i = 1; i<inBuffer.getNumberOfElements()>> 2; i++)
     {
-        gmax[i] = std::max<int16_t>(dmax[i << 1], dmax[(i << 1) + 1]);
+        gmax[i] = outpost::utils::max<int16_t>(dmax[i << 1], dmax[(i << 1) + 1]);
     }
 
     // Calculate the number of bitplanes
@@ -268,7 +268,8 @@ NLSEncoder::push(uint16_t pI, size_t pBufferLength)
     }
 }
 
-outpost::Slice<int16_t> NLSEncoder::decode(Bitstream& inBuffer, outpost::Slice<int16_t> outBuffer)
+outpost::Slice<int16_t>
+NLSEncoder::decode(Bitstream& inBuffer, outpost::Slice<int16_t> outBuffer)
 {
     int8_t n;
     uint8_t dcComponents;
