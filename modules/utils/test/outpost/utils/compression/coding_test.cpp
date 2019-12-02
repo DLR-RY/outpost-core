@@ -201,8 +201,7 @@ TEST_F(CodingTest, LinearTestWithCompression)
     double mse = 0.0f;
     for (uint32_t i = 0; i < bufferLength; i++)
     {
-        mse += std::abs(res[i] - inputReference[i])
-               * std::abs(res[i] - inputReference[i]);
+        mse += std::abs(res[i] - inputReference[i]) * std::abs(res[i] - inputReference[i]);
         uint16_t dif = std::abs(res[i] - inputReference[i]);
         EXPECT_LE(dif, 5U);
     }
