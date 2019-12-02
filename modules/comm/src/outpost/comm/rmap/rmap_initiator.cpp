@@ -265,7 +265,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                     outpost::time::Duration timeout)
 {
     RmapResult result;
-    if (buffer.getNumberOfElements() > Buffer::bufferSize)
+    if (buffer.getNumberOfElements() > rmap::bufferSize)
     {
         console_out("RMAP-Initiator: Requested size for read %u, maximal allowed size %u\n",
                     length,

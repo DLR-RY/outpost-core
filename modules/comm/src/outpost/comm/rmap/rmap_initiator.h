@@ -27,6 +27,7 @@
 #include <outpost/smpc.h>
 #include <outpost/support/heartbeat.h>
 #include <outpost/time/duration.h>
+#include <outpost/utils/minmax.h>
 
 #include <array>
 
@@ -52,7 +53,23 @@ class RmapInitiator : public outpost::rtos::Thread
 {
     friend class TestingRmap;
 
+    // For parameterize the class
     static constexpr outpost::time::Duration receiveTimeout = outpost::time::Seconds(5);
+
+    // Packet length related constants.
+    static constexpr uint16_t maxReadCommandLength =
+            rmap::readCommandOverhead + (2 * rmap::maxAddressLength);
+    static constexpr uint16_t maxWriteCommandLength =
+            rmap::writeCommandOverhead + (2 * rmap::maxAddressLength) + rmap::bufferSize;
+
+    static constexpr uint16_t maxCommandLength = maxWriteCommandLength;
+
+    static constexpr uint16_t maxReadReplyLength =
+            rmap::readReplyOverhead + rmap::maxAddressLength + rmap::bufferSize;
+    static constexpr uint16_t maxWriteReplyLength =
+            rmap::writeReplyOverhead + rmap::maxAddressLength;
+
+    static constexpr uint16_t maxReplyLength = maxReadReplyLength;
 
 public:
     enum Operation
@@ -86,7 +103,6 @@ public:
      * */
     struct Buffer
     {
-        static constexpr uint16_t bufferSize = 1024;
         Buffer() : mLength(0)
         {
             mData.fill(0);
@@ -97,7 +113,7 @@ public:
         {
             bool result = false;
 
-            if (len <= bufferSize)
+            if (len <= rmap::bufferSize)
             {
                 mLength = len;
                 memcpy(mData.data(), buffer, mLength);
@@ -115,7 +131,7 @@ public:
         }
 
     private:
-        std::array<uint8_t, bufferSize> mData;
+        std::array<uint8_t, rmap::bufferSize> mData;
         uint16_t mLength;
     };
 
