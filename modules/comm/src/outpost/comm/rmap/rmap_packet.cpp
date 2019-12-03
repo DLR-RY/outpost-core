@@ -109,7 +109,7 @@ RmapPacket::reset()
 }
 
 bool
-RmapPacket::constructPacket(outpost::Slice<uint8_t> buffer, outpost::Slice<const uint8_t>& data)
+RmapPacket::constructPacket(outpost::Slice<uint8_t>& buffer, outpost::Slice<const uint8_t>& data)
 {
     outpost::Serialize stream(buffer);
 
@@ -117,8 +117,8 @@ RmapPacket::constructPacket(outpost::Slice<uint8_t> buffer, outpost::Slice<const
     constructHeader(stream);
 
     // Data length must be less then total buffer length supported by SpW driver
-    if ((buffer.getNumberOfElements() - 4)
-        < static_cast<size_t>(stream.getPosition() + mDataLength))
+    if ((buffer.getNumberOfElements())
+        < static_cast<size_t>(stream.getPosition() + mDataLength + 1))
     {
         console_out("RMAP-Packet: Trying to send larger packet than available buffer "
                     "space\n");
@@ -135,11 +135,13 @@ RmapPacket::constructPacket(outpost::Slice<uint8_t> buffer, outpost::Slice<const
         stream.store<uint8_t>(mDataCRC);
     }
 
+    buffer = buffer.first(stream.getPosition());
+
     return true;
 }
 
 bool
-RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress)
+RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress)
 {
     if (data.getNumberOfElements() < rmap::minimumReplySize)
     {
@@ -154,27 +156,6 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
     uint8_t* dataStartPointer;
     uint8_t calculatedDataCRC;
     uint8_t packetDataCRC;
-
-    // Extract path addresses from the packet. Maximum SpW nodes supported in the
-    // network is 32. So max value of the SpW node ID would be less then 32
-    uint8_t spwPathAddr[rmap::maxPhysicalRouterOutputPorts];
-    uint8_t validSpWPathAddr = 0;
-
-    memset(spwPathAddr, 0, sizeof(spwPathAddr));
-    memset(mSpwTargets, 0, sizeof(mSpwTargets));
-
-    for (uint8_t i = 0; i < rmap::maxPhysicalRouterOutputPorts; i++)
-    {
-        if (data[i] == initiatorLogicalAddress)
-        {
-            break;
-        }
-        else if (data[i] < 32)
-        {
-            spwPathAddr[i] = stream.read<uint8_t>();
-            validSpWPathAddr++;
-        }
-    }
 
     uint8_t initiatoraLogicalAddress = stream.read<uint8_t>();
 
@@ -197,7 +178,7 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
     // If reply packet is received
     if (isReplyPacket())
     {
-        memcpy(mReplyAddress, spwPathAddr, validSpWPathAddr);
+        memset(mReplyAddress, 0, rmap::maxAddressLength / 4);
 
         mInitiatorLogicalAddress = initiatoraLogicalAddress;
         mStatus = stream.read<uint8_t>();
@@ -225,6 +206,12 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
         // Read command reply
         else
         {
+            if (data.getNumberOfElements() < rmap::readReplyOverhead)
+            {
+                console_out("RMAP-Packet: too small read reply\n");
+                return false;
+            }
+
             // Skip the reserved byte
             stream.skip(1);
 
@@ -249,8 +236,7 @@ RmapPacket::extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiator
             dataStartPointer = const_cast<uint8_t*>(stream.getPointerToCurrentPosition());
 
             // Check data length
-            if (static_cast<size_t>(stream.getPosition() + mDataLength + 1)
-                != data.getNumberOfElements())
+            if (mDataLength + rmap::readReplyOverhead != data.getNumberOfElements())
             {
                 console_out("RMAP-Packet: data length mismatch\n");
                 return false;

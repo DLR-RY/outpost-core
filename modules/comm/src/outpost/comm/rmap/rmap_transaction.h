@@ -18,6 +18,7 @@
 
 #include <outpost/rtos.h>
 #include <outpost/time/duration.h>
+#include <outpost/utils/container/shared_buffer.h>
 
 namespace outpost
 {
@@ -147,6 +148,12 @@ public:
         mReplyPacket = *replyPacket;
     }
 
+    inline void
+    setBuffer(outpost::utils::SharedBufferPointer& buffer)
+    {
+        mBuffer = buffer;
+    }
+
     /**
      * Blocks the current thread holding initiating the transaction.
      *
@@ -205,6 +212,7 @@ private:
     RmapPacket mReplyPacket;
     RmapPacket mCommandPacket;
     outpost::rtos::BinarySemaphore mReplyLock;
+    outpost::utils::SharedBufferPointer mBuffer;
 };
 }  // namespace comm
 }  // namespace outpost

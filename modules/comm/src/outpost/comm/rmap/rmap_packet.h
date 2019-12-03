@@ -239,7 +239,7 @@ public:
      * the packet buffer making it ready to send.
      *
      * \param buffer
-     *      SpW buffer provided by the RMAP initiator
+     *      SpW buffer provided by the RMAP initiator, size will be set as well
      *
      * \param data
      *      Reference to the user data for write commands, for read commands
@@ -252,7 +252,7 @@ public:
      *
      * */
     bool
-    constructPacket(outpost::Slice<uint8_t> buffer, outpost::Slice<const uint8_t>& data);
+    constructPacket(outpost::Slice<uint8_t>& buffer, outpost::Slice<const uint8_t>& data);
 
     /**
      * Extract the received RMAP packet according to the given standard by
@@ -271,7 +271,7 @@ public:
      *
      * */
     bool
-    extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress);
+    extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress);
 
     /**
      * Setting the RMAP target specific information into the packet, will be

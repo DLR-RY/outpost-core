@@ -19,12 +19,10 @@
 
 using namespace outpost::comm;
 
-outpost::smpc::Topic<outpost::comm::NonRmapDataType> outpost::comm::nonRmapPacketReceived;
-
 constexpr outpost::time::Duration RmapInitiator::receiveTimeout;
 
 //-----------------------------------------------------------------------------
-RmapInitiator::RmapInitiator(hal::SpaceWire& spw,
+RmapInitiator::RmapInitiator(hal::SpaceWireMultiProtocolHandlerInterface& spw,
                              RmapTargetsList* list,
                              uint8_t priority,
                              size_t stackSize,
@@ -40,7 +38,6 @@ RmapInitiator::RmapInitiator(hal::SpaceWire& spw,
     mTransactionsList(),
     mDiscardedPacket(nullptr),
     mCounters(),
-    mRxData(),
     mHeartbeatSource(heartbeatSource)
 {
 }
@@ -68,7 +65,7 @@ RmapInitiator::write(const char* targetNodeName,
             if (data.getNumberOfElements() != 0)
             {
                 result = write(
-                        *targetNode, options, extendedMemoryAdress, memoryAddress, data, timeout);
+                        *targetNode, options, memoryAddress, extendedMemoryAdress, data, timeout);
             }
         }
     }
@@ -377,12 +374,17 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                 else if (buffer.getNumberOfElements() > rply->getDataLength())
                 {
                     console_out("RMAP-Initiator: Read reply with insufficient data\n");
+
+                    // Copy received data to the external buffer
+                    memcpy(&buffer[0], rply->getData(), rply->getDataLength());
+
                     result.mResult = RmapResultType::replyTooShort;
                 }
                 else
                 {
                     // Copy received data to the external buffer
-                    mRxData.getData(buffer.begin());
+                    // at this point rply->getDataLength() == buffer.getNumberOfElements()
+                    memcpy(&buffer[0], rply->getData(), rply->getDataLength());
 
                     // Release the SpW buffer
 
@@ -403,6 +405,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     }
 
     // Delete the transaction from the list
+    // Will also release the SharedBuffer allocated for the received data
     mTransactionsList.removeTransaction(transaction->getTransactionID());
 
     return result;
@@ -415,22 +418,29 @@ RmapInitiator::run()
 {
     static RmapPacket packet;
 
+    // setup the receive part
+    mSpW.addQueue(rmap::protocolIdentifier, &mPool, &mQueue, true);
+
     mStopped = false;
     while (!mStopped)
     {
+        outpost::utils::SharedBufferPointer rxBuffer;
+
         outpost::support::Heartbeat::send(mHeartbeatSource, receiveTimeout * 2);
-        if (receivePacket(&packet))
+        if (receivePacket(&packet, rxBuffer))
         {
             // Only handling reply packet, no command packets
             if (packet.isReplyPacket())
             {
-                replyPacketReceived(&packet);
+                replyPacketReceived(&packet, rxBuffer);
             }
             else
             {
                 mCounters.mErrorneousReplyPackets++;
             }
         }
+        // Explicitly yield the control over the buffer
+        rxBuffer = outpost::utils::SharedBufferPointer();
     }
     outpost::support::Heartbeat::suspend(mHeartbeatSource);
     mStopped = true;
@@ -440,7 +450,6 @@ bool
 RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uint8_t> data)
 {
     RmapPacket* cmd = transaction->getCommandPacket();
-    hal::SpaceWire::TransmitBuffer* txBuffer = 0;
     uint16_t transactionID;
     bool result = false;
 
@@ -454,107 +463,70 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uin
     // therefore transmit can directly begin
 
     // Request TX buffer
-    if (mSpW.requestBuffer(txBuffer, transaction->getTimeoutDuration())
-        == hal::SpaceWire::Result::success)
+    outpost::Slice<uint8_t> txBuffer = outpost::asSlice(mSendBuffer);
+
+    // Serialize the packet content to the SpW buffer
+    if (cmd->constructPacket(txBuffer, data))
     {
-        // Serialize the packet content to the SpW buffer
-        if (cmd->constructPacket(txBuffer->getData(), data))
-        {
-            // Total packet length varies with command type
-            if (cmd->isWrite())
-            {
-                // Header length + Data length + Header CRC + Data CRC
-                txBuffer->setLength(cmd->getHeaderLength() + cmd->getDataLength() + 2);
-            }
-            else if (cmd->isRead())
-            {
-                // Header length Header CRC
-                txBuffer->setLength(cmd->getHeaderLength() + 1);
-            }
-
-            txBuffer->setEndMarker(outpost::hal::SpaceWire::eop);
-
 #ifdef DEBUG_EN
-            outpost::Slice<uint8_t> txData = txBuffer->getData();
-            console_out("TX-Data length: %zu\n", txData.getNumberOfElements());
-            for (uint16_t i = 0; i < txData.getNumberOfElements(); i++)
+        outpost::Slice<uint8_t> txData = txBuffer->getData();
+        console_out("TX-Data length: %zu\n", txData.getNumberOfElements());
+        for (uint16_t i = 0; i < txData.getNumberOfElements(); i++)
+        {
+            console_out("%02X ", txData[i]);
+            if (i % 30 == 29)
             {
-                console_out("%02X ", txData[i]);
-                if (i % 30 == 29)
-                {
-                    console_out("\n");
-                }
+                console_out("\n");
             }
-            console_out("\n");
+        }
+        console_out("\n");
 #endif
 
-            if (mSpW.send(txBuffer, transaction->getTimeoutDuration())
-                == hal::SpaceWire::Result::success)
-            {
-                transaction->setState(RmapTransaction::initiated);
+        if (mSpW.send(txBuffer, transaction->getTimeoutDuration()))
+        {
+            transaction->setState(RmapTransaction::initiated);
 
-                result = true;
-            }
+            result = true;
         }
     }
     return result;
 }
 
 bool
-RmapInitiator::receivePacket(RmapPacket* rxedPacket)
+RmapInitiator::receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBufferPointer& rxBuffer)
 {
-    hal::SpaceWire::ReceiveBuffer rxBuffer;
     bool result = false;
 
     // Receive response
-    if (mSpW.receive(rxBuffer, receiveTimeout) == hal::SpaceWire::Result::success)
+    if (mQueue.receive(rxBuffer, receiveTimeout))
     {
-        if (rxBuffer.getEndMarker() == hal::SpaceWire::eop)
-        {
-            outpost::Slice<const uint8_t> rxData = rxBuffer.getData();
+        outpost::Slice<const uint8_t> rxData = rxBuffer.asSlice();
 
 #ifdef DEBUG_EN
-            console_out("RX-Data length: %zu\n", rxData.getNumberOfElements());
-            for (uint16_t i = 0; i < rxData.getNumberOfElements(); i++)
+        console_out("RX-Data length: %zu\n", rxData.getNumberOfElements());
+        for (uint16_t i = 0; i < rxData.getNumberOfElements(); i++)
+        {
+            console_out("%02X ", rxData[i]);
+            if (i % 30 == 29)
             {
-                console_out("%02X ", rxData[i]);
-                if (i % 30 == 29)
-                {
-                    console_out("\n");
-                }
+                console_out("\n");
             }
-            console_out("\n");
+        }
+        console_out("\n");
 #endif
 
-            rxedPacket->reset();
+        rxedPacket->reset();
 
-            if (rxedPacket->extractPacket(rxData, mInitiatorLogicalAddress))
-            {
-                if (mRxData.addData(rxedPacket->getData(), rxedPacket->getDataLength()))
-                {
-                    result = true;
-                }
-                else
-                {
-                    mCounters.mErrorInStoringReplyPacket++;
-                }
-                mSpW.releaseBuffer(rxBuffer);
-            }
-            else
-            {
-                console_out("RMAP-Initiator: packet interpretation failed, could be "
-                            "non-rmap"
-                            "packet\n");
-                nonRmapPacketReceived.publish(rxData);
-                mCounters.mNonRmapPacketReceived++;
-                mSpW.releaseBuffer(rxBuffer);
-                result = false;
-            }
+        if (rxedPacket->extractReplyPacket(rxData, mInitiatorLogicalAddress))
+        {
+            result = true;
         }
         else
         {
-            console_out("RMAP-Initiator: Wrong end of packet\n");
-            mSpW.releaseBuffer(rxBuffer);
+            console_out("RMAP-Initiator: packet interpretation failed, could be "
+                        "non-rmap"
+                        "packet\n");
+            mCounters.mNonRmapPacketReceived++;
             result = false;
         }
     }
@@ -562,7 +534,8 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket)
 }
 
 void
-RmapInitiator::replyPacketReceived(RmapPacket* packet)
+RmapInitiator::replyPacketReceived(RmapPacket* packet,
+                                   outpost::utils::SharedBufferPointer& rxBuffer)
 {
     // Find a corresponding command packet
     RmapTransaction* transaction = resolveTransaction(packet);
@@ -583,6 +556,10 @@ RmapInitiator::replyPacketReceived(RmapPacket* packet)
 
         // Update transaction state
         transaction->setState(RmapTransaction::replyReceived);
+
+        // give the transaction the control over the shared buffer, so it lives as long as the
+        // transaction does
+        transaction->setBuffer(rxBuffer);
 
         console_out("RMAP-Initiator: Reply received, thus notifying blocking thread\n");
 

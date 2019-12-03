@@ -22,11 +22,13 @@
 #include "rmap_status.h"
 #include "rmap_transaction.h"
 
-#include <outpost/hal/spacewire.h>
+#include <outpost/hal/space_wire_multi_protocol_handler.h>
 #include <outpost/rtos.h>
 #include <outpost/smpc.h>
 #include <outpost/support/heartbeat.h>
 #include <outpost/time/duration.h>
+#include <outpost/utils/container/shared_buffer_queue.h>
+#include <outpost/utils/container/shared_object_pool.h>
 #include <outpost/utils/minmax.h>
 
 #include <array>
@@ -241,7 +243,7 @@ public:
     };
 
     //--------------------------------------------------------------------------
-    RmapInitiator(hal::SpaceWire& spw,
+    RmapInitiator(hal::SpaceWireMultiProtocolHandlerInterface& spw,
                   RmapTargetsList* list,
                   uint8_t priority,
                   size_t stackSize,
@@ -445,10 +447,10 @@ private:
     sendPacket(RmapTransaction* transaction, outpost::Slice<const uint8_t> data);
 
     bool
-    receivePacket(RmapPacket* rxedPacket);
+    receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBufferPointer& rxBuffer);
 
     void
-    replyPacketReceived(RmapPacket* packet);
+    replyPacketReceived(RmapPacket* packet, outpost::utils::SharedBufferPointer& rxBuffer);
 
     RmapTransaction*
     resolveTransaction(RmapPacket* packet);
@@ -457,7 +459,7 @@ private:
     getNextAvailableTransactionID();
 
     //--------------------------------------------------------------------------
-    hal::SpaceWire& mSpW;
+    hal::SpaceWireMultiProtocolHandlerInterface& mSpW;
     RmapTargetsList* mTargetNodes;
     outpost::rtos::Mutex mOperationLock;
     const uint8_t mInitiatorLogicalAddress;
@@ -475,13 +477,14 @@ private:
     RmapPacket* mDiscardedPacket;
 
     ErrorCounters mCounters;
-    Buffer mRxData;
 
     const outpost::support::parameter::HeartbeatSource mHeartbeatSource;
-};
 
-typedef outpost::Slice<const uint8_t> NonRmapDataType;
-extern outpost::smpc::Topic<NonRmapDataType> nonRmapPacketReceived;
+    std::array<uint8_t, maxCommandLength> mSendBuffer;
+
+    outpost::utils::SharedBufferQueue<rmap::numberOfReceiveBuffer> mQueue;
+    outpost::utils::SharedBufferPool<maxReplyLength, rmap::numberOfReceiveBuffer> mPool;
+};
 
 }  // namespace comm
 }  // namespace outpost

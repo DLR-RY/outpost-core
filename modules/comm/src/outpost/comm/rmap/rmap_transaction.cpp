@@ -24,7 +24,8 @@ RmapTransaction::RmapTransaction() :
     mBlockingMode(false),
     mReplyPacket(),
     mCommandPacket(),
-    mReplyLock(outpost::rtos::BinarySemaphore::State::released)
+    mReplyLock(outpost::rtos::BinarySemaphore::State::released),
+    mBuffer()
 {
 }
 
@@ -43,4 +44,5 @@ RmapTransaction::reset()
     mBlockingMode = false;
     mReplyPacket.reset();
     mCommandPacket.reset();
+    mBuffer = outpost::utils::SharedBufferPointer();
 }
