@@ -335,11 +335,12 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
         transaction->setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
         transaction->setTimeoutDuration(timeout);
 
+        // Command is read, thus no data bytes available
         outpost::Slice<const uint8_t> empty{outpost::Slice<const uint8_t>::empty()};
         sendSuccesful = sendPacket(transaction, empty);
     }  // MutexGuard scope
 
-    // Command is read, thus no data bytes available
+
     if (sendSuccesful)
     {
         transaction->setState(RmapTransaction::commandSent);

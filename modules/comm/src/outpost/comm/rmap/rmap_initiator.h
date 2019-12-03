@@ -139,7 +139,7 @@ public:
 
     struct TransactionsList
     {
-        TransactionsList() : mTransactions(), mIndex(0)
+        TransactionsList() : mTransactions()
         {
         }
 
@@ -148,7 +148,7 @@ public:
         }
 
         uint8_t
-        getActiveTransactions()
+        getNumberOfActiveTransactions()
         {
             uint8_t active = 0;
 
@@ -162,11 +162,17 @@ public:
             return active;
         }
 
+        /**
+         * only used for testing
+         */
         void
         addTransaction(RmapTransaction* trans)
         {
-            mTransactions[mIndex] = *trans;
-            mIndex = (mIndex == (rmap::maxConcurrentTransactions - 1) ? 0 : mIndex + 1);
+            RmapTransaction* pos = getFreeTransaction();
+            if (pos != nullptr)
+            {
+                *pos = *trans;
+            }
         }
 
         void
@@ -239,7 +245,6 @@ public:
         }
 
         RmapTransaction mTransactions[rmap::maxConcurrentTransactions];
-        uint8_t mIndex;
     };
 
     //--------------------------------------------------------------------------
@@ -403,7 +408,7 @@ public:
     inline size_t
     getActiveTransactions()
     {
-        return mTransactionsList.getActiveTransactions();
+        return mTransactionsList.getNumberOfActiveTransactions();
     }
 
     inline ErrorCounters
