@@ -107,19 +107,18 @@ public:
     allocate(SharedBufferPointer& pointer) override
     {
         outpost::rtos::MutexGuard lock(mMutex);
-        bool res = false;
-        size_t searchLastIndex = (mLastIndex - 1) % N;
         size_t i = mLastIndex;
+        bool res = false;
         do
         {
             if (!mBuffer[i].isUsed())
             {
                 pointer = SharedBufferPointer(&mBuffer[i]);
                 res = true;
-                mLastIndex = i;
+                mLastIndex = (i + 1) % N;
             }
             i = (i + 1) % N;
-        } while (i != searchLastIndex && !res);
+        } while (i != mLastIndex && !res);
         return res;
     }
 
