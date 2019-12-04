@@ -27,7 +27,7 @@ bool
 SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::send(
         const outpost::Slice<const uint8_t>& buffer, outpost::time::Duration timeout)
 {
-    outpost::time::SpacecraftElapsedTime start = mClock.now();
+    outpost::time::SpacecraftElapsedTime startTime = mClock.now();
     SpaceWire::TransmitBuffer* transmitBuffer;
     auto result = mSpWHandle.getSpaceWire().requestBuffer(transmitBuffer, timeout);
     if (result != SpaceWire::Result::Type::success)
@@ -47,17 +47,18 @@ SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::send(
         transmitBuffer->setEndMarker(outpost::hal::SpaceWire::EndMarker::eop);
     }
 
-    if (timeout != outpost::time::Duration::zero())
+    if (timeout != outpost::time::Duration::zero()
+        && timeout != outpost::time::Duration::infinity())
     {
         // update remaining timeout unless we are in non-blocking anyways
         outpost::time::SpacecraftElapsedTime now = mClock.now();
-        if (now > start + timeout)
+        if (now > startTime + timeout)
         {
             return false;
         }
         else
         {
-            timeout = timeout - (now - start);
+            timeout = timeout - (now - startTime);
         }
     }
 
