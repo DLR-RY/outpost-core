@@ -11,3 +11,9 @@ bin/
 modules/*/doc/doxygen/api/*
 .sconsign.dblite
 *.pyc
+
+# generated files
+.o
+compile_db.json
+checks.xml
+check-tests.xml

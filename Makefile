@@ -68,6 +68,26 @@ test:
 	done
 	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
 
+cppcheck:
+	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+		printf "\n$(CINFO)Run CPPcheck for module \"$$m\":$(CEND)\n" ; \
+		make -C modules/$$m cppcheck || return 1 ; \
+	done
+	#@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+		#grep "severity=\"error" checks.xml; \
+	#done
+	#TODO check the results
+	#@printf "\n$(COK)[PASS] All cppcheck passed! $(CEND)\n"
+
+cppcheck-tests:
+	for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+		printf "\n$(CINFO)Run CPPcheck  on tests of module \"$$m\":$(CEND)\n" ; \
+		make -C modules/$$m cppcheck-tests || return 1 ; \
+	done
+	#TODO check the results
+	#@printf "\n$(COK)[PASS] All cppcheck passed! $(CEND)\n"
+
+
 cloc-source:
 	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
 		printf "\n$(CINFO)Count Lines of Code for module \"$$m\":$(CEND)\n" ; \

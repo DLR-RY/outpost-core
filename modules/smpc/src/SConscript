@@ -27,6 +27,7 @@ objects = []
 for file in files:
 	objects.append(env.Object(file))
 envGlobal.Append(objects={'smpc': objects})
+envGlobal.Append(sources={'smpc': files})
 
 library = env.StaticLibrary('outpost_smpc', objects)
 envGlobal.Install('$BUILDPATH/lib', library)

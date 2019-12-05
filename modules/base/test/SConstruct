@@ -59,10 +59,14 @@ files += env.Glob('outpost/*/*.cpp')
 files += env.Glob('outpost/*/*/*.cpp')
 files += env.Glob('outpost/*/*/*/*.cpp')
 
+sources = env['sources'][module]
+sources += files
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong
 # results for the coverage analysis.
 files += env['objects'][module]
 
 envGlobal.Alias('build', env.Program('runner', files))
+envGlobal.Alias('compiledb', env.compiledb(sources))
+
 envGlobal.Default('build')

@@ -37,7 +37,7 @@ pipeline {
         stage("build") {
             steps {
                 dir('outpost-core') {
-                    sh 'bear make test'
+                    sh 'make test'
                 }
             }
         }
@@ -81,12 +81,16 @@ pipeline {
                     qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
             }
         }
-		stage("cppcheck") {
-			steps {
-					sh 'python compile_commands-rel2abs.py'
-					sh 'cppcheck --enable=all --inconclusive --force --xml --project=c.json 2> cppcheck.xml'
-			}
-		}
+        stage("cppcheck") {
+            steps {
+                dir('outpost-core') {
+                    sh 'make cppcheck'
+                    sh 'make cppcheck-tests'
+                    sh 'make cppcheck-unittests'
+                    // TODO use the check results in jenkins
+                }
+            }
+        }
     }
 
     post {

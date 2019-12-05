@@ -84,6 +84,16 @@ test-default:
 	@mkdir -p $(BUILDPATH)/test
 	@python3 $(ROOTPATH)/tools/gtest_process_skipped.py $(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml $(BUILDPATH)/test/$(MODULE).xml
 
+cppcheck:
+	@scons -C test/ compiledb
+	@cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> checks.xml
+
+
+cppcheck-tests:
+	@scons -C test/ tests_compiledb
+	@cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> check-tests.xml
+
+
 coverage-default:
 	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
 	find $(BUILDPATH)/$(MODULE)/test/coverage -name "*.gcda" -delete; \
@@ -185,4 +195,4 @@ clean-default:
 distclean-default:
 	@scons build coverage=1 -Q -C test/unit -c
 
-.PHONY: build-lua test-default coverage-default coverage-html-default
+.PHONY: build-lua test-default coverage-default coverage-html-default cppcheck cppcheck-tests

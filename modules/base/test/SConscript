@@ -30,3 +30,4 @@ objects = []
 for file in files:
     objects.append(env.Object(file))
 envGlobal.Append(objects_unittest=objects)
+envGlobal.Append(sources_unittest=files)

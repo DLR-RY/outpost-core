@@ -48,3 +48,5 @@ envGlobal.AppendUnique(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 # Export the symbols into the dynamic symbol table. This is needed when
 # using dynamically loaded lua modules.
 envGlobal.Append(LINKFLAGS=['-Wl,--export-dynamic'])
+
+envGlobal.Alias('tests_compiledb', envGlobal.compiledb(envGlobal['sources_unittest']))
