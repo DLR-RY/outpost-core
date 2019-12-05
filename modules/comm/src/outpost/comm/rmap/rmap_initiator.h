@@ -73,6 +73,9 @@ class RmapInitiator : public outpost::rtos::Thread
 
     static constexpr uint16_t maxReplyLength = maxReadReplyLength;
 
+    // Interval duration to check when the dispatcher thread is running
+    static constexpr outpost::time::Duration startUpWaitInterval = outpost::time::Milliseconds(1);
+
 public:
     enum Operation
     {
@@ -255,6 +258,12 @@ public:
                   outpost::support::parameter::HeartbeatSource heartbeatSource,
                   uint8_t initiatorLogicalAddress = rmap::defaultLogicalAddress);
     ~RmapInitiator();
+
+    /**
+     * Starts the internal thread and waits till the listener are set up
+     */
+    void
+    init(void);
 
     /**
      * Writes remote memory. For blocking write, the method blocks the current

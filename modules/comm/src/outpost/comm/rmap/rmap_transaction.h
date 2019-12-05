@@ -38,8 +38,7 @@ public:
     enum State : uint8_t
     {
         notInitiated = 0x00,
-        initiated = 0x01,
-        commandSent = 0x02,
+        initiated = 0x01,  // anything from reserved till answer received
         replyReceived = 0x03,
         timeout = 0x04
     };

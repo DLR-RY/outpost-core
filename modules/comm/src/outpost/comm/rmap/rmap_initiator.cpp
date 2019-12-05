@@ -20,6 +20,7 @@
 using namespace outpost::comm;
 
 constexpr outpost::time::Duration RmapInitiator::receiveTimeout;
+constexpr outpost::time::Duration RmapInitiator::startUpWaitInterval;
 
 //-----------------------------------------------------------------------------
 RmapInitiator::RmapInitiator(hal::SpaceWireMultiProtocolHandlerInterface& spw,
@@ -174,13 +175,11 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
         // If reply is expected
         if (options.mReplyMode)
         {
-            transaction->setState(RmapTransaction::commandSent);
-
             // Wait for the RMAP reply
             transaction->blockTransaction(timeout);
 
             // Command sent but no reply
-            if (transaction->getState() == RmapTransaction::commandSent)
+            if (transaction->getState() == RmapTransaction::initiated)
             {
                 console_out("RMAP-Initiator: command sent but no reply received for the "
                             "transaction %u\n",
@@ -277,8 +276,8 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     if (buffer.getNumberOfElements() > rmap::bufferSize)
     {
         console_out("RMAP-Initiator: Requested size for read %u, maximal allowed size %u\n",
-                    length,
-                    Buffer::bufferSize);
+                    buffer.getNumberOfElements(),
+                    rmap::bufferSize);
         result.mResult = RmapResultType::invalidParameters;
         return result;
     }
@@ -355,8 +354,6 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
 
     if (sendSuccesful)
     {
-        transaction->setState(RmapTransaction::commandSent);
-
         console_out("RMAP-Initiator: Command sent %u, waiting for reply\n",
                     transaction->getState());
 
@@ -486,7 +483,7 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uin
     if (cmd->constructPacket(txBuffer, data))
     {
 #ifdef DEBUG_EN
-        outpost::Slice<uint8_t> txData = txBuffer->getData();
+        outpost::Slice<uint8_t> txData = txBuffer;
         console_out("TX-Data length: %zu\n", txData.getNumberOfElements());
         for (uint16_t i = 0; i < txData.getNumberOfElements(); i++)
         {
@@ -498,11 +495,10 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uin
         }
         console_out("\n");
 #endif
-
+        // first set it then send the request otherwise we are in a race condition
+        transaction->setState(RmapTransaction::initiated);
         if (mSpW.send(txBuffer, transaction->getTimeoutDuration()))
         {
-            transaction->setState(RmapTransaction::initiated);
-
             result = true;
         }
     }
