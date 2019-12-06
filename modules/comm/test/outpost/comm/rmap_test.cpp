@@ -320,9 +320,9 @@ TEST_F(RmapTest, shouldBuildVerifyPacketHeaderCRC)
     send.setInitiatorLogicalAddress(rmap::defaultLogicalAddress);
     send.setWrite();
     send.setCommand();
-    send.unsetIncrementFlag();
-    send.unsetVerifyFlag();
-    send.unsetReplyFlag();
+    send.setIncrementFlag(false);
+    send.setVerifyFlag(false);
+    send.setReplyFlag(false);
     send.setExtendedAddress(rmap::defaultExtendedAddress);
     send.setAddress(0x100);
     send.setDataLength(4);
@@ -355,9 +355,9 @@ TEST_F(RmapTest, shouldSendWriteCommandPacket)
     cmd->setInitiatorLogicalAddress(rmap::defaultLogicalAddress);
     cmd->setWrite();
     cmd->setCommand();
-    cmd->unsetIncrementFlag();
-    cmd->unsetVerifyFlag();
-    cmd->unsetReplyFlag();
+    cmd->setIncrementFlag(false);
+    cmd->setVerifyFlag(false);
+    cmd->setReplyFlag(false);
     transaction.setBlockingMode(false);
     cmd->setExtendedAddress(rmap::defaultExtendedAddress);
     cmd->setAddress(0x100);
@@ -423,9 +423,9 @@ TEST_F(RmapTest, shouldSendReadCommandPacket)
     cmd->setInitiatorLogicalAddress(rmap::defaultLogicalAddress);
     cmd->setRead();
     cmd->setCommand();
-    cmd->unsetIncrementFlag();
-    cmd->unsetVerifyFlag();
-    cmd->setReplyFlag();
+    cmd->setIncrementFlag(false);
+    cmd->setVerifyFlag(false);
+    cmd->setReplyFlag(true);
     transaction.setBlockingMode(false);
     cmd->setExtendedAddress(rmap::defaultExtendedAddress);
     cmd->setAddress(0x100);
@@ -673,7 +673,7 @@ TEST_F(RmapTest, testReadAnswerTooShort)
 
 TEST_F(RmapTest, testReadSwitchReply)
 {
-    static_assert(rmap::numberOfReceiveBuffer >= 2,
+    static_assert(rmap::numberOfReceiveBuffers >= 2,
                   "Two package switch test requires a receive buffer of at least 2");
 
     uint8_t readBuffer1[4] = {0x00, 0x00, 0x00, 0x00};
@@ -770,7 +770,7 @@ TEST_F(RmapTest, testReadSwitchReply)
 
 TEST_F(RmapTest, testBufferDoNotLeak)
 {
-    static_assert(rmap::numberOfReceiveBuffer < rmap::maxConcurrentTransactions,
+    static_assert(rmap::numberOfReceiveBuffers < rmap::maxConcurrentTransactions,
                   "Test against leakage requires more transaction then receive buffer");
 
     uint8_t readBuffer[4] = {0x00, 0x00, 0x00, 0x00};

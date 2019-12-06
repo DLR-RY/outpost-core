@@ -47,6 +47,10 @@ public:
      * */
     struct InstructionField
     {
+        static constexpr int incrementBit = 2;
+        static constexpr int replyBit = 3;
+        static constexpr int verifyBit = 4;
+
         enum PacketType : uint8_t
         {
             replyPacket = 0,
@@ -109,66 +113,61 @@ public:
         }
 
         inline void
-        enableVerify()
+        setVerify(bool enable)
         {
-            // bit4 verify
-            outpost::BitAccess::set<uint8_t, 4>(mField, 1);
+            if (enable)
+            {
+                outpost::BitAccess::set<uint8_t, verifyBit>(mField, 1);
+            }
+            else
+            {
+                outpost::BitAccess::set<uint8_t, verifyBit>(mField, 0);
+            }
         }
 
         inline void
-        disableVerify()
+        setReply(bool enable)
         {
-            // bit4 verify
-            outpost::BitAccess::set<uint8_t, 4>(mField, 0);
+            if (enable)
+            {
+                outpost::BitAccess::set<uint8_t, replyBit>(mField, 1);
+            }
+            else
+            {
+                outpost::BitAccess::set<uint8_t, replyBit>(mField, 0);
+            }
         }
 
         inline void
-        enableReply()
+        setIncrement(bool enable)
         {
-            // bit3 reply
-            outpost::BitAccess::set<uint8_t, 3>(mField, 1);
-        }
-
-        inline void
-        disableReply()
-        {
-            // bit3 reply
-            outpost::BitAccess::set<uint8_t, 3>(mField, 0);
-        }
-
-        inline void
-        enableIncrement()
-        {
-            // bit2 increment
-            outpost::BitAccess::set<uint8_t, 2>(mField, 1);
-        }
-
-        inline void
-        disableIncrement()
-        {
-            // bit2 increment
-            outpost::BitAccess::set<uint8_t, 2>(mField, 0);
+            if (enable)
+            {
+                outpost::BitAccess::set<uint8_t, incrementBit>(mField, 1);
+            }
+            else
+            {
+                outpost::BitAccess::set<uint8_t, incrementBit>(mField, 0);
+            }
         }
 
         inline bool
         isVerifyEnabled()
         {
             // bit4 verify
-            return outpost::BitAccess::get<uint8_t, 4>(mField);
+            return outpost::BitAccess::get<uint8_t, verifyBit>(mField);
         }
 
         inline bool
         isReplyEnabled()
         {
-            // bit3 reply
-            return outpost::BitAccess::get<uint8_t, 3>(mField);
+            return outpost::BitAccess::get<uint8_t, replyBit>(mField);
         }
 
         inline bool
         isIncrementEnabled()
         {
-            // bit2 increment
-            return outpost::BitAccess::get<uint8_t, 2>(mField);
+            return outpost::BitAccess::get<uint8_t, incrementBit>(mField);
         }
 
         inline void
@@ -410,15 +409,9 @@ public:
     }
 
     inline void
-    setVerifyFlag()
+    setVerifyFlag(bool enable)
     {
-        mInstruction.enableVerify();
-    }
-
-    inline void
-    unsetVerifyFlag()
-    {
-        mInstruction.disableVerify();
+        mInstruction.setVerify(enable);
     }
 
     inline bool
@@ -428,15 +421,9 @@ public:
     }
 
     inline void
-    setReplyFlag()
+    setReplyFlag(bool enable)
     {
-        mInstruction.enableReply();
-    }
-
-    inline void
-    unsetReplyFlag()
-    {
-        mInstruction.disableReply();
+        mInstruction.setReply(enable);
     }
 
     inline bool
@@ -446,15 +433,9 @@ public:
     }
 
     inline void
-    setIncrementFlag()
+    setIncrementFlag(bool enable)
     {
-        mInstruction.enableIncrement();
-    }
-
-    inline void
-    unsetIncrementFlag()
-    {
-        mInstruction.disableIncrement();
+        mInstruction.setIncrement(enable);
     }
 
     inline void

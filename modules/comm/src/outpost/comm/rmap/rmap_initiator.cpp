@@ -48,7 +48,7 @@ RmapInitiator::~RmapInitiator()
 }
 
 /**
- * Starts the internal thread and waits till the listener are set up
+ * Starts the internal thread and waits till the listeners are set up
  */
 void
 RmapInitiator::init(void)
@@ -69,7 +69,7 @@ RmapInitiator::write(const char* targetNodeName,
 {
     RmapResult result;
     result.mResult = RmapResultType::invalidParameters;
-    if (mTargetNodes)
+    if (mTargetNodes != nullptr)
     {
         RmapTargetNode* targetNode = mTargetNodes->getTargetNode(targetNodeName);
         if (targetNode)
@@ -118,57 +118,43 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
             return result;
         }
 
-        RmapPacket* cmd = transaction->getCommandPacket();
-
-        // Packet configuration
-        cmd->setInitiatorLogicalAddress(mInitiatorLogicalAddress);
-        cmd->setWrite();
-        cmd->setCommand();
-
-        if (options.mIncrementMode)
-        {
-            cmd->setIncrementFlag();
-        }
-        else
-        {
-            cmd->unsetIncrementFlag();
-        }
-
-        if (options.mVerifyMode)
-        {
-            cmd->setVerifyFlag();
-        }
-        else
-        {
-            cmd->unsetVerifyFlag();
-        }
-
-        if (options.mReplyMode)
-        {
-            // Sets the transaction mode
-            transaction->setBlockingMode(true);
-
-            // Extra block call with zero timeout for acquiring already released lock
-            transaction->blockTransaction(outpost::time::Duration::zero());
-
-            cmd->setReplyFlag();
-        }
-        else
-        {
-            // UnSets the transaction mode
-            transaction->setBlockingMode(false);
-
-            cmd->unsetReplyFlag();
-        }
-        cmd->setExtendedAddress(extendedMemoryAdress);
-        cmd->setAddress(memoryAddress);
-        cmd->setDataLength(data.getNumberOfElements());
-        cmd->setTargetInformation(rmapTargetNode);
-        transaction->setTimeoutDuration(timeout);
-
-        // Transaction will be initiated and sent through the SpW interface
-        sendSuccesful = sendPacket(transaction, data);
+        // id must also be under mutex
+        uint16_t transactionID = getNextAvailableTransactionID();
+        transaction->setTransactionID(transactionID);
     }  // MutexGuard scope
+
+    RmapPacket* cmd = transaction->getCommandPacket();
+
+    // Packet configuration
+    cmd->setInitiatorLogicalAddress(mInitiatorLogicalAddress);
+    cmd->setWrite();
+    cmd->setCommand();
+
+    cmd->setIncrementFlag(options.mIncrementMode);
+    cmd->setVerifyFlag(options.mVerifyMode);
+    cmd->setReplyFlag(options.mReplyMode);
+
+    if (options.mReplyMode)
+    {
+        // Sets the transaction mode
+        transaction->setBlockingMode(true);
+
+        // Extra block call with zero timeout for acquiring already released lock
+        transaction->blockTransaction(outpost::time::Duration::zero());
+    }
+    else
+    {
+        // UnSets the transaction mode
+        transaction->setBlockingMode(false);
+    }
+    cmd->setExtendedAddress(extendedMemoryAdress);
+    cmd->setAddress(memoryAddress);
+    cmd->setDataLength(data.getNumberOfElements());
+    cmd->setTargetInformation(rmapTargetNode);
+    transaction->setTimeoutDuration(timeout);
+
+    // Transaction will be initiated and sent through the SpW interface
+    sendSuccesful = sendPacket(transaction, data);
 
     if (sendSuccesful)
     {
@@ -179,7 +165,7 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
             transaction->blockTransaction(timeout);
 
             // Command sent but no reply
-            if (transaction->getState() == RmapTransaction::initiated)
+            if (transaction->getState() == RmapTransaction::reserved)
             {
                 console_out("RMAP-Initiator: command sent but no reply received for the "
                             "transaction %u\n",
@@ -213,17 +199,8 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
         }
         else
         {
-            if (transaction->getState() == RmapTransaction::initiated)
-            {
-                // Command was sent successfully
-                result.mResult = RmapResultType::success;
-            }
-            else
-            {
-                // Command was not sent successfully
-                console_out("RMAP-Initiator: transaction could not be initiated\n");
-                result.mResult = RmapResultType::sendFailed;
-            }
+            // Command was sent successfully, in non reply mode there is nothing more
+            result.mResult = RmapResultType::success;
         }
     }
     else
@@ -233,8 +210,14 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
         result.mResult = RmapResultType::sendFailed;
     }
 
-    // Delete the transaction from the list
-    mTransactionsList.removeTransaction(transaction->getTransactionID());
+    // mutex guarded scope to guard the transaction tear down
+    {
+        // Guard operation against concurrent accesses
+        outpost::rtos::MutexGuard lock(mOperationLock);
+        // Delete the transaction from the list
+        mTransactionsList.removeTransaction(transaction->getTransactionID());
+    }
+
     return result;
 }
 
@@ -248,7 +231,7 @@ RmapInitiator::read(const char* targetNodeName,
 {
     RmapResult result;
     result.mResult = RmapResultType::invalidParameters;
-    if (mTargetNodes)
+    if (mTargetNodes != nullptr)
     {
         RmapTargetNode* targetNode = mTargetNodes->getTargetNode(targetNodeName);
         if (targetNode)
@@ -305,52 +288,40 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
             result.mResult = RmapResultType::noFreeTransactions;
             return result;
         }
-
-        RmapPacket* cmd = transaction->getCommandPacket();
-
-        // Read transaction will always be blocking
-        transaction->setBlockingMode(true);
-
-        // Extra block call with zero timeout for acquiring already released lock
-        transaction->blockTransaction(outpost::time::Duration::zero());
-
-        // Sets the command packet
-        cmd->setInitiatorLogicalAddress(mInitiatorLogicalAddress);
-        cmd->setRead();
-        cmd->setCommand();
-
-        if (options.mIncrementMode)
-        {
-            cmd->setIncrementFlag();
-        }
-        else
-        {
-            cmd->unsetIncrementFlag();
-        }
-        if (options.mVerifyMode)
-        {
-            cmd->setVerifyFlag();
-        }
-        else
-        {
-            cmd->unsetVerifyFlag();
-        }
-
-        cmd->setReplyFlag();
-        cmd->setExtendedAddress(extendedMemoryAdress);
-        cmd->setAddress(memoryAddress);
-        cmd->setDataLength(buffer.getNumberOfElements());
-
-        // InitiatorLogicalAddress might be updated in below
-        cmd->setTargetInformation(rmapTargetNode);
-        transaction->setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
-        transaction->setTimeoutDuration(timeout);
-
-        // Command is read, thus no data bytes available
-        outpost::Slice<const uint8_t> empty{outpost::Slice<const uint8_t>::empty()};
-        sendSuccesful = sendPacket(transaction, empty);
+        // id must also be under mutex
+        uint16_t transactionID = getNextAvailableTransactionID();
+        transaction->setTransactionID(transactionID);
     }  // MutexGuard scope
 
+    RmapPacket* cmd = transaction->getCommandPacket();
+
+    // Read transaction will always be blocking
+    transaction->setBlockingMode(true);
+
+    // Extra block call with zero timeout for acquiring already released lock
+    transaction->blockTransaction(outpost::time::Duration::zero());
+
+    // Sets the command packet
+    cmd->setInitiatorLogicalAddress(mInitiatorLogicalAddress);
+    cmd->setRead();
+    cmd->setCommand();
+
+    cmd->setIncrementFlag(options.mIncrementMode);
+    cmd->setVerifyFlag(options.mVerifyMode);
+    cmd->setReplyFlag(true);
+
+    cmd->setExtendedAddress(extendedMemoryAdress);
+    cmd->setAddress(memoryAddress);
+    cmd->setDataLength(buffer.getNumberOfElements());
+
+    // InitiatorLogicalAddress might be updated in below
+    cmd->setTargetInformation(rmapTargetNode);
+    transaction->setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
+    transaction->setTimeoutDuration(timeout);
+
+    // Command is read, thus no data bytes available
+    outpost::Slice<const uint8_t> empty{outpost::Slice<const uint8_t>::empty()};
+    sendSuccesful = sendPacket(transaction, empty);
 
     if (sendSuccesful)
     {
@@ -414,9 +385,14 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
         result.mResult = RmapResultType::sendFailed;
     }
 
-    // Delete the transaction from the list
-    // Will also release the SharedBuffer allocated for the received data
-    mTransactionsList.removeTransaction(transaction->getTransactionID());
+    // mutex guarded scope to guard the transaction tear down
+    {
+        // Guard operation against concurrent accesses
+        outpost::rtos::MutexGuard lock(mOperationLock);
+        // Delete the transaction from the list
+        // Will also release the SharedBuffer allocated for the received data
+        mTransactionsList.removeTransaction(transaction->getTransactionID());
+    }
 
     return result;
 }
@@ -464,13 +440,9 @@ bool
 RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uint8_t> data)
 {
     RmapPacket* cmd = transaction->getCommandPacket();
-    uint16_t transactionID;
     bool result = false;
 
-    transactionID = getNextAvailableTransactionID();
-
-    transaction->setTransactionID(transactionID);
-    cmd->setTransactionID(transactionID);
+    cmd->setTransactionID(transaction->getTransactionID());
 
     // It is assumed that the transaction is already in the list and in case of
     // required reply corresponding transaction will found and freed accordingly
@@ -495,8 +467,6 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uin
         }
         console_out("\n");
 #endif
-        // first set it then send the request otherwise we are in a race condition
-        transaction->setState(RmapTransaction::initiated);
         if (mSpW.send(txBuffer, transaction->getTimeoutDuration()))
         {
             result = true;
@@ -511,7 +481,7 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBuffe
     bool result = false;
 
     // Receive response
-    if (mQueue.receive(rxBuffer, receiveTimeout))
+    if (mQueue.receive(rxBuffer, receiveTimeout) && rxBuffer.isValid())
     {
         outpost::Slice<const uint8_t> rxData = rxBuffer.asSlice();
 
@@ -549,10 +519,14 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBuffe
 void
 RmapInitiator::handleReplyPacket(RmapPacket* packet, outpost::utils::SharedBufferPointer& rxBuffer)
 {
+    // Prevents that this function and removeTransaction both change the transaction
+    // Which could lead to unusable transaction objects
+    outpost::rtos::MutexGuard lock(mOperationLock);
+
     // Find a corresponding command packet
     RmapTransaction* transaction = resolveTransaction(packet);
 
-    if (!transaction)
+    if (transaction == nullptr)
     {
         // If not found, increment error counter
         mCounters.mDiscardedReceivedPackets++;

@@ -241,6 +241,7 @@ public:
             {
                 if (mTransactions[i].getState() == RmapTransaction::notInitiated)
                 {
+                    mTransactions[i].setState(RmapTransaction::reserved);
                     return &mTransactions[i];
                 }
             }
@@ -260,7 +261,7 @@ public:
     ~RmapInitiator();
 
     /**
-     * Starts the internal thread and waits till the listener are set up
+     * Starts the internal thread and waits till the listeners are set up
      */
     void
     init(void);
@@ -502,8 +503,8 @@ private:
 
     std::array<uint8_t, maxCommandLength> mSendBuffer;
 
-    outpost::utils::SharedBufferQueue<rmap::numberOfReceiveBuffer> mQueue;
-    outpost::utils::SharedBufferPool<maxReplyLength, rmap::numberOfReceiveBuffer> mPool;
+    outpost::utils::SharedBufferQueue<rmap::numberOfReceiveBuffers> mQueue;
+    outpost::utils::SharedBufferPool<maxReplyLength, rmap::numberOfReceiveBuffers> mPool;
 };
 
 }  // namespace comm
