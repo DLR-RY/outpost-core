@@ -52,6 +52,8 @@ envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports=
 
 env = envGlobal.Clone()
 
+env.Append(CXXFLAGS=["-std=c++14"])
+
 env.AppendUnique(LIBS=[
     'outpost_rtos',
     'outpost_utils',
