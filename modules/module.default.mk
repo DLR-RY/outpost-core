@@ -86,13 +86,18 @@ test-default:
 
 cppcheck:
 	@scons -C test/ compiledb
-	@cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> checks.xml
-
+	@if [ '$(shell head test/compile_db.json)' != '[]' ]; \
+	then \
+		cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> checks.xml; \
+	fi;
 
 cppcheck-tests:
-	@scons -C test/ tests_compiledb
+	@scons -C test/ compiledb_tests
 	@cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> check-tests.xml
 
+cppcheck-unittests:
+	@scons -C test/ compiledb_unittests
+	@cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> check-unittests.xml
 
 coverage-default:
 	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
@@ -195,4 +200,4 @@ clean-default:
 distclean-default:
 	@scons build coverage=1 -Q -C test/unit -c
 
-.PHONY: build-lua test-default coverage-default coverage-html-default cppcheck cppcheck-tests
+.PHONY: build-lua test-default coverage-default coverage-html-default cppcheck cppcheck-tests cppcheck-unittests

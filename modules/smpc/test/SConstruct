@@ -30,6 +30,8 @@ envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-build-tools/s
                         ENV=os.environ)
 Help(vars.GenerateHelpText(envGlobal))
 
+envGlobal.Tool('utils_compilation_database')
+
 buildfolder = os.path.join(rootpath, 'build')
 if envGlobal['coverage']:
     envGlobal.Tool('compiler_hosted_gcc_coverage')
@@ -60,8 +62,8 @@ files += env.Glob('outpost/*.cpp')
 files += env.Glob('outpost/*/*.cpp')
 files += env.Glob('outpost/*/*/*.cpp')
 
+envGlobal.Alias('compiledb_tests', env.compiledb(files))
 sources = env['sources'][module]
-sources += files
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong
 # results for the coverage analysis.

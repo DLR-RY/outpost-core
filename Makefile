@@ -77,7 +77,6 @@ cppcheck:
 		#grep "severity=\"error" checks.xml; \
 	#done
 	#TODO check the results
-	#@printf "\n$(COK)[PASS] All cppcheck passed! $(CEND)\n"
 
 cppcheck-tests:
 	for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
@@ -85,8 +84,13 @@ cppcheck-tests:
 		make -C modules/$$m cppcheck-tests || return 1 ; \
 	done
 	#TODO check the results
-	#@printf "\n$(COK)[PASS] All cppcheck passed! $(CEND)\n"
 
+cppcheck-unittests:
+	for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+		printf "\n$(CIINFO)Run CPPcheck on unit-tests of module \"$$m\":$(CENDR)\n"; \
+		make -C modules/$$m cppcheck-unittests || return 1; \
+	done
+	#TODO check the resuts 
 
 cloc-source:
 	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
