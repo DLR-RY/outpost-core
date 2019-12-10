@@ -36,7 +36,7 @@ public:
     bool
     encode(outpost::Slice<const uint8_t> src_data, outpost::Slice<uint8_t> coded_data) override;
 
-    bool
+    DecodeStatus
     decode(outpost::Slice<const uint8_t> coded_data, outpost::Slice<uint8_t> src_data) override;
 
     inline uint32_t
@@ -134,13 +134,6 @@ private:
     static constexpr uint32_t MAX_CODE_WORD_BYTES = mFFSize / 8 + 1;
     static constexpr uint32_t MAX_NUM_SYM = (2 * MAX_CORR);
 
-    enum class DecodeStatus
-    {
-        noError,
-        corrected,
-        uncorrectable
-    };
-
     static constexpr int32_t DIV_ZERO_DIV = 1;
 
     uint32_t mLoc[MAX_CORR];
@@ -151,7 +144,6 @@ private:
     uint16_t mErrLocByte[DEF_ERROR_CORRECTION];
     uint8_t mErrLocBit[DEF_ERROR_CORRECTION];
     bool mValid;
-    bool mDecodeSuccess;
 
     void
     bchEncode(void);

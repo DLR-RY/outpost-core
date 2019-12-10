@@ -13,6 +13,31 @@ namespace outpost
 {
 namespace utils
 {
+/**
+ * Combines the results of 2 Decoding steps into a combined one
+ */
+DecodeStatus
+combine(DecodeStatus a, DecodeStatus b)
+{
+    // order of ifs are relevant
+    if (a == DecodeStatus::invalidParameters || b == DecodeStatus::invalidParameters)
+    {
+        return DecodeStatus::invalidParameters;
+    }
+    else if (a == DecodeStatus::uncorrectable || b == DecodeStatus::uncorrectable)
+    {
+        return DecodeStatus::uncorrectable;
+    }
+    else if (a == DecodeStatus::corrected || b == DecodeStatus::corrected)
+    {
+        return DecodeStatus::corrected;
+    }
+    else
+    {
+        return DecodeStatus::noError;
+    }
+}
+
 // default values
 constexpr uint32_t NandBCHInterface::DEF_GALIOS_DEMISIONS;
 constexpr uint32_t NandBCHInterface::DEF_ERROR_CORRECTION;

@@ -18,6 +18,20 @@ namespace outpost
 {
 namespace utils
 {
+enum class DecodeStatus
+{
+    invalidParameters,
+    noError,
+    corrected,
+    uncorrectable
+};
+
+/**
+ * Combines the results of 2 Decoding steps into a combined one
+ */
+DecodeStatus
+combine(DecodeStatus a, DecodeStatus b);
+
 class NandBCHInterface
 {
 public:
@@ -39,7 +53,7 @@ public:
     virtual bool
     encode(outpost::Slice<const uint8_t> src_data, outpost::Slice<uint8_t> coded_data) = 0;
 
-    virtual bool
+    virtual DecodeStatus
     decode(outpost::Slice<const uint8_t> coded_data, outpost::Slice<uint8_t> src_data) = 0;
 
     virtual uint32_t

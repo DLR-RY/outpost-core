@@ -65,7 +65,8 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, simpleEncodeDecode, ())
     expected = input;
 
     EXPECT_TRUE(bch.encode(outpost::asSlice(input), outpost::asSlice(encoded)));
-    EXPECT_TRUE(bch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
+    EXPECT_EQ(DecodeStatus::noError,
+              bch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
 
     EXPECT_EQ(output, expected);
 }
@@ -91,7 +92,8 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, simpleEncodeDecodeSeveralParts, ())
     expected = input;
 
     EXPECT_TRUE(lbch.encode(outpost::asSlice(input), outpost::asSlice(encoded)));
-    EXPECT_TRUE(lbch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
+    EXPECT_EQ(DecodeStatus::noError,
+              lbch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
 
     EXPECT_EQ(output, expected);
 }
@@ -118,7 +120,8 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, simpleSeveralPartsPartialCopy, ())
     expected = input;
 
     EXPECT_TRUE(lbch.encode(outpost::asSlice(input), outpost::asSlice(encoded)));
-    EXPECT_TRUE(lbch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
+    EXPECT_EQ(DecodeStatus::noError,
+              lbch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
 
     for (size_t i = 0; i < output.size(); i++)
     {
@@ -149,8 +152,9 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, failsTooSmallEncoded, ())
     // to get valid data
     EXPECT_TRUE(bch.encode(outpost::asSlice(input), outpost::asSlice(encoded)));
 
-    EXPECT_FALSE(bch.decode(outpost::asSlice(encoded).first(dataSize + spareSize - 1),
-                            outpost::asSlice(output)));
+    EXPECT_EQ(DecodeStatus::invalidParameters,
+              bch.decode(outpost::asSlice(encoded).first(dataSize + spareSize - 1),
+                         outpost::asSlice(output)));
 }
 
 RC_GTEST_FIXTURE_PROP(BCHRTest, partialCopy, ())
@@ -171,7 +175,8 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, partialCopy, ())
     expected = input;
 
     EXPECT_TRUE(bch.encode(outpost::asSlice(input), outpost::asSlice(encoded)));
-    EXPECT_TRUE(bch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
+    EXPECT_EQ(DecodeStatus::noError,
+              bch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
 
     for (size_t i = 0; i < output.size(); i++)
     {
@@ -237,7 +242,8 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, correctBitFlip, ())
     value = (value & (~(1u << bit))) | (~value & ((1u << bit)));
     encoded[byte] = value;
 
-    EXPECT_TRUE(bch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
+    EXPECT_EQ(DecodeStatus::corrected,
+              bch.decode(outpost::asSlice(encoded), outpost::asSlice(output)));
 
     EXPECT_EQ(output, expected);
 }
@@ -273,7 +279,15 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, singleBitflipsShouldNotMoveFromCorrectableToWron
         value = (value & (~(1u << bit))) | (~value & ((1u << bit)));
         encoded[byte] = value;
 
-        correct = bch.decode(outpost::asSlice(encoded), outpost::asSlice(output));
+        DecodeStatus status = bch.decode(outpost::asSlice(encoded), outpost::asSlice(output));
+
+        correct = (status == DecodeStatus::corrected || status == DecodeStatus::noError);
+
+        if (correct && itcount % 2 == 0)
+        {
+            // odd number of bitflips -> they cannot all cancel out each other
+            EXPECT_EQ(status, DecodeStatus::corrected);
+        }
 
         if (correct)
         {

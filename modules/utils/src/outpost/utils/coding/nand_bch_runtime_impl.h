@@ -30,8 +30,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void
     mErrLocBit{0},
     mTraceTestVal(0),
     mQuadCompTable{0},
-    mValid(false),
-    mDecodeSuccess(false)
+    mValid(false)
 {
     // Initialize vectors
     memset(aLogTable, 0, sizeof(uint16_t) * (2 * MAX_FFSIZE));
@@ -1556,11 +1555,9 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-typename NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::DecodeStatus
+DecodeStatus
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
 {
-    using DecodeStatus =
-            NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::DecodeStatus;
     //****************************************************************
     //  Function: bchDecode
     //
@@ -1679,18 +1676,18 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-bool
+DecodeStatus
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
         outpost::Slice<const uint8_t> coded_data, outpost::Slice<uint8_t> src_data)
 {
     if (coded_data.getNumberOfElements() < mNandDataSize + mNandSpareSize || !mValid)
     {
         // too small data or invalid template parameter
-        return false;
+        return DecodeStatus::invalidParameters;
     }
 
-    using DecodeStatus =
-            NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::DecodeStatus;
+    DecodeStatus status = DecodeStatus::noError;
+
     uint8_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
 
     /* Convert k size information in bits format */
@@ -1703,46 +1700,26 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
                (mNumRedundantBytes));
 
         /* Perform decoding */
-        DecodeStatus status = bchDecode();
+        status = combine(status, bchDecode());
 
-        /* Check status */
-        if (status != DecodeStatus::noError)
+        // Copy anyways, we tell them whether it is correct or not
+        if (src_data.getNumberOfElements() >= ((i + 1) * mNumDataBytes))
         {
-            if (status == DecodeStatus::uncorrectable)
-            {
-                mDecodeSuccess = false;
-            }
-            else if (status == DecodeStatus::corrected)
-            {
-                mDecodeSuccess = true;
-            }
+            // all data fitting
+            memcpy(&src_data[0] + (i * mNumDataBytes), mCodeWord, mNumDataBytes);
+        }
+        else if (src_data.getNumberOfElements() <= (i * mNumDataBytes))
+        {
+            // do nothing but still go on so that errors are found that are positioned later
         }
         else
         {
-            mDecodeSuccess = true;
-        }
-
-        if (mDecodeSuccess)
-        {
-            /* Copying data incrementally from beginning and checksum at the end */
-            if (src_data.getNumberOfElements() >= ((i + 1) * mNumDataBytes))
-            {
-                // all data fitting
-                memcpy(&src_data[0] + (i * mNumDataBytes), mCodeWord, mNumDataBytes);
-            }
-            else if (src_data.getNumberOfElements() <= (i * mNumDataBytes))
-            {
-                // do nothing but still go on so that errors are found that are positioned later
-            }
-            else
-            {
-                // partial
-                uint32_t sizeRemaining = src_data.getNumberOfElements() - (i * mNumDataBytes);
-                memcpy(&src_data[0] + (i * mNumDataBytes), mCodeWord, sizeRemaining);
-            }
+            // partial
+            uint32_t sizeRemaining = src_data.getNumberOfElements() - (i * mNumDataBytes);
+            memcpy(&src_data[0] + (i * mNumDataBytes), mCodeWord, sizeRemaining);
         }
     }
-    return mDecodeSuccess;
+    return status;
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
