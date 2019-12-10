@@ -19,6 +19,7 @@
 #include <rapidcheck/gtest.h>
 
 #include <array>
+#include <iostream>
 
 using namespace outpost::utils;
 

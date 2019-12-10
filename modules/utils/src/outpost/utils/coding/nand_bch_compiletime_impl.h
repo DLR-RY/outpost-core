@@ -43,14 +43,12 @@ constexpr typename NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHCTime(void) :
     mLoc{0},
-    mCodeWord{0},
-    mCodeWordSav{0},
-    mRemainderBytes{0},
-    mSigmaOrig{0},
     mSyndromes{0},
     mErrLocByte{0},
     mErrLocBit{0},
-    mValid(false)
+    mValid(false),
+    mCodeWord{0},
+    mRemainderBytes{0}
 {
     static_assert(checkLogTables() && mPolynom.valid,
                   "Template parameters does not create a valid encoder");
@@ -461,10 +459,10 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
     //****************************************************************
     Polynom ret;
 
-    uint32_t genPolyBitArray[MAX_CORR * mMParam + 1] = {};
+    uint32_t genPolyBitArray[mTParam * mMParam + 1] = {};
 
     int32_t flag[mFFSize] = {};
-    int32_t tmp[MAX_CORR * mMParam + 1] = {};
+    int32_t tmp[mTParam * mMParam + 1] = {};
 
     ret.genPolyDegree = 0;   // The degree of the code generator poly is obj->mInitialized to "0"
     genPolyBitArray[0] = 1;  // Now the initial code generator poly is "1" (degree "0")
@@ -685,7 +683,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchEncode(void)
     }
 
     // +5 So that we can temporarily keep remainder bytes in whole words
-    int32_t redunByteArray[(MAX_CORR * mMParam) / 8 + 5];
+    int32_t redunByteArray[(mTParam * mMParam) / 8 + 5];
     // Copy redundancy bytes from shift register (SR) word array
     for (uint32_t kx = 0; kx < mNumRedundantWords; kx++)
     {
@@ -821,7 +819,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
     uint32_t numSyndromes = 2 * mTParam;
 
     // Clear syndromes array
-    memset(mSyndromes, 0, numSyndromes * 4);
+    memset(mSyndromes, 0, numSyndromes * sizeof(uint32_t));
 
     for (uint32_t i = 0; i < mNumRedundantBytes; i++)
     {
@@ -880,7 +878,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-int32_t
+uint32_t
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t sigmaN[],
                                                                       bool& success)
 {
@@ -927,8 +925,8 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
     //  NO. 2, March 1981.  Before implementing this technique you need
     //  to understand its impact on your miscorrection rate.
     //***************************************************************
-    int32_t sigmaK[MAX_CORR + 1];
-    int32_t sigmaTmp[MAX_CORR + 1];
+    int32_t sigmaK[mTParam + 1];
+    int32_t sigmaTmp[mTParam + 1];
 
     sigmaN[0] = 1;
     sigmaK[0] = 1;
@@ -966,7 +964,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
                 // Next 2 "if" blks chgd to not use ffMult and ffDiv funs 9-9-2010
                 if (dk == 0)
                 {
-                    return (DIV_ZERO_DIV);  // Divide by zero error
+                    return (ZERO_DIV_RETURN_VALUE);  // Divide by zero error
                 }
                 if (dn > 0)
                 {
@@ -999,7 +997,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
                 // Next 2 "if" blks chgd to not use ffMult and ffDiv funs 9-9-2010
                 if (dk == 0)
                 {
-                    return (DIV_ZERO_DIV);  // Divide by zero error
+                    return (ZERO_DIV_RETURN_VALUE);  // Divide by zero error
                 }
                 if (dn > 0)
                 {
@@ -1390,7 +1388,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quarticElp(int32_
     bool success = true;
     int32_t Ln = 4;  // ELP degree is 4 for quartic
 
-    int32_t sigbk[MAX_CORR + 1], b2, b3, b4, b4n, b4d;
+    int32_t sigbk[mTParam + 1], b2, b3, b4, b4n, b4d;
     for (int32_t n = 0; n <= Ln; n++)
     {
         sigbk[n] = sigmaN[n];
@@ -1529,8 +1527,8 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
     //****************************************************************
     bool success = true;
 
-    memset(mErrLocByte, 0xFFFF, DEF_ERROR_CORRECTION * sizeof(uint16_t));
-    memset(mErrLocBit, 0, DEF_ERROR_CORRECTION);
+    memset(mErrLocByte, 0xFFFF, mTParam * sizeof(uint16_t));
+    memset(mErrLocBit, 0, mTParam);
 
     for (int32_t kx = 0; kx < Ln; kx++)
     {
@@ -1582,11 +1580,11 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     //  to this function but on entry to this function these arrays do not
     //  contain useful data.
     //****************************************************************
-    int32_t sigmaN[MAX_CORR + 1];
+    int32_t sigmaN[mTParam + 1];
     bool success = true;
     DecodeStatus status = DecodeStatus::noError;
 
-    memset(mLoc, mLogZVal, MAX_CORR);
+    memset(mLoc, mLogZVal, ((2 * mTParam) + 1) * sizeof(uint32_t));
 
     int32_t remainderDetdErr = computeRemainder();
 
@@ -1599,8 +1597,6 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
 
         //  Compute coeff's of ELP using Berlekamp/Massey
         uint32_t Ln = berMas(sigmaN, success);
-
-        memcpy(mSigmaOrig, sigmaN, Ln + 1);
 
         if (success)
         {
@@ -1616,7 +1612,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     }
     else
     {
-        memset(mSyndromes, 0, (2 * mTParam));
+        memset(mSyndromes, 0, (2 * mTParam) * sizeof(uint32_t));
     }
     if (!success)
     {

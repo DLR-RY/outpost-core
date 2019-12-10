@@ -21,11 +21,16 @@ namespace outpost
 {
 namespace utils
 {
+/**
+ * Class to encode/decode nand pages with BCH error correction.
+ * Warning: Functions not thread-safe add mutexes for us different instances of class.
+ */
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 class NandBCHCTime : public NandBCHInterface
 {
     static constexpr uint32_t mNumDataBytes = 512;
 
+    static_assert(mTParam >= 4, "Minimal value for mTParam is 4");
     static_assert((mNandDataSize % mNumDataBytes) == 0, "mNumDataBytes shall be multiple of 512");
     static_assert(mMParam >= 2, "Minimal supported value for mMParam = 2");
     static_assert(mMParam <= 16, "Maximal supported value for mMParam =  16");
@@ -42,13 +47,13 @@ public:
     inline uint32_t
     getNumberOfRedundantBytes(void) const override
     {
-        return mNumRedundantBytes;
+        return mNumRedundantBytes * (mNandDataSize / mNumDataBytes);
     }
 
     inline uint32_t
     getNumberOfDatabytes(void) const override
     {
-        return mNumDataBytes;
+        return mNandDataSize;
     }
 
     inline bool
@@ -129,20 +134,14 @@ private:
     static constexpr int32_t mTraceTestVal = getTraceTestVal();
     static constexpr QuadCompTable mQuadCompTable = genQuadCompTable();
 
-    static constexpr uint32_t MAX_CORR = 64;
     static constexpr uint32_t BYTESTATES = 256;
-    static constexpr uint32_t MAX_CODE_WORD_BYTES = mFFSize / 8 + 1;
-    static constexpr uint32_t MAX_NUM_SYM = (2 * MAX_CORR);
 
-    static constexpr int32_t DIV_ZERO_DIV = 1;
+    static constexpr uint32_t ZERO_DIV_RETURN_VALUE = 1;
 
-    uint32_t mLoc[MAX_CORR];
-    uint8_t mCodeWord[MAX_CODE_WORD_BYTES];
-    uint8_t mCodeWordSav[MAX_CODE_WORD_BYTES];
-    uint8_t mRemainderBytes[(MAX_CORR * mMParam) / 8 + 1];
-    uint32_t mSigmaOrig[MAX_CORR + 1], mSyndromes[MAX_NUM_SYM];
-    uint16_t mErrLocByte[DEF_ERROR_CORRECTION];
-    uint8_t mErrLocBit[DEF_ERROR_CORRECTION];
+    uint32_t mLoc[(2 * mTParam) + 1];
+    uint32_t mSyndromes[2 * mTParam];
+    uint16_t mErrLocByte[mTParam];
+    uint8_t mErrLocBit[mTParam];
     bool mValid;
 
     void
@@ -154,7 +153,7 @@ private:
     void
     computeSyndromes(void);
 
-    int32_t
+    uint32_t
     berMas(int32_t sigmaN[], bool& success);
 
     bool
@@ -212,7 +211,7 @@ private:
     struct Polynom
     {
         constexpr Polynom() : genPolyFdbkWords{}, genPolyDegree(0), valid(false){};
-        uint32_t genPolyFdbkWords[(((MAX_CORR * mMParam) / 8 + 1) / 4 + 1)];
+        uint32_t genPolyFdbkWords[(((mTParam * mMParam) / 8 + 1) / 4 + 1)];
         uint32_t genPolyDegree;
         bool valid;
     };
@@ -228,6 +227,8 @@ private:
     // Note: number of data length must be less than equal to (mNParam - genPolyDegree) / 8
     // value in our case it is 1010 bytes
     static constexpr uint32_t mNumCodeWordBytes = mNumDataBytes + mNumRedundantBytes;
+    uint8_t mCodeWord[mNumCodeWordBytes];
+    uint8_t mRemainderBytes[mNumRedundantBytes];
 
     static constexpr uint32_t mNumRedundantWords = ((mNumRedundantBytes % 4) > 0)
                                                            ? (mNumRedundantBytes / 4) + 1

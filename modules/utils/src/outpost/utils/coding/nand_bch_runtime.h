@@ -8,6 +8,7 @@
 #ifndef NAND_BCH_RUNTIME_H_
 #define NAND_BCH_RUNTIME_H_
 
+#include "../pow.h"
 #include "nand_bch_interface.h"
 
 #include <stdint.h>
@@ -16,11 +17,22 @@ namespace outpost
 {
 namespace utils
 {
+/**
+ * Class to encode/decode nand pages with BCH error correction.
+ * Warning: Functions not thread-safe add mutexes for us different instances of class.
+ *
+ * Note: For use different instance  compile time version is suggested as this (with default values)
+ *       only requires 704 bytes per instance, compared to this class with 98656 bytes per instance
+ *       (for default values)
+ */
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 class NandBCHRTime : public NandBCHInterface
 {
     static constexpr uint32_t mNumDataBytes = 512;
+    static constexpr uint32_t MAX_CORR = 64;
 
+    static_assert(mTParam >= 4, "Min Supported value for mTParam is 4");
+    static_assert(mTParam <= MAX_CORR, "Max Supported value for mTParam 64");
     static_assert((mNandDataSize % mNumDataBytes) == 0, "mNumDataBytes shall be multiple of 512");
     static_assert(mMParam >= 2, "Minimal supported value for mMParam = 2");
     static_assert(mMParam <= 16, "Maximal supported value for mMParam =  16");
@@ -37,13 +49,13 @@ public:
     inline uint32_t
     getNumberOfRedundantBytes(void) const override
     {
-        return mNumRedundantBytes;
+        return mNumRedundantBytes * (mNandDataSize / mNumDataBytes);
     }
 
     inline uint32_t
     getNumberOfDatabytes(void) const override
     {
-        return mNumDataBytes;
+        return mNandDataSize;
     }
 
     inline bool
@@ -56,15 +68,13 @@ public:
     isChecksumEmpty(uint8_t* buffer) override;
 
 private:
-    static constexpr uint32_t MAX_FFSIZE = 8192;  // Reduced to 2^13, maximum supported 2^16
-    static constexpr uint32_t MAX_MPARAM = 13;    // Reduced to 13, maximum supported 16
-    static constexpr uint32_t MAX_CORR = 64;
-    static constexpr uint32_t MAX_REDUN_WORDS = (((MAX_CORR * MAX_MPARAM) / 8 + 1) / 4 + 1);
+    static constexpr uint32_t mFFSize = outpost::PowerOfTwo<mMParam>::value;
+    static constexpr uint32_t MAX_REDUN_WORDS = (((MAX_CORR * mMParam) / 8 + 1) / 4 + 1);
     static constexpr uint32_t BYTESTATES = 256;
-    static constexpr uint32_t MAX_CODE_WORD_BYTES = MAX_FFSIZE / 8 + 1;
+    static constexpr uint32_t MAX_CODE_WORD_BYTES = mFFSize / 8 + 1;
     static constexpr uint32_t MAX_NUM_SYM = (2 * MAX_CORR);
 
-    static constexpr int32_t DIV_ZERO_DIV = 1;
+    static constexpr uint32_t ZERO_DIV_RETURN_VALUE = 1;
 
     static constexpr uint32_t fieldPolyTable[22] = {
             1,  // dummy value
@@ -75,24 +85,22 @@ private:
     static constexpr uint32_t mFFPoly = fieldPolyTable[mMParam];
 
     uint32_t mMOddParam, mNParam, mLogZVal;
-    uint32_t mFFSize;
     uint32_t mNumRedundantBits, mNumRedundantBytes;
     uint32_t mNumCodeWordBytes, mNumDataBits, mNumRedundantWords;
     uint32_t mLoc[MAX_CORR];
-    uint8_t mCodeWord[MAX_CODE_WORD_BYTES];
-    uint8_t mCodeWordSav[MAX_CODE_WORD_BYTES];
-    uint8_t mRemainderBytes[(MAX_CORR * MAX_MPARAM) / 8 + 1];
-    uint32_t mSigmaOrig[MAX_CORR + 1], mSyndromes[MAX_NUM_SYM];
-    uint16_t mErrLocByte[DEF_ERROR_CORRECTION];
-    uint8_t mErrLocBit[DEF_ERROR_CORRECTION];
-    int mTraceTestVal, mQuadCompTable[MAX_MPARAM];
+    uint32_t mSyndromes[MAX_NUM_SYM];
+    uint16_t mErrLocByte[mTParam];
+    uint8_t mErrLocBit[mTParam];
+    int mTraceTestVal, mQuadCompTable[mMParam];
     bool mValid;
+    uint8_t mCodeWord[MAX_CODE_WORD_BYTES];
+    uint8_t mRemainderBytes[(MAX_CORR * mMParam) / 8 + 1];
 
-    uint16_t aLogTable[2 * MAX_FFSIZE];
-    uint16_t logTable[2 * MAX_FFSIZE];
-    uint32_t genPolyBitArray[MAX_CORR * MAX_MPARAM + 1];
+    uint16_t aLogTable[2 * mFFSize];
+    uint16_t logTable[2 * mFFSize];
+    uint32_t genPolyBitArray[MAX_CORR * mMParam + 1];
     uint32_t genPolyDegree;
-    uint32_t genPolyFdbkWords[((MAX_CORR * MAX_MPARAM) / 8 + 1) / 4 + 1];
+    uint32_t genPolyFdbkWords[((MAX_CORR * mMParam) / 8 + 1) / 4 + 1];
     uint32_t encodeTable[BYTESTATES][MAX_REDUN_WORDS];
 
     int32_t
@@ -146,7 +154,7 @@ private:
     void
     computeSyndromes(void);
 
-    int32_t
+    uint32_t
     berMas(int32_t sigmaN[], bool& pErrFlg);
 
     bool

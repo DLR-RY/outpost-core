@@ -8,7 +8,6 @@
 #ifndef NAND_BCH_RUNTIME_IMPL_H_
 #define NAND_BCH_RUNTIME_IMPL_H_
 
-#include "../pow.h"
 #include "nand_bch_runtime.h"
 
 #include <string.h>  //for memcpy
@@ -21,26 +20,23 @@ template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t m
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void) :
     mNumDataBits(0),
     mLoc{0},
-    mCodeWord{0},
-    mCodeWordSav{0},
-    mRemainderBytes{0},
-    mSigmaOrig{0},
     mSyndromes{0},
     mErrLocByte{0},
     mErrLocBit{0},
     mTraceTestVal(0),
     mQuadCompTable{0},
-    mValid(false)
+    mValid(false),
+    mCodeWord{0},
+    mRemainderBytes{0}
 {
     // Initialize vectors
-    memset(aLogTable, 0, sizeof(uint16_t) * (2 * MAX_FFSIZE));
-    memset(logTable, 0, sizeof(uint16_t) * (2 * MAX_FFSIZE));
-    memset(genPolyBitArray, 0, sizeof(uint32_t) * (MAX_CORR * MAX_MPARAM + 1));
-    memset(genPolyFdbkWords, 0, sizeof(uint32_t) * (((MAX_CORR * MAX_MPARAM) / 8 + 1) / 4 + 1));
+    memset(aLogTable, 0, sizeof(uint16_t) * (2 * mFFSize));
+    memset(logTable, 0, sizeof(uint16_t) * (2 * mFFSize));
+    memset(genPolyBitArray, 0, sizeof(uint32_t) * (MAX_CORR * mMParam + 1));
+    memset(genPolyFdbkWords, 0, sizeof(uint32_t) * (((MAX_CORR * mMParam) / 8 + 1) / 4 + 1));
     memset(encodeTable, 0, sizeof(uint32_t) * (BYTESTATES * MAX_REDUN_WORDS));
 
     // Using default code configuration
-    mFFSize = outpost::PowerOfTwo<mMParam>::value;
     mMOddParam = mMParam % 2;
     mNParam = mFFSize - 1;
     mLogZVal = 2 * mNParam;
@@ -186,7 +182,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::genQuadCompTable(
     //  y^2+y=c and if it finds one then it stores the associated
     //  value of y in the gblQuadCompTbl.
     //****************************************************************
-    int32_t searchTable[MAX_MPARAM];
+    int32_t searchTable[mMParam];
 
     int32_t firstTraceOne = 0;
 
@@ -333,11 +329,11 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
     //  significantly the size of the flg array and will reduce the time
     //  to initialize this array.
     //****************************************************************
-    int32_t flag[MAX_FFSIZE], tmp[MAX_CORR * MAX_MPARAM + 1];
+    int32_t flag[mFFSize], tmp[MAX_CORR * mMParam + 1];
 
     memset(flag, 0, mFFSize);  // Index to flg can have values root,2*root,4*root,8*root...
-    memset(genPolyBitArray, 0, mMParam * mTParam);
-    memset(tmp, 0, mMParam * mTParam);
+    memset(genPolyBitArray, 0, mMParam * mTParam * sizeof(uint32_t));
+    memset(tmp, 0, mMParam * mTParam * sizeof(uint32_t));
 
     genPolyDegree = 0;       // The degree of the code generator poly is obj->mInitialized to "0"
     genPolyBitArray[0] = 1;  // Now the initial code generator poly is "1" (degree "0")
@@ -417,7 +413,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::convertGenPolyBit
 
     // Convert gblCgpBitArray to cgpWordArray
     // That is, 1 bit per word to 32 bits per word
-    memset(genPolyFdbkWords, 0, mNumRedundantWords);
+    memset(genPolyFdbkWords, 0, mNumRedundantWords * sizeof(uint32_t));
 
     uint32_t wordAddr = 0;
     uint32_t bitMask = 0x80000000;
@@ -660,7 +656,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchEncode(void)
     //****************************************************************
     uint32_t SR[MAX_REDUN_WORDS];
     // +5 So that we can temporarily keep remainder bytes in whole words
-    int32_t redunByteArray[(MAX_CORR * MAX_MPARAM) / 8 + 5];
+    int32_t redunByteArray[(MAX_CORR * mMParam) / 8 + 5];
 
     memset(SR, 0, mNumRedundantWords * 4);
 
@@ -818,7 +814,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
     uint32_t numSyndromes = 2 * mTParam;
 
     // Clear syndromes array
-    memset(mSyndromes, 0, numSyndromes * 4);
+    memset(mSyndromes, 0, numSyndromes * sizeof(uint32_t));
 
     for (uint32_t i = 0; i < mNumRedundantBytes; i++)
     {
@@ -877,7 +873,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-int32_t
+uint32_t
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t sigmaN[],
                                                                       bool& success)
 {
@@ -963,7 +959,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
                 // Next 2 "if" blks chgd to not use ffMult and ffDiv funs 9-9-2010
                 if (dk == 0)
                 {
-                    return (DIV_ZERO_DIV);  // Divide by zero error
+                    return (ZERO_DIV_RETURN_VALUE);  // Divide by zero error
                 }
                 if (dn > 0)
                 {
@@ -996,7 +992,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
                 // Next 2 "if" blks chgd to not use ffMult and ffDiv funs 9-9-2010
                 if (dk == 0)
                 {
-                    return (DIV_ZERO_DIV);  // Divide by zero error
+                    return (ZERO_DIV_RETURN_VALUE);  // Divide by zero error
                 }
                 if (dn > 0)
                 {
@@ -1524,8 +1520,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
     //****************************************************************
     bool success = true;
 
-    memset(mErrLocByte, 0xFFFF, DEF_ERROR_CORRECTION * sizeof(uint16_t));
-    memset(mErrLocBit, 0, DEF_ERROR_CORRECTION);
+    memset(mErrLocByte, 0xFFFF, mTParam * sizeof(uint16_t));
+    memset(mErrLocBit, 0, mTParam);
 
     for (int32_t kx = 0; kx < Ln; kx++)
     {
@@ -1581,7 +1577,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     bool success = true;
     DecodeStatus status = DecodeStatus::noError;
 
-    memset(mLoc, mLogZVal, MAX_CORR);
+    memset(mLoc, mLogZVal, MAX_CORR * sizeof(uint32_t));
 
     int32_t remainderDetdErr = computeRemainder();
 
@@ -1594,8 +1590,6 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
 
         //  Compute coeff's of ELP using Berlekamp/Massey
         int32_t Ln = berMas(sigmaN, success);
-
-        memcpy(mSigmaOrig, sigmaN, Ln + 1);
 
         if (success)
         {
@@ -1611,7 +1605,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     }
     else
     {
-        memset(mSyndromes, 0, (2 * mTParam));
+        memset(mSyndromes, 0, (2 * mTParam) * sizeof(uint32_t));
     }
 
     if (!success)
