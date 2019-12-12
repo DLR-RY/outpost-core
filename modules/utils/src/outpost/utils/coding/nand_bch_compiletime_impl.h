@@ -1724,16 +1724,23 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 bool
-NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::isChecksumEmpty(uint8_t* buffer)
+NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::isChecksumEmpty(
+        outpost::Slice<const uint8_t> data)
 {
     bool result = true;
     uint8_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
     uint32_t codeSize = (iteration_count * mNumRedundantBytes);
 
+    // if there is no checksum it is empty
+    if (data.getNumberOfElements() < mNandDataSize + codeSize)
+    {
+        return true;
+    }
+
     /* Convert k size information in bits format */
     for (uint32_t i = mNandDataSize; i < mNandDataSize + codeSize; i++)
     {
-        if (buffer[i] != 0xFF)
+        if (data[i] != 0xFF)
         {
             result = false;
             break;

@@ -64,7 +64,7 @@ public:
     }
 
     bool
-    isChecksumEmpty(uint8_t* buffer) override;
+    isChecksumEmpty(outpost::Slice<const uint8_t> data) override;
 
 private:
     struct LogTable;

@@ -36,10 +36,8 @@ class NandBCHInterface
 {
 public:
     // default values
-    static constexpr uint32_t DEF_GALIOS_DEMISIONS =
-            13;  // Dimension of Galois Field supported up to 15
-    static constexpr uint32_t DEF_ERROR_CORRECTION =
-            8;  // Default error correction power in bits supported up to 20
+    static constexpr uint32_t DEF_GALIOS_DEMISIONS = 13;  // Dimension of Galois Field
+    static constexpr uint32_t DEF_ERROR_CORRECTION = 8;   // Default error correction power in bits
     static constexpr uint8_t fillValue =
             0x00;  // value to fill up if less data then nand page data size s provided
 
@@ -48,7 +46,7 @@ public:
     virtual ~NandBCHInterface() = default;
 
     virtual bool
-    isChecksumEmpty(uint8_t* buffer) = 0;
+    isChecksumEmpty(outpost::Slice<const uint8_t> data) = 0;
 
     virtual bool
     encode(outpost::Slice<const uint8_t> src_data, outpost::Slice<uint8_t> coded_data) = 0;

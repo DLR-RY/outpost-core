@@ -65,7 +65,7 @@ public:
     }
 
     bool
-    isChecksumEmpty(uint8_t* buffer) override;
+    isChecksumEmpty(outpost::Slice<const uint8_t> data) override;
 
 private:
     static constexpr uint32_t mFFSize = outpost::PowerOfTwo<mMParam>::value;
