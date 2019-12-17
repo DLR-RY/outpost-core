@@ -427,12 +427,6 @@ public:
         return mCounters;
     }
 
-    inline RmapPacket*
-    getLatestDiscardedPacket() const
-    {
-        return mDiscardedPacket;
-    }
-
 private:
     virtual void
     run() override;
@@ -487,15 +481,6 @@ private:
     volatile bool mStopped;
     uint16_t mTransactionId;
     TransactionsList mTransactionsList;
-
-    /**
-     * Discarded packet is stored immediately if no waiting transaction is
-     * found with valid transaction ID for the received packet. It is made
-     * available for the user in case its needed for being inspected. Discarded
-     * packet will be invalidated as soon as there is new incoming packet at the
-     * reception node.
-     * */
-    RmapPacket* mDiscardedPacket;
 
     ErrorCounters mCounters;
 

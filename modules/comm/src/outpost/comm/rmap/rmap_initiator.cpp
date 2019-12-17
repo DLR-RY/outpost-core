@@ -37,7 +37,6 @@ RmapInitiator::RmapInitiator(hal::SpaceWireMultiProtocolHandlerInterface& spw,
     mStopped(true),
     mTransactionId(0),
     mTransactionsList(),
-    mDiscardedPacket(nullptr),
     mCounters(),
     mHeartbeatSource(heartbeatSource)
 {
@@ -418,7 +417,7 @@ RmapInitiator::run()
 void
 RmapInitiator::doSingleStep()
 {
-    static RmapPacket packet;
+    RmapPacket packet;
 
     outpost::utils::SharedBufferPointer rxBuffer;
 
@@ -530,7 +529,6 @@ RmapInitiator::handleReplyPacket(RmapPacket* packet, outpost::utils::SharedBuffe
     {
         // If not found, increment error counter
         mCounters.mDiscardedReceivedPackets++;
-        mDiscardedPacket = packet;
         console_out("RMAP Reply packet (dataLength %lu bytes) was received but "
                     "no corresponding transaction was found.\n",
                     packet->getDataLength());
