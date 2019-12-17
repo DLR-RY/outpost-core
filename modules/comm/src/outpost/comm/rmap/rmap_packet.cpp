@@ -128,6 +128,12 @@ RmapPacket::constructPacket(outpost::Slice<uint8_t>& buffer, outpost::Slice<cons
     // Append data and CRC only if packet is write command
     if (isWrite())
     {
+        if (data.getNumberOfElements() != mDataLength)
+        {
+            console_out("RMAP-Packet: dataLength and provided data is not equal for write "
+                        "command\n");
+            return false;
+        }
         mDataCRC = outpost::Crc8CcittReversed::calculate(data);
         mData = const_cast<uint8_t*>(data.begin());
 
