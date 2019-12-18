@@ -20,7 +20,7 @@ RmapTransaction::RmapTransaction() :
     mInitiatorLogicalAddress(0),
     mTransactionID(0),
     mTimeoutDuration(outpost::time::Duration::zero()),
-    mState(notInitiated),
+    mState(State::notInitiated),
     mBlockingMode(false),
     mReplyPacket(),
     mCommandPacket(),
@@ -40,7 +40,7 @@ RmapTransaction::reset()
     mInitiatorLogicalAddress = 0;
     mTransactionID = 0;
     mTimeoutDuration = outpost::time::Duration::zero();
-    mState = notInitiated;
+    mState = State::notInitiated;
     mBlockingMode = false;
     mReplyPacket.reset();
     mCommandPacket.reset();

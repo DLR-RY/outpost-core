@@ -22,6 +22,90 @@ using namespace outpost::comm;
 constexpr outpost::time::Duration RmapInitiator::receiveTimeout;
 constexpr outpost::time::Duration RmapInitiator::startUpWaitInterval;
 
+uint8_t
+RmapInitiator::TransactionsList::getNumberOfActiveTransactions()
+{
+    uint8_t active = 0;
+
+    for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
+    {
+        if (mTransactions[i].getState() != RmapTransaction::State::notInitiated)
+        {
+            active++;
+        }
+    }
+    return active;
+}
+
+void
+RmapInitiator::TransactionsList::removeTransaction(uint16_t tid)
+{
+    for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
+    {
+        if (mTransactions[i].getTransactionID() == tid)
+        {
+            mTransactions[i].reset();
+            break;
+        }
+    }
+}
+
+RmapTransaction*
+RmapInitiator::TransactionsList::getTransaction(uint16_t tid)
+{
+    bool found = false;
+    uint8_t i;
+
+    for (i = 0; i < rmap::maxConcurrentTransactions; i++)
+    {
+        if (mTransactions[i].getTransactionID() == tid)
+        {
+            found = true;
+            break;
+        }
+    }
+
+    if (found)
+    {
+        return &mTransactions[i];
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
+bool
+RmapInitiator::TransactionsList::isTransactionIdUsed(uint16_t tid)
+{
+    bool used = false;
+
+    for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
+    {
+        if (mTransactions[i].getTransactionID() == tid)
+        {
+            used = true;
+            break;
+        }
+    }
+
+    return used;
+}
+
+RmapTransaction*
+RmapInitiator::TransactionsList::getFreeTransaction()
+{
+    for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
+    {
+        if (mTransactions[i].getState() == RmapTransaction::State::notInitiated)
+        {
+            mTransactions[i].setState(RmapTransaction::State::reserved);
+            return &mTransactions[i];
+        }
+    }
+    return nullptr;
+}
+
 //-----------------------------------------------------------------------------
 RmapInitiator::RmapInitiator(hal::SpaceWireMultiProtocolHandlerInterface& spw,
                              RmapTargetsList* list,
@@ -64,10 +148,10 @@ RmapInitiator::write(const char* targetNodeName,
                      uint32_t memoryAddress,
                      uint8_t extendedMemoryAdress,
                      outpost::Slice<const uint8_t> const& data,
-                     outpost::time::Duration timeout)
+                     const outpost::time::Duration& timeout)
 {
     RmapResult result;
-    result.mResult = RmapResultType::invalidParameters;
+    result.mResult = RmapResult::Code::invalidParameters;
     if (mTargetNodes != nullptr)
     {
         RmapTargetNode* targetNode = mTargetNodes->getTargetNode(targetNodeName);
@@ -90,13 +174,13 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                      uint32_t memoryAddress,
                      uint8_t extendedMemoryAdress,
                      outpost::Slice<const uint8_t> const& data,
-                     outpost::time::Duration timeout)
+                     const outpost::time::Duration& timeout)
 {
     RmapResult result;
     if (data.getNumberOfElements() == 0)
     {
         // the second write function also return without a message in this case
-        result.mResult = RmapResultType::invalidParameters;
+        result.mResult = RmapResult::Code::invalidParameters;
         return result;
     }
 
@@ -113,7 +197,7 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
 
         if (transaction == nullptr)
         {
-            result.mResult = RmapResultType::noFreeTransactions;
+            result.mResult = RmapResult::Code::noFreeTransactions;
             return result;
         }
 
@@ -163,17 +247,19 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
             // Wait for the RMAP reply
             transaction->blockTransaction(timeout);
 
+            RmapTransaction::State state = transaction->getState();
+
             // Command sent but no reply
-            if (transaction->getState() == RmapTransaction::reserved)
+            if (state == RmapTransaction::State::reserved)
             {
                 console_out("RMAP-Initiator: command sent but no reply received for the "
                             "transaction %u\n",
                             transaction->getTransactionID());
 
-                result.mResult = RmapResultType::timeout;
+                result.mResult = RmapResult::Code::timeout;
             }
             // Command sent and reply received
-            else if (transaction->getState() == RmapTransaction::replyReceived)
+            else if (state == RmapTransaction::State::replyReceived)
             {
                 RmapPacket* rply = transaction->getReplyPacket();
 
@@ -183,7 +269,7 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                 {
                     console_out("RMAP-Initiator: reply received with success\n");
 
-                    result.mResult = RmapResultType::success;
+                    result.mResult = RmapResult::Code::success;
                 }
                 else
                 {
@@ -192,21 +278,21 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                     RmapReplyStatus::replyStatus(
                             static_cast<RmapReplyStatus::ErrorStatusCodes>(rply->getStatus()));
 
-                    result.mResult = RmapResultType::executionFailed;
+                    result.mResult = RmapResult::Code::executionFailed;
                 }
             }
         }
         else
         {
             // Command was sent successfully, in non reply mode there is nothing more
-            result.mResult = RmapResultType::success;
+            result.mResult = RmapResult::Code::success;
         }
     }
     else
     {
         // Command was not sent successfully
         console_out("RMAP-Initiator: transaction could not be initiated, failed to send command\n");
-        result.mResult = RmapResultType::sendFailed;
+        result.mResult = RmapResult::Code::sendFailed;
     }
 
     // mutex guarded scope to guard the transaction tear down
@@ -226,10 +312,10 @@ RmapInitiator::read(const char* targetNodeName,
                     uint32_t memoryAddress,
                     uint8_t extendedMemoryAdress,
                     outpost::Slice<uint8_t> const& buffer,
-                    outpost::time::Duration timeout)
+                    const outpost::time::Duration& timeout)
 {
     RmapResult result;
-    result.mResult = RmapResultType::invalidParameters;
+    result.mResult = RmapResult::Code::invalidParameters;
     if (mTargetNodes != nullptr)
     {
         RmapTargetNode* targetNode = mTargetNodes->getTargetNode(targetNodeName);
@@ -252,7 +338,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                     uint32_t memoryAddress,
                     uint8_t extendedMemoryAdress,
                     outpost::Slice<uint8_t> const& buffer,
-                    outpost::time::Duration timeout)
+                    const outpost::time::Duration& timeout)
 {
     RmapResult result;
     if (buffer.getNumberOfElements() > rmap::bufferSize)
@@ -260,14 +346,14 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
         console_out("RMAP-Initiator: Requested size for read %u, maximal allowed size %u\n",
                     buffer.getNumberOfElements(),
                     rmap::bufferSize);
-        result.mResult = RmapResultType::invalidParameters;
+        result.mResult = RmapResult::Code::invalidParameters;
         return result;
     }
 
     if (buffer.getNumberOfElements() == 0)
     {
         // the second read function also return without a message in this case
-        result.mResult = RmapResultType::invalidParameters;
+        result.mResult = RmapResult::Code::invalidParameters;
         return result;
     }
 
@@ -284,7 +370,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
         if (transaction == nullptr)
         {
             console_out("RMAP-Initiator: All transactions are in use\n");
-            result.mResult = RmapResultType::noFreeTransactions;
+            result.mResult = RmapResult::Code::noFreeTransactions;
             return result;
         }
         // id must also be under mutex
@@ -332,7 +418,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
 
         console_out("RMAP-Initiator: Notified with state: %u\n", transaction->getState());
 
-        if (transaction->getState() == RmapTransaction::replyReceived)
+        if (transaction->getState() == RmapTransaction::State::replyReceived)
         {
             RmapPacket* rply = transaction->getReplyPacket();
             uint8_t replyStatus = rply->getStatus();
@@ -341,7 +427,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
             if (replyStatus != RmapReplyStatus::commandExecutedSuccessfully)
             {
                 console_out("RMAP-Initiator: Command not executed successfully: %u\n", replyStatus);
-                result.mResult = RmapResultType::executionFailed;
+                result.mResult = RmapResult::Code::executionFailed;
             }
             else
             {
@@ -349,39 +435,39 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                 if (buffer.getNumberOfElements() < rply->getDataLength())
                 {
                     console_out("RMAP-Initiator: Read reply with more data then requested\n");
-                    result.mResult = RmapResultType::invalidReply;
+                    result.mResult = RmapResult::Code::invalidReply;
                 }
                 else if (buffer.getNumberOfElements() > rply->getDataLength())
                 {
                     console_out("RMAP-Initiator: Read reply with insufficient data\n");
 
                     // Copy received data to the external buffer
-                    memcpy(&buffer[0], rply->getData(), rply->getDataLength());
+                    memcpy(&buffer[0], &rply->getData()[0], rply->getDataLength());
 
-                    result.mResult = RmapResultType::replyTooShort;
+                    result.mResult = RmapResult::Code::replyTooShort;
                 }
                 else
                 {
                     // Copy received data to the external buffer
                     // at this point rply->getDataLength() == buffer.getNumberOfElements()
-                    memcpy(&buffer[0], rply->getData(), rply->getDataLength());
+                    memcpy(&buffer[0], &rply->getData()[0], rply->getDataLength());
 
                     // Release the SpW buffer
 
-                    result.mResult = RmapResultType::success;
+                    result.mResult = RmapResult::Code::success;
                 }
             }
         }
         else
         {
             console_out("RMAP-Initiator: Timeout\n");
-            result.mResult = RmapResultType::timeout;
+            result.mResult = RmapResult::Code::timeout;
         }
     }
     else
     {
         console_out("RMAP-Initiator: Transaction could not be initiated\n");
-        result.mResult = RmapResultType::sendFailed;
+        result.mResult = RmapResult::Code::sendFailed;
     }
 
     // mutex guarded scope to guard the transaction tear down
@@ -412,7 +498,8 @@ RmapInitiator::run()
 }
 
 /**
- * does a single step of the receive loop, needed for testing
+ * does a single step of the receive loop, called continously by receiver thread,
+ * for testing needed as own function
  */
 void
 RmapInitiator::doSingleStep()
@@ -454,11 +541,10 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uin
     if (cmd->constructPacket(txBuffer, data))
     {
 #ifdef DEBUG_EN
-        outpost::Slice<uint8_t> txData = txBuffer;
-        console_out("TX-Data length: %zu\n", txData.getNumberOfElements());
-        for (uint16_t i = 0; i < txData.getNumberOfElements(); i++)
+        console_out("TX-Data length: %zu\n", txBuffer.getNumberOfElements());
+        for (uint16_t i = 0; i < txBuffer.getNumberOfElements(); i++)
         {
-            console_out("%02X ", txData[i]);
+            console_out("%02X ", txBuffer[i]);
             if (i % 30 == 29)
             {
                 console_out("\n");
@@ -505,9 +591,7 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBuffe
         }
         else
         {
-            console_out("RMAP-Initiator: packet interpretation failed, could be "
-                        "non-rmap"
-                        "packet\n");
+            console_out("RMAP-Initiator: packet interpretation failed, could be non-rmap packet\n");
             mCounters.mNonRmapPacketReceived++;
             result = false;
         }
@@ -538,12 +622,12 @@ RmapInitiator::handleReplyPacket(RmapPacket* packet, outpost::utils::SharedBuffe
         // Register reply packet to the resolved transaction
         transaction->setReplyPacket(packet);
 
-        // Update transaction state
-        transaction->setState(RmapTransaction::replyReceived);
-
         // give the transaction the control over the shared buffer, so it lives as long as the
         // transaction does
         transaction->setBuffer(rxBuffer);
+
+        // Update transaction state
+        transaction->setState(RmapTransaction::State::replyReceived);
 
         console_out("RMAP-Initiator: Reply received, thus notifying blocking thread\n");
 
@@ -563,11 +647,11 @@ RmapInitiator::resolveTransaction(RmapPacket* packet)
     uint16_t transactionID = packet->getTransactionID();
     RmapTransaction* transaction = mTransactionsList.getTransaction(transactionID);
 
-    if (!transaction)
+    if (transaction == nullptr)
     {
         // TID is not in use
         console_out("RMAP-Initiator: Unexpected RMAP Reply Packet Was Received\n");
-        return NULL;
+        return nullptr;
     }
     return transaction;
 }
@@ -576,8 +660,14 @@ uint16_t
 RmapInitiator::getNextAvailableTransactionID()
 {
     // Check in the current transaction list that the TID is not in use
-    for (uint32_t i = 0; i < rmap::maxTransactionIds; i++)
+    for (uint16_t i = mTransactionId + 1; i != mTransactionId; i++)
     {
+        // cast to prevent compiler warning (always false comparison when using default values)
+        if (static_cast<uint32_t>(i) >= rmap::maxTransactionIds)
+        {
+            i = 0;
+        }
+
         if (!mTransactionsList.isTransactionIdUsed(i))
         {
             mTransactionId = i;

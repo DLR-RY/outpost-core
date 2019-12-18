@@ -35,12 +35,11 @@ namespace comm
 class RmapTransaction
 {
 public:
-    enum State : uint8_t
+    enum class State : uint8_t
     {
         notInitiated = 0x00,
         reserved = 0x01,  // anything from reserved till answer received
-        replyReceived = 0x03,
-        timeout = 0x04
+        replyReceived = 0x03
     };
 
     RmapTransaction();
@@ -87,7 +86,7 @@ public:
         mState = state;
     }
 
-    inline uint8_t
+    inline State
     getState() const
     {
         return mState;

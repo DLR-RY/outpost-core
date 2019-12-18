@@ -587,7 +587,7 @@ TEST_F(RmapTest, testRead)
 
     if (status == std::future_status::ready)
     {
-        EXPECT_EQ(RmapResultType::success, read1.get().getResult());
+        EXPECT_EQ(RmapResult::Code::success, read1.get().getResult());
     }
     else
     {
@@ -649,7 +649,7 @@ TEST_F(RmapTest, testReadAnswerTooShort)
     if (status == std::future_status::ready)
     {
         RmapResult result = read1.get();
-        EXPECT_EQ(RmapResultType::replyTooShort, result.getResult());
+        EXPECT_EQ(RmapResult::Code::replyTooShort, result.getResult());
         EXPECT_EQ(answerSize, result.getReadBytes());
     }
     else
@@ -726,7 +726,7 @@ TEST_F(RmapTest, testReadSwitchReply)
 
     if (status == std::future_status::ready)
     {
-        EXPECT_EQ(RmapResultType::success, read2.get().getResult());
+        EXPECT_EQ(RmapResult::Code::success, read2.get().getResult());
     }
     else
     {
@@ -743,7 +743,7 @@ TEST_F(RmapTest, testReadSwitchReply)
 
     if (status == std::future_status::ready)
     {
-        EXPECT_EQ(RmapResultType::success, read1.get().getResult());
+        EXPECT_EQ(RmapResult::Code::success, read1.get().getResult());
     }
     else
     {
@@ -812,7 +812,7 @@ TEST_F(RmapTest, testBufferDoNotLeak)
 
         if (status == std::future_status::ready)
         {
-            EXPECT_EQ(RmapResultType::success, read1.get().getResult());
+            EXPECT_EQ(RmapResult::Code::success, read1.get().getResult());
         }
         else
         {

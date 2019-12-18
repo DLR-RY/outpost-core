@@ -10,6 +10,7 @@
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  * - 2017-2018, Fabian Greif (DLR RY-AVS)
+ * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_COMM_RMAP_PACKET_H_
@@ -50,6 +51,7 @@ public:
         static constexpr int incrementBit = 2;
         static constexpr int replyBit = 3;
         static constexpr int verifyBit = 4;
+        static constexpr int operationBit = 5;
 
         enum PacketType : uint8_t
         {
@@ -88,14 +90,14 @@ public:
         setOperation(Operation op)
         {
             // bit5 operation
-            outpost::BitAccess::set<uint8_t, 5>(mField, op);
+            outpost::BitAccess::set<uint8_t, operationBit>(mField, op);
         }
 
         inline Operation
         getOperation() const
         {
             // bit5 operation
-            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, 5>(mField));
+            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, operationBit>(mField));
         }
 
         inline void
@@ -115,40 +117,19 @@ public:
         inline void
         setVerify(bool enable)
         {
-            if (enable)
-            {
-                outpost::BitAccess::set<uint8_t, verifyBit>(mField, 1);
-            }
-            else
-            {
-                outpost::BitAccess::set<uint8_t, verifyBit>(mField, 0);
-            }
+            outpost::BitAccess::set<uint8_t, verifyBit>(mField, enable);
         }
 
         inline void
         setReply(bool enable)
         {
-            if (enable)
-            {
-                outpost::BitAccess::set<uint8_t, replyBit>(mField, 1);
-            }
-            else
-            {
-                outpost::BitAccess::set<uint8_t, replyBit>(mField, 0);
-            }
+            outpost::BitAccess::set<uint8_t, replyBit>(mField, enable);
         }
 
         inline void
         setIncrement(bool enable)
         {
-            if (enable)
-            {
-                outpost::BitAccess::set<uint8_t, incrementBit>(mField, 1);
-            }
-            else
-            {
-                outpost::BitAccess::set<uint8_t, incrementBit>(mField, 0);
-            }
+            outpost::BitAccess::set<uint8_t, incrementBit>(mField, enable);
         }
 
         inline bool
@@ -296,13 +277,13 @@ public:
         memcpy(mSpwTargets,
                targetSpaceWireAddress.begin(),
                targetSpaceWireAddress.getNumberOfElements());
-        mNumOfSpwTargets = targetSpaceWireAddress.getNumberOfElements();
+        mSpwTargetAddressLength = targetSpaceWireAddress.getNumberOfElements();
     }
 
     inline outpost::Slice<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::Slice<uint8_t>::unsafe(mSpwTargets, mNumOfSpwTargets);
+        return outpost::Slice<uint8_t>::unsafe(mSpwTargets, mSpwTargetAddressLength);
     }
 
     inline outpost::Slice<uint8_t>
@@ -510,12 +491,14 @@ public:
         return mHeaderCRC;
     }
 
-    inline uint8_t*
+    inline outpost::Slice<const uint8_t>
     getData() const
     {
         return mData;
     }
 
+    void
+    setData(const outpost::Slice<const uint8_t>& data);
     inline uint8_t
     getDataCRC() const
     {
@@ -546,7 +529,7 @@ private:
     constructHeader(outpost::Serialize& stream);
 
     //--------------------------------------------------------------------------
-    uint8_t mNumOfSpwTargets;
+    uint8_t mSpwTargetAddressLength;
     uint8_t mSpwTargets[rmap::maxPhysicalRouterOutputPorts];
     uint8_t mTargetLogicalAddress;
     InstructionField mInstruction;
@@ -559,7 +542,7 @@ private:
     uint32_t mDataLength;
     uint8_t mStatus;
     uint32_t mHeaderLength;
-    uint8_t* mData;
+    outpost::Slice<const uint8_t> mData;
 
     uint8_t mHeaderCRC;
     uint8_t mDataCRC;

@@ -77,12 +77,6 @@ class RmapInitiator : public outpost::rtos::Thread
     static constexpr outpost::time::Duration startUpWaitInterval = outpost::time::Milliseconds(1);
 
 public:
-    enum Operation
-    {
-        operationRead = 0x01,
-        operationWrite = 0x02
-    };
-
     struct ErrorCounters
     {
         ErrorCounters() :
@@ -99,6 +93,10 @@ public:
         size_t mErrorInStoringReplyPacket;
     };
 
+    /**
+     * Handles a list of  Transaction object,
+     * list not thread save.
+     */
     struct TransactionsList
     {
         TransactionsList() : mTransactions()
@@ -110,89 +108,19 @@ public:
         }
 
         uint8_t
-        getNumberOfActiveTransactions()
-        {
-            uint8_t active = 0;
-
-            for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getTransactionID() != 0)
-                {
-                    active++;
-                }
-            }
-            return active;
-        }
+        getNumberOfActiveTransactions();
 
         void
-        removeTransaction(uint16_t tid)
-        {
-            for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getTransactionID() == tid)
-                {
-                    mTransactions[i].reset();
-                    break;
-                }
-            }
-        }
+        removeTransaction(uint16_t tid);
 
         RmapTransaction*
-        getTransaction(uint16_t tid)
-        {
-            bool found = false;
-            uint8_t i;
-
-            for (i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getTransactionID() == tid)
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found)
-            {
-                return &mTransactions[i];
-            }
-            else
-            {
-                return nullptr;
-            }
-        }
+        getTransaction(uint16_t tid);
 
         bool
-        isTransactionIdUsed(uint16_t tid)
-        {
-            bool used = false;
-            uint8_t i;
-
-            for (i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getTransactionID() == tid)
-                {
-                    used = true;
-                    break;
-                }
-            }
-
-            return used;
-        }
+        isTransactionIdUsed(uint16_t tid);
 
         RmapTransaction*
-        getFreeTransaction()
-        {
-            for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getState() == RmapTransaction::notInitiated)
-                {
-                    mTransactions[i].setState(RmapTransaction::reserved);
-                    return &mTransactions[i];
-                }
-            }
-            return nullptr;
-        }
+        getFreeTransaction();
 
         RmapTransaction mTransactions[rmap::maxConcurrentTransactions];
     };
@@ -249,7 +177,7 @@ public:
           uint32_t memoryAddress,
           uint8_t extendedMemoryAdress,
           outpost::Slice<const uint8_t> const& data,
-          outpost::time::Duration timeout = outpost::time::Seconds(1));
+          const outpost::time::Duration& timeout = outpost::time::Seconds(1));
 
     /**
      * Writes remote memory. For blocking write, the method blocks the current
@@ -287,7 +215,7 @@ public:
           uint32_t memoryAddress,
           uint8_t extendedMemoryAdress,
           outpost::Slice<const uint8_t> const& data,
-          outpost::time::Duration timeout = outpost::time::Seconds(1));
+          const outpost::time::Duration& timeout = outpost::time::Seconds(1));
 
     /**
      * Read from remote memory. The method blocks the current
@@ -322,7 +250,7 @@ public:
          uint32_t memoryAddress,
          uint8_t extendedMemoryAdress,
          outpost::Slice<uint8_t> const& buffer,
-         outpost::time::Duration timeout = outpost::time::Duration::maximum());
+         const outpost::time::Duration& timeout = outpost::time::Duration::maximum());
 
     /**
      * Read from remote memory. The method blocks the current
@@ -357,7 +285,7 @@ public:
          uint32_t memoryAddress,
          uint8_t extendedMemoryAdress,
          outpost::Slice<uint8_t> const& buffer,
-         outpost::time::Duration timeout = outpost::time::Duration::maximum());
+         const outpost::time::Duration& timeout = outpost::time::Duration::maximum());
 
     //--------------------------------------------------------------------------
 
@@ -378,7 +306,8 @@ private:
     run() override;
 
     /**
-     * does a single step of the receive loop, needed for testing
+     * does a single step of the receive loop, called continously by receiver thread,
+     * for testing needed as own function
      */
     void
     doSingleStep();
@@ -416,6 +345,11 @@ private:
     RmapTransaction*
     resolveTransaction(RmapPacket* packet);
 
+    /**
+     * Returns a free Transaction ID,
+     * requires mOperationLock to be lock to current thread
+     * to prevent race conditions
+     */
     uint16_t
     getNextAvailableTransactionID();
 

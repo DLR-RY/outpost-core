@@ -1,8 +1,14 @@
 /*
- * rmap_result.h
+ * Copyright (c) 2013-2019, German Aerospace Center (DLR)
  *
- *  Created on: 29.11.2019
- *      Author: user
+ * This file is part of the development version of OUTPOST.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Authors:
+ * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_COMM_RMAP_RMAP_RESULT_H_
@@ -16,29 +22,29 @@ namespace comm
 {
 class RmapInitiator;
 
-enum class RmapResultType
-{
-    unknown,             // not yet set
-    timeout,             // request was not finished in time
-    invalidReply,        // remote replied with invalid package
-    executionFailed,     // remote indicate execution failure, check status
-    noFreeTransactions,  // all transactions are currently in use
-    invalidParameters,   // functions parameters will never result in a successful request
-    sendFailed,          // sending the command already failed
-    replyTooShort,       // a read command read less data than requested, this may be valid behavior
-                         // have to be handled by caller who knows more about the target
-    success              // command executed as expected
-};
-
 class RmapResult
 {
     friend class RmapInitiator;
 
 public:
+    enum class Code
+    {
+        unknown,             // not yet set
+        timeout,             // request was not finished in time
+        invalidReply,        // remote replied with invalid package
+        executionFailed,     // remote indicate execution failure, check status
+        noFreeTransactions,  // all transactions are currently in use
+        invalidParameters,   // functions parameters will never result in a successful request
+        sendFailed,          // sending the command already failed
+        replyTooShort,  // a read command read less data than requested, this may be valid behavior
+                        // have to be handled by caller who knows more about the target
+        success         // command executed as expected
+    };
+
     /**
      * Returns the result of the command
      */
-    RmapResultType
+    Code
     getResult() const
     {
         return mResult;
@@ -69,11 +75,11 @@ public:
      */
     operator bool() const
     {
-        return mResult == RmapResultType::success;
+        return mResult == Code::success;
     }
 
 private:
-    RmapResultType mResult = RmapResultType::unknown;
+    Code mResult = Code::unknown;
     RmapReplyStatus::ErrorStatusCodes mErrorCode = RmapReplyStatus::ErrorStatusCodes::unknown;
     uint32_t mReadbytes = 0;
 };
