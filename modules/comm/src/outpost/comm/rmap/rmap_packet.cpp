@@ -117,7 +117,7 @@ RmapPacket::setData(const outpost::Slice<const uint8_t>& data)
 }
 
 bool
-RmapPacket::constructPacket(outpost::Slice<uint8_t>& buffer, outpost::Slice<const uint8_t>& data)
+RmapPacket::constructPacket(outpost::Slice<uint8_t>& buffer)
 {
     uint32_t headerLength =
             (rmap::readCommandOverhead + (sizeof(uint32_t) * mInstruction.getReplyAddressLength())
@@ -145,16 +145,15 @@ RmapPacket::constructPacket(outpost::Slice<uint8_t>& buffer, outpost::Slice<cons
             return false;
         }
 
-        if (data.getNumberOfElements() != mDataLength)
+        // sanity check
+        if (mData.getNumberOfElements() != mDataLength)
         {
             console_out("RMAP-Packet: dataLength and provided data is not equal for write "
                         "command\n");
             return false;
         }
-        mDataCRC = outpost::Crc8CcittReversed::calculate(data);
-        mData = data;
 
-        stream.store(data);
+        stream.store(mData);
         stream.store<uint8_t>(mDataCRC);
     }
 

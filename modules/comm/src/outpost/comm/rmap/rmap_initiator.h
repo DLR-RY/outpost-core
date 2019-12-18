@@ -334,7 +334,7 @@ private:
     }
 
     bool
-    sendPacket(RmapTransaction* transaction, outpost::Slice<const uint8_t> data);
+    sendPacket(RmapTransaction* transaction);
 
     bool
     receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBufferPointer& rxBuffer);

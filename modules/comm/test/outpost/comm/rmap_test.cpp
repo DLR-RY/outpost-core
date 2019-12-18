@@ -63,9 +63,9 @@ public:
     }
 
     bool
-    sendPacket(RmapInitiator& init, RmapTransaction* trans, outpost::Slice<const uint8_t> data)
+    sendPacket(RmapInitiator& init, RmapTransaction* trans)
     {
-        return init.sendPacket(trans, data);
+        return init.sendPacket(trans);
     }
 
     bool
@@ -359,8 +359,9 @@ TEST_F(RmapTest, shouldSendWriteCommandPacket)
     cmd->setTargetInformation(mRmapTarget);
     transaction.setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction.setTimeoutDuration(outpost::time::Duration::zero());
+    cmd->setData(outpost::asSlice(buffer));
 
-    EXPECT_TRUE(mTestingRmap.sendPacket(mRmapInitiator, &transaction, outpost::asSlice(buffer)));
+    EXPECT_TRUE(mTestingRmap.sendPacket(mRmapInitiator, &transaction));
 
     size_t expectedSize = 1;
 
@@ -428,8 +429,7 @@ TEST_F(RmapTest, shouldSendReadCommandPacket)
     transaction.setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction.setTimeoutDuration(outpost::time::Duration::zero());
 
-    EXPECT_TRUE(mTestingRmap.sendPacket(
-            mRmapInitiator, &transaction, outpost::Slice<uint8_t>::empty()));
+    EXPECT_TRUE(mTestingRmap.sendPacket(mRmapInitiator, &transaction));
 
     size_t expectedSize = 1;
 

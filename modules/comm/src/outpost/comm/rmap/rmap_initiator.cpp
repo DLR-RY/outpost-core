@@ -232,12 +232,12 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
     }
     cmd->setExtendedAddress(extendedMemoryAdress);
     cmd->setAddress(memoryAddress);
-    cmd->setDataLength(data.getNumberOfElements());
+    cmd->setData(data);  // also set data length and crc
     cmd->setTargetInformation(rmapTargetNode);
     transaction->setTimeoutDuration(timeout);
 
     // Transaction will be initiated and sent through the SpW interface
-    sendSuccesful = sendPacket(transaction, data);
+    sendSuccesful = sendPacket(transaction);
 
     if (sendSuccesful)
     {
@@ -404,9 +404,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     transaction->setInitiatorLogicalAddress(cmd->getInitiatorLogicalAddress());
     transaction->setTimeoutDuration(timeout);
 
-    // Command is read, thus no data bytes available
-    outpost::Slice<const uint8_t> empty{outpost::Slice<const uint8_t>::empty()};
-    sendSuccesful = sendPacket(transaction, empty);
+    sendSuccesful = sendPacket(transaction);
 
     if (sendSuccesful)
     {
@@ -523,7 +521,7 @@ RmapInitiator::doSingleStep()
 }
 
 bool
-RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uint8_t> data)
+RmapInitiator::sendPacket(RmapTransaction* transaction)
 {
     RmapPacket* cmd = transaction->getCommandPacket();
     bool result = false;
@@ -538,7 +536,7 @@ RmapInitiator::sendPacket(RmapTransaction* transaction, outpost::Slice<const uin
     outpost::Slice<uint8_t> txBuffer = outpost::asSlice(mSendBuffer);
 
     // Serialize the packet content to the SpW buffer
-    if (cmd->constructPacket(txBuffer, data))
+    if (cmd->constructPacket(txBuffer))
     {
 #ifdef DEBUG_EN
         console_out("TX-Data length: %zu\n", txBuffer.getNumberOfElements());

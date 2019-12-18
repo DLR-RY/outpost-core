@@ -221,10 +221,6 @@ public:
      * \param buffer
      *      SpW buffer provided by the RMAP initiator, size will be set as well
      *
-     * \param data
-     *      Reference to the user data for write commands, for read commands
-     *      this object will be outpost::Slice<uint8_t>::empty() and will
-     *      be ignored
      *
      * \return
      *      True for successful integration of packet into the buffer, false for
@@ -232,7 +228,7 @@ public:
      *
      * */
     bool
-    constructPacket(outpost::Slice<uint8_t>& buffer, outpost::Slice<const uint8_t>& data);
+    constructPacket(outpost::Slice<uint8_t>& buffer);
 
     /**
      * Extract the received RMAP packet according to the given standard by
@@ -499,6 +495,7 @@ public:
 
     void
     setData(const outpost::Slice<const uint8_t>& data);
+
     inline uint8_t
     getDataCRC() const
     {
