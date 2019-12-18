@@ -183,21 +183,9 @@ public:
         mReplyLock.release();
     }
 
+    // Disabling copy constructor and assignment
     inline RmapTransaction&
-    operator=(const RmapTransaction& rhs)
-    {
-        mTargetLogicalAddress = rhs.mTargetLogicalAddress;
-        mInitiatorLogicalAddress = rhs.mInitiatorLogicalAddress;
-        mTransactionID = rhs.mTransactionID;
-        mTimeoutDuration = rhs.mTimeoutDuration;
-        mState = rhs.mState;
-        mBlockingMode = rhs.mBlockingMode;
-        mCommandPacket = rhs.mCommandPacket;
-        mReplyPacket = rhs.mReplyPacket;
-        return *this;
-    }
-
-    // Disabling copy constructor
+    operator=(const RmapTransaction& rhs) = delete;
     RmapTransaction(const RmapTransaction&) = delete;
 
 private:

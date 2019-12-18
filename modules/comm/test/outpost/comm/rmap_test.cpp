@@ -38,10 +38,10 @@ public:
         return init.mTransactionsList.getNumberOfActiveTransactions();
     }
 
-    void
-    addTransaction(RmapInitiator& init, RmapTransaction* trans)
+    RmapTransaction*
+    getFreeTransaction(RmapInitiator& init)
     {
-        init.mTransactionsList.addTransaction(trans);
+        return init.mTransactionsList.getFreeTransaction();
     }
 
     void
@@ -236,9 +236,7 @@ TEST_F(RmapTest, shouldGetEmptyTransactionsList)
 
 TEST_F(RmapTest, shouldAddAndRemoveEmptyTransactionInList)
 {
-    RmapTransaction transaction;
-    transaction.setTransactionID(50);
-    mTestingRmap.addTransaction(mRmapInitiator, &transaction);
+    mTestingRmap.getFreeTransaction(mRmapInitiator)->setTransactionID(50);
     EXPECT_EQ(1, mTestingRmap.getActiveTransactions(mRmapInitiator));
     mTestingRmap.removeTransaction(mRmapInitiator, 50);
     EXPECT_EQ(0, mTestingRmap.getActiveTransactions(mRmapInitiator));
@@ -246,18 +244,14 @@ TEST_F(RmapTest, shouldAddAndRemoveEmptyTransactionInList)
 
 TEST_F(RmapTest, shouldGetAddedTransactionFromList)
 {
-    RmapTransaction transaction;
-    transaction.setTransactionID(60);
-    mTestingRmap.addTransaction(mRmapInitiator, &transaction);
+    mTestingRmap.getFreeTransaction(mRmapInitiator)->setTransactionID(60);
     EXPECT_EQ(1, mTestingRmap.getActiveTransactions(mRmapInitiator));
     EXPECT_EQ(60, mTestingRmap.getTransaction(mRmapInitiator, 60)->getTransactionID());
 }
 
 TEST_F(RmapTest, shouldGetUsedTransactionFromList)
 {
-    RmapTransaction transaction;
-    transaction.setTransactionID(80);
-    mTestingRmap.addTransaction(mRmapInitiator, &transaction);
+    mTestingRmap.getFreeTransaction(mRmapInitiator)->setTransactionID(80);
     EXPECT_EQ(1, mTestingRmap.getActiveTransactions(mRmapInitiator));
     EXPECT_TRUE(mTestingRmap.isUsedTransaction(mRmapInitiator, 80));
 }

@@ -99,47 +99,6 @@ public:
         size_t mErrorInStoringReplyPacket;
     };
 
-    /**
-     * Buffer handling for providing data to the user for received reply
-     * packets.
-     *
-     * TODO: Extend this to partial data buffering for storing multiple received
-     * data on the single buffer with the help of data indexing
-     * */
-    struct Buffer
-    {
-        Buffer() : mLength(0)
-        {
-            mData.fill(0);
-        }
-
-        bool
-        addData(uint8_t* buffer, uint16_t len)
-        {
-            bool result = false;
-
-            if (len <= rmap::bufferSize)
-            {
-                mLength = len;
-                memcpy(mData.data(), buffer, mLength);
-                result = true;
-            }
-            return result;
-        }
-
-        void
-        getData(uint8_t* buffer)
-        {
-            memcpy(buffer, mData.data(), mLength);
-            mData.fill(0);
-            mLength = 0;
-        }
-
-    private:
-        std::array<uint8_t, rmap::bufferSize> mData;
-        uint16_t mLength;
-    };
-
     struct TransactionsList
     {
         TransactionsList() : mTransactions()
@@ -163,19 +122,6 @@ public:
                 }
             }
             return active;
-        }
-
-        /**
-         * only used for testing
-         */
-        void
-        addTransaction(RmapTransaction* trans)
-        {
-            RmapTransaction* pos = getFreeTransaction();
-            if (pos != nullptr)
-            {
-                *pos = *trans;
-            }
         }
 
         void
