@@ -18,6 +18,7 @@ import os
 
 vars = Variables('custom.py')
 vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+vars.Add('append_buildpath', 'manual append to buildpath', '')
 
 module = 'time'
 
@@ -30,8 +31,6 @@ envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-build-tools/s
                         ENV=os.environ)
 Help(vars.GenerateHelpText(envGlobal))
 
-envGlobal.Tool('utils_compilation_database')
-
 buildfolder = os.path.join(rootpath, 'build')
 if envGlobal['coverage']:
     envGlobal.Tool('compiler_hosted_gcc_coverage')
@@ -41,6 +40,11 @@ else:
     envGlobal.Tool('compiler_hosted_llvm')
     envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
+
+if envGlobal['append_buildpath']:
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, envGlobal['append_buildpath'] + '/' ))
+
+envGlobal.Tool('utils_compilation_database')
 
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
@@ -61,7 +65,7 @@ files += env.Glob('outpost/*/*.cpp')
 files += env.Glob('outpost/*/*/*.cpp')
 
 sources =  env['sources'][module]
-envGlobal.Alias('compiledb_tests', env.compiledb(files))
+envGlobal.Alias('compiledb_tests', env.compiledb(files, compile_db_suffix='_tests.json'))
 
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong
@@ -69,6 +73,6 @@ envGlobal.Alias('compiledb_tests', env.compiledb(files))
 files += env['objects'][module]
 
 envGlobal.Alias('build', env.Program('runner', files))
-envGlobal.Alias('compiledb', env.compiledb(sources))
+envGlobal.Alias('compiledb', env.compiledb(sources, compile_db_suffix='.json'))
 
 envGlobal.Default('build')

@@ -49,4 +49,4 @@ envGlobal.AppendUnique(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 # using dynamically loaded lua modules.
 envGlobal.Append(LINKFLAGS=['-Wl,--export-dynamic'])
 
-envGlobal.Alias('compiledb_unittests', envGlobal.compiledb(envGlobal['sources_unittest']))
+envGlobal.Alias('compiledb_unittests', envGlobal.compiledb(envGlobal['sources_unittest'], compile_db_suffix='_unittest.json'))

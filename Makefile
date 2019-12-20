@@ -72,25 +72,25 @@ cppcheck:
 	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
 		printf "\n$(CINFO)Run CPPcheck for module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m cppcheck || return 1 ; \
+		printf "$(CINFO)CPPcheck results for \"$$m\" saved to disk$(CEND)\n"; \
 	done
-	#@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
-		#grep "severity=\"error" checks.xml; \
-	#done
-	#TODO check the results
+	@printf "\n$(CINFO)all CPPcheck-src results saved to disk$(CEND)\n"; \
 
 cppcheck-tests:
-	for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
 		printf "\n$(CINFO)Run CPPcheck  on tests of module \"$$m\":$(CEND)\n" ; \
 		make -C modules/$$m cppcheck-tests || return 1 ; \
+		printf "$(CINFO)CPPcheck results for \"$$m\"-tests saved to disk$(CEND)\n"; \
 	done
-	#TODO check the results
+	@printf "\n$(CINFO)all CPPcheck-tests results saved to disk$(CEND)\n"; \
 
 cppcheck-unittests:
-	for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
 		printf "\n$(CIINFO)Run CPPcheck on unit-tests of module \"$$m\":$(CENDR)\n"; \
 		make -C modules/$$m cppcheck-unittests || return 1; \
+		printf "$(CINFO)CPPcheck results for \"$$m\"-unittests saved to disk$(CEND)\n"; \
 	done
-	#TODO check the resuts 
+	@printf "\n$(CINFO)CPPcheck-unittests saved to disk$(CEND)\n"; \
 
 cloc-source:
 	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \

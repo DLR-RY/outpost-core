@@ -85,19 +85,30 @@ test-default:
 	@python3 $(ROOTPATH)/tools/gtest_process_skipped.py $(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml $(BUILDPATH)/test/$(MODULE).xml
 
 cppcheck:
-	@scons -C test/ compiledb
-	@if [ '$(shell head test/compile_db.json)' != '[]' ]; \
-	then \
-		cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> checks.xml; \
-	fi;
+	@scons -C test/ compiledb -D append_buildpath=compiledb
+	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
+	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db.json"` ;\
+	do \
+		cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE).xml;\
+	done;
+
 
 cppcheck-tests:
-	@scons -C test/ compiledb_tests
-	@cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> check-tests.xml
+	@scons -C test/ compiledb_tests -D append_buildpath=compiledb
+	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
+	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_tests.json"` ;\
+	do \
+		cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-tests.xml;\
+	done;
 
 cppcheck-unittests:
-	@scons -C test/ compiledb_unittests
-	@cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=test/compile_db.json --xml --xml-version=2 2> check-unittests.xml
+	@scons -C test/ compiledb_unittests -D append_buildpath=compiledb
+	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
+	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_unittest.json"` ;\
+	do \
+		cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-unittests.xml;\
+	done;
+
 
 coverage-default:
 	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
