@@ -1,10 +1,16 @@
 /*
- * Copyright (c) 2015, German Aerospace Center (DLR)
- * All rights reserved.
+ * Copyright (c) 2019, German Aerospace Center (DLR)
  *
- * This file is part of the RCN bootloader software.
+ * This file is part of the development version of OUTPOST.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Authors:
+ * - 2019, Jan Malburg (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
+
 #ifndef NAND_BCH_RUNTIME_IMPL_H_
 #define NAND_BCH_RUNTIME_IMPL_H_
 
@@ -1619,7 +1625,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 bool
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
-        outpost::Slice<const uint8_t> src_data, outpost::Slice<uint8_t> coded_data)
+        const outpost::Slice<const uint8_t>& src_data, const outpost::Slice<uint8_t>& coded_data)
 {
     if (coded_data.getNumberOfElements() < mNandDataSize + mNandSpareSize || !mValid)
     {
@@ -1672,7 +1678,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 DecodeStatus
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
-        outpost::Slice<const uint8_t> coded_data, outpost::Slice<uint8_t> src_data)
+        const outpost::Slice<const uint8_t>& coded_data, const outpost::Slice<uint8_t>& src_data)
 {
     if (coded_data.getNumberOfElements() < mNandDataSize + mNandSpareSize || !mValid)
     {
@@ -1719,7 +1725,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 bool
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::isChecksumEmpty(
-        outpost::Slice<const uint8_t> data)
+        const outpost::Slice<const uint8_t>& data)
 {
     bool result = true;
     uint8_t iteration_count = (mNandDataSize * 8) / mNumDataBits;

@@ -1,8 +1,12 @@
 /*
  * Copyright (c) 2019, German Aerospace Center (DLR)
- * All rights reserved.
  *
- * This file is part of the RCN bootloader software.
+ * This file is part of the development version of OUTPOST.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * Authors:
  * - 2019, Jan Malburg (DLR RY-AVS)
  */
@@ -46,13 +50,15 @@ public:
     virtual ~NandBCHInterface() = default;
 
     virtual bool
-    isChecksumEmpty(outpost::Slice<const uint8_t> data) = 0;
+    isChecksumEmpty(const outpost::Slice<const uint8_t>& data) = 0;
 
     virtual bool
-    encode(outpost::Slice<const uint8_t> src_data, outpost::Slice<uint8_t> coded_data) = 0;
+    encode(const outpost::Slice<const uint8_t>& src_data,
+           const outpost::Slice<uint8_t>& coded_data) = 0;
 
     virtual DecodeStatus
-    decode(outpost::Slice<const uint8_t> coded_data, outpost::Slice<uint8_t> src_data) = 0;
+    decode(const outpost::Slice<const uint8_t>& coded_data,
+           const outpost::Slice<uint8_t>& src_data) = 0;
 
     virtual uint32_t
     getNumberOfRedundantBytes(void) const = 0;

@@ -1,10 +1,16 @@
 /*
- * Copyright (c) 2015, German Aerospace Center (DLR)
- * All rights reserved.
+ * Copyright (c) 2019, German Aerospace Center (DLR)
  *
- * This file is part of the RCN bootloader software.
+ * This file is part of the development version of OUTPOST.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Authors:
+ * - 2019, Jan Malburg (DLR RY-AVS)
  */
-// ----------------------------------------------------------------------------
+
 #ifndef NAND_BCH_RUNTIME_H_
 #define NAND_BCH_RUNTIME_H_
 
@@ -41,10 +47,12 @@ public:
     NandBCHRTime(void);
 
     bool
-    encode(outpost::Slice<const uint8_t> src_data, outpost::Slice<uint8_t> coded_data) override;
+    encode(const outpost::Slice<const uint8_t>& src_data,
+           const outpost::Slice<uint8_t>& coded_data) override;
 
     DecodeStatus
-    decode(outpost::Slice<const uint8_t> coded_data, outpost::Slice<uint8_t> src_data) override;
+    decode(const outpost::Slice<const uint8_t>& coded_data,
+           const outpost::Slice<uint8_t>& src_data) override;
 
     inline uint32_t
     getNumberOfRedundantBytes(void) const override
@@ -65,7 +73,7 @@ public:
     }
 
     bool
-    isChecksumEmpty(outpost::Slice<const uint8_t> data) override;
+    isChecksumEmpty(const outpost::Slice<const uint8_t>& data) override;
 
 private:
     static constexpr uint32_t mFFSize = outpost::PowerOfTwo<mMParam>::value;
