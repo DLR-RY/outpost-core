@@ -21,9 +21,11 @@
 
 #include <unittest/hal/spacewire_stub.h>
 #include <unittest/harness.h>
+#include <unittest/time/testing_clock.h>
 
 #include <cstdlib>
 #include <future>
+#include <utility>
 
 namespace outpost
 {
@@ -113,7 +115,8 @@ using outpost::hal::SpaceWire;
 using namespace outpost::comm;
 
 static char name[] = "Test";
-static outpost::rtos::SystemClock Clock;
+
+static unittest::time::TestingClock Clock;
 
 class RmapTest : public testing::Test
 {
@@ -169,14 +172,11 @@ public:
     TestingRmap mTestingRmap;
 };
 
-std::vector<uint8_t>
-getReadReplyPacket(std::vector<uint8_t>& command, uint8_t readValue, uint16_t countRead);
-
 /**
  * Note: Only working for command with logical addressing!!!
  */
-std::vector<uint8_t>
-getReadReplyPacket(std::vector<uint8_t>& command, uint8_t readValue, uint16_t countRead)
+static std::vector<uint8_t>
+constructReadReplyPacket(std::vector<uint8_t>& command, uint8_t readValue, uint16_t countRead)
 {
     std::vector<uint8_t> ret;
     ret.resize(countRead + 13);
@@ -189,7 +189,7 @@ getReadReplyPacket(std::vector<uint8_t>& command, uint8_t readValue, uint16_t co
     ret[countRead + 12] = outpost::Crc8CcittReversed::calculate(
             outpost::Slice<uint8_t>::unsafe(&ret[12], countRead));
 
-    ret[8] = 0;  // this function does max read replys o of uint16_t size
+    ret[8] = 0;  // this function does max read replies of uint16_t size
     ret[9] = (countRead & 0xff00) >> 8;
     ret[10] = countRead & 0x00ff;
 
@@ -207,6 +207,72 @@ getReadReplyPacket(std::vector<uint8_t>& command, uint8_t readValue, uint16_t co
     ret[2] = command[2] & 0xbf;  // remove command flag
     ret[3] = RmapReplyStatus::commandExecutedSuccessfully;
     ret[11] = outpost::Crc8CcittReversed::calculate(outpost::Slice<uint8_t>::unsafe(&ret[0], 11));
+
+    return ret;
+}
+
+/**
+ * Note: Only working for command with logical addressing!!!
+ */
+static std::vector<uint8_t>
+constructReadReplyErrorPacket(std::vector<uint8_t>& command,
+                              RmapReplyStatus::ErrorStatusCodes error)
+{
+    std::vector<uint8_t> ret;
+    ret.resize(13);
+
+    // data is only its crc
+    ret[12] = 0;
+
+    // data error 0 for error
+    ret[8] = 0;
+    ret[9] = 0;
+    ret[10] = 0;
+
+    // address
+    ret[0] = command[4];
+    ret[4] = command[0];
+
+    // transaction id
+    ret[5] = command[5];
+    ret[6] = command[6];
+
+    ret[7] = 0;  // reserved
+
+    ret[1] = rmap::protocolIdentifier;
+    ret[2] = command[2] & 0xbf;  // remove command flag
+    ret[3] = error;
+    ret[11] = outpost::Crc8CcittReversed::calculate(outpost::Slice<uint8_t>::unsafe(&ret[0], 11));
+
+    return ret;
+}
+
+/**
+ * Note: Only working for command with logical addressing!!!
+ */
+static std::vector<uint8_t>
+constructWriteReplyPacket(
+        std::vector<uint8_t>& command,
+        RmapReplyStatus::ErrorStatusCodes error = RmapReplyStatus::commandExecutedSuccessfully)
+{
+    std::vector<uint8_t> ret;
+    ret.resize(rmap::writeReplyOverhead);
+
+    // address
+    ret[0] = command[4];
+    ret[4] = command[0];
+
+    // type and result
+    ret[1] = rmap::protocolIdentifier;
+    ret[2] = command[2] & 0xbf;  // remove command flag
+    ret[3] = error;
+
+    // transaction id
+    ret[5] = command[5];
+    ret[6] = command[6];
+
+    // crc
+    ret[7] = outpost::Crc8CcittReversed::calculate(outpost::Slice<uint8_t>::unsafe(&ret[0], 7));
 
     return ret;
 }
@@ -578,12 +644,12 @@ TEST_F(RmapTest, testRead)
     // parsing result requires a logical addressing command
     EXPECT_EQ(packet.data.size(), 16u);
 
-    auto answer = getReadReplyPacket(packet.data, readValue, sizeof(readBuffer));
+    auto answer = constructReadReplyPacket(packet.data, readValue, sizeof(readBuffer));
 
     mHandler.handlePackage(outpost::asSlice(answer), answer.size());
     mTestingRmap.step(mRmapInitiator);
 
-    auto status = read1.wait_for(std::chrono::seconds(1));  // give it time to send
+    auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
 
     if (status == std::future_status::ready)
     {
@@ -601,9 +667,73 @@ TEST_F(RmapTest, testRead)
     }
 }
 
+TEST_F(RmapTest, testAnswerToLong)
+{
+    uint8_t readBuffer[4] = {0x00, 0x00, 0x00, 0x00};
+
+    uint8_t readValue = 0xf0;
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    auto read1 = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.read(
+                targetName, options, address, extaddress, outpost::asSlice(readBuffer));
+    });
+    read1.wait_for(std::chrono::milliseconds(50));  // give it time to send
+
+    // check send package
+    auto& packet = *mSpaceWire.mSentPackets.begin();
+
+    // parsing result requires a logical addressing command
+    EXPECT_EQ(packet.data.size(), 16u);
+
+    // too long answers are invalid
+    auto answer = constructReadReplyPacket(packet.data, readValue, sizeof(readBuffer) + 1);
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_EQ(RmapResult::Code::invalidReply, read1.get().getResult());
+    }
+    else
+    {
+        EXPECT_TRUE(false);
+        exit(-1);  // no other way to stop the threads, unit tests will still fail.
+    }
+}
+
 TEST_F(RmapTest, testReadAnswerTooShort)
 {
-    uint8_t readBuffer[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    constexpr uint8_t initialValue = 0x00;
+    constexpr uint32_t arraySize = 8;
+    uint8_t readBuffer[arraySize] = {initialValue,
+                                     initialValue,
+                                     initialValue,
+                                     initialValue,
+                                     initialValue,
+                                     initialValue,
+                                     initialValue,
+                                     initialValue};
 
     uint8_t readValue = 0xf0;
 
@@ -639,12 +769,12 @@ TEST_F(RmapTest, testReadAnswerTooShort)
 
     const uint32_t answerSize = sizeof(readBuffer) / 2;
 
-    auto answer = getReadReplyPacket(packet.data, readValue, answerSize);
+    auto answer = constructReadReplyPacket(packet.data, readValue, answerSize);
 
     mHandler.handlePackage(outpost::asSlice(answer), answer.size());
     mTestingRmap.step(mRmapInitiator);
 
-    auto status = read1.wait_for(std::chrono::seconds(1));  // give it time to send
+    auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
 
     if (status == std::future_status::ready)
     {
@@ -663,9 +793,117 @@ TEST_F(RmapTest, testReadAnswerTooShort)
     {
         EXPECT_EQ(readBuffer[i], readValue);
     }
+
+    for (unsigned int i = answerSize; i < arraySize; i++)
+    {
+        EXPECT_EQ(readBuffer[i], initialValue);
+    }
 }
 
-TEST_F(RmapTest, testReadSwitchReply)
+TEST_F(RmapTest, testReadFailed)
+{
+    uint8_t readBuffer[4] = {0x00, 0x00, 0x00, 0x00};
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    mRmapInitiator.resetErrorCounters();
+
+    auto read1 = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.read(
+                targetName, options, address, extaddress, outpost::asSlice(readBuffer));
+    });
+    read1.wait_for(std::chrono::milliseconds(50));  // give it time to send
+
+    // check send package
+    auto& packet = *mSpaceWire.mSentPackets.begin();
+
+    // parsing result requires a logical addressing command
+    EXPECT_EQ(packet.data.size(), 16u);
+
+    RmapReplyStatus::ErrorStatusCodes executionstatus = RmapReplyStatus::generalErrorCode;
+
+    auto answer = constructReadReplyErrorPacket(packet.data, executionstatus);
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        RmapResult result = read1.get();
+        EXPECT_EQ(RmapResult::Code::executionFailed, result.getResult());
+        EXPECT_EQ(executionstatus, result.getReplyErrorCode());
+    }
+    else
+    {
+        EXPECT_TRUE(false);
+        exit(-1);  // no other way to stop the threads, unit tests will still fail.
+    }
+
+    auto errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(1u, errorCounters.mOperationFailed);
+}
+
+TEST_F(RmapTest, testInvalidParameters)
+{
+    uint8_t readBuffer[4] = {0x00, 0x00, 0x00, 0x00};
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    auto ret = mRmapInitiator.read(
+            nullptr, options, address, extaddress, outpost::asSlice(readBuffer));
+    EXPECT_EQ(RmapResult::Code::invalidParameters, ret.getResult());
+
+    ret = mRmapInitiator.read(
+            targetName, options, address, extaddress, outpost::Slice<uint8_t>::empty());
+    EXPECT_EQ(RmapResult::Code::invalidParameters, ret.getResult());
+
+    uint8_t tooLong[rmap::bufferSize + 1];
+    ret = mRmapInitiator.read(targetName, options, address, extaddress, outpost::asSlice(tooLong));
+    EXPECT_EQ(RmapResult::Code::invalidParameters, ret.getResult());
+
+    ret = mRmapInitiator.write(nullptr, options, address, extaddress, outpost::asSlice(readBuffer));
+    EXPECT_EQ(RmapResult::Code::invalidParameters, ret.getResult());
+
+    ret = mRmapInitiator.write(
+            targetName, options, address, extaddress, outpost::Slice<uint8_t>::empty());
+    EXPECT_EQ(RmapResult::Code::invalidParameters, ret.getResult());
+}
+
+TEST_F(RmapTest, testReverseReplyOrder)
 {
     static_assert(rmap::numberOfReceiveBuffers >= 2,
                   "Two package switch test requires a receive buffer of at least 2");
@@ -674,7 +912,7 @@ TEST_F(RmapTest, testReadSwitchReply)
     uint8_t readBuffer2[4] = {0x00, 0x00, 0x00, 0x00};
 
     uint8_t readValue1 = 0xf0;
-    uint8_t readValue2 = 0xf0;
+    uint8_t readValue2 = 0x0f;
 
     // for easier parsing of send command
     mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
@@ -717,12 +955,12 @@ TEST_F(RmapTest, testReadSwitchReply)
     EXPECT_EQ(packet1.data.size(), 16u);
     EXPECT_EQ(packet2.data.size(), 16u);
 
-    auto answer2 = getReadReplyPacket(packet2.data, readValue2, sizeof(readBuffer2));
+    auto answer2 = constructReadReplyPacket(packet2.data, readValue2, sizeof(readBuffer2));
 
     mHandler.handlePackage(outpost::asSlice(answer2), answer2.size());
     mTestingRmap.step(mRmapInitiator);
 
-    auto status = read2.wait_for(std::chrono::seconds(1));  // give it time to send
+    auto status = read2.wait_for(std::chrono::milliseconds(50));  // give it time process reply
 
     if (status == std::future_status::ready)
     {
@@ -734,12 +972,12 @@ TEST_F(RmapTest, testReadSwitchReply)
         exit(-1);  // no other way to stop the threads, unit tests will still fail.
     }
 
-    auto answer1 = getReadReplyPacket(packet1.data, readValue1, sizeof(readBuffer1));
+    auto answer1 = constructReadReplyPacket(packet1.data, readValue1, sizeof(readBuffer1));
 
     mHandler.handlePackage(outpost::asSlice(answer1), answer1.size());
     mTestingRmap.step(mRmapInitiator);
 
-    status = read1.wait_for(std::chrono::seconds(1));  // give it time to send
+    status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
 
     if (status == std::future_status::ready)
     {
@@ -803,12 +1041,12 @@ TEST_F(RmapTest, testBufferDoNotLeak)
         // parsing result requires a logical addressing command
         EXPECT_EQ(packet.data.size(), 16u);
 
-        auto answer = getReadReplyPacket(packet.data, readValue, sizeof(readBuffer));
+        auto answer = constructReadReplyPacket(packet.data, readValue, sizeof(readBuffer));
 
         mHandler.handlePackage(outpost::asSlice(answer), answer.size());
         mTestingRmap.step(mRmapInitiator);
 
-        auto status = read1.wait_for(std::chrono::seconds(1));  // give it time to send
+        auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
 
         if (status == std::future_status::ready)
         {
@@ -827,6 +1065,567 @@ TEST_F(RmapTest, testBufferDoNotLeak)
 
         mSpaceWire.mSentPackets.clear();
 
-        readValue++;  // change the valuefor more testing
+        readValue++;  // change the value for more testing
     }
+}
+
+TEST_F(RmapTest, testInvaldRepliesAndErrorCounters)
+{
+    uint8_t readBuffer[4] = {0x00, 0x00, 0x00, 0x00};
+
+    uint8_t readValueInCor1 = 0x10;
+    uint8_t readValueInCor2 = 0x20;
+    uint8_t readValueInCor3 = 0x30;
+    uint8_t readValueInCor4 = 0x40;
+    uint8_t readValueInCor5 = 0x50;
+    uint8_t readValue = 0xf0;
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    mRmapInitiator.resetErrorCounters();
+
+    auto errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(0u, errorCounters.mIncorrectOperation);
+    EXPECT_EQ(0u, errorCounters.mOperationFailed);
+    EXPECT_EQ(0u, errorCounters.mPackageCrcError);
+    EXPECT_EQ(0u, errorCounters.mSpacewireFailure);
+    EXPECT_EQ(0u, errorCounters.mUnknownTransactionID);
+    EXPECT_EQ(0u, errorCounters.mInvalidSize);
+
+    auto read1 = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.read(
+                targetName, options, address, extaddress, outpost::asSlice(readBuffer));
+    });
+    read1.wait_for(std::chrono::milliseconds(50));  // give it time to send
+
+    // check send package
+    auto& packet = *mSpaceWire.mSentPackets.begin();
+
+    // parsing result requires a logical addressing command
+    EXPECT_EQ(packet.data.size(), 16u);
+
+    // first wrong header crc
+    auto answer = constructReadReplyPacket(packet.data, readValueInCor1, sizeof(readBuffer));
+    answer[11]++;
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_TRUE(false);
+    }
+
+    errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(0u, errorCounters.mIncorrectOperation);
+    EXPECT_EQ(0u, errorCounters.mOperationFailed);
+    EXPECT_EQ(1u, errorCounters.mPackageCrcError);
+    EXPECT_EQ(0u, errorCounters.mSpacewireFailure);
+    EXPECT_EQ(0u, errorCounters.mUnknownTransactionID);
+    EXPECT_EQ(0u, errorCounters.mInvalidSize);
+
+    // wrong data crc
+    answer = constructReadReplyPacket(packet.data, readValueInCor2, sizeof(readBuffer));
+    (*answer.rbegin())++;
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_TRUE(false);
+    }
+
+    errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(0u, errorCounters.mIncorrectOperation);
+    EXPECT_EQ(0u, errorCounters.mOperationFailed);
+    EXPECT_EQ(2u, errorCounters.mPackageCrcError);
+    EXPECT_EQ(0u, errorCounters.mSpacewireFailure);
+    EXPECT_EQ(0u, errorCounters.mUnknownTransactionID);
+    EXPECT_EQ(0u, errorCounters.mInvalidSize);
+
+    // partial package package
+    answer = constructReadReplyPacket(packet.data, readValueInCor3, sizeof(readBuffer));
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size() - 1);
+    mTestingRmap.step(mRmapInitiator);
+
+    status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_TRUE(false);
+    }
+
+    errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(0u, errorCounters.mIncorrectOperation);
+    EXPECT_EQ(0u, errorCounters.mOperationFailed);
+    EXPECT_EQ(2u, errorCounters.mPackageCrcError);
+    EXPECT_EQ(0u, errorCounters.mSpacewireFailure);
+    EXPECT_EQ(0u, errorCounters.mUnknownTransactionID);
+    EXPECT_EQ(1u, errorCounters.mInvalidSize);
+
+    // partial package very small
+    answer = constructReadReplyPacket(packet.data, readValueInCor3, sizeof(readBuffer));
+
+    mHandler.handlePackage(outpost::asSlice(answer), rmap::minimumReplySize - 1);
+    mTestingRmap.step(mRmapInitiator);
+
+    status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_TRUE(false);
+    }
+
+    errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(0u, errorCounters.mIncorrectOperation);
+    EXPECT_EQ(0u, errorCounters.mOperationFailed);
+    EXPECT_EQ(2u, errorCounters.mPackageCrcError);
+    EXPECT_EQ(0u, errorCounters.mSpacewireFailure);
+    EXPECT_EQ(0u, errorCounters.mUnknownTransactionID);
+    EXPECT_EQ(2u, errorCounters.mInvalidSize);
+
+    // incorrect type
+    std::vector<uint8_t> tmp = packet.data;
+    tmp[2] ^= 0x04;  // change: increment mode
+
+    answer = constructReadReplyPacket(tmp, readValueInCor4, sizeof(readBuffer));
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_TRUE(false);
+    }
+
+    errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(1u, errorCounters.mIncorrectOperation);
+    EXPECT_EQ(0u, errorCounters.mOperationFailed);
+    EXPECT_EQ(2u, errorCounters.mPackageCrcError);
+    EXPECT_EQ(0u, errorCounters.mSpacewireFailure);
+    EXPECT_EQ(0u, errorCounters.mUnknownTransactionID);
+    EXPECT_EQ(2u, errorCounters.mInvalidSize);
+
+    // incorrect id
+    tmp = packet.data;
+    tmp[6] += 1;
+    answer = constructReadReplyPacket(tmp, readValueInCor5, sizeof(readBuffer));
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_TRUE(false);
+    }
+
+    errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(1u, errorCounters.mIncorrectOperation);
+    EXPECT_EQ(0u, errorCounters.mOperationFailed);
+    EXPECT_EQ(2u, errorCounters.mPackageCrcError);
+    EXPECT_EQ(0u, errorCounters.mSpacewireFailure);
+    EXPECT_EQ(1u, errorCounters.mUnknownTransactionID);
+    EXPECT_EQ(2u, errorCounters.mInvalidSize);
+
+    // correct version
+    answer = constructReadReplyPacket(packet.data, readValue, sizeof(readBuffer));
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_EQ(RmapResult::Code::success, read1.get().getResult());
+    }
+    else
+    {
+        EXPECT_TRUE(false);
+        exit(-1);  // no other way to stop the threads, unit tests will still fail.
+    }
+
+    for (unsigned int i = 0; i < sizeof(readBuffer); i++)
+    {
+        EXPECT_EQ(readBuffer[i], readValue);
+    }
+
+    errorCounters = mRmapInitiator.getErrorCounters();
+    EXPECT_EQ(1u, errorCounters.mIncorrectOperation);
+    EXPECT_EQ(0u, errorCounters.mOperationFailed);
+    EXPECT_EQ(2u, errorCounters.mPackageCrcError);
+    EXPECT_EQ(0u, errorCounters.mSpacewireFailure);
+    EXPECT_EQ(1u, errorCounters.mUnknownTransactionID);
+    EXPECT_EQ(2u, errorCounters.mInvalidSize);
+}
+
+TEST_F(RmapTest, testTimeoutRead)
+{
+    outpost::time::Duration waitTime = outpost::time::Seconds(1);
+    uint8_t readBuffer[4] = {0x00, 0x00, 0x00, 0x00};
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    auto read1 = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.read(
+                targetName, options, address, extaddress, outpost::asSlice(readBuffer), waitTime);
+    });
+    read1.wait_for(std::chrono::milliseconds(50));  // give it time to send
+
+    // check send package
+    auto& packet = *mSpaceWire.mSentPackets.begin();
+
+    // parsing result requires a logical addressing command
+    EXPECT_EQ(packet.data.size(), 16u);
+
+    auto status = read1.wait_for(
+            std::chrono::milliseconds(waitTime.milliseconds() * 2));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_EQ(RmapResult::Code::timeout, read1.get().getResult());
+    }
+    else
+    {
+        EXPECT_TRUE(false);
+        exit(-1);  // no other way to stop the threads, unit tests will still fail.
+    }
+}
+
+TEST_F(RmapTest, testWrite)
+{
+    uint8_t writeBuffer[4] = {0x01, 0x02, 0x03, 0x04};
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    auto write = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.write(
+                targetName, options, address, extaddress, outpost::asSlice(writeBuffer));
+    });
+    write.wait_for(std::chrono::milliseconds(50));  // give it time to send
+
+    // check send package
+    auto& packet = *mSpaceWire.mSentPackets.begin();
+
+    // parsing result requires a logical addressing command
+    EXPECT_EQ(packet.data.size(), rmap::writeCommandOverhead + sizeof(writeBuffer));
+
+    for (unsigned int i = 0; i < sizeof(writeBuffer); i++)
+    {
+        // data crc is behind data
+        EXPECT_EQ(packet.data[(rmap::writeCommandOverhead - 1) + i], writeBuffer[i]);
+    }
+
+    auto answer = constructWriteReplyPacket(packet.data);
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    auto status = write.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_EQ(RmapResult::Code::success, write.get().getResult());
+    }
+    else
+    {
+        EXPECT_TRUE(false);
+        exit(-1);  // no other way to stop the threads, unit tests will still fail.
+    }
+}
+
+TEST_F(RmapTest, testWriteFailed)
+{
+    uint8_t writeBuffer[4] = {0x01, 0x02, 0x03, 0x04};
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    auto write = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.write(
+                targetName, options, address, extaddress, outpost::asSlice(writeBuffer));
+    });
+    write.wait_for(std::chrono::milliseconds(50));  // give it time to send
+
+    // check send package
+    auto& packet = *mSpaceWire.mSentPackets.begin();
+
+    // parsing result requires a logical addressing command
+    EXPECT_EQ(packet.data.size(), rmap::writeCommandOverhead + sizeof(writeBuffer));
+
+    for (unsigned int i = 0; i < sizeof(writeBuffer); i++)
+    {
+        // data crc is behind data
+        EXPECT_EQ(packet.data[(rmap::writeCommandOverhead - 1) + i], writeBuffer[i]);
+    }
+
+    RmapReplyStatus::ErrorStatusCodes error = RmapReplyStatus::invalidDataCrc;
+
+    auto answer = constructWriteReplyPacket(packet.data, error);
+
+    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    mTestingRmap.step(mRmapInitiator);
+
+    auto status = write.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        auto r = write.get();
+        EXPECT_EQ(RmapResult::Code::executionFailed, r.getResult());
+        EXPECT_EQ(error, r.getReplyErrorCode());
+    }
+    else
+    {
+        EXPECT_TRUE(false);
+        exit(-1);  // no other way to stop the threads, unit tests will still fail.
+    }
+}
+
+TEST_F(RmapTest, testTimeoutWrite)
+{
+    outpost::time::Duration waitTime = outpost::time::Seconds(1);
+    uint8_t writeBuffer[4] = {0x00, 0x00, 0x00, 0x00};
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    auto read1 = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.write(
+                targetName, options, address, extaddress, outpost::asSlice(writeBuffer), waitTime);
+    });
+    read1.wait_for(std::chrono::milliseconds(50));  // give it time to send
+
+    // check send package
+    auto& packet = *mSpaceWire.mSentPackets.begin();
+
+    // parsing result requires a logical addressing command
+    EXPECT_EQ(packet.data.size(), rmap::writeCommandOverhead + sizeof(writeBuffer));
+
+    auto status = read1.wait_for(
+            std::chrono::milliseconds(waitTime.milliseconds() * 2));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_EQ(RmapResult::Code::timeout, read1.get().getResult());
+    }
+    else
+    {
+        EXPECT_TRUE(false);
+        exit(-1);  // no other way to stop the threads, unit tests will still fail.
+    }
+}
+
+TEST_F(RmapTest, testNoReplyWrite)
+{
+    uint8_t writeBuffer[4] = {0x00, 0x00, 0x00, 0x00};
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = false;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    auto read1 = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.write(
+                targetName, options, address, extaddress, outpost::asSlice(writeBuffer));
+    });
+    read1.wait_for(std::chrono::milliseconds(50));  // give it time to send
+
+    // check send package
+    auto& packet = *mSpaceWire.mSentPackets.begin();
+
+    // parsing result requires a logical addressing command
+    EXPECT_EQ(packet.data.size(), rmap::writeCommandOverhead + sizeof(writeBuffer));
+
+    auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
+
+    if (status == std::future_status::ready)
+    {
+        EXPECT_EQ(RmapResult::Code::success, read1.get().getResult());
+    }
+    else
+    {
+        EXPECT_TRUE(false);
+        exit(-1);  // no other way to stop the threads, unit tests will still fail.
+    }
+}
+
+TEST_F(RmapTest, testTooManyTransactions)
+{
+    outpost::time::Duration waitTime = outpost::time::Seconds(2);
+    uint8_t readBuffer[4] = {0x00, 0x00, 0x00, 0x00};
+
+    // for easier parsing of send command
+    mRmapTarget.setReplyAddress(outpost::Slice<uint8_t>::empty());
+    mRmapTarget.setTargetSpaceWireAddress(outpost::Slice<uint8_t>::empty());
+
+    // Register RMAP target
+    EXPECT_TRUE(mTargetNodes.addTargetNode(&mRmapTarget));
+    EXPECT_EQ(1, mTargetNodes.getSize());
+    EXPECT_EQ(&mRmapTarget, mTargetNodes.getTargetNode(targetName));
+
+    // Send RMAP command to read from the target
+    RMapOptions options;
+    options.mIncrementMode = true;
+    options.mReplyMode = true;
+    options.mVerifyMode = true;
+
+    static const uint8_t extaddress = 0x7e;
+    static const uint32_t address = 0x1000;
+
+    // one moved out to get the type
+    auto f = std::async(std::launch::async, [&]() {
+        return mRmapInitiator.read(
+                targetName, options, address, extaddress, outpost::asSlice(readBuffer), waitTime);
+    });
+
+    decltype(f) futurs[rmap::maxConcurrentTransactions + 1];
+    futurs[rmap::maxConcurrentTransactions] = std::move(f);
+    for (unsigned int i = 0; i < rmap::maxConcurrentTransactions; i++)
+    {
+        futurs[i] = std::async(std::launch::async, [&]() {
+            return mRmapInitiator.read(targetName,
+                                       options,
+                                       address,
+                                       extaddress,
+                                       outpost::asSlice(readBuffer),
+                                       waitTime);
+        });
+    }
+
+    // for one there will be no transaction but as they are parallel starting we don't know which
+    uint32_t timeOuted = 0;
+    uint32_t noFreeTransaction = 0;
+
+    // clear the running threads
+    for (unsigned int i = 0; i < rmap::maxConcurrentTransactions + 1; i++)
+    {
+        auto status = futurs[i].wait_for(std::chrono::milliseconds(waitTime.milliseconds() * 2));
+        if (status == std::future_status::ready)
+        {
+            auto value = futurs[i].get().getResult();
+            if (value == RmapResult::Code::timeout)
+            {
+                timeOuted++;
+            }
+            else if (value == RmapResult::Code::noFreeTransactions)
+            {
+                noFreeTransaction++;
+            }
+            else
+            {
+                // Unexpected result
+                EXPECT_TRUE(false);
+                exit(-1);  // no other way to stop the threads, unit tests will still fail.
+            }
+        }
+        else
+        {
+            EXPECT_TRUE(false);
+            exit(-1);  // no other way to stop the threads, unit tests will still fail.
+        }
+    }
+
+    EXPECT_EQ(1u, noFreeTransaction);
+    EXPECT_EQ(rmap::maxConcurrentTransactions, timeOuted);
 }
