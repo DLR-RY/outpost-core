@@ -26,7 +26,7 @@ static constexpr uint32_t maxTransactionIds = 65536;
 static constexpr uint8_t maxConcurrentTransactions = 10;
 static constexpr uint16_t bufferSize = 1024;  // The amount of data bytes.
 static constexpr uint8_t numberOfReceiveBuffer =
-        2;  // How many reply packages can be queued,
+        3;  // How many reply packages can be queued,
             // including the currently processed one (i.e. min = 1)
 static constexpr uint8_t defaultLogicalAddress = 0xFE;
 static constexpr uint8_t defaultExtendedAddress = 0x00;
