@@ -46,6 +46,18 @@ RmapInitiator::~RmapInitiator()
 {
 }
 
+/**
+ * Starts the internal thread and waits till the listener are set up
+ */
+void
+RmapInitiator::init(void)
+{
+    // setup the receive part
+    mSpW.addQueue(rmap::protocolIdentifier, &mPool, &mQueue, true);
+
+    start();
+}
+
 RmapResult
 RmapInitiator::write(const char* targetNodeName,
                      const RMapOptions& options,
@@ -417,34 +429,38 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
 void
 RmapInitiator::run()
 {
-    static RmapPacket packet;
-
-    // setup the receive part
-    mSpW.addQueue(rmap::protocolIdentifier, &mPool, &mQueue, true);
-
     mStopped = false;
     while (!mStopped)
     {
-        outpost::utils::SharedBufferPointer rxBuffer;
-
         outpost::support::Heartbeat::send(mHeartbeatSource, receiveTimeout * 2);
-        if (receivePacket(&packet, rxBuffer))
-        {
-            // Only handling reply packet, no command packets
-            if (packet.isReplyPacket())
-            {
-                replyPacketReceived(&packet, rxBuffer);
-            }
-            else
-            {
-                mCounters.mErrorneousReplyPackets++;
-            }
-        }
-        // Explicitly yield the control over the buffer
-        rxBuffer = outpost::utils::SharedBufferPointer();
+        doSingleStep();
     }
     outpost::support::Heartbeat::suspend(mHeartbeatSource);
     mStopped = true;
+}
+
+/**
+ * does a single step of the receive loop, needed for testing
+ */
+void
+RmapInitiator::doSingleStep()
+{
+    static RmapPacket packet;
+
+    outpost::utils::SharedBufferPointer rxBuffer;
+
+    if (receivePacket(&packet, rxBuffer))
+    {
+        // Only handling reply packet, no command packets
+        if (packet.isReplyPacket())
+        {
+            handleReplyPacket(&packet, rxBuffer);
+        }
+        else
+        {
+            mCounters.mErrorneousReplyPackets++;
+        }
+    }
 }
 
 bool
@@ -535,8 +551,7 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBuffe
 }
 
 void
-RmapInitiator::replyPacketReceived(RmapPacket* packet,
-                                   outpost::utils::SharedBufferPointer& rxBuffer)
+RmapInitiator::handleReplyPacket(RmapPacket* packet, outpost::utils::SharedBufferPointer& rxBuffer)
 {
     // Find a corresponding command packet
     RmapTransaction* transaction = resolveTransaction(packet);

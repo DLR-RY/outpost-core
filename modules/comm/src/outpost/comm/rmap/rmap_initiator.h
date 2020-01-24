@@ -427,6 +427,12 @@ private:
     virtual void
     run() override;
 
+    /**
+     * does a single step of the receive loop, needed for testing
+     */
+    void
+    doSingleStep();
+
     void
     stop()
     {
@@ -455,7 +461,7 @@ private:
     receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBufferPointer& rxBuffer);
 
     void
-    replyPacketReceived(RmapPacket* packet, outpost::utils::SharedBufferPointer& rxBuffer);
+    handleReplyPacket(RmapPacket* packet, outpost::utils::SharedBufferPointer& rxBuffer);
 
     RmapTransaction*
     resolveTransaction(RmapPacket* packet);
