@@ -310,19 +310,19 @@ TEST_F(SharedBufferTest, allocateChildBuffer)
 
 TEST_F(SharedBufferTest, twoElementPool)
 {
-	outpost::utils::SharedBufferPool<1,2> pool;
-	outpost::utils::SharedBufferPointer p1, p2;
-	EXPECT_TRUE(pool.allocate(p1));
-	EXPECT_TRUE(pool.allocate(p2));
+    outpost::utils::SharedBufferPool<1, 2> pool;
+    outpost::utils::SharedBufferPointer p1, p2;
+    EXPECT_TRUE(pool.allocate(p1));
+    EXPECT_TRUE(pool.allocate(p2));
 }
 
 TEST_F(SharedBufferTest, threeElementPool)
 {
-	outpost::utils::SharedBufferPool<1,3> pool;
-	outpost::utils::SharedBufferPointer p1, p2, p3;
-	EXPECT_TRUE(pool.allocate(p1));
-	EXPECT_TRUE(pool.allocate(p2));
-	EXPECT_TRUE(pool.allocate(p3));
+    outpost::utils::SharedBufferPool<1, 3> pool;
+    outpost::utils::SharedBufferPointer p1, p2, p3;
+    EXPECT_TRUE(pool.allocate(p1));
+    EXPECT_TRUE(pool.allocate(p2));
+    EXPECT_TRUE(pool.allocate(p3));
 }
 
 TEST_F(SharedBufferTest, allocateChildChildBuffer)

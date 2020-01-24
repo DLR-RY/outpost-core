@@ -10,6 +10,7 @@
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  * - 2017-2018, Fabian Greif (DLR RY-AVS)
+ * - 2019, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_COMM_RMAP_PACKET_H_
@@ -40,6 +41,14 @@ class RmapPacket
     friend class TestingRmap;
 
 public:
+    enum class ExtractionResult
+    {
+        success,
+        crcError,
+        invalid,
+        incorrectAddress
+    };
+
     /**
      * RMAP packet instruction field, for reference
      * (see ECSS-E-ST-50-52C pg. 17)
@@ -47,6 +56,11 @@ public:
      * */
     struct InstructionField
     {
+        static constexpr int incrementBit = 2;
+        static constexpr int replyBit = 3;
+        static constexpr int verifyBit = 4;
+        static constexpr int operationBit = 5;
+
         enum PacketType : uint8_t
         {
             replyPacket = 0,
@@ -84,14 +98,14 @@ public:
         setOperation(Operation op)
         {
             // bit5 operation
-            outpost::BitAccess::set<uint8_t, 5>(mField, op);
+            outpost::BitAccess::set<uint8_t, operationBit>(mField, op);
         }
 
         inline Operation
         getOperation() const
         {
             // bit5 operation
-            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, 5>(mField));
+            return static_cast<Operation>(outpost::BitAccess::get<uint8_t, operationBit>(mField));
         }
 
         inline void
@@ -109,66 +123,40 @@ public:
         }
 
         inline void
-        enableVerify()
+        setVerify(bool enable)
         {
-            // bit4 verify
-            outpost::BitAccess::set<uint8_t, 4>(mField, 1);
+            outpost::BitAccess::set<uint8_t, verifyBit>(mField, enable);
         }
 
         inline void
-        disableVerify()
+        setReply(bool enable)
         {
-            // bit4 verify
-            outpost::BitAccess::set<uint8_t, 4>(mField, 0);
+            outpost::BitAccess::set<uint8_t, replyBit>(mField, enable);
         }
 
         inline void
-        enableReply()
+        setIncrement(bool enable)
         {
-            // bit3 reply
-            outpost::BitAccess::set<uint8_t, 3>(mField, 1);
-        }
-
-        inline void
-        disableReply()
-        {
-            // bit3 reply
-            outpost::BitAccess::set<uint8_t, 3>(mField, 0);
-        }
-
-        inline void
-        enableIncrement()
-        {
-            // bit2 increment
-            outpost::BitAccess::set<uint8_t, 2>(mField, 1);
-        }
-
-        inline void
-        disableIncrement()
-        {
-            // bit2 increment
-            outpost::BitAccess::set<uint8_t, 2>(mField, 0);
+            outpost::BitAccess::set<uint8_t, incrementBit>(mField, enable);
         }
 
         inline bool
         isVerifyEnabled()
         {
             // bit4 verify
-            return outpost::BitAccess::get<uint8_t, 4>(mField);
+            return outpost::BitAccess::get<uint8_t, verifyBit>(mField);
         }
 
         inline bool
         isReplyEnabled()
         {
-            // bit3 reply
-            return outpost::BitAccess::get<uint8_t, 3>(mField);
+            return outpost::BitAccess::get<uint8_t, replyBit>(mField);
         }
 
         inline bool
         isIncrementEnabled()
         {
-            // bit2 increment
-            return outpost::BitAccess::get<uint8_t, 2>(mField);
+            return outpost::BitAccess::get<uint8_t, incrementBit>(mField);
         }
 
         inline void
@@ -239,12 +227,8 @@ public:
      * the packet buffer making it ready to send.
      *
      * \param buffer
-     *      SpW buffer provided by the RMAP initiator
+     *      SpW buffer provided by the RMAP initiator, size will be set as well
      *
-     * \param data
-     *      Reference to the user data for write commands, for read commands
-     *      this object will be outpost::Slice<uint8_t>::empty() and will
-     *      be ignored
      *
      * \return
      *      True for successful integration of packet into the buffer, false for
@@ -252,7 +236,7 @@ public:
      *
      * */
     bool
-    constructPacket(outpost::Slice<uint8_t> buffer, outpost::Slice<const uint8_t>& data);
+    constructPacket(outpost::Slice<uint8_t>& buffer);
 
     /**
      * Extract the received RMAP packet according to the given standard by
@@ -267,11 +251,14 @@ public:
      *      initiator
      *
      * \return
-     *      True for valid RMAP packet and its extraction, otherwise false
+     *	  success	successful extracted
+     *	  crcError	a crc is incorrect
+     *	  invalid   format is invalid
+     *	  incorrectAddress initiatorLogicalAddress incorrect
      *
      * */
-    bool
-    extractPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress);
+    ExtractionResult
+    extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress);
 
     /**
      * Setting the RMAP target specific information into the packet, will be
@@ -297,13 +284,13 @@ public:
         memcpy(mSpwTargets,
                targetSpaceWireAddress.begin(),
                targetSpaceWireAddress.getNumberOfElements());
-        mNumOfSpwTargets = targetSpaceWireAddress.getNumberOfElements();
+        mSpwTargetAddressLength = targetSpaceWireAddress.getNumberOfElements();
     }
 
     inline outpost::Slice<uint8_t>
     getTargetSpaceWireAddress()
     {
-        return outpost::Slice<uint8_t>::unsafe(mSpwTargets, mNumOfSpwTargets);
+        return outpost::Slice<uint8_t>::unsafe(mSpwTargets, mSpwTargetAddressLength);
     }
 
     inline outpost::Slice<uint8_t>
@@ -410,15 +397,9 @@ public:
     }
 
     inline void
-    setVerifyFlag()
+    setVerifyFlag(bool enable)
     {
-        mInstruction.enableVerify();
-    }
-
-    inline void
-    unsetVerifyFlag()
-    {
-        mInstruction.disableVerify();
+        mInstruction.setVerify(enable);
     }
 
     inline bool
@@ -428,15 +409,9 @@ public:
     }
 
     inline void
-    setReplyFlag()
+    setReplyFlag(bool enable)
     {
-        mInstruction.enableReply();
-    }
-
-    inline void
-    unsetReplyFlag()
-    {
-        mInstruction.disableReply();
+        mInstruction.setReply(enable);
     }
 
     inline bool
@@ -446,15 +421,9 @@ public:
     }
 
     inline void
-    setIncrementFlag()
+    setIncrementFlag(bool enable)
     {
-        mInstruction.enableIncrement();
-    }
-
-    inline void
-    unsetIncrementFlag()
-    {
-        mInstruction.disableIncrement();
+        mInstruction.setIncrement(enable);
     }
 
     inline void
@@ -529,11 +498,14 @@ public:
         return mHeaderCRC;
     }
 
-    inline uint8_t*
+    inline outpost::Slice<const uint8_t>
     getData() const
     {
         return mData;
     }
+
+    void
+    setData(const outpost::Slice<const uint8_t>& data);
 
     inline uint8_t
     getDataCRC() const
@@ -565,7 +537,7 @@ private:
     constructHeader(outpost::Serialize& stream);
 
     //--------------------------------------------------------------------------
-    uint8_t mNumOfSpwTargets;
+    uint8_t mSpwTargetAddressLength;
     uint8_t mSpwTargets[rmap::maxPhysicalRouterOutputPorts];
     uint8_t mTargetLogicalAddress;
     InstructionField mInstruction;
@@ -578,7 +550,7 @@ private:
     uint32_t mDataLength;
     uint8_t mStatus;
     uint32_t mHeaderLength;
-    uint8_t* mData;
+    outpost::Slice<const uint8_t> mData;
 
     uint8_t mHeaderCRC;
     uint8_t mDataCRC;

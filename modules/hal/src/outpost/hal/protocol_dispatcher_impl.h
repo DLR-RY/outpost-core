@@ -24,7 +24,6 @@ namespace outpost
 {
 namespace hal
 {
-
 template <typename protocolType, uint32_t numberOfQueues>
 bool
 ProtocolDispatcher<protocolType, numberOfQueues>::setDefaultQueue(

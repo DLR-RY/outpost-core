@@ -20,11 +20,12 @@ RmapTransaction::RmapTransaction() :
     mInitiatorLogicalAddress(0),
     mTransactionID(0),
     mTimeoutDuration(outpost::time::Duration::zero()),
-    mState(notInitiated),
+    mState(State::notInitiated),
     mBlockingMode(false),
     mReplyPacket(),
     mCommandPacket(),
-    mReplyLock(outpost::rtos::BinarySemaphore::State::released)
+    mReplyLock(outpost::rtos::BinarySemaphore::State::released),
+    mBuffer()
 {
 }
 
@@ -39,8 +40,9 @@ RmapTransaction::reset()
     mInitiatorLogicalAddress = 0;
     mTransactionID = 0;
     mTimeoutDuration = outpost::time::Duration::zero();
-    mState = notInitiated;
+    mState = State::notInitiated;
     mBlockingMode = false;
     mReplyPacket.reset();
     mCommandPacket.reset();
+    mBuffer = outpost::utils::SharedBufferPointer();
 }

@@ -24,11 +24,20 @@ namespace rmap
 {
 static constexpr uint32_t maxTransactionIds = 65536;
 static constexpr uint8_t maxConcurrentTransactions = 10;
-static constexpr uint8_t minimumReplySize = 8;
+static constexpr uint16_t bufferSize = 1024;  // The amount of data bytes.
+static constexpr uint8_t numberOfReceiveBuffers =
+        3;  // How many reply packages can be queued,
+            // including the currently processed one (i.e. min = 1)
 static constexpr uint8_t defaultLogicalAddress = 0xFE;
-static constexpr uint8_t defaultExtendedAddress = 0;
+static constexpr uint8_t defaultExtendedAddress = 0x00;
 static constexpr uint8_t protocolIdentifier = 0x01;
 
+static constexpr uint16_t writeCommandOverhead = 17;  // including data crc
+static constexpr uint16_t readCommandOverhead = 16;
+static constexpr uint16_t readReplyOverhead = 13;  // includes data crc
+static constexpr uint16_t writeReplyOverhead = 8;
+
+static constexpr uint8_t minimumReplySize = writeReplyOverhead;
 // Maximum physical output ports that router can have (see ECSS-E-ST-50-12C pg. 98)
 static constexpr uint8_t maxPhysicalRouterOutputPorts = 32;
 

@@ -140,6 +140,11 @@ RmapTargetsList::addTargetNodes(outpost::Slice<RmapTargetNode*> nodes)
 RmapTargetNode*
 RmapTargetsList::getTargetNode(const char* name)
 {
+    if (name == nullptr)
+    {
+        return nullptr;
+    }
+
     RmapTargetNode* rt = nullptr;
 
     for (uint8_t i = 0; i < mSize; i++)

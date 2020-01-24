@@ -18,6 +18,7 @@
 
 #include <outpost/rtos.h>
 #include <outpost/time/duration.h>
+#include <outpost/utils/container/shared_buffer.h>
 
 namespace outpost
 {
@@ -34,13 +35,11 @@ namespace comm
 class RmapTransaction
 {
 public:
-    enum State : uint8_t
+    enum class State : uint8_t
     {
         notInitiated = 0x00,
-        initiated = 0x01,
-        commandSent = 0x02,
-        replyReceived = 0x03,
-        timeout = 0x04
+        reserved = 0x01,  // anything from reserved till answer received
+        replyReceived = 0x03
     };
 
     RmapTransaction();
@@ -87,7 +86,7 @@ public:
         mState = state;
     }
 
-    inline uint8_t
+    inline State
     getState() const
     {
         return mState;
@@ -147,6 +146,12 @@ public:
         mReplyPacket = *replyPacket;
     }
 
+    inline void
+    setBuffer(outpost::utils::SharedBufferPointer& buffer)
+    {
+        mBuffer = buffer;
+    }
+
     /**
      * Blocks the current thread holding initiating the transaction.
      *
@@ -177,21 +182,9 @@ public:
         mReplyLock.release();
     }
 
+    // Disabling copy constructor and assignment
     inline RmapTransaction&
-    operator=(const RmapTransaction& rhs)
-    {
-        mTargetLogicalAddress = rhs.mTargetLogicalAddress;
-        mInitiatorLogicalAddress = rhs.mInitiatorLogicalAddress;
-        mTransactionID = rhs.mTransactionID;
-        mTimeoutDuration = rhs.mTimeoutDuration;
-        mState = rhs.mState;
-        mBlockingMode = rhs.mBlockingMode;
-        mCommandPacket = rhs.mCommandPacket;
-        mReplyPacket = rhs.mReplyPacket;
-        return *this;
-    }
-
-    // Disabling copy constructor
+    operator=(const RmapTransaction& rhs) = delete;
     RmapTransaction(const RmapTransaction&) = delete;
 
 private:
@@ -205,6 +198,7 @@ private:
     RmapPacket mReplyPacket;
     RmapPacket mCommandPacket;
     outpost::rtos::BinarySemaphore mReplyLock;
+    outpost::utils::SharedBufferPointer mBuffer;
 };
 }  // namespace comm
 }  // namespace outpost

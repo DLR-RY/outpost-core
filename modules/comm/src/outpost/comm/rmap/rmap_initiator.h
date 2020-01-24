@@ -10,21 +10,26 @@
  * Authors:
  * - 2017, Muhammad Bassam (DLR RY-AVS)
  * - 2017, Fabian Greif (DLR RY-AVS)
- * - 2018, Jan Malburg (DLR RY-AVS)
+ * - 2018 - 2019, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_COMM_RMAP_INITIATOR_H_
 #define OUTPOST_COMM_RMAP_INITIATOR_H_
 
+#include "rmap_options.h"
 #include "rmap_packet.h"
+#include "rmap_result.h"
 #include "rmap_status.h"
 #include "rmap_transaction.h"
 
-#include <outpost/hal/spacewire.h>
+#include <outpost/hal/space_wire_multi_protocol_handler.h>
 #include <outpost/rtos.h>
 #include <outpost/smpc.h>
 #include <outpost/support/heartbeat.h>
 #include <outpost/time/duration.h>
+#include <outpost/utils/container/shared_buffer_queue.h>
+#include <outpost/utils/container/shared_object_pool.h>
+#include <outpost/utils/minmax.h>
 
 #include <array>
 
@@ -50,76 +55,55 @@ class RmapInitiator : public outpost::rtos::Thread
 {
     friend class TestingRmap;
 
+    // For parameterize the class
     static constexpr outpost::time::Duration receiveTimeout = outpost::time::Seconds(5);
 
-public:
-    enum Operation
-    {
-        operationRead = 0x01,
-        operationWrite = 0x02
-    };
+    // Packet length related constants.
+    static constexpr uint16_t maxReadCommandLength =
+            rmap::readCommandOverhead + (2 * rmap::maxAddressLength);
+    static constexpr uint16_t maxWriteCommandLength =
+            rmap::writeCommandOverhead + (2 * rmap::maxAddressLength) + rmap::bufferSize;
 
+    static constexpr uint16_t maxCommandLength = maxWriteCommandLength;
+
+    static constexpr uint16_t maxReadReplyLength =
+            rmap::readReplyOverhead + rmap::maxAddressLength + rmap::bufferSize;
+    static constexpr uint16_t maxWriteReplyLength =
+            rmap::writeReplyOverhead + rmap::maxAddressLength;
+
+    static constexpr uint16_t maxReplyLength = maxReadReplyLength;
+
+    // Interval duration to check when the dispatcher thread is running
+    static constexpr outpost::time::Duration startUpWaitInterval = outpost::time::Milliseconds(1);
+
+public:
     struct ErrorCounters
     {
         ErrorCounters() :
-            mDiscardedReceivedPackets(0),
-            mNonRmapPacketReceived(0),
-            mErrorneousReplyPackets(0),
-            mErrorInStoringReplyPacket(0)
+            mUnknownTransactionID(0),
+            mPackageCrcError(0),
+            mIncorrectOperation(0),
+            mInvalidSize(0),
+            mOperationFailed(0),
+            mSpacewireFailure(0)
         {
         }
 
-        size_t mDiscardedReceivedPackets;
-        size_t mNonRmapPacketReceived;
-        size_t mErrorneousReplyPackets;
-        size_t mErrorInStoringReplyPacket;
+        size_t mUnknownTransactionID;  // may also include already timed out replies
+        size_t mPackageCrcError;       // data or header
+        size_t mIncorrectOperation;    // the received answer does not fit the request
+        size_t mInvalidSize;           // size does not fit
+        size_t mOperationFailed;       // remote indicated failure
+        size_t mSpacewireFailure;      // SpW failure
     };
 
     /**
-     * Buffer handling for providing data to the user for received reply
-     * packets.
-     *
-     * TODO: Extend this to partial data buffering for storing multiple received
-     * data on the single buffer with the help of data indexing
-     * */
-    struct Buffer
-    {
-        static constexpr uint16_t bufferSize = 1024;
-        Buffer() : mLength(0)
-        {
-            mData.fill(0);
-        }
-
-        bool
-        addData(uint8_t* buffer, uint16_t len)
-        {
-            bool result = false;
-
-            if (len <= bufferSize)
-            {
-                mLength = len;
-                memcpy(mData.data(), buffer, mLength);
-                result = true;
-            }
-            return result;
-        }
-
-        void
-        getData(uint8_t* buffer)
-        {
-            memcpy(buffer, mData.data(), mLength);
-            mData.fill(0);
-            mLength = 0;
-        }
-
-    private:
-        std::array<uint8_t, bufferSize> mData;
-        uint16_t mLength;
-    };
-
+     * Handles a list of  Transaction object,
+     * list not thread save.
+     */
     struct TransactionsList
     {
-        TransactionsList() : mTransactions(), mIndex(0)
+        TransactionsList() : mTransactions()
         {
         }
 
@@ -128,109 +112,39 @@ public:
         }
 
         uint8_t
-        getActiveTransactions()
-        {
-            uint8_t active = 0;
-
-            for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getTransactionID() != 0)
-                {
-                    active++;
-                }
-            }
-            return active;
-        }
+        getNumberOfActiveTransactions();
 
         void
-        addTransaction(RmapTransaction* trans)
-        {
-            mTransactions[mIndex] = *trans;
-            mIndex = (mIndex == (rmap::maxConcurrentTransactions - 1) ? 0 : mIndex + 1);
-        }
-
-        void
-        removeTransaction(uint16_t tid)
-        {
-            for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getTransactionID() == tid)
-                {
-                    mTransactions[i].reset();
-                    break;
-                }
-            }
-        }
+        removeTransaction(uint16_t tid);
 
         RmapTransaction*
-        getTransaction(uint16_t tid)
-        {
-            bool found = false;
-            uint8_t i;
-
-            for (i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getTransactionID() == tid)
-                {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (found)
-            {
-                return &mTransactions[i];
-            }
-            else
-            {
-                return NULL;
-            }
-        }
+        getTransaction(uint16_t tid);
 
         bool
-        isTransactionIdUsed(uint16_t tid)
-        {
-            bool used = false;
-            uint8_t i;
-
-            for (i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getTransactionID() == tid)
-                {
-                    used = true;
-                    break;
-                }
-            }
-
-            return used;
-        }
+        isTransactionIdUsed(uint16_t tid);
 
         RmapTransaction*
-        getFreeTransaction()
-        {
-            for (uint8_t i = 0; i < rmap::maxConcurrentTransactions; i++)
-            {
-                if (mTransactions[i].getState() == RmapTransaction::notInitiated)
-                {
-                    return &mTransactions[i];
-                }
-            }
-            return NULL;
-        }
+        getFreeTransaction();
 
         RmapTransaction mTransactions[rmap::maxConcurrentTransactions];
-        uint8_t mIndex;
     };
 
     //--------------------------------------------------------------------------
-    RmapInitiator(hal::SpaceWire& spw,
+    RmapInitiator(hal::SpaceWireMultiProtocolHandlerInterface& spw,
                   RmapTargetsList* list,
                   uint8_t priority,
                   size_t stackSize,
-                  outpost::support::parameter::HeartbeatSource heartbeatSource);
+                  outpost::support::parameter::HeartbeatSource heartbeatSource,
+                  uint8_t initiatorLogicalAddress = rmap::defaultLogicalAddress);
     ~RmapInitiator();
 
     /**
+     * Starts the internal thread and waits till the listeners are set up
+     */
+    void
+    init(void);
+
+    /**
      * Writes remote memory. For blocking write, the method blocks the current
      * thread and waits for the desired reply until specific time interval. For
      * asynchronous write non blocking mode should be used, which can be done by
@@ -241,8 +155,14 @@ public:
      *      Name of the target which is commands, targets are preinitialized list
      *      and searched against the name provided
      *
+     * @param options
+     *      contains the options with which the command is executed
+     *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
+     *
+     * @param extendedMemoryAddress
+     *      The MSB of the (40Bit) remote memory address
      *
      * @param data
      *      A Slice containing the data to write
@@ -252,13 +172,16 @@ public:
      *      outpost::time::Duration::zero()
      *
      * @return
-     *      True in case of successful operations, false for any errors encountered
+     *      Description of the result, will implicitly cast to true in success case and false
+     * otherwise
      */
-    bool
+    RmapResult
     write(const char* targetNodeName,
+          const RMapOptions& options,
           uint32_t memoryAddress,
+          uint8_t extendedMemoryAdress,
           outpost::Slice<const uint8_t> const& data,
-          outpost::time::Duration timeout = outpost::time::Seconds(1));
+          const outpost::time::Duration& timeout = outpost::time::Seconds(1));
 
     /**
      * Writes remote memory. For blocking write, the method blocks the current
@@ -270,8 +193,14 @@ public:
      * @param targetNode
      *      Reference to the target node object found from the list
      *
+     * @param options
+     *      contains the options with which the command is executed
+     *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
+     *
+     * @param extendedMemoryAddress
+     *      The MSB of the (40Bit) remote memory address
      *
      * @param data
      *      A Slice containing the data to write
@@ -281,13 +210,16 @@ public:
      *      outpost::time::Duration::zero()
      *
      * @return
-     *      True in case of successful operations, false for any errors encountered
+     *      Description of the result, will implicitly cast to true in success case and false
+     * otherwise
      */
-    bool
+    RmapResult
     write(RmapTargetNode& targetNode,
+          const RMapOptions& options,
           uint32_t memoryAddress,
+          uint8_t extendedMemoryAdress,
           outpost::Slice<const uint8_t> const& data,
-          outpost::time::Duration timeout = outpost::time::Seconds(1));
+          const outpost::time::Duration& timeout = outpost::time::Seconds(1));
 
     /**
      * Read from remote memory. The method blocks the current
@@ -297,8 +229,14 @@ public:
      *      Name of the target which is commands, targets are preinitialized list
      *      and searched against the name provided
      *
+     * @param options
+     *      contains the options with which the command is executed
+     *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
+     *
+     * @param extendedMemoryAddress
+     *      The MSB of the (40Bit) remote memory address
      *
      * @param buffer
      *      A Slice where received data bytes will be stored
@@ -307,13 +245,16 @@ public:
      *      Timeout for the SpW read operation
      *
      * @return
-     *      True in case of successful operations, false for any errors encountered
+     *      Description of the result, will implicitly cast to true in success case and false
+     * otherwise
      */
-    bool
+    RmapResult
     read(const char* targetNodeName,
+         const RMapOptions& options,
          uint32_t memoryAddress,
+         uint8_t extendedMemoryAdress,
          outpost::Slice<uint8_t> const& buffer,
-         outpost::time::Duration timeout = outpost::time::Duration::maximum());
+         const outpost::time::Duration& timeout = outpost::time::Duration::maximum());
 
     /**
      * Read from remote memory. The method blocks the current
@@ -322,8 +263,14 @@ public:
      * @param targetNode
      *      Reference to the target node object found from the list
      *
+     * @param options
+     *      contains the options with which the command is executed
+     *
      * @param memoryAddress
      *      Actual remote memory address where the data is being written
+     *
+     * @param extendedMemoryAddress
+     *      The MSB of the (40Bit) remote memory address
      *
      * @param buffer
      *      A Slice where received data bytes will be stored
@@ -332,80 +279,24 @@ public:
      *      Timeout for the SpW read operation
      *
      * @return
-     *      True in case of successful operations, false for any errors encountered
+     *      Description of the result, will implicitly cast to true in success case and false
+     * otherwise
      */
 
-    bool
+    RmapResult
     read(RmapTargetNode& rmapTargetNode,
+         const RMapOptions& options,
          uint32_t memoryAddress,
+         uint8_t extendedMemoryAdress,
          outpost::Slice<uint8_t> const& buffer,
-         outpost::time::Duration timeout = outpost::time::Duration::maximum());
+         const outpost::time::Duration& timeout = outpost::time::Duration::maximum());
 
     //--------------------------------------------------------------------------
-    inline bool
-    isReplyModeSet() const
-    {
-        return mReplyMode;
-    }
-
-    inline void
-    setReplyMode()
-    {
-        mReplyMode = true;
-    }
-
-    inline void
-    unsetReplyMode()
-    {
-        mReplyMode = false;
-    }
-
-    inline bool
-    isIncrementMode() const
-    {
-        return mIncrementMode;
-    }
-
-    inline void
-    setIncrementMode()
-    {
-        mIncrementMode = true;
-    }
-
-    inline void
-    unsetIncrementMode()
-    {
-        mIncrementMode = false;
-    }
-
-    inline bool
-    isVerifyMode() const
-    {
-        return mVerifyMode;
-    }
-
-    inline void
-    setVerifyMode()
-    {
-        mVerifyMode = true;
-    }
-
-    inline void
-    unsetVerifyMode()
-    {
-        mVerifyMode = false;
-    }
-
-    inline void
-    setInitiatorLogicalAddress(uint8_t initiatorLogicalAddress)
-    {
-        mInitiatorLogicalAddress = initiatorLogicalAddress;
-    }
 
     inline size_t
     getActiveTransactions()
     {
-        return mTransactionsList.getActiveTransactions();
+        return mTransactionsList.getNumberOfActiveTransactions();
     }
 
     inline ErrorCounters
@@ -414,15 +305,22 @@ public:
         return mCounters;
     }
 
-    inline RmapPacket*
-    getLatestDiscardedPacket() const
+    inline void
+    resetErrorCounters()
     {
-        return mDiscardedPacket;
+        mCounters = ErrorCounters();
     }
 
 private:
     virtual void
     run() override;
+
+    /**
+     * does a single step of the receive loop, called continously by receiver thread,
+     * for testing needed as own function
+     */
+    void
+    doSingleStep();
 
     void
     stop()
@@ -446,49 +344,43 @@ private:
     }
 
     bool
-    sendPacket(RmapTransaction* transaction, outpost::Slice<const uint8_t> data);
+    sendPacket(RmapTransaction* transaction);
 
     bool
-    receivePacket(RmapPacket* rxedPacket);
+    receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBufferPointer& rxBuffer);
 
     void
-    replyPacketReceived(RmapPacket* packet);
+    handleReplyPacket(RmapPacket* packet, outpost::utils::SharedBufferPointer& rxBuffer);
 
     RmapTransaction*
     resolveTransaction(RmapPacket* packet);
 
+    /**
+     * Returns a free Transaction ID,
+     * requires mOperationLock to be lock to current thread
+     * to prevent race conditions
+     */
     uint16_t
     getNextAvailableTransactionID();
 
     //--------------------------------------------------------------------------
-    hal::SpaceWire& mSpW;
+    hal::SpaceWireMultiProtocolHandlerInterface& mSpW;
     RmapTargetsList* mTargetNodes;
     outpost::rtos::Mutex mOperationLock;
-    uint8_t mInitiatorLogicalAddress;
-    bool mIncrementMode;
-    bool mVerifyMode;
-    bool mReplyMode;
-    bool mStopped;
+    const uint8_t mInitiatorLogicalAddress;
+    volatile bool mStopped;
     uint16_t mTransactionId;
     TransactionsList mTransactionsList;
 
-    /**
-     * Discarded packet is stored immediately if no waiting transaction is
-     * found with valid transaction ID for the received packet. It is made
-     * available for the user in case its needed for being inspected. Discarded
-     * packet will be invalidated as soon as there is new incoming packet at the
-     * reception node.
-     * */
-    RmapPacket* mDiscardedPacket;
-
     ErrorCounters mCounters;
-    Buffer mRxData;
 
     const outpost::support::parameter::HeartbeatSource mHeartbeatSource;
-};
 
-typedef outpost::Slice<const uint8_t> NonRmapDataType;
-extern outpost::smpc::Topic<NonRmapDataType> nonRmapPacketReceived;
+    std::array<uint8_t, maxCommandLength> mSendBuffer;
+
+    outpost::utils::SharedBufferQueue<rmap::numberOfReceiveBuffers> mQueue;
+    outpost::utils::SharedBufferPool<maxReplyLength, rmap::numberOfReceiveBuffers> mPool;
+};
 
 }  // namespace comm
 }  // namespace outpost
