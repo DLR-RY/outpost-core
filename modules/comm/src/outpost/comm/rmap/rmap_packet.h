@@ -41,6 +41,14 @@ class RmapPacket
     friend class TestingRmap;
 
 public:
+    enum class ExtractionResult
+    {
+        success,
+        crcError,
+        invalid,
+        incorrectAddress
+    };
+
     /**
      * RMAP packet instruction field, for reference
      * (see ECSS-E-ST-50-52C pg. 17)
@@ -243,10 +251,13 @@ public:
      *      initiator
      *
      * \return
-     *      True for valid RMAP packet and its extraction, otherwise false
+     *	  success	successful extracted
+     *	  crcError	a crc is incorrect
+     *	  invalid   format is invalid
+     *	  incorrectAddress initiatorLogicalAddress incorrect
      *
      * */
-    bool
+    ExtractionResult
     extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress);
 
     /**

@@ -279,6 +279,7 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
                             static_cast<RmapReplyStatus::ErrorStatusCodes>(rply->getStatus()));
 
                     result.mResult = RmapResult::Code::executionFailed;
+                    mCounters.mPackageCrcError++;
                 }
             }
         }
@@ -293,6 +294,7 @@ RmapInitiator::write(RmapTargetNode& rmapTargetNode,
         // Command was not sent successfully
         console_out("RMAP-Initiator: transaction could not be initiated, failed to send command\n");
         result.mResult = RmapResult::Code::sendFailed;
+        mCounters.mSpacewireFailure++;
     }
 
     // mutex guarded scope to guard the transaction tear down
@@ -426,6 +428,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
             {
                 console_out("RMAP-Initiator: Command not executed successfully: %u\n", replyStatus);
                 result.mResult = RmapResult::Code::executionFailed;
+                mCounters.mOperationFailed++;
             }
             else
             {
@@ -434,6 +437,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
                 {
                     console_out("RMAP-Initiator: Read reply with more data then requested\n");
                     result.mResult = RmapResult::Code::invalidReply;
+                    mCounters.mIncorrectOperation++;
                 }
                 else if (buffer.getNumberOfElements() > rply->getDataLength())
                 {
@@ -466,6 +470,7 @@ RmapInitiator::read(RmapTargetNode& rmapTargetNode,
     {
         console_out("RMAP-Initiator: Transaction could not be initiated\n");
         result.mResult = RmapResult::Code::sendFailed;
+        mCounters.mSpacewireFailure++;
     }
 
     // mutex guarded scope to guard the transaction tear down
@@ -496,7 +501,7 @@ RmapInitiator::run()
 }
 
 /**
- * does a single step of the receive loop, called continously by receiver thread,
+ * does a single step of the receive loop, called continuously by receiver thread,
  * for testing needed as own function
  */
 void
@@ -512,10 +517,6 @@ RmapInitiator::doSingleStep()
         if (packet.isReplyPacket())
         {
             handleReplyPacket(&packet, rxBuffer);
-        }
-        else
-        {
-            mCounters.mErrorneousReplyPackets++;
         }
     }
 }
@@ -583,15 +584,19 @@ RmapInitiator::receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBuffe
 
         rxedPacket->reset();
 
-        if (rxedPacket->extractReplyPacket(rxData, mInitiatorLogicalAddress))
+        auto extractionResult = rxedPacket->extractReplyPacket(rxData, mInitiatorLogicalAddress);
+        switch (extractionResult)
         {
-            result = true;
-        }
-        else
-        {
-            console_out("RMAP-Initiator: packet interpretation failed, could be non-rmap packet\n");
-            mCounters.mNonRmapPacketReceived++;
-            result = false;
+            case RmapPacket::ExtractionResult::success: result = true; break;
+            case RmapPacket::ExtractionResult::incorrectAddress: result = false; break;
+            case RmapPacket::ExtractionResult::crcError:
+                result = false;
+                mCounters.mPackageCrcError++;
+                break;
+            case RmapPacket::ExtractionResult::invalid:
+                result = false;
+                mCounters.mInvalidSize++;
+                break;
         }
     }
     return result;
@@ -610,13 +615,22 @@ RmapInitiator::handleReplyPacket(RmapPacket* packet, outpost::utils::SharedBuffe
     if (transaction == nullptr)
     {
         // If not found, increment error counter
-        mCounters.mDiscardedReceivedPackets++;
+        mCounters.mUnknownTransactionID++;
         console_out("RMAP Reply packet (dataLength %lu bytes) was received but "
                     "no corresponding transaction was found.\n",
                     packet->getDataLength());
     }
     else
     {
+        // check correct answer
+        if ((transaction->getCommandPacket()->getInstruction() & 0x3c)
+            != (packet->getInstruction() & 0x3c))
+        {
+            console_out("RMAP-Initiator: Received reply does not fit request \n");
+            mCounters.mIncorrectOperation++;
+            return;
+        }
+
         // Register reply packet to the resolved transaction
         transaction->setReplyPacket(packet);
 

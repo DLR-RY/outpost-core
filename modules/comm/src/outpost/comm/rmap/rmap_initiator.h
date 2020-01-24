@@ -80,17 +80,21 @@ public:
     struct ErrorCounters
     {
         ErrorCounters() :
-            mDiscardedReceivedPackets(0),
-            mNonRmapPacketReceived(0),
-            mErrorneousReplyPackets(0),
-            mErrorInStoringReplyPacket(0)
+            mUnknownTransactionID(0),
+            mPackageCrcError(0),
+            mIncorrectOperation(0),
+            mInvalidSize(0),
+            mOperationFailed(0),
+            mSpacewireFailure(0)
         {
         }
 
-        size_t mDiscardedReceivedPackets;
-        size_t mNonRmapPacketReceived;
-        size_t mErrorneousReplyPackets;
-        size_t mErrorInStoringReplyPacket;
+        size_t mUnknownTransactionID;  // may also include already timed out replies
+        size_t mPackageCrcError;       // data or header
+        size_t mIncorrectOperation;    // the received answer does not fit the request
+        size_t mInvalidSize;           // size does not fit
+        size_t mOperationFailed;       // remote indicated failure
+        size_t mSpacewireFailure;      // SpW failure
     };
 
     /**
@@ -299,6 +303,12 @@ public:
     getErrorCounters() const
     {
         return mCounters;
+    }
+
+    inline void
+    resetErrorCounters()
+    {
+        mCounters = ErrorCounters();
     }
 
 private:

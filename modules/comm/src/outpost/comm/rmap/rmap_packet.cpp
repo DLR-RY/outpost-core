@@ -162,13 +162,13 @@ RmapPacket::constructPacket(outpost::Slice<uint8_t>& buffer)
     return true;
 }
 
-bool
+RmapPacket::ExtractionResult
 RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t initiatorLogicalAddress)
 {
     if (data.getNumberOfElements() < rmap::minimumReplySize)
     {
         console_out("RMAP-Packet: packet size less then minimum\n");
-        return false;
+        return ExtractionResult::invalid;
     }
 
     outpost::Deserialize stream(data);
@@ -183,7 +183,7 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
     if (initiatoraLogicalAddress != initiatorLogicalAddress)
     {
         console_out("RMAP-Packet: Initiator logical address doesn't match\n");
-        return false;
+        return ExtractionResult::incorrectAddress;
     }
 
     uint8_t protocolIdentifiter = stream.read<uint8_t>();
@@ -191,7 +191,7 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
     if (protocolIdentifiter != rmap::protocolIdentifier)
     {
         console_out("RMAP-Packet: Protocol ID is not RMAP\n");
-        return false;
+        return ExtractionResult::invalid;
     }
 
     mInstruction.setAllRaw(stream.read<uint8_t>());
@@ -210,6 +210,11 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
         // Write command reply
         if (isWrite())
         {
+            if (data.getNumberOfElements() != rmap::writeReplyOverhead)
+            {
+                console_out("RMAP-Packet: Incorrect size for write reply\n");
+                return ExtractionResult::invalid;
+            }
             headerEndPosition = stream.getPosition();
             packetHeaderCRC = stream.read<uint8_t>();
 
@@ -220,7 +225,7 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
             if (calculatedHeaderCRC != packetHeaderCRC)
             {
                 console_out("RMAP-Packet: invalid packet header CRC\n");
-                return false;
+                return ExtractionResult::crcError;
             }
             mHeaderCRC = packetHeaderCRC;
         }
@@ -230,7 +235,7 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
             if (data.getNumberOfElements() < rmap::readReplyOverhead)
             {
                 console_out("RMAP-Packet: too small read reply\n");
-                return false;
+                return ExtractionResult::invalid;
             }
 
             // Skip the reserved byte
@@ -250,7 +255,7 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
             if (calculatedHeaderCRC != packetHeaderCRC)
             {
                 console_out("RMAP-Packet: Invalid packet header CRC\n");
-                return false;
+                return ExtractionResult::crcError;
             }
             mHeaderCRC = packetHeaderCRC;
 
@@ -258,7 +263,7 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
             if (mDataLength + rmap::readReplyOverhead != data.getNumberOfElements())
             {
                 console_out("RMAP-Packet: data length mismatch\n");
-                return false;
+                return ExtractionResult::invalid;
             }
 
             mData = Slice<const uint8_t>::unsafe(stream.getPointerToCurrentPosition(), mDataLength);
@@ -272,14 +277,14 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
             if (packetDataCRC != calculatedDataCRC)
             {
                 console_out("RMAP-Packet: Invalid packet data CRC\n");
-                return false;
+                return ExtractionResult::crcError;
             }
             mDataCRC = packetDataCRC;
         }
         mHeaderLength = headerEndPosition;
     }
 
-    return true;
+    return ExtractionResult::success;
 }
 
 void
