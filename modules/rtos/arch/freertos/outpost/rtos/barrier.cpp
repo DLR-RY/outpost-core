@@ -14,8 +14,8 @@
 #include "barrier.h"
 
 outpost::rtos::Barrier::Barrier(uint32_t numberOfThreads) :
-    mReleaseSemaphore(outpost::rtos::BinarySemaphore::State::released),
-    mWaitSemaphore(outpost::rtos::BinarySemaphore::State::acquired),
+    mWaitSemaphore(::outpost::rtos::BinarySemaphore::State::acquired),
+    mReleaseSemaphore(::outpost::rtos::BinarySemaphore::State::released),
     mMaxWaiting(numberOfThreads),
     mCurrentlyWaiting(0){};
 

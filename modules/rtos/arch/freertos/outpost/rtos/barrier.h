@@ -11,11 +11,12 @@
  * - 2020, Jan Malburg (DLR RY-AVS)
  */
 
-#ifndef OUTPOST_RTOS_RTEMS_BARRIER_HPP
-#define OUTPOST_RTOS_RTEMS_BARRIER_HPP
+#ifndef OUTPOST_RTOS_FREERTOS_BARRIER_HPP
+#define OUTPOST_RTOS_FREERTOS_BARRIER_HPP
 
-#include "mutex"
-#include "semaphore.h"
+// included as standard include for testing reason
+#include <outpost/rtos/mutex.h>
+#include <outpost/rtos/semaphore.h>
 
 #include <stdint.h>
 
@@ -61,9 +62,10 @@ public:
     wait();
 
 private:
-    Mutex mCounterMutex;
-    BinarySemaphore mWaitSemaphore;
-    BinarySemaphore mReleaseSemaphore;
+    // explicit naming for testing reasons
+    ::outpost::rtos::Mutex mCounterMutex;
+    ::outpost::rtos::BinarySemaphore mWaitSemaphore;
+    ::outpost::rtos::BinarySemaphore mReleaseSemaphore;
 
     uint32_t mMaxWaiting;
     uint32_t mCurrentlyWaiting;
