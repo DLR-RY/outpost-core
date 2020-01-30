@@ -42,6 +42,10 @@ envGlobal = Environment(
 envGlobal['BASEPATH'] = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/rtems'))
 
+envGlobal.Append(CPPPATH=[
+    os.path.abspath(os.path.join(modulepath, 'support/default'))
+])
+
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 
 # Build outpost-hw
@@ -55,6 +59,7 @@ env.Append(CPPPATH=[
 ])
 
 env.AppendUnique(LIBS=[
+    'outpost_support',
     'outpost_hal',
     'outpost_rtos',
     'outpost_smpc',
