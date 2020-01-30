@@ -41,7 +41,8 @@ struct Resource
         messageQueue = 6,
         clock = 7,
         periodicTask = 8,
-        driverManager = 9
+        driverManager = 9,
+        barrier = 10
     };
 };
 

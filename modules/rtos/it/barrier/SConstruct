@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2014, 2016-2017, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2014, 2016-2017, Fabian Greif (DLR RY-AVS)
+
+import os
+
+rootpath = '../../../../'
+envGlobal = Environment(
+    toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
+    tools=[
+        'compiler_hosted_llvm',
+        'settings_buildpath',
+        'utils_buildformat',
+        'utils_buildsize'
+    ],
+    ENV=os.environ)
+
+envGlobal['BASEPATH'] = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath(rootpath + 'build/rtos/test/posix')
+
+envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
+
+env = envGlobal.Clone()
+
+env.Append(CPPPATH=[
+    '.',
+    '../reference'
+])
+env.AppendUnique(LIBS=[
+    'outpost_rtos',
+    'outpost_smpc',
+    'outpost_time',
+    'outpost_utils',
+])
+env.Append(LIBPATH=['$BUILDPATH/lib'])
+
+files  = env.Glob('*.cpp')
+
+program = env.Program('posix', files)
+
+envGlobal.Alias('build', program)
+envGlobal.Alias('install', env.Install('bin', program))
+
+envGlobal.Default(['build', 'install'])
