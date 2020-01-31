@@ -89,24 +89,27 @@ cppcheck:
 	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
 	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db.json"` ;\
 	do \
-		cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE).xml;\
+		cppcheck --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE).xml;\
+		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE).xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE) --title="$(MODULE)";\
 	done;
 
 
 cppcheck-tests:
-	@scons -C test/ compiledb_tests -D append_buildpath=compiledb
+	@scons -C test/ compiledb_test -D append_buildpath=compiledb
 	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
-	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_tests.json"` ;\
+	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_test.json"` ;\
 	do \
-		cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-tests.xml;\
+		cppcheck --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-test.xml;\
+		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE)-test.xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE)-test --title="$(MODULE)-test";\
 	done;
 
 cppcheck-unittests:
-	@scons -C test/ compiledb_unittests -D append_buildpath=compiledb
+	@scons -C test/ compiledb_unittest -D append_buildpath=compiledb
 	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
 	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_unittest.json"` ;\
 	do \
-		cppcheck $(MAKEJOBS) --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-unittests.xml;\
+		cppcheck --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml;\
+		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE)-unittest --title="$(MODULE)-unittest";\
 	done;
 
 

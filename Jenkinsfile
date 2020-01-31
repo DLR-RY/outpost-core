@@ -103,5 +103,8 @@ pipeline {
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
         }
+        always {
+            archiveArtifacts artifacts: '**/build/cppcheck/**/*'
+        }
     }
 }
