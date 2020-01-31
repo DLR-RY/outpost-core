@@ -9,7 +9,7 @@
 
 #include <outpost/base/fixpoint.h>
 #include <outpost/base/slice.h>
-#include <outpost/utils/compression/legall_wavelet.h>
+#include <outpost/utils/compression/transformation/legall_wavelet.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
