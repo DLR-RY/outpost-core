@@ -28,6 +28,7 @@ envGlobal.SConscript([
         'rtos/test/SConscript',
         'utils/test/SConscript',
         'smpc/test/SConscript',
+        'compression/test/SConscript',
         'hal/test/SConscript',
         'l3test/src/SConscript',
         'l3test/ext/SConscript',
