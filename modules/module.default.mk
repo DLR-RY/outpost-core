@@ -89,7 +89,7 @@ cppcheck:
 	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
 	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db.json"` ;\
 	do \
-		cppcheck --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE).xml;\
+		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE).xml;\
 		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE).xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE) --title="$(MODULE)";\
 	done;
 
@@ -99,7 +99,7 @@ cppcheck-tests:
 	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
 	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_test.json"` ;\
 	do \
-		cppcheck --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-test.xml;\
+		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-test.xml;\
 		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE)-test.xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE)-test --title="$(MODULE)-test";\
 	done;
 
@@ -108,7 +108,7 @@ cppcheck-unittests:
 	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
 	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_unittest.json"` ;\
 	do \
-		cppcheck --enable=all --inconclusive --force --project=$$DB --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml;\
+		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml;\
 		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE)-unittest --title="$(MODULE)-unittest";\
 	done;
 
