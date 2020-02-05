@@ -86,8 +86,8 @@ test-default:
 
 cppcheck:
 	@scons -C test/ compiledb -D append_buildpath=compiledb
-	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
-	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db.json"` ;\
+	@mkdir -p $(BUILDPATH)/cppcheck;
+	@for DB in `find $(BUILDPATH)/$(MODULE) -iname "compile_commands.json"` ;\
 	do \
 		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE).xml;\
 		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE).xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE) --title="$(MODULE)";\
@@ -96,8 +96,8 @@ cppcheck:
 
 cppcheck-tests:
 	@scons -C test/ compiledb_test -D append_buildpath=compiledb
-	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
-	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_test.json"` ;\
+	@mkdir -p $(BUILDPATH)/cppcheck;
+	@for DB in `find $(BUILDPATH)/$(MODULE) -iname "test_compile_commands.json"` ;\
 	do \
 		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-test.xml;\
 		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE)-test.xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE)-test --title="$(MODULE)-test";\
@@ -105,8 +105,8 @@ cppcheck-tests:
 
 cppcheck-unittests:
 	@scons -C test/ compiledb_unittest -D append_buildpath=compiledb
-	@mkdir -p $(BUILDPATH_ABSOLUTE)/cppcheck;
-	@for DB in `find $(BUILDPATH_ABSOLUTE)/$(MODULE) -iname "compile_db_unittest.json"` ;\
+	@mkdir -p $(BUILDPATH)/cppcheck;
+	@for DB in `find $(BUILDPATH)/$(MODULE) -iname "unittest_compile_commands.json"` ;\
 	do \
 		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml;\
 		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE)-unittest --title="$(MODULE)-unittest";\

@@ -68,7 +68,7 @@ files += env.Glob('outpost/*.cpp')
 files += env.Glob('outpost/*/*.cpp')
 files += env.Glob('outpost/*/*/*.cpp')
 
-envGlobal.Alias('compiledb_test', env.compiledb(target="compile_db_test", source=files))
+envGlobal.Alias('compiledb_test', env.compiledb(target="test_compile_commands", source=files))
 sources = env['sources'][module]
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong
@@ -76,6 +76,6 @@ sources = env['sources'][module]
 files += env['objects'][module]
 
 envGlobal.Alias('build', env.Program('runner', files))
-envGlobal.Alias('compiledb', env.compiledb(target="compile_db", source=sources))
+envGlobal.Alias('compiledb', env.compiledb(target="compile_commands", source=sources))
 
 envGlobal.Default('build')
