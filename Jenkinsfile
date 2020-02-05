@@ -72,15 +72,6 @@ pipeline {
                 }
             }
         }
-        stage("Check for Compiler warnings") {
-            steps {
-                recordIssues blameDisabled: true,
-                    tools: [
-                        gcc4(), clang()
-                    ],
-                    qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
-            }
-        }
         stage("cppcheck") {
             steps {
                 parallel (
@@ -99,8 +90,27 @@ pipeline {
                             sh 'make cppcheck-unittests'
                         }
                     }
-                    // TODO use the check results in jenkins
                 )
+            }
+       }
+       stage("Check for Compiler warnings") {
+            steps {
+                dir('outpost-core') {
+                    publishCppcheck pattern: "build/cppcheck/*.xml"
+
+                    recordIssues blameDisabled: true,
+                        tools: [
+                            gcc4(), clang()
+                        ],
+                        qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
+                    recordIssues blameDisabled: true,
+                        tools: [
+                            cppCheck(pattern: "build/cppcheck/*.xml")
+                        ],
+                        qualityGates: [[threshold: 1, type: 'TOTAL_ERROR', unstable: false],
+                                       [threshold: 1, type: 'TOTAL_HIGH', unstable: false],
+                                       [threshold: 3, type: 'TOTAL_NORMAL', unstable: true]] // TODO reduce threshold when sources have been cleaned
+                }
             }
         }
     }
