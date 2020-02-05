@@ -83,12 +83,24 @@ pipeline {
         }
         stage("cppcheck") {
             steps {
-                dir('outpost-core') {
-                    sh 'make cppcheck'
-                    sh 'make cppcheck-tests'
-                    sh 'make cppcheck-unittests'
+                parallel (
+                    "cppcheck modules": {
+                        dir('outpost-core') {
+                            sh 'make cppcheck'
+                        }
+                    },
+                    "cppcheck tests": {
+                        dir('outpost-core') {
+                            sh 'make cppcheck-tests'
+                        }
+                    },
+                    "cppcheck unittests": {
+                        dir('outpost-core') {
+                            sh 'make cppcheck-unittests'
+                        }
+                    }
                     // TODO use the check results in jenkins
-                }
+                )
             }
         }
     }
