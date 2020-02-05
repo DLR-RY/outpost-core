@@ -40,6 +40,8 @@ else:
     envGlobal.Tool('compiler_hosted_llvm')
     envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, 'test/unittest'))
+    
+envGlobal.Tool('utils_compilation_database')
 
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
 envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports='envGlobal')
@@ -47,8 +49,8 @@ envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.test'), exports=
 env = envGlobal.Clone()
 
 env.AppendUnique(LIBS=[
-    'outpost_rtos',
     'outpost_utils',
+    'outpost_rtos',
     'outpost_time',
     'outpost_base'
 ])
@@ -59,10 +61,15 @@ files += env.Glob('outpost/*/*.cpp')
 files += env.Glob('outpost/*/*/*.cpp')
 files += env.Glob('outpost/*/*/*/*.cpp')
 
+envGlobal.Alias('compiledb_test', env.compiledb(target="test_compile_commands", source=files))
+sources = env['sources'][module]
+
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong
 # results for the coverage analysis.
 files += env['objects'][module]
 
 envGlobal.Alias('build', env.Program('runner', files))
+envGlobal.Alias('compiledb', env.compiledb(target="compile_commands", source=sources))
+
 envGlobal.Default('build')

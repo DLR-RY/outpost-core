@@ -96,6 +96,36 @@ TEST(BistreamTest, push)
     EXPECT_ARRAY_EQ(uint8_t, ref, buffer_in, ARRAY_LENGTH);
 }
 
+TEST(BistreamTest, reset)
+{
+    memset(buffer_in, 0, ARRAY_LENGTH);
+    memset(ref, 0, ARRAY_LENGTH);
+    outpost::Bitstream bitstream(data_in);
+
+    bitstream.pushBit(true);
+    EXPECT_EQ(bitstream.getBit(0), true);
+    bitstream.pushBit(false);
+    bitstream.pushBit(true);
+    bitstream.pushBit(false);
+    bitstream.pushBit(true);
+    bitstream.pushBit(false);
+    bitstream.pushBit(true);
+    bitstream.pushBit(false);
+
+    bitstream.pushBit(true);
+
+    ref[3] = 0xAA;
+    ref[4] = 0x80;
+
+    EXPECT_ARRAY_EQ(uint8_t, ref, buffer_in, ARRAY_LENGTH);
+
+    bitstream.reset();
+    EXPECT_EQ(bitstream.getSerializedSize(), 3U);
+    EXPECT_EQ(bitstream.getByte(0U), 0);
+    EXPECT_EQ(bitstream.getByte(1U), 0);
+    EXPECT_EQ(bitstream.getBit(0), false);
+}
+
 TEST(BistreamTest, getBit)
 {
     memset(buffer_in, 0, ARRAY_LENGTH);
