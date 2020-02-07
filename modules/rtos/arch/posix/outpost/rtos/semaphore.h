@@ -116,6 +116,14 @@ public:
     };
 
     /**
+     * Create a binary semaphore in the released state.
+     *
+     * \param    initial
+     *         Initial value of the semaphore.
+     */
+    BinarySemaphore();
+
+    /**
      * Create a binary semaphore.
      *
      * \param    initial

@@ -44,6 +44,10 @@ outpost::rtos::Semaphore::release()
 }
 
 // ----------------------------------------------------------------------------
+outpost::rtos::BinarySemaphore::BinarySemaphore()
+{
+}
+
 outpost::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
 {
     (void) initial;

@@ -57,6 +57,16 @@ outpost::rtos::Semaphore::release()
 }
 
 // ----------------------------------------------------------------------------
+outpost::rtos::BinarySemaphore::BinarySemaphore()
+{
+    vSemaphoreCreateBinary(mHandle);
+
+    if (mHandle == 0)
+    {
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
+    }
+}
+
 outpost::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
 {
     vSemaphoreCreateBinary(mHandle);
