@@ -41,9 +41,7 @@ public:
     {
     }
 
-    FP(const FP& x) : value(x.value)
-    {
-    }
+    FP(const FP&) = default;
 
     FP(int16_t x) : value(x * (1 << PREC))
     {
@@ -182,16 +180,13 @@ public:
     }
 
     /**
-     * Assignment operator for other fixpoint numbers
+     * Default the Copy Assignment operator for other fixpoint numbers
      * @param x Assigned value
      * @return Fixpoint number
      */
     FP&
-    operator=(const FP& x)
-    {
-        value = x.value;
-        return *this;
-    }
+    operator=(const FP&) = default;
+
 
     /**
      * Add assignment operator for fixpoint numbers

@@ -291,7 +291,7 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     ASSERT_EQ(res.getNumberOfElements(), bufferLength);
     for (uint32_t i = 0; i < bufferLength; i++)
     {
-        EXPECT_LE(std::abs(std::abs(outputBuffer[i]) - std::abs(inBuffer[i])), 2U);
+        EXPECT_LE(std::abs(std::abs(outputBuffer[i]) - std::abs(inBuffer[i])), 2);
     }
 
     double doubleInBuffer[bufferLength];
