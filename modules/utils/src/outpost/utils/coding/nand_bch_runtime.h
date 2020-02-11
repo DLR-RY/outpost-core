@@ -25,7 +25,7 @@ namespace utils
 {
 /**
  * Class to encode/decode nand pages with BCH error correction.
- * Warning: Functions not thread-safe add mutexes for us different instances of class.
+ * Warning: Functions not thread-safe add mutexes or us different instances of class.
  *
  * Note: For use different instance  compile time version is suggested as this (with default values)
  *       only requires 704 bytes per instance, compared to this class with 98656 bytes per instance
@@ -84,22 +84,22 @@ private:
 
     static constexpr uint32_t ZERO_DIV_RETURN_VALUE = 1;
 
-    static constexpr uint32_t fieldPolyTable[16] = {1,  // dummy value
-                                                    1,  // dummy value
-                                                    5,
-                                                    11,
-                                                    19,
-                                                    37,
-                                                    67,
-                                                    131,
-                                                    369,
-                                                    529,
-                                                    1033,
-                                                    2053,
-                                                    4249,
-                                                    9647,
-                                                    16853,
-                                                    32771};
+    static constexpr uint32_t fieldPolyTable[16] = {0x1,  // dummy value
+                                                    0x1,  // dummy value
+                                                    0x5,
+                                                    0xb,
+                                                    0x13,
+                                                    0x25,
+                                                    0x43,
+                                                    0x83,
+                                                    0x11d,
+                                                    0x211,
+                                                    0x409,
+                                                    0x805,
+                                                    0x1053,
+                                                    0x201b,
+                                                    0x402b,
+                                                    0x8003};
 
     static constexpr uint32_t mFFPoly = fieldPolyTable[mMParam];
 
