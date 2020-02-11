@@ -72,13 +72,45 @@ pipeline {
                 }
             }
         }
-        stage("Check for Compiler warnings") {
+        stage("cppcheck") {
             steps {
-                recordIssues blameDisabled: true,
-                    tools: [
-                        gcc4(), clang()
-                    ],
-                    qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
+                parallel (
+                    "cppcheck modules": {
+                        dir('outpost-core') {
+                            sh 'make cppcheck'
+                        }
+                    },
+                    "cppcheck tests": {
+                        dir('outpost-core') {
+                            sh 'make cppcheck-tests'
+                        }
+                    },
+                    "cppcheck unittests": {
+                        dir('outpost-core') {
+                            sh 'make cppcheck-unittests'
+                        }
+                    }
+                )
+            }
+       }
+       stage("Check for Compiler warnings") {
+            steps {
+                dir('outpost-core') {
+                    publishCppcheck pattern: "build/cppcheck/*.xml"
+
+                    recordIssues blameDisabled: true,
+                        tools: [
+                            gcc4(), clang()
+                        ],
+                        qualityGates: [[threshold: 1, type: 'TOTAL', unstable: true]]
+                    recordIssues blameDisabled: true,
+                        tools: [
+                            cppCheck(pattern: "build/cppcheck/*.xml")
+                        ],
+                        qualityGates: [[threshold: 1, type: 'TOTAL_ERROR', unstable: false],
+                                       [threshold: 1, type: 'TOTAL_HIGH', unstable: false],
+                                       [threshold: 3, type: 'TOTAL_NORMAL', unstable: true]] // TODO reduce threshold when sources have been cleaned
+                }
             }
         }
     }
@@ -92,6 +124,9 @@ pipeline {
         }
         success {
             updateGitlabCommitStatus name: 'build', state: 'success'
+        }
+        always {
+            archiveArtifacts artifacts: '**/build/cppcheck/**/*'
         }
     }
 }

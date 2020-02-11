@@ -30,6 +30,7 @@ objects = []
 for file in files:
 	objects.append(env.Object(file))
 envGlobal.Append(objects={'utils': objects})
+envGlobal.Append(sources={'utils': files})
 
 library = env.StaticLibrary('outpost_utils', objects)
 envGlobal.Install('$BUILDPATH/lib', library)

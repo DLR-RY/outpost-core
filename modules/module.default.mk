@@ -84,6 +84,35 @@ test-default:
 	@mkdir -p $(BUILDPATH)/test
 	@python3 $(ROOTPATH)/tools/gtest_process_skipped.py $(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml $(BUILDPATH)/test/$(MODULE).xml
 
+cppcheck:
+	@scons -C test/ compiledb -D append_buildpath=compiledb
+	@mkdir -p $(BUILDPATH)/cppcheck;
+	@for DB in `find $(BUILDPATH)/$(MODULE) -iname "compile_commands.json"` ;\
+	do \
+		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE).xml;\
+		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE).xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE) --title="$(MODULE)";\
+	done;
+
+
+cppcheck-tests:
+	@scons -C test/ compiledb_test -D append_buildpath=compiledb
+	@mkdir -p $(BUILDPATH)/cppcheck;
+	@for DB in `find $(BUILDPATH)/$(MODULE) -iname "test_compile_commands.json"` ;\
+	do \
+		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-test.xml;\
+		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE)-test.xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE)-test --title="$(MODULE)-test";\
+	done;
+
+cppcheck-unittests:
+	@scons -C test/ compiledb_unittest -D append_buildpath=compiledb
+	@mkdir -p $(BUILDPATH)/cppcheck;
+	@for DB in `find $(BUILDPATH)/$(MODULE) -iname "unittest_compile_commands.json"` ;\
+	do \
+		cppcheck --enable=all --inconclusive --force --project=$$DB --suppressions-list=../../.cppcheck-excludes --xml --xml-version=2 2> $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml;\
+		cppcheck-htmlreport --file $(BUILDPATH)/cppcheck/$(MODULE)-unittest.xml --report-dir $(BUILDPATH)/cppcheck/$(MODULE)-unittest --title="$(MODULE)-unittest";\
+	done;
+
+
 coverage-default:
 	@scons build coverage=1 $(MAKEJOBS) -Q -C test || return 1; \
 	find $(BUILDPATH)/$(MODULE)/test/coverage -name "*.gcda" -delete; \
@@ -185,4 +214,4 @@ clean-default:
 distclean-default:
 	@scons build coverage=1 -Q -C test/unit -c
 
-.PHONY: build-lua test-default coverage-default coverage-html-default
+.PHONY: build-lua test-default coverage-default coverage-html-default cppcheck cppcheck-tests cppcheck-unittests

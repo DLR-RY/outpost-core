@@ -19,6 +19,7 @@ import os
 
 vars = Variables('custom.py')
 vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+vars.Add('append_buildpath', 'manual append to buildpath', '')
 
 module = 'base'
 
@@ -42,6 +43,11 @@ else:
     envGlobal.Tool('settings_buildpath')
     envGlobal['BUILDPATH'] = os.path.join(buildfolder, module, 'test/unittest')
 
+if envGlobal['append_buildpath']:
+    envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, module, envGlobal['append_buildpath'] + '/' ))
+
+envGlobal.Tool('utils_compilation_database')
+
 envGlobal.SConscript([
     os.path.join(rootpath, 'modules/SConscript.library'),
     os.path.join(rootpath, 'modules/SConscript.test'),
@@ -59,10 +65,17 @@ files += env.Glob('outpost/*/*.cpp')
 files += env.Glob('outpost/*/*/*.cpp')
 files += env.Glob('outpost/*/*/*/*.cpp')
 
+envGlobal.Alias('compiledb_test', env.compiledb(target="test_compile_commands", source=files))
+sources = env['sources'][module]
 # Do not include the module files as library but directly as compiled objects.
 # Otherwise only the realy used symbols are pulled in which yields wrong
 # results for the coverage analysis.
 files += env['objects'][module]
 
 envGlobal.Alias('build', env.Program('runner', files))
+if sources != [] :
+    envGlobal.Alias('compiledb', env.compiledb(target="compile_commands", source=sources))
+else:
+    envGlobal.Alias('compiledb', builder="echo nothing to be done")
+
 envGlobal.Default('build')

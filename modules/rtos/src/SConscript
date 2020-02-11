@@ -66,6 +66,7 @@ objects = []
 for file in files:
 	objects.append(env.Object(file))
 envGlobal.Append(objects={'rtos': objects})
+envGlobal.Append(sources={'rtos': files})
 
 library = env.StaticLibrary('outpost_rtos', objects)
 envGlobal.Install('$BUILDPATH/lib', library)
