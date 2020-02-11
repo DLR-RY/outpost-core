@@ -187,7 +187,6 @@ public:
     FP&
     operator=(const FP&) = default;
 
-
     /**
      * Add assignment operator for fixpoint numbers
      * @param x Summand

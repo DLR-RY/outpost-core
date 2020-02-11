@@ -127,6 +127,16 @@ public:
     };
 
     /**
+     * Create a Semaphore, that is initially released.
+     *
+     * RTEMS has only one pool for mutexes and semaphores. Make sure
+     * the maximum number of allocated mutexes and semaphores combined
+     * is smaller than the number given via \c CONFIGURE_MAXIMUM_SEMAPHORES.
+     *
+     */
+    BinarySemaphore();
+
+    /**
      * Create a Semaphore.
      *
      * RTEMS has only one pool for mutexes and semaphores. Make sure

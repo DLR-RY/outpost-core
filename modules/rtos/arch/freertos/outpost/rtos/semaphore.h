@@ -118,6 +118,11 @@ public:
     };
 
     /**
+     * Create a Semaphore initially released
+     */
+    BinarySemaphore();
+
+    /**
      * Create a Semaphore.
      *
      * RTEMS has only one pool for mutexes and semaphores. Make sure

@@ -60,6 +60,18 @@ outpost::rtos::Semaphore::acquire(time::Duration timeout)
 }
 
 // ----------------------------------------------------------------------------
+outpost::rtos::BinarySemaphore::BinarySemaphore()
+{
+    rtems_name name = rtems_build_name('B', 'S', 'E', 'M');
+
+    if (rtems_semaphore_create(name, 1, RTEMS_PRIORITY | RTEMS_SIMPLE_BINARY_SEMAPHORE, 1, &mId)
+        != RTEMS_SUCCESSFUL)
+    {
+        FailureHandler::fatal(FailureCode::resourceAllocationFailed(Resource::semaphore));
+    }
+}
+
+// ----------------------------------------------------------------------------
 outpost::rtos::BinarySemaphore::BinarySemaphore(State::Type initial)
 {
     rtems_name name = rtems_build_name('B', 'S', 'E', 'M');

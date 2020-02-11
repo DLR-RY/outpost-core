@@ -54,6 +54,12 @@ Semaphore::acquire(time::Duration timeout)
 }
 
 // ----------------------------------------------------------------------------
+BinarySemaphore::BinarySemaphore() : mValue(BinarySemaphore::State::released)
+{
+    pthread_mutex_init(&mMutex, NULL);
+    pthread_cond_init(&mSignal, NULL);
+}
+
 BinarySemaphore::BinarySemaphore(State::Type initial) : mValue(initial)
 {
     pthread_mutex_init(&mMutex, NULL);

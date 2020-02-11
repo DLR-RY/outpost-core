@@ -25,7 +25,8 @@ TEST(DatagramTransportTest, shouldAllowToComposeAddressConstants)
 
     std::array<uint8_t, 4> Ip = address.getIpAddress().getArray();
     std::array<uint8_t, 4> refIp = DatagramTransport::IpAddress(127, 0, 0, 1).getArray();
-    for (size_t i=0; i < refIp.size(); i++){
+    for (size_t i = 0; i < refIp.size(); i++)
+    {
         EXPECT_EQ(Ip[i], refIp[i]);
     }
 }
