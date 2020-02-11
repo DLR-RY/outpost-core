@@ -40,8 +40,8 @@ class NandBCHInterface
 {
 public:
     // default values
-    static constexpr uint32_t DEF_GALIOS_DEMISIONS = 13;  // Dimension of Galois Field
-    static constexpr uint32_t DEF_ERROR_CORRECTION = 8;   // Default error correction power in bits
+    static constexpr uint32_t DEF_GALIOS_DIMENISIONS = 13;  // Dimension of Galois Field
+    static constexpr uint32_t DEF_ERROR_CORRECTION = 8;  // Default error correction power in bits
     static constexpr uint8_t fillValue =
             0x00;  // value to fill up if less data then nand page data size s provided
 

@@ -27,7 +27,7 @@ constexpr uint32_t dataSize = 512;
 constexpr uint32_t spareSize = 16;
 
 template <uint32_t mNandDataSize, uint32_t mNandSpareSize>
-using BCH = NandBCHRTime<NandBCHInterface::DEF_GALIOS_DEMISIONS,
+using BCH = NandBCHRTime<NandBCHInterface::DEF_GALIOS_DIMENISIONS,
                          NandBCHInterface::DEF_ERROR_CORRECTION,
                          mNandDataSize,
                          mNandSpareSize>;

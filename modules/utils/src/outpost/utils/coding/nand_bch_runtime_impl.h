@@ -42,11 +42,6 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void
     memset(genPolyFdbkWords, 0, sizeof(uint32_t) * (((MAX_CORR * mMParam) / 8 + 1) / 4 + 1));
     memset(encodeTable, 0, sizeof(uint32_t) * (BYTESTATES * MAX_REDUN_WORDS));
 
-    // Using default code configuration
-    mMOddParam = mMParam % 2;
-    mNParam = mFFSize - 1;
-    mLogZVal = 2 * mNParam;
-
     // Internal initialization
     bchInit();
 
@@ -83,7 +78,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void
     convertGenPolyBitToWord();
     generateEncodeTables();
 
-    uint8_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
+    uint32_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
     mValid = (iteration_count * mNumRedundantBytes) <= mNandSpareSize;
 }
 
@@ -93,8 +88,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::buildLogTables(vo
 {
     // Constructing FF's LOG and ALOG tables
     uint32_t shiftReg = 1;
-    uint32_t fdbkCon = mFFPoly - mFFSize;
-    uint32_t ffSizeDivTwo = mFFSize / 2;
+    constexpr uint32_t fdbkCon = mFFPoly - mFFSize;
+    constexpr uint32_t ffSizeDivTwo = mFFSize / 2;
 
     for (uint32_t i = 0; i < 2 * mFFSize; i++)
     {
@@ -262,7 +257,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffQuadFun(int32_t
     //****************************************************************
 
     // "c" is "c" of y^2+y=c.  Given "c" we want one solution (y1) of y^2+y=c
-    int32_t parityWord = mTraceTestVal & c;  // Get bits that parity is to be checked on
+    const int32_t parityWord = mTraceTestVal & c;  // Get bits that parity is to be checked on
     int32_t parityBit = 0;
     int32_t y1 = 0;
     int32_t shifter = 1;
@@ -335,11 +330,10 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
     //  significantly the size of the flg array and will reduce the time
     //  to initialize this array.
     //****************************************************************
-    int32_t flag[mFFSize], tmp[MAX_CORR * mMParam + 1];
+    int32_t flag[mFFSize];
 
     memset(flag, 0, mFFSize);  // Index to flg can have values root,2*root,4*root,8*root...
     memset(genPolyBitArray, 0, mMParam * mTParam * sizeof(uint32_t));
-    memset(tmp, 0, mMParam * mTParam * sizeof(uint32_t));
 
     genPolyDegree = 0;       // The degree of the code generator poly is obj->mInitialized to "0"
     genPolyBitArray[0] = 1;  // Now the initial code generator poly is "1" (degree "0")
@@ -357,6 +351,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
                 {
                     return false;  // Fatal problem of some type
                 }
+
+                int32_t tmp[MAX_CORR * mMParam + 1] = {0};
 
                 // Start multiply this factor times current gblCgpBitArray
                 // Intermediate poly products will have some values greater than one
@@ -466,9 +462,9 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateEncodeTab
     for (uint32_t i = 0; i < BYTESTATES; i++)
     {  // Encoding is 8 bits parallel
         // Clear shift register
-        memset(SR, 0, mNumRedundantWords * 4);
+        memset(SR, 0, mNumRedundantWords * sizeof(uint32_t));
 
-        SR[0] ^= (i << 24);
+        SR[0] = (i << 24);
         for (uint32_t j = 0; j <= 7; j++)
         {  // 7 is the # of bits in a byte -1
             uint32_t fdbk = 0;
@@ -1123,79 +1119,19 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::chienSearch(int32
         }
         else
         {
-            // Unrolled loop
-            switch (Ln)
+            for (uint32_t i = Ln; i > 0; i--)
             {
-                case 8:
-                    accum ^= aLogTable[sigmaN[8]];  // accum is XOR sum of all alogs
-                    sigmaN[8] -= 8;
-                    if (sigmaN[8] < 0)
-                    {
-                        sigmaN[8] += mNParam;
-                    }
-                    // lint -fallthrough
-                case 7:
-                    accum ^= aLogTable[sigmaN[7]];  // accum is XOR sum of all alogs
-                    sigmaN[7] -= 7;
-                    if (sigmaN[7] < 0)
-                    {
-                        sigmaN[7] += mNParam;
-                    }
-                    // lint -fallthrough
-                case 6:
-                    accum ^= aLogTable[sigmaN[6]];  // accum is XOR sum of all alogs
-                    sigmaN[6] -= 6;
-                    if (sigmaN[6] < 0)
-                    {
-                        sigmaN[6] += mNParam;
-                    }
-                    // lint -fallthrough
-                case 5:
-                    accum ^= aLogTable[sigmaN[5]];  // accum is XOR sum of all alogs
-                    sigmaN[5] -= 5;
-                    if (sigmaN[5] < 0)
-                    {
-                        sigmaN[5] += mNParam;
-                    }
-                    // lint -fallthrough
-                case 4:
-                    accum ^= aLogTable[sigmaN[4]];  // accum is XOR sum of all alogs
-                    sigmaN[4] -= 4;
-                    if (sigmaN[4] < 0)
-                    {
-                        sigmaN[4] += mNParam;
-                    }
-                    // lint -fallthrough
-                case 3:
-                    accum ^= aLogTable[sigmaN[3]];  // accum is XOR sum of all alogs
-                    sigmaN[3] -= 3;
-                    if (sigmaN[3] < 0)
-                    {
-                        sigmaN[3] += mNParam;
-                    }
-                    // lint -fallthrough
-                case 2:
-                    accum ^= aLogTable[sigmaN[2]];  // accum is XOR sum of all alogs
-                    sigmaN[2] -= 2;
-                    if (sigmaN[2] < 0)
-                    {
-                        sigmaN[2] += mNParam;
-                    }
-                    // lint -fallthrough
-                case 1:
-                    accum ^= aLogTable[sigmaN[1]];  // accum is XOR sum of all alogs
-                    sigmaN[1] -= 1;
-                    if (sigmaN[1] < 0)
-                    {
-                        sigmaN[1] += mNParam;
-                    }
-                    // lint -fallthrough
-                default: break;
+                accum ^= aLogTable[sigmaN[i]];  // accum is XOR sum of all alogs
+                sigmaN[i] -= i;
+                if (sigmaN[i] < 0)
+                {
+                    sigmaN[i] += mNParam;
+                }
             }
         }
         if (accum == 1)
         {
-            mLoc[Ln - 1] = aLogTable[n];
+            mLoc[Ln - 1] = aLogTable[n % (mFFSize)];
             // Convert back to alog domain so we can divide down
             for (uint32_t i = 1; i <= Ln; i++)
             {
@@ -1633,12 +1569,12 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
         return false;
     }
 
-    uint8_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
-    uint16_t data_ptr = 0;
-    uint16_t chksum_ptr = mNandDataSize;
+    uint32_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
+    uint32_t data_ptr = 0;
+    uint32_t chksum_ptr = mNandDataSize;
 
     /* Convert k size information in bits format */
-    for (uint8_t i = 0; i < iteration_count; i++)
+    for (uint32_t i = 0; i < iteration_count; i++)
     {
         if (((i * mNumDataBytes) + mNumDataBytes) <= src_data.getNumberOfElements())
         {
@@ -1669,7 +1605,6 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
         memcpy(&(coded_data[0]) + chksum_ptr, &mCodeWord[mNumDataBytes], mNumRedundantBytes);
         data_ptr += mNumDataBytes;
         chksum_ptr += (mNumRedundantBytes);
-        memset(mCodeWord, 0, mNumCodeWordBytes);
     }
 
     return true;
@@ -1678,7 +1613,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 DecodeStatus
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
-        const outpost::Slice<const uint8_t>& coded_data, const outpost::Slice<uint8_t>& src_data)
+        const outpost::Slice<const uint8_t>& coded_data, const outpost::Slice<uint8_t>& dest_data)
 {
     if (coded_data.getNumberOfElements() < mNandDataSize + mNandSpareSize || !mValid)
     {
@@ -1688,10 +1623,10 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
 
     DecodeStatus status = DecodeStatus::noError;
 
-    uint8_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
+    uint32_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
 
     /* Convert k size information in bits format */
-    for (uint16_t i = 0; i < iteration_count; i++)
+    for (uint32_t i = 0; i < iteration_count; i++)
     {
         /* Retrieving data incrementally from beginning and checksum at the end */
         memcpy(mCodeWord, &coded_data[i * mNumDataBytes], mNumDataBytes);
@@ -1703,20 +1638,20 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
         status = combine(status, bchDecode());
 
         // Copy anyways, we tell them whether it is correct or not
-        if (src_data.getNumberOfElements() >= ((i + 1) * mNumDataBytes))
+        if (dest_data.getNumberOfElements() >= ((i + 1) * mNumDataBytes))
         {
             // all data fitting
-            memcpy(&src_data[0] + (i * mNumDataBytes), mCodeWord, mNumDataBytes);
+            memcpy(&dest_data[0] + (i * mNumDataBytes), mCodeWord, mNumDataBytes);
         }
-        else if (src_data.getNumberOfElements() <= (i * mNumDataBytes))
+        else if (dest_data.getNumberOfElements() <= (i * mNumDataBytes))
         {
             // do nothing but still go on so that errors are found that are positioned later
         }
         else
         {
             // partial
-            uint32_t sizeRemaining = src_data.getNumberOfElements() - (i * mNumDataBytes);
-            memcpy(&src_data[0] + (i * mNumDataBytes), mCodeWord, sizeRemaining);
+            uint32_t sizeRemaining = dest_data.getNumberOfElements() - (i * mNumDataBytes);
+            memcpy(&dest_data[0] + (i * mNumDataBytes), mCodeWord, sizeRemaining);
         }
     }
     return status;
@@ -1728,7 +1663,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::isChecksumEmpty(
         const outpost::Slice<const uint8_t>& data)
 {
     bool result = true;
-    uint8_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
+    uint32_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
     uint32_t codeSize = (iteration_count * mNumRedundantBytes);
 
     // if there is no checksum it is empty

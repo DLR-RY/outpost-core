@@ -43,7 +43,7 @@ combine(DecodeStatus a, DecodeStatus b)
 }
 
 // default values
-constexpr uint32_t NandBCHInterface::DEF_GALIOS_DEMISIONS;
+constexpr uint32_t NandBCHInterface::DEF_GALIOS_DIMENISIONS;
 constexpr uint32_t NandBCHInterface::DEF_ERROR_CORRECTION;
 constexpr uint8_t NandBCHInterface::fillValue;
 

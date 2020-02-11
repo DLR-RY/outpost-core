@@ -41,7 +41,7 @@ class NandBCHRTime : public NandBCHInterface
     static_assert(mTParam <= MAX_CORR, "Max Supported value for mTParam 64");
     static_assert((mNandDataSize % mNumDataBytes) == 0, "mNumDataBytes shall be multiple of 512");
     static_assert(mMParam >= 2, "Minimal supported value for mMParam = 2");
-    static_assert(mMParam <= 16, "Maximal supported value for mMParam =  16");
+    static_assert(mMParam <= 15, "Maximal supported value for mMParam =  15");
 
 public:
     NandBCHRTime(void);
@@ -84,15 +84,29 @@ private:
 
     static constexpr uint32_t ZERO_DIV_RETURN_VALUE = 1;
 
-    static constexpr uint32_t fieldPolyTable[22] = {
-            1,  // dummy value
-            1,  // dummy value
-            5,    11,   19,    37,    67,    131,    369,    529,    1033,   2053,
-            4249, 9647, 16853, 32771, 65581, 131081, 262273, 524387, 1048585};
+    static constexpr uint32_t fieldPolyTable[16] = {1,  // dummy value
+                                                    1,  // dummy value
+                                                    5,
+                                                    11,
+                                                    19,
+                                                    37,
+                                                    67,
+                                                    131,
+                                                    369,
+                                                    529,
+                                                    1033,
+                                                    2053,
+                                                    4249,
+                                                    9647,
+                                                    16853,
+                                                    32771};
 
     static constexpr uint32_t mFFPoly = fieldPolyTable[mMParam];
 
-    uint32_t mMOddParam, mNParam, mLogZVal;
+    static constexpr uint32_t mMOddParam = mMParam % 2;
+    static constexpr uint32_t mNParam = mFFSize - 1;
+    static constexpr uint32_t mLogZVal = 2 * mNParam;
+
     uint32_t mNumRedundantBits, mNumRedundantBytes;
     uint32_t mNumCodeWordBytes, mNumDataBits, mNumRedundantWords;
     uint32_t mLoc[MAX_CORR];
@@ -105,7 +119,7 @@ private:
     uint8_t mRemainderBytes[(MAX_CORR * mMParam) / 8 + 1];
 
     uint16_t aLogTable[2 * mFFSize];
-    uint16_t logTable[2 * mFFSize];
+    uint16_t logTable[mFFSize];
     uint32_t genPolyBitArray[MAX_CORR * mMParam + 1];
     uint32_t genPolyDegree;
     uint32_t genPolyFdbkWords[((MAX_CORR * mMParam) / 8 + 1) / 4 + 1];

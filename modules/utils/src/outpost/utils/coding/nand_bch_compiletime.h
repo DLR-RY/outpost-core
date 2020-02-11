@@ -39,7 +39,7 @@ class NandBCHCTime : public NandBCHInterface
     static_assert(mTParam >= 4, "Minimal value for mTParam is 4");
     static_assert((mNandDataSize % mNumDataBytes) == 0, "mNumDataBytes shall be multiple of 512");
     static_assert(mMParam >= 2, "Minimal supported value for mMParam = 2");
-    static_assert(mMParam <= 16, "Maximal supported value for mMParam =  16");
+    static_assert(mMParam <= 15, "Maximal supported value for mMParam =  15");
 
 public:
     NandBCHCTime(void);
@@ -75,12 +75,13 @@ public:
     isChecksumEmpty(const outpost::Slice<const uint8_t>& data) override;
 
 private:
+    struct ALogTable;
     struct LogTable;
     struct QuadCompTable;
     struct Polynom;
     struct EncodeTable;
 
-    static constexpr LogTable
+    static constexpr ALogTable
     buildALogTables(void);
 
     static constexpr LogTable
@@ -122,11 +123,22 @@ private:
     static constexpr void
     convertGenPolyBitToWord(Polynom& poly, const uint32_t* genPolyBitArray);
 
-    static constexpr uint32_t fieldPolyTable[22] = {
-            1,  // dummy value
-            1,  // dummy value
-            5,    11,   19,    37,    67,    131,    369,    529,    1033,   2053,
-            4249, 9647, 16853, 32771, 65581, 131081, 262273, 524387, 1048585};
+    static constexpr uint32_t fieldPolyTable[22] = {1,  // dummy value
+                                                    1,  // dummy value
+                                                    5,
+                                                    11,
+                                                    19,
+                                                    37,
+                                                    67,
+                                                    131,
+                                                    369,
+                                                    529,
+                                                    1033,
+                                                    2053,
+                                                    4249,
+                                                    9647,
+                                                    16853,
+                                                    32771};
 
     static constexpr uint32_t mFFPoly = fieldPolyTable[mMParam];
 
@@ -137,7 +149,7 @@ private:
     static constexpr uint32_t mLogZVal = 2 * mNParam;
     static constexpr uint32_t mNumDataBits = mNumDataBytes * 8;
 
-    static constexpr LogTable aLogTable = buildALogTables();
+    static constexpr ALogTable aLogTable = buildALogTables();
     static constexpr LogTable logTable = buildLogTables();
     static constexpr int32_t mTraceTestVal = getTraceTestVal();
     static constexpr QuadCompTable mQuadCompTable = genQuadCompTable();
@@ -204,6 +216,21 @@ private:
     struct LogTable
     {
         constexpr LogTable(void) : table{} {};
+        uint16_t table[mFFSize];
+
+        constexpr const uint16_t& operator[](int i) const
+        {
+            return table[i];
+        };
+        uint16_t& operator[](int i)
+        {
+            return table[i];
+        };
+    };
+
+    struct ALogTable
+    {
+        constexpr ALogTable(void) : table{} {};
         uint16_t table[2 * mFFSize];
 
         constexpr const uint16_t& operator[](int i) const
