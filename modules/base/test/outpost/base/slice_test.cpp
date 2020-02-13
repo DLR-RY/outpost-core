@@ -39,6 +39,23 @@ TEST(SliceTest, toUint8Slice)
     EXPECT_EQ(true, std::is_const<Slice<const uint32_t>::uint8Type>::value);
 }
 
+TEST(SliceTest, fill)
+{
+    uint32_t data[4] = {0};
+
+    Slice<uint32_t> slice(data);
+    slice.fill(0x1f2e3d4cu);
+
+    EXPECT_EQ(0x1f2e3d4cu, slice[0]);
+    EXPECT_EQ(0x1f2e3d4cu, slice[1]);
+    EXPECT_EQ(0x1f2e3d4cu, slice[2]);
+    EXPECT_EQ(0x1f2e3d4cu, slice[3]);
+
+    // check it does not prevent const type slices
+    const uint32_t data2[4] = {0};
+    Slice<const uint32_t> slice2(data2);
+}
+
 TEST(SliceTest, createFromCStyleArray)
 {
     uint8_t data[7];
