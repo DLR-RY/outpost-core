@@ -24,8 +24,15 @@ template <typename T>
 outpost::rtos::Queue<T>::Queue(size_t numberOfItems) : mId()
 {
     rtems_attribute attributes = RTEMS_FIFO | RTEMS_LOCAL;
+
+    // RTEMS is C, thus, old-style-casts need to be allowed here.
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wold-style-cast"
+
     rtems_status_code result = rtems_message_queue_create(
             rtems_build_name('R', 'T', 'Q', '0'), numberOfItems, sizeof(T), attributes, &mId);
+
+    #pragma GCC diagnostic pop
 
     if (result != RTEMS_SUCCESSFUL)
     {
