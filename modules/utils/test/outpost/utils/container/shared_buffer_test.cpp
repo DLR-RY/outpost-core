@@ -20,7 +20,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <unittest/utils/container/shared_buffer_queue_stub.h>
+#include <unittest/utils/container/reference_queue_stub.h>
 
 using namespace testing;
 
@@ -31,7 +31,7 @@ class SharedBufferTest : public testing::Test
 {
 public:
     outpost::utils::SharedBufferPool<objectSize, poolSize> mPool;
-    unittest::utils::SharedBufferQueue<10> mQueue;
+    unittest::utils::ReferenceQueue<outpost::utils::SharedBufferPointer, 10> mQueue;
 
     SharedBufferTest()
     {
@@ -191,7 +191,7 @@ TEST_F(SharedBufferTest, allocateFullPool)
 
 TEST_F(SharedBufferTest, queueBuffer)
 {
-    unittest::utils::SharedBufferQueue<2> q;
+    unittest::utils::ReferenceQueue<outpost::utils::SharedBufferPointer, 2> q;
     EXPECT_TRUE(q.isEmpty());
     EXPECT_FALSE(q.isFull());
 

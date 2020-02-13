@@ -21,7 +21,7 @@
 #include <outpost/rtos.h>
 #include <outpost/support/heartbeat.h>
 #include <outpost/time/duration.h>
-#include <outpost/utils/container/shared_buffer_queue.h>
+#include <outpost/utils/container/reference_queue.h>
 #include <outpost/utils/container/shared_object_pool.h>
 
 #include <stdint.h>

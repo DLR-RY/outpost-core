@@ -12,8 +12,8 @@
  * - 2018, Fabian Greif (DLR RY-AVS)
  */
 
-#ifndef UNITTEST_UTILS_SMART_BUFFER_QUEUE_STUB_H_
-#define UNITTEST_UTILS_SMART_BUFFER_QUEUE_STUB_H_
+#ifndef UNITTEST_UTILS_REFERENCE_QUEUE_STUB_H_
+#define UNITTEST_UTILS_REFERENCE_QUEUE_STUB_H_
 
 #include <outpost/time/duration.h>
 
@@ -23,11 +23,11 @@ namespace unittest
 {
 namespace utils
 {
-template <size_t N>
-class SharedBufferQueue
+template <typename T, size_t N>
+class ReferenceQueue
 {
 public:
-    SharedBufferQueue()
+    ReferenceQueue()
     {
         for (size_t i = 0; i < N; i++)
         {
@@ -58,7 +58,7 @@ public:
     }
 
     bool
-    send(const outpost::utils::SharedBufferPointer& data)
+    send(const T& data)
     {
         bool res = false;
         for (size_t i = 0; i < N; i++)
@@ -76,7 +76,7 @@ public:
     }
 
     bool
-    receive(outpost::utils::SharedBufferPointer& data, outpost::time::Duration)
+    receive(T& data, outpost::time::Duration)
     {
         bool res = false;
         if (mQueue.size() > 0)
@@ -98,15 +98,15 @@ public:
     }
 
 private:
-    std::queue<outpost::utils::SharedBufferPointer> mQueue;
+    std::queue<T> mQueue;
 
-    outpost::utils::SharedBufferPointer _empty;
+    T _empty;
 
-    outpost::utils::SharedBufferPointer mPointers[N];
+    T mPointers[N];
     bool isUsed[N];
 };
 
 }  // namespace utils
 }  // namespace unittest
 
-#endif /* UNITTEST_UTILS_SMART_BUFFER_QUEUE_STUB_H_ */
+#endif /* UNITTEST_UTILS_REFERENCE_QUEUE_STUB_H_ */

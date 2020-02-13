@@ -15,7 +15,7 @@
 #define OUTPOST_HAL_PROTOCOL_DISPATCHER_INTERFACE_H_
 
 #include <outpost/rtos.h>
-#include <outpost/utils/container/shared_buffer_queue.h>
+#include <outpost/utils/container/reference_queue.h>
 #include <outpost/utils/container/shared_object_pool.h>
 
 #include <stdint.h>
