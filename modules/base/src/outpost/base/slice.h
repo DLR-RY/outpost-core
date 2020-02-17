@@ -192,6 +192,19 @@ public:
     }
 
     /**
+     * Set all elements in the slice to a given value
+     * @param v      The value to set all values to
+     */
+    inline void
+    fill(const ElementType& v)
+    {
+        for (IndexType i = 0; i < mNumberOfElements; i++)
+        {
+            mData[i] = v;
+        }
+    }
+
+    /**
      * Create a sub-slice from the beginning of the slice.
      */
     inline Slice
