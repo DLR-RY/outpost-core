@@ -158,8 +158,10 @@ private:
 
     static constexpr uint32_t ZERO_DIV_RETURN_VALUE = 1;
 
+    static constexpr uint32_t numSyndromes = 2 * mTParam;
+
     uint32_t mLoc[(2 * mTParam) + 1];
-    uint32_t mSyndromes[2 * mTParam];
+    uint32_t mSyndromes[numSyndromes];
     uint16_t mErrLocByte[mTParam];
     uint8_t mErrLocBit[mTParam];
     bool mValid;

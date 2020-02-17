@@ -47,6 +47,9 @@ constexpr typename NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>
         NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encodeTable;
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
+constexpr uint32_t NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::mLogZVal;
+
+template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHCTime(void) :
     mLoc{0},
     mSyndromes{0},
@@ -664,9 +667,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchEncode(void)
     //  of Linear-Feedback Shift-Register Circuits" which appeared in
     //  IEEE. Trans. on Elec. Comp., 738-740 (Dec. 1964).
     //****************************************************************
-    uint32_t SR[mNumRedundantWords];
-
-    memset(SR, 0, mNumRedundantWords * 4);
+    uint32_t SR[mNumRedundantWords] = {};
 
     for (uint16_t writeCWAddr = 0; writeCWAddr < mNumDataBytes; writeCWAddr++)
     {  // index to write data buffer
@@ -746,10 +747,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeRemainder(
     //  of Linear-Feedback Shift-Register Circuits" which appeared in
     //  IEEE. Trans. on Elec. Comp., 738-740 (Dec. 1964).
     //****************************************************************
-    uint32_t SR[mNumRedundantWords];
-
-    // Clear shift register
-    memset(SR, 0, mNumRedundantWords * 4);
+    uint32_t SR[mNumRedundantWords] = {};
 
     // SHIFTS WITH FEEDBACK
     for (uint32_t readCWAddr = 0; readCWAddr < mNumDataBytes; readCWAddr++)
@@ -821,11 +819,8 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
     //  REVISED SECOND EDITION.
     //****************************************************************
 
-    // In a real implementation of one fixed code, numSyndromes would be a constant
-    uint32_t numSyndromes = 2 * mTParam;
-
     // Clear syndromes array
-    memset(mSyndromes, 0, numSyndromes * sizeof(uint32_t));
+    outpost::asSlice(mSyndromes).fill(0);
 
     for (uint32_t i = 0; i < mNumRedundantBytes; i++)
     {
@@ -1473,8 +1468,8 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
     //****************************************************************
     bool success = true;
 
-    memset(mErrLocByte, 0xFFFF, mTParam * sizeof(uint16_t));
-    memset(mErrLocBit, 0, mTParam);
+    outpost::asSlice(mErrLocByte).fill(0xffffu);
+    outpost::asSlice(mErrLocBit).fill(0);
 
     for (int32_t kx = 0; kx < Ln; kx++)
     {
@@ -1530,7 +1525,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     bool success = true;
     DecodeStatus status = DecodeStatus::noError;
 
-    memset(mLoc, mLogZVal, ((2 * mTParam) + 1) * sizeof(uint32_t));
+    outpost::asSlice(mLoc).fill(mLogZVal);
 
     int32_t remainderDetdErr = computeRemainder();
 
@@ -1558,7 +1553,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     }
     else
     {
-        memset(mSyndromes, 0, (2 * mTParam) * sizeof(uint32_t));
+        outpost::asSlice(mSyndromes).fill(0);
     }
     if (!success)
     {
@@ -1594,14 +1589,14 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
         else if ((i * mNumDataBytes) <= src_data.getNumberOfElements())
         {
             // fill up all remaining data
-            memset(mCodeWord, NandBCHInterface::fillValue, mNumDataBytes);
+            outpost::asSlice(mCodeWord).first(mNumDataBytes).fill(NandBCHInterface::fillValue);
         }
         else
         {
             // partial fit and partial not
 
             // first set all to fill value and then write the one we have there es far as possible
-            memset(mCodeWord, NandBCHInterface::fillValue, mNumDataBytes);
+            outpost::asSlice(mCodeWord).first(mNumDataBytes).fill(NandBCHInterface::fillValue);
 
             uint32_t sizeRemaining = src_data.getNumberOfElements() - (i * mNumDataBytes);
             memcpy(mCodeWord, &src_data[i * mNumDataBytes], sizeRemaining);

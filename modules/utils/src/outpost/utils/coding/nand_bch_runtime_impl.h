@@ -23,6 +23,9 @@ namespace outpost
 namespace utils
 {
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
+constexpr uint32_t NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::mLogZVal;
+
+template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void) :
     mNumDataBits(0),
     mLoc{0},
@@ -36,11 +39,14 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void
     mRemainderBytes{0}
 {
     // Initialize vectors
-    memset(aLogTable, 0, sizeof(uint16_t) * (2 * mFFSize));
-    memset(logTable, 0, sizeof(uint16_t) * (2 * mFFSize));
-    memset(genPolyBitArray, 0, sizeof(uint32_t) * (MAX_CORR * mMParam + 1));
-    memset(genPolyFdbkWords, 0, sizeof(uint32_t) * (((MAX_CORR * mMParam) / 8 + 1) / 4 + 1));
-    memset(encodeTable, 0, sizeof(uint32_t) * (BYTESTATES * MAX_REDUN_WORDS));
+    outpost::asSlice(aLogTable).fill(0);
+    outpost::asSlice(logTable).fill(0);
+    outpost::asSlice(genPolyBitArray).fill(0);
+    outpost::asSlice(genPolyFdbkWords).fill(0);
+    for (uint32_t i = 0; i < BYTESTATES; i++)
+    {
+        outpost::asSlice(encodeTable[i]).fill(0);
+    }
 
     // Internal initialization
     bchInit();
@@ -330,10 +336,10 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
     //  significantly the size of the flg array and will reduce the time
     //  to initialize this array.
     //****************************************************************
-    int32_t flag[mFFSize];
+    int32_t flag[mFFSize];  // Index to flg can have values root,2*root,4*root,8*root...
 
-    memset(flag, 0, mFFSize);  // Index to flg can have values root,2*root,4*root,8*root...
-    memset(genPolyBitArray, 0, mMParam * mTParam * sizeof(uint32_t));
+    outpost::asSlice(flag).fill(0);
+    outpost::asSlice(genPolyBitArray).fill(0);
 
     genPolyDegree = 0;       // The degree of the code generator poly is obj->mInitialized to "0"
     genPolyBitArray[0] = 1;  // Now the initial code generator poly is "1" (degree "0")
@@ -415,7 +421,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::convertGenPolyBit
 
     // Convert gblCgpBitArray to cgpWordArray
     // That is, 1 bit per word to 32 bits per word
-    memset(genPolyFdbkWords, 0, mNumRedundantWords * sizeof(uint32_t));
+    outpost::asSlice(genPolyFdbkWords).fill(0);
 
     uint32_t wordAddr = 0;
     uint32_t bitMask = 0x80000000;
@@ -462,7 +468,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateEncodeTab
     for (uint32_t i = 0; i < BYTESTATES; i++)
     {  // Encoding is 8 bits parallel
         // Clear shift register
-        memset(SR, 0, mNumRedundantWords * sizeof(uint32_t));
+        uint32_t SR[MAX_REDUN_WORDS];
+        outpost::asSlice(SR).fill(0);
 
         SR[0] = (i << 24);
         for (uint32_t j = 0; j <= 7; j++)
@@ -660,7 +667,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchEncode(void)
     // +5 So that we can temporarily keep remainder bytes in whole words
     int32_t redunByteArray[(MAX_CORR * mMParam) / 8 + 5];
 
-    memset(SR, 0, mNumRedundantWords * 4);
+    outpost::asSlice(SR).fill(0);
 
     for (uint16_t writeCWAddr = 0; writeCWAddr < mNumDataBytes; writeCWAddr++)
     {  // index to write data buffer
@@ -740,7 +747,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeRemainder(
     uint32_t SR[MAX_REDUN_WORDS];
 
     // Clear shift register
-    memset(SR, 0, mNumRedundantWords * 4);
+    outpost::asSlice(SR).fill(0);
 
     // SHIFTS WITH FEEDBACK
     for (uint32_t readCWAddr = 0; readCWAddr < mNumDataBytes; readCWAddr++)
@@ -816,7 +823,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
     uint32_t numSyndromes = 2 * mTParam;
 
     // Clear syndromes array
-    memset(mSyndromes, 0, numSyndromes * sizeof(uint32_t));
+    outpost::asSlice(mSyndromes).fill(0);
 
     for (uint32_t i = 0; i < mNumRedundantBytes; i++)
     {
@@ -1462,8 +1469,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
     //****************************************************************
     bool success = true;
 
-    memset(mErrLocByte, 0xFFFF, mTParam * sizeof(uint16_t));
-    memset(mErrLocBit, 0, mTParam);
+    outpost::asSlice(mErrLocByte).fill(0xffffu);
+    outpost::asSlice(mErrLocBit).fill(0);
 
     for (int32_t kx = 0; kx < Ln; kx++)
     {
@@ -1519,7 +1526,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     bool success = true;
     DecodeStatus status = DecodeStatus::noError;
 
-    memset(mLoc, mLogZVal, MAX_CORR * sizeof(uint32_t));
+    outpost::asSlice(mLoc).fill(mLogZVal);
 
     int32_t remainderDetdErr = computeRemainder();
 
@@ -1547,7 +1554,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     }
     else
     {
-        memset(mSyndromes, 0, (2 * mTParam) * sizeof(uint32_t));
+        outpost::asSlice(mSyndromes).fill(0);
     }
 
     if (!success)
@@ -1584,14 +1591,14 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
         else if ((i * mNumDataBytes) <= src_data.getNumberOfElements())
         {
             // fill up all remaining data
-            memset(mCodeWord, NandBCHInterface::fillValue, mNumDataBytes);
+            outpost::asSlice(mCodeWord).first(mNumDataBytes).fill(NandBCHInterface::fillValue);
         }
         else
         {
             // partial fit and partial not
 
             // first set all to fill value and then write the one we have there es far as possible
-            memset(mCodeWord, NandBCHInterface::fillValue, mNumDataBytes);
+            outpost::asSlice(mCodeWord).first(mNumDataBytes).fill(NandBCHInterface::fillValue);
 
             uint32_t sizeRemaining = src_data.getNumberOfElements() - (i * mNumDataBytes);
             memcpy(mCodeWord, &src_data[i * mNumDataBytes], sizeRemaining);
