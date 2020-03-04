@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, German Aerospace Center (DLR)
+ * Copyright (c) 2015 - 2020, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,7 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2019, Jan Malburg (DLR RY-AVS)
+ * - 2015, Muhammad Bassam (DLR RY-AVS)
+ * - 2019 - 2020, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef COMMON_MODULES_NAND_MIL_NAND_BCH_INTERFACE_H_

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, German Aerospace Center (DLR)
+ * Copyright (c) 2015 - 2020, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,7 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2019, Jan Malburg (DLR RY-AVS)
+ * - 2015, Muhammad Bassam (DLR RY-AVS)
+ * - 2019 - 2020, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef NAND_BCH_RUNTIME_IMPL_H_
@@ -27,27 +28,24 @@ constexpr uint32_t NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void) :
-    mNumDataBits(0),
+    mNumRedundantBits(0),
+    mNumRedundantBytes(0),
+    mNumCodeWordBytes(0),
+    mNumRedundantWords(0),
     mLoc{0},
     mSyndromes{0},
-    mErrLocByte{0},
-    mErrLocBit{0},
     mTraceTestVal(0),
     mQuadCompTable{0},
     mValid(false),
     mCodeWord{0},
-    mRemainderBytes{0}
+    mRemainderBytes{0},
+    aLogTable{},
+    logTable{},
+    genPolyBitArray{},
+    genPolyDegree(0),
+    genPolyFdbkWords{},
+    encodeTable{}
 {
-    // Initialize vectors
-    outpost::asSlice(aLogTable).fill(0);
-    outpost::asSlice(logTable).fill(0);
-    outpost::asSlice(genPolyBitArray).fill(0);
-    outpost::asSlice(genPolyFdbkWords).fill(0);
-    for (uint32_t i = 0; i < BYTESTATES; i++)
-    {
-        outpost::asSlice(encodeTable[i]).fill(0);
-    }
-
     // Internal initialization
     bchInit();
 
@@ -73,7 +71,6 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void
     // Note: number of data length must be less than equal to (mNParam - genPolyDegree) / 8
     // value in our case it is 1010 bytes
     mNumCodeWordBytes = mNumDataBytes + mNumRedundantBytes;
-    mNumDataBits = mNumDataBytes * 8;
     mNumRedundantWords = mNumRedundantBytes / 4;
 
     if ((mNumRedundantBytes % 4) > 0)
@@ -132,6 +129,16 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::checkLogTables(vo
             return false;
         }
     }
+
+    // also check the redundant part
+    for (size_t i = mNParam; i < mLogZVal; i++)
+    {
+        if (aLogTable[i] != aLogTable[i - mNParam])
+        {
+            return false;
+        }
+    }
+
     // Next line changed 9-5-10 for double size alog table
     if (logTable[0] != mLogZVal || aLogTable[mLogZVal] != 0)
     {
@@ -174,9 +181,9 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::genQuadCompTable(
     //  Function to find a list of components of y to be used
     //  in finding solutions to Y^2+y+c using a table of
     //  linear components. This function is called at initialization
-    //  time only.  This solution uses a small table with gblMParm
+    //  time only.  This solution uses a small table with mMParam
     //  entries.  A large table would be faster but would
-    //  require 2^gblMParm entries.  It is possible to have an inbetween
+    //  require 2^gblMParm entries.  It is possible to have an in between
     //  solution that uses two moderate size tables and is faster than
     //  this small table solution but not as fast as the one large table
     //  solution.  The reference for this solution is Dr. Berlekamp's 1968
@@ -187,7 +194,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::genQuadCompTable(
     //  trace = "1". The second loop searches for each element in the
     //  table within a set of solutions for
     //  y^2+y=c and if it finds one then it stores the associated
-    //  value of y in the gblQuadCompTbl.
+    //  value of y in the mQuadCompTbl.
     //****************************************************************
     int32_t searchTable[mMParam];
 
@@ -336,9 +343,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
     //  significantly the size of the flg array and will reduce the time
     //  to initialize this array.
     //****************************************************************
-    int32_t flag[mFFSize];  // Index to flg can have values root,2*root,4*root,8*root...
-
-    outpost::asSlice(flag).fill(0);
+    generatedRoots.reset();
     outpost::asSlice(genPolyBitArray).fill(0);
 
     genPolyDegree = 0;       // The degree of the code generator poly is obj->mInitialized to "0"
@@ -347,7 +352,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
     // root and rootBase are in log form
     for (uint32_t rootBase = 1; rootBase <= 2 * mTParam - 1; rootBase += 2)
     {  // alpha 1,3,5,7 etc.
-        if (flag[rootBase] == 0)
+        if (!generatedRoots[rootBase])
         {  // If this root not already processed
             uint32_t root = rootBase;
             for (;;)
@@ -358,13 +363,13 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
                     return false;  // Fatal problem of some type
                 }
 
-                int32_t tmp[MAX_CORR * mMParam + 1] = {0};
+                uint32_t tmp[mTParam * mMParam + 1] = {0};
 
                 // Start multiply this factor times current gblCgpBitArray
                 // Intermediate poly products will have some values greater than one
                 // The coefficients of the final product will have values 0 or 1 only.
                 // Multiply code gen poly by (X - alpha^root)
-                for (int32_t kx = genPolyDegree + 1; kx >= 1; kx--)
+                for (uint32_t kx = genPolyDegree + 1; kx >= 1; kx--)
                 {
                     // Shift poly 1 place (low to high)
                     tmp[kx] = genPolyBitArray[kx - 1];
@@ -384,7 +389,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateCodeGenPo
                     }
                 }
                 // End multiply
-                flag[root] = 1;
+                generatedRoots[root] = true;
                 root *= 2;  // root is in finite field log form
                 if (root >= mNParam)
                 {
@@ -462,14 +467,12 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateEncodeTab
     //  The feedback words are highest order in lowest address and the
     //  resulting encode table is organized the same way.
     //****************************************************************
-    uint32_t SR[MAX_REDUN_WORDS];
 
     // Gen Encode Table
     for (uint32_t i = 0; i < BYTESTATES; i++)
     {  // Encoding is 8 bits parallel
         // Clear shift register
-        uint32_t SR[MAX_REDUN_WORDS];
-        outpost::asSlice(SR).fill(0);
+        uint32_t SR[MAX_REDUN_WORDS] = {0};
 
         SR[0] = (i << 24);
         for (uint32_t j = 0; j <= 7; j++)
@@ -595,7 +598,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffSquareRoot(int3
     }
     else
     {
-        int32_t logtmp = logTable[opa];
+        uint16_t logtmp = logTable[opa];
         if (logtmp % 2 == 1)
         {
             logtmp = logtmp + mNParam;
@@ -626,7 +629,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffCubeRoot(int32_
     }
     else
     {
-        int32_t logtmp = logTable[opa];
+        uint16_t logtmp = logTable[opa];
         if (logtmp % 3 != 0)
         {
             success = false;  // Or error into location pointed to
@@ -663,11 +666,9 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchEncode(void)
     //  of Linear-Feedback Shift-Register Circuits" which appeared in
     //  IEEE. Trans. on Elec. Comp., 738-740 (Dec. 1964).
     //****************************************************************
-    uint32_t SR[MAX_REDUN_WORDS];
+    uint32_t SR[MAX_REDUN_WORDS] = {0};
     // +5 So that we can temporarily keep remainder bytes in whole words
-    int32_t redunByteArray[(MAX_CORR * mMParam) / 8 + 5];
-
-    outpost::asSlice(SR).fill(0);
+    uint8_t redunByteArray[(mTParam * mMParam) / 8 + 5];
 
     for (uint16_t writeCWAddr = 0; writeCWAddr < mNumDataBytes; writeCWAddr++)
     {  // index to write data buffer
@@ -744,10 +745,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeRemainder(
     //  of Linear-Feedback Shift-Register Circuits" which appeared in
     //  IEEE. Trans. on Elec. Comp., 738-740 (Dec. 1964).
     //****************************************************************
-    uint32_t SR[MAX_REDUN_WORDS];
-
-    // Clear shift register
-    outpost::asSlice(SR).fill(0);
+    uint32_t SR[MAX_REDUN_WORDS] = {0};
+    ;
 
     // SHIFTS WITH FEEDBACK
     for (uint32_t readCWAddr = 0; readCWAddr < mNumDataBytes; readCWAddr++)
@@ -827,10 +826,10 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
 
     for (uint32_t i = 0; i < mNumRedundantBytes; i++)
     {
-        int32_t mask = 0x01;
+        uint8_t mask = 0x01;
         for (uint32_t j = 0; j < 8; j++)
         {
-            int32_t data = mRemainderBytes[i] & mask;
+            uint8_t data = mRemainderBytes[i] & mask;
             if (data > 0)
             {
                 // 9-10-10 Changed for speed
@@ -840,24 +839,9 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
                 for (uint32_t k = 0; k < numSyndromes; k += 2)
                 {
                     //  "+1" is for syndrome offset
-                    //  CAN UNROLL THIS LOOP FOR A LITTLE MORE SPEED
-                    //  A SWITCH STATEMENT WILL BE REQUIRED.
-                    //  CAN GET RID OF MOD (FOR SPEED) BY CARRYING A SUM THAT STARTS
-                    //  OUT AS THE MAXIMUM VALUE OF ((kkk+1)*preComputeVal) AND
-                    //  SUBTRACTING PRECOMPUTEVAL EACH TIME AND IF VALUE GOES
-                    //  NEGATIVE ADD IN NPARM.  THE MAX VALUE ABOVE WILL VARY
-                    //  BASED ON NUMBER OF REDUN BYTES FOR SELECTED PARMS
-                    //  9-10-10 Changed next few lines for speed
                     mSyndromes[k] ^= aLogTable[accumVal];
                     accumVal += bumpVal;  // Add 2*preComputeVal
-                    if (accumVal >= mNParam)
-                    {
-                        accumVal -= mNParam;
-                        if (accumVal >= mNParam)
-                        {
-                            accumVal -= mNParam;
-                        }
-                    }
+                    accumVal = accumVal % mNParam;
                 }
             }
             mask *= 2;
@@ -929,8 +913,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
     //  NO. 2, March 1981.  Before implementing this technique you need
     //  to understand its impact on your miscorrection rate.
     //***************************************************************
-    int32_t sigmaK[MAX_CORR + 1];
-    int32_t sigmaTmp[MAX_CORR + 1];
+    int32_t sigmaK[mTParam + 1];
 
     sigmaN[0] = 1;
     sigmaK[0] = 1;
@@ -994,6 +977,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
                     success = false;
                     break;
                 }
+                int32_t sigmaTmp[mTParam + 1];
                 for (uint32_t j = 0; j <= Ln; j++)
                 {
                     sigmaTmp[j] = sigmaN[j];
@@ -1327,10 +1311,12 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quarticElp(int32_
     //  Note to Neal. ###### Next level - list here the conditions that
     //  result in an uncorrectable error and where each is detected.
     //****************************************************************
-    int32_t sigbk[MAX_CORR + 1], b2, b3, b4, b4n, b4d;
+    int32_t b2, b3, b4, b4n, b4d;
 
     bool success = true;
-    int32_t Ln = 4;  // ELP degree is 4 for quartic
+    constexpr int32_t Ln = 4;  // ELP degree is 4 for quartic
+    int32_t sigbk[Ln + 1];
+
     for (int32_t n = 0; n <= Ln; n++)
     {
         sigbk[n] = sigmaN[n];
@@ -1469,9 +1455,6 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
     //****************************************************************
     bool success = true;
 
-    outpost::asSlice(mErrLocByte).fill(0xffffu);
-    outpost::asSlice(mErrLocBit).fill(0);
-
     for (int32_t kx = 0; kx < Ln; kx++)
     {
         uint32_t bitLoc = (((mNumCodeWordBytes * 8 - logTable[mLoc[kx]]) - 1) % mNParam);
@@ -1481,14 +1464,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
         {
             int32_t byteLoc = bitLoc / 8;
             int32_t byteBitNum = 7 - (bitLoc % 8);
-            int32_t byteValue = 1;
-            for (int32_t jx = byteBitNum; jx >= 1; jx--)
-            {
-                byteValue *= 2;
-            }
+            int32_t byteValue = 1 << byteBitNum;
             mCodeWord[byteLoc] ^= byteValue;
-            mErrLocByte[kx] = byteLoc;
-            mErrLocBit[kx] = byteBitNum;
         }
         else
         {
@@ -1522,7 +1499,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     //  to this function but on entry to this function these arrays do not
     //  contain useful data.
     //****************************************************************
-    int32_t sigmaN[MAX_CORR + 1];
+    int32_t sigmaN[mTParam + 1];
     bool success = true;
     DecodeStatus status = DecodeStatus::noError;
 

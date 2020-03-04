@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, German Aerospace Center (DLR)
+ * Copyright (c) 2015 - 2020, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,7 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2019, Jan Malburg (DLR RY-AVS)
+ * - 2015, Muhammad Bassam (DLR RY-AVS)
+ * - 2019 - 2020, Jan Malburg (DLR RY-AVS)
  */
 
 #if __cplusplus < 201402L
@@ -37,12 +38,12 @@ class NandBCHCTime : public NandBCHInterface
     static constexpr uint32_t mNumDataBytes = 512;
 
     static_assert(mTParam >= 4, "Minimal value for mTParam is 4");
-    static_assert((mNandDataSize % mNumDataBytes) == 0, "mNumDataBytes shall be multiple of 512");
+    static_assert((mNandDataSize % mNumDataBytes) == 0, "mNandDataSize shall be multiple of 512");
     static_assert(mMParam >= 2, "Minimal supported value for mMParam = 2");
     static_assert(mMParam <= 15, "Maximal supported value for mMParam =  15");
 
 public:
-    NandBCHCTime(void);
+    constexpr NandBCHCTime(void);
 
     bool
     encode(const outpost::Slice<const uint8_t>& src_data,
@@ -50,7 +51,7 @@ public:
 
     DecodeStatus
     decode(const outpost::Slice<const uint8_t>& coded_data,
-           const outpost::Slice<uint8_t>& src_data) override;
+           const outpost::Slice<uint8_t>& dst_data) override;
 
     inline uint32_t
     getNumberOfRedundantBytes(void) const override
@@ -68,7 +69,7 @@ public:
     isTemplateParameterValid(void) const override
     {
         // In the compile time variant this is checked via static_assert
-        return mValid;
+        return true;
     }
 
     bool
@@ -82,10 +83,10 @@ private:
     struct EncodeTable;
 
     static constexpr ALogTable
-    buildALogTables(void);
+    buildALogTable(void);
 
     static constexpr LogTable
-    buildLogTables(void);
+    buildLogTable(void);
 
     static constexpr QuadCompTable
     genQuadCompTable(void);
@@ -96,22 +97,22 @@ private:
     static constexpr bool
     checkLogTables(void);
 
-    constexpr static int32_t
+    static constexpr int32_t
     ffMult(int32_t a, int32_t b);
 
-    constexpr static int32_t
+    static constexpr int32_t
     ffInv(int32_t opa, bool& success);
 
-    constexpr static int32_t
+    static constexpr int32_t
     ffDiv(int32_t opa, int32_t opb, bool& success);
 
-    constexpr static int32_t
+    static constexpr int32_t
     ffSquareRoot(int32_t opa);
 
-    constexpr static int32_t
+    static constexpr int32_t
     ffCubeRoot(int32_t opa, bool& success);
 
-    constexpr int32_t
+    static constexpr int32_t
     ffQuadFun(int32_t c);
 
     static constexpr Polynom
@@ -123,7 +124,7 @@ private:
     static constexpr void
     convertGenPolyBitToWord(Polynom& poly, const uint32_t* genPolyBitArray);
 
-    static constexpr uint32_t fieldPolyTable[22] = {0x1,  // dummy value
+    static constexpr uint32_t fieldPolyTable[16] = {0x1,  // dummy value
                                                     0x1,  // dummy value
                                                     0x5,
                                                     0xb,
@@ -149,8 +150,8 @@ private:
     static constexpr uint32_t mLogZVal = 2 * mNParam;
     static constexpr uint32_t mNumDataBits = mNumDataBytes * 8;
 
-    static constexpr ALogTable aLogTable = buildALogTables();
-    static constexpr LogTable logTable = buildLogTables();
+    static constexpr ALogTable aLogTable = buildALogTable();
+    static constexpr LogTable logTable = buildLogTable();
     static constexpr int32_t mTraceTestVal = getTraceTestVal();
     static constexpr QuadCompTable mQuadCompTable = genQuadCompTable();
 
@@ -162,41 +163,38 @@ private:
 
     uint32_t mLoc[(2 * mTParam) + 1];
     uint32_t mSyndromes[numSyndromes];
-    uint16_t mErrLocByte[mTParam];
-    uint8_t mErrLocBit[mTParam];
-    bool mValid;
 
-    void
+    constexpr void
     bchEncode(void);
 
-    int32_t
+    constexpr int32_t
     computeRemainder(void);
 
-    void
+    constexpr void
     computeSyndromes(void);
 
-    uint32_t
+    constexpr uint32_t
     berMas(int32_t sigmaN[], bool& success);
 
-    bool
+    constexpr bool
     chienSearch(int32_t sigmaN[], const int32_t LnOrig);
 
-    bool
+    constexpr bool
     quadraticElp(const int32_t sigmaN[]);
 
-    bool
+    constexpr bool
     cubicElp(const int32_t sigmaN[]);
 
-    bool
+    constexpr bool
     quarticElp(int32_t sigmaN[]);
 
-    bool
+    constexpr bool
     rootFindChien(int32_t sigmaN[], const int32_t LnOrig);
 
-    bool
+    constexpr bool
     fixErrors(int32_t Ln);
 
-    DecodeStatus
+    constexpr DecodeStatus
     bchDecode(void);
 
     struct QuadCompTable
@@ -209,7 +207,7 @@ private:
         {
             return table[i];
         };
-        int32_t& operator[](int i)
+        constexpr int32_t& operator[](int i)
         {
             return table[i];
         };
@@ -224,7 +222,7 @@ private:
         {
             return table[i];
         };
-        uint16_t& operator[](int i)
+        constexpr uint16_t& operator[](int i)
         {
             return table[i];
         };
@@ -239,7 +237,7 @@ private:
         {
             return table[i];
         };
-        uint16_t& operator[](int i)
+        constexpr uint16_t& operator[](int i)
         {
             return table[i];
         };

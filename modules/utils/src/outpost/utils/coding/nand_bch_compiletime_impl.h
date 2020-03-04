@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, German Aerospace Center (DLR)
+ * Copyright (c) 2015 - 2020, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -8,7 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2019, Jan Malburg (DLR RY-AVS)
+ * - 2015, Muhammad Bassam (DLR RY-AVS)
+ * - 2019 - 2020, Jan Malburg (DLR RY-AVS)
  */
 
 #if __cplusplus < 201402L
@@ -50,12 +51,9 @@ template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t m
 constexpr uint32_t NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::mLogZVal;
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHCTime(void) :
+constexpr NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHCTime(void) :
     mLoc{0},
     mSyndromes{0},
-    mErrLocByte{0},
-    mErrLocBit{0},
-    mValid(false),
     mCodeWord{0},
     mRemainderBytes{0}
 {
@@ -63,12 +61,13 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHCTime(void
                   "Template parameters does not create a valid encoder");
 
     constexpr uint32_t iteration_count = (mNandDataSize * 8) / mNumDataBits;
-    mValid = (iteration_count * mNumRedundantBytes) <= mNandSpareSize;
+    static_assert((iteration_count * mNumRedundantBytes) <= mNandSpareSize,
+                  "Not enough spare area for given Nand-Size and BCH parameter");
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 constexpr typename NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::LogTable
-NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::buildLogTables(void)
+NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::buildLogTable(void)
 {
     LogTable ret;
     // Constructing FF's LOG and ALOG tables
@@ -93,7 +92,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::buildLogTables(vo
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 constexpr typename NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ALogTable
-NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::buildALogTables(void)
+NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::buildALogTable(void)
 {
     ALogTable ret;
     // Constructing FF's LOG and ALOG tables
@@ -264,6 +263,16 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::checkLogTables(vo
             return false;  // Flag error
         }
     }
+
+    // also check the redundant part
+    for (size_t i = mNParam; i < mLogZVal; i++)
+    {
+        if (aLogTable[i] != aLogTable[i - mNParam])
+        {
+            return false;
+        }
+    }
+
     // Next line changed 9-5-10 for double size alog table
     if (logTable[0] != mLogZVal || aLogTable[mLogZVal] != 0)
     {
@@ -308,9 +317,9 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::genQuadCompTable(
     //  Function to find a list of components of y to be used
     //  in finding solutions to Y^2+y+c using a table of
     //  linear components. This function is called at initialization
-    //  time only.  This solution uses a small table with gblMParm
+    //  time only.  This solution uses a small table with gblMParam
     //  entries.  A large table would be faster but would
-    //  require 2^gblMParm entries.  It is possible to have an inbetween
+    //  require 2^gblMParam entries.  It is possible to have an in between
     //  solution that uses two moderate size tables and is faster than
     //  this small table solution but not as fast as the one large table
     //  solution.  The reference for this solution is Dr. Berlekamp's 1968
@@ -593,16 +602,11 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateEncodeTab
     //****************************************************************
     EncodeTable ret;
 
-    uint32_t SR[mNumRedundantWords] = {};
-
     // Gen Encode Table
     for (uint32_t i = 0; i < BYTESTATES; i++)
     {  // Encoding is 8 bits parallel
         // Clear shift register
-        for (uint32_t pos = 0; pos < mNumRedundantWords; pos++)
-        {
-            SR[pos] = 0;
-        }
+        uint32_t SR[mNumRedundantWords] = {0};
 
         SR[0] = (i << 24);
         for (uint32_t j = 0; j <= 7; j++)
@@ -640,7 +644,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateEncodeTab
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-void
+constexpr void
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchEncode(void)
 {
     //****************************************************************
@@ -708,7 +712,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchEncode(void)
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-int32_t
+constexpr int32_t
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeRemainder(void)
 {
     //****************************************************************
@@ -795,7 +799,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeRemainder(
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-void
+constexpr void
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(void)
 {
     //****************************************************************
@@ -824,10 +828,10 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
 
     for (uint32_t i = 0; i < mNumRedundantBytes; i++)
     {
-        int32_t mask = 0x01;
+        uint8_t mask = 0x01;
         for (uint32_t j = 0; j < 8; j++)
         {
-            int32_t data = mRemainderBytes[i] & mask;
+            uint8_t data = mRemainderBytes[i] & mask;
             if (data > 0)
             {
                 // 9-10-10 Changed for speed
@@ -837,24 +841,9 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
                 for (uint32_t k = 0; k < numSyndromes; k += 2)
                 {
                     //  "+1" is for syndrome offset
-                    //  CAN UNROLL THIS LOOP FOR A LITTLE MORE SPEED
-                    //  A SWITCH STATEMENT WILL BE REQUIRED.
-                    //  CAN GET RID OF MOD (FOR SPEED) BY CARRYING A SUM THAT STARTS
-                    //  OUT AS THE MAXIMUM VALUE OF ((kkk+1)*preComputeVal) AND
-                    //  SUBTRACTING PRECOMPUTEVAL EACH TIME AND IF VALUE GOES
-                    //  NEGATIVE ADD IN NPARM.  THE MAX VALUE ABOVE WILL VARY
-                    //  BASED ON NUMBER OF REDUN BYTES FOR SELECTED PARMS
-                    //  9-10-10 Changed next few lines for speed
                     mSyndromes[k] ^= aLogTable[accumVal];
                     accumVal += bumpVal;  // Add 2*preComputeVal
-                    if (accumVal >= mNParam)
-                    {
-                        accumVal -= mNParam;
-                        if (accumVal >= mNParam)
-                        {
-                            accumVal -= mNParam;
-                        }
-                    }
+                    accumVal = accumVal % mNParam;
                 }
             }
             mask *= 2;
@@ -879,7 +868,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::computeSyndromes(
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-uint32_t
+constexpr uint32_t
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t sigmaN[],
                                                                       bool& success)
 {
@@ -927,7 +916,6 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
     //  to understand its impact on your miscorrection rate.
     //***************************************************************
     int32_t sigmaK[mTParam + 1];
-    int32_t sigmaTmp[mTParam + 1];
 
     sigmaN[0] = 1;
     sigmaK[0] = 1;
@@ -991,6 +979,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
                     success = false;
                     break;
                 }
+                int32_t sigmaTmp[mTParam + 1];
                 for (uint32_t j = 0; j <= Ln; j++)
                 {
                     sigmaTmp[j] = sigmaN[j];
@@ -1035,7 +1024,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::berMas(int32_t si
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-bool
+constexpr bool
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::chienSearch(int32_t sigmaN[],
                                                                            const int32_t LnOrig)
 {
@@ -1190,7 +1179,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::chienSearch(int32
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-bool
+constexpr bool
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quadraticElp(const int32_t sigmaN[])
 {
     //****************************************************************
@@ -1230,7 +1219,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quadraticElp(cons
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-bool
+constexpr bool
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::cubicElp(const int32_t sigmaN[])
 {
     //****************************************************************
@@ -1271,12 +1260,8 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::cubicElp(const in
     // Note to Neal.  ######## I think I put in the next decision
     // during debug in 1999.  The code could be extensively tested
     // without this decision to see if it can be left out.
-    int32_t u1;
-    if (n == 0)
-    {
-        u1 = d;
-    }
-    else
+    int32_t u1 = d;
+    if (n != 0)
     {
         // The quad function is equiv to fetching from large table
         int32_t v1 = ffQuadFun(c);
@@ -1299,7 +1284,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::cubicElp(const in
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-bool
+constexpr bool
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quarticElp(int32_t sigmaN[])
 {
     //****************************************************************
@@ -1327,9 +1312,14 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quarticElp(int32_
     //****************************************************************
 
     bool success = true;
-    int32_t Ln = 4;  // ELP degree is 4 for quartic
+    constexpr int32_t Ln = 4;  // ELP degree is 4 for quartic
 
-    int32_t sigbk[mTParam + 1], b2, b3, b4, b4n, b4d;
+    int32_t sigbk[Ln + 1] = {};
+    int32_t b2 = 0;
+    int32_t b3 = 0;
+    int32_t b4 = 0;
+    int32_t b4n = 0;
+    int32_t b4d = 0;
     for (int32_t n = 0; n <= Ln; n++)
     {
         sigbk[n] = sigmaN[n];
@@ -1403,7 +1393,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quarticElp(int32_
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-bool
+constexpr bool
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::rootFindChien(int32_t sigmaN[],
                                                                              const int32_t LnOrig)
 {
@@ -1457,7 +1447,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::rootFindChien(int
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-bool
+constexpr bool
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t Ln)
 {
     //****************************************************************
@@ -1468,9 +1458,6 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
     //****************************************************************
     bool success = true;
 
-    outpost::asSlice(mErrLocByte).fill(0xffffu);
-    outpost::asSlice(mErrLocBit).fill(0);
-
     for (int32_t kx = 0; kx < Ln; kx++)
     {
         uint32_t bitLoc = (((mNumCodeWordBytes * 8 - logTable[mLoc[kx]]) - 1) % mNParam);
@@ -1480,14 +1467,8 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
         {
             int32_t byteLoc = bitLoc / 8;
             int32_t byteBitNum = 7 - (bitLoc % 8);
-            int32_t byteValue = 1;
-            for (int32_t jx = byteBitNum; jx >= 1; jx--)
-            {
-                byteValue *= 2;
-            }
+            int32_t byteValue = 1 << byteBitNum;
             mCodeWord[byteLoc] ^= byteValue;
-            mErrLocByte[kx] = byteLoc;
-            mErrLocBit[kx] = byteBitNum;
         }
         else
         {
@@ -1499,7 +1480,7 @@ NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::fixErrors(int32_t
 }
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
-DecodeStatus
+constexpr DecodeStatus
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
 {
     //****************************************************************
@@ -1568,7 +1549,7 @@ bool
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::encode(
         const outpost::Slice<const uint8_t>& src_data, const outpost::Slice<uint8_t>& coded_data)
 {
-    if (coded_data.getNumberOfElements() < mNandDataSize + mNandSpareSize || !mValid)
+    if (coded_data.getNumberOfElements() < mNandDataSize + mNandSpareSize)
     {
         // too small data or invalid template parameter
         return false;
@@ -1620,7 +1601,7 @@ DecodeStatus
 NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::decode(
         const outpost::Slice<const uint8_t>& coded_data, const outpost::Slice<uint8_t>& dest_data)
 {
-    if (coded_data.getNumberOfElements() < mNandDataSize + mNandSpareSize || !mValid)
+    if (coded_data.getNumberOfElements() < mNandDataSize + mNandSpareSize)
     {
         // too small data or invalid template parameter
         return DecodeStatus::invalidParameters;
