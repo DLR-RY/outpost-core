@@ -172,6 +172,7 @@ private:
      */
     std::map<TransmitBuffer*, std::unique_ptr<TransmitBufferEntry>> mTransmitBuffers;
     std::map<const uint8_t*, std::unique_ptr<ReceiveBufferEntry>> mReceiveBuffers;
+    outpost::rtos::Mutex mOperationLock;
 };
 
 }  // namespace hal
