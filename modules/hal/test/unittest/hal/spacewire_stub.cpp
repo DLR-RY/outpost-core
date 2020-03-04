@@ -71,10 +71,12 @@ SpaceWireStub::Result::Type
 SpaceWireStub::requestBuffer(TransmitBuffer*& buffer, outpost::time::Duration /*timeout*/)
 {
     Result::Type result = Result::success;
-
-    std::unique_ptr<TransmitBufferEntry> entry(new TransmitBufferEntry(mMaximumLength));
-    buffer = &entry->header;
-    mTransmitBuffers.emplace(make_pair(&(entry->header), std::move(entry)));
+    {
+        outpost::rtos::MutexGuard lock(mOperationLock);
+        std::unique_ptr<TransmitBufferEntry> entry(new TransmitBufferEntry(mMaximumLength));
+        buffer = &entry->header;
+        mTransmitBuffers.emplace(make_pair(&(entry->header), std::move(entry)));
+    }
 
     return result;
 }
@@ -87,6 +89,7 @@ SpaceWireStub::send(TransmitBuffer* buffer, outpost::time::Duration /*timeout*/)
     {
         try
         {
+            outpost::rtos::MutexGuard lock(mOperationLock);
             std::unique_ptr<TransmitBufferEntry>& entry = mTransmitBuffers.at(buffer);
             mSentPackets.emplace_back(
                     Packet{std::vector<uint8_t>(&entry->buffer.front(),

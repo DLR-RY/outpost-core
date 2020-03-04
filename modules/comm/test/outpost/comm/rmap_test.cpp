@@ -1615,13 +1615,13 @@ TEST_F(RmapTest, testTooManyTransactions)
             else
             {
                 // Unexpected result
-                EXPECT_TRUE(false);
+                EXPECT_EQ(value, RmapResult::Code::timeout);
                 exit(-1);  // no other way to stop the threads, unit tests will still fail.
             }
         }
         else
         {
-            EXPECT_TRUE(false);
+            EXPECT_EQ(status, std::future_status::ready);
             exit(-1);  // no other way to stop the threads, unit tests will still fail.
         }
     }
