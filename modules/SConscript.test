@@ -49,5 +49,5 @@ envGlobal.AppendUnique(LIBPATH=['/usr/lib', '$BUILDPATH/lib'])
 # using dynamically loaded lua modules.
 envGlobal.Append(LINKFLAGS=['-Wl,--export-dynamic'])
 
-if 'append_buildpath' in envGlobal:
+if(envGlobal.get_builder("compiledb") is not None):
     envGlobal.Alias('compiledb_unittest', envGlobal.compiledb(target='unittest_compile_commands', source=envGlobal['sources_unittest']))
