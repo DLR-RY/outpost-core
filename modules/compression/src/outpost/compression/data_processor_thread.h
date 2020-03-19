@@ -26,48 +26,87 @@ namespace outpost
 {
 namespace compression
 {
+/**
+ * The DataProcessorThread is responsible for taking over the workload of transforming and encoding
+ * DataBlocks one at a time.
+ */
 class DataProcessorThread : public outpost::rtos::Thread
 {
 public:
-    DataProcessorThread(uint8_t,
-                        outpost::utils::SharedBufferPoolBase&,
-                        outpost::utils::ReferenceQueueBase<DataBlock>&,
-                        outpost::utils::ReferenceQueueBase<DataBlock>&);
+    /** Constructor
+     * @param thread_priority Priority in the OS' scheduler
+     * @param pool SharedBufferPool for allocation of new DataBlocks
+     * @param inputQueue Queue to listen to for incoming raw DataBlocks
+     * @param outputQueue Queue to send encoded DataBlocks to for long-term storage or transmission
+     * to ground
+     */
+    DataProcessorThread(uint8_t thread_priority,
+                        outpost::utils::SharedBufferPoolBase& pool,
+                        outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
+                        outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue);
 
     virtual ~DataProcessorThread();
 
+    /**
+     * The method is called by the OS' scheduler. It awaits DataBlocks on the incoming queue,
+     * transforms them using the wavelet transform and then encodes the data to a newly allocated
+     * DataBlock.
+     */
     void
     run();
 
+    /**
+     * Enables the processing of DataBlocks
+     */
     void
     enable();
+
+    /**
+     * Disables the processing of DataBlocks
+     */
     void
     disable();
 
+    /**
+     * Getter for the number of DataBlocks that have been received from the input queue.
+     * @return Returns the number of incoming blocks.
+     */
     inline uint32_t
     getNumberOfIncomingBlocks()
     {
         return numIncomingBlocks;
     }
 
+    /**
+     * Getter for the number of DataBlocks that have been processed.
+     * @return Returns the number of processed blocks.
+     */
     inline uint32_t
     getNumberOfProcessedBlocks()
     {
         return numProcessedBlocks;
     }
 
+    /**
+     * Getter for the number of DataBlocks that haven been forwarded to the output queue.
+     * @return Returns the number of forwarded blocks.
+     */
     inline uint32_t
     getNumberOfForwardedBlocks()
     {
         return numForwardedBlocks;
     }
 
-    inline bool
-    isEnabled()
-    {
-        return mCheckpoint.getState() == outpost::rtos::Checkpoint::State::running;
-    }
+    /**
+     * Getter for the thread's state.
+     * @return Returns true if processing is currently enabled, false otherwise.
+     */
+    bool
+    isEnabled();
 
+    /**
+     * Resets the counters for incoming, processed and forwarded blocks.
+     */
     inline void
     resetCounters()
     {
@@ -76,7 +115,13 @@ public:
         numForwardedBlocks = 0;
     }
 
-    void processSingleBlock(outpost::time::Duration = outpost::time::Duration::infinity());
+    /**
+     * Goes through the entire processing sequence for a single block,
+     * from reception from the input queue through compression to forwarding to the output queue.
+     * @param timeout Timeout for reception of a DataBlock on the input queue.
+     */
+    void
+    processSingleBlock(outpost::time::Duration timeout = outpost::time::Duration::infinity());
 
 private:
     bool

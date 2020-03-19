@@ -89,7 +89,7 @@ TEST_F(DataBlockTest, Constructor)
         EXPECT_EQ(block.getSamples().getNumberOfElements(), 0U);
         EXPECT_EQ(block.getSampleCount(), 0);
 
-        EXPECT_EQ(block.getEncodedDataBlock().getNumberOfElements(), 0U);
+        EXPECT_EQ(block.getEncodedData().getNumberOfElements(), 0U);
 
         EXPECT_FALSE(block.isTransformed());
         EXPECT_FALSE(block.isEncoded());

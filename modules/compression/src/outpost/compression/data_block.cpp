@@ -21,8 +21,65 @@ namespace compression
 {
 constexpr size_t DataBlock::headerSize;
 
+uint16_t
+toUInt(Blocksize bs)
+{
+    switch (bs)
+    {
+        case Blocksize::bs16: return 16U;
+        case Blocksize::bs128: return 128U;
+        case Blocksize::bs256: return 256U;
+        case Blocksize::bs512: return 512U;
+        case Blocksize::bs1024: return 1024U;
+        case Blocksize::bs2048: return 2048U;
+        case Blocksize::bs4096: return 4096U;
+        case Blocksize::disabled:
+        default: return 0U;
+    }
+}
+
+DataBlock::DataBlock() :
+    mSampleCount(0),
+    mParameterId(0),
+    mStartTime(),
+    mSamplingRate(SamplingRate::disabled),
+    mBlocksize(Blocksize::disabled),
+    mScheme(CompressionScheme::raw),
+    mPointer(),
+    mSampleBuffer(nullptr),
+    mCoefficientBuffer(nullptr),
+    mIsTransformed(false),
+    mIsEncoded(false)
+{
+}
+
+DataBlock::DataBlock(outpost::utils::SharedBufferPointer p,
+                     uint16_t parameterId,
+                     outpost::time::GpsTime startTime,
+                     SamplingRate rate,
+                     Blocksize bs) :
+    mSampleCount(0),
+    mParameterId(parameterId),
+    mStartTime(startTime),
+    mSamplingRate(rate),
+    mBlocksize(bs),
+    mScheme(CompressionScheme::waveletNLS),
+    mPointer(p),
+    mSampleBuffer(reinterpret_cast<Fixpoint*>(&p[headerSize])),
+    mCoefficientBuffer(reinterpret_cast<int16_t*>(&p[headerSize])),
+    mIsTransformed(false),
+    mIsEncoded(false)
+{
+}
+
+size_t
+DataBlock::getMaximumSize() const
+{
+    return mPointer.getLength();
+}
+
 outpost::Slice<Fixpoint>
-DataBlock::getSamples()
+DataBlock::getSamples() const
 {
     if (isTransformed() || isEncoded())
     {
@@ -35,7 +92,7 @@ DataBlock::getSamples()
 }
 
 outpost::Slice<int16_t>
-DataBlock::getCoefficients()
+DataBlock::getCoefficients() const
 {
     if (isTransformed() && !isEncoded())
     {
@@ -48,7 +105,7 @@ DataBlock::getCoefficients()
 }
 
 outpost::Slice<uint8_t>
-DataBlock::getEncodedDataBlock()
+DataBlock::getEncodedData() const
 {
     if (isEncoded())
     {
@@ -84,9 +141,33 @@ DataBlock::applyWaveletTransform()
 }
 
 bool
-DataBlock::encode(DataBlock& b, NLSEncoder& encoder)
+DataBlock::isComplete() const
 {
-    if (isTransformed() && b.getMaximumSize() >= getMaximumSize())
+    return mSampleCount > 0 && mSampleCount == toUInt(mBlocksize);
+}
+
+bool
+DataBlock::isValid() const
+{
+    return (mPointer.isValid()
+            && mPointer.getLength() >= (toUInt(mBlocksize) * sizeof(Fixpoint) + headerSize));
+}
+
+bool
+DataBlock::push(Fixpoint f)
+{
+    if (!isComplete() && isValid())
+    {
+        mSampleBuffer[mSampleCount++] = f;
+        return true;
+    }
+    return false;
+}
+
+bool
+DataBlock::encode(DataBlock& b, NLSEncoder& encoder) const
+{
+    if (isTransformed() && b.getMaximumSize() >= mSampleCount * sizeof(int16_t))
     {
         outpost::Slice<uint8_t> slice = b.mPointer.asSlice().skipFirst(headerSize);
         outpost::Bitstream bitstream(slice);
@@ -95,6 +176,7 @@ DataBlock::encode(DataBlock& b, NLSEncoder& encoder)
         bitstream.serialize(stream);
         b.mSampleCount = bitstream.getSerializedSize();
         b.mIsEncoded = true;
+        b.mScheme = CompressionScheme::waveletNLS;
         return true;
     }
     return false;

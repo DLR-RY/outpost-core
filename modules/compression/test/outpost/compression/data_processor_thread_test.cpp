@@ -131,7 +131,7 @@ TEST_F(DataProcessorThreadTest, processSingleBlock)
     EXPECT_EQ(block.getSamplingRate(), outpost::compression::SamplingRate::hz05);
     EXPECT_EQ(block.getBlocksize(), outpost::compression::Blocksize::bs16);
     EXPECT_TRUE(block.isEncoded());
-    outpost::Slice<uint8_t> encodedData = block.getEncodedDataBlock();
+    outpost::Slice<uint8_t> encodedData = block.getEncodedData();
     EXPECT_EQ(encodedData.getNumberOfElements(),
               DataBlock::headerSize + Bitstream::headerSize + 8U);
 }

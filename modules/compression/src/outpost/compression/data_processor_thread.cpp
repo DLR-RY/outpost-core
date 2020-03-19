@@ -65,6 +65,12 @@ DataProcessorThread::disable()
     mCheckpoint.suspend();
 }
 
+bool
+DataProcessorThread::isEnabled()
+{
+    return mCheckpoint.getState() == outpost::rtos::Checkpoint::State::running;
+}
+
 void
 DataProcessorThread::processSingleBlock(outpost::time::Duration timeout)
 {
