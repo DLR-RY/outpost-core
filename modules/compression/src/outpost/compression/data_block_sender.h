@@ -14,15 +14,18 @@
 #ifndef OUTPOST_COMPRESSION_DATA_BLOCK_SENDER_H_
 #define OUTPOST_COMPRESSION_DATA_BLOCK_SENDER_H_
 
-#include "data_block.h"
-
-#include <outpost/utils/container/implicit_list.h>
-#include <outpost/utils/container/reference_queue.h>
-
 namespace outpost
 {
+namespace utils
+{
+template <typename T>
+class ReferenceQueueBase;
+}
+
 namespace compression
 {
+class DataBlock;
+
 /**
  * In order to anticipate different transmission mechanisms (queues, smpc, etc.) and policies (i.e.
  * optmizing for safety, delay, jitter, etc.) for DataBlocks, the abstract DataBlockSender allows

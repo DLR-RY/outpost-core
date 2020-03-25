@@ -13,9 +13,12 @@
 
 #include "data_processor_thread.h"
 
+#include "data_block.h"
 #include "legall_wavelet.h"
 
 #include <outpost/base/fixpoint.h>
+#include <outpost/utils/container/reference_queue.h>
+#include <outpost/utils/container/shared_object_pool.h>
 
 namespace outpost
 {
@@ -25,7 +28,9 @@ DataProcessorThread::DataProcessorThread(
         uint8_t thread_priority,
         outpost::utils::SharedBufferPoolBase& pool,
         outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
-        outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue) :
+        outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue,
+		uint8_t numOutputRetries,
+		outpost::time::Duration retryTimeout) :
     outpost::rtos::Thread(thread_priority, 1024, "DPT"),
     mInputQueue(inputQueue),
     mOutputQueue(outputQueue),
@@ -34,8 +39,11 @@ DataProcessorThread::DataProcessorThread(
     numIncomingBlocks(0),
     numProcessedBlocks(0),
     numForwardedBlocks(0),
+    numLostBlocks(0),
     mEncodingSlice(mEncodingBuffer),
-    mBitstream(mEncodingSlice)
+    mBitstream(mEncodingSlice),
+    mRetrySendTimeout(retryTimeout),
+    mMaxSendRetries(numOutputRetries)
 {
 }
 
@@ -81,9 +89,25 @@ DataProcessorThread::processSingleBlock(outpost::time::Duration timeout)
         if (compress(b))
         {
             numProcessedBlocks++;
-            if (mOutputQueue.send(b))
+            bool success = false;
+            for (uint8_t tries = 0; tries < mMaxSendRetries && !success; tries++)
+            {
+                if (mOutputQueue.send(b))
+                {
+                    success = true;
+                }
+                else
+                {
+                    outpost::rtos::Thread::sleep(mRetrySendTimeout);
+                }
+            }
+            if (success)
             {
                 numForwardedBlocks++;
+            }
+            else
+            {
+                numLostBlocks++;
             }
         }
     }
@@ -92,8 +116,7 @@ DataProcessorThread::processSingleBlock(outpost::time::Duration timeout)
 bool
 DataProcessorThread::compress(DataBlock& b)
 {
-    b.applyWaveletTransform();
-    if (b.getCoefficients().getNumberOfElements() > 0U)
+    if (b.applyWaveletTransform() && b.getCoefficients().getNumberOfElements() > 0U)
     {
         outpost::utils::SharedBufferPointer p;
         if (mPool.allocate(p))

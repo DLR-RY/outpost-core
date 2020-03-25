@@ -8,7 +8,10 @@
 // ----------------------------------------------------------------------------
 
 #include <outpost/base/fixpoint.h>
+#include <outpost/compression/data_block.h>
 #include <outpost/compression/data_processor_thread.h>
+#include <outpost/utils/container/reference_queue.h>
+#include <outpost/utils/container/shared_object_pool.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -55,9 +58,10 @@ TEST_F(DataProcessorThreadTest, Constructor)
 {
     DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue);
 
-    EXPECT_EQ(thread.getNumberOfIncomingBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfReceivedBlocks(), 0U);
     EXPECT_EQ(thread.getNumberOfProcessedBlocks(), 0U);
     EXPECT_EQ(thread.getNumberOfForwardedBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfLostBlocks(), 0U);
 
     EXPECT_FALSE(thread.isEnabled());
 }
@@ -79,9 +83,11 @@ TEST_F(DataProcessorThreadTest, emptyQueue)
 
     thread.processSingleBlock(outpost::time::Duration::zero());
 
-    EXPECT_EQ(thread.getNumberOfIncomingBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfReceivedBlocks(), 0U);
     EXPECT_EQ(thread.getNumberOfProcessedBlocks(), 0U);
     EXPECT_EQ(thread.getNumberOfForwardedBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfLostBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfLostBlocks(), 0U);
 }
 
 TEST_F(DataProcessorThreadTest, processSingleInvalidBlock)
@@ -93,16 +99,17 @@ TEST_F(DataProcessorThreadTest, processSingleInvalidBlock)
 
     thread.processSingleBlock(outpost::time::Duration::zero());
 
-    EXPECT_EQ(thread.getNumberOfIncomingBlocks(), 1U);
+    EXPECT_EQ(thread.getNumberOfReceivedBlocks(), 1U);
     EXPECT_EQ(thread.getNumberOfProcessedBlocks(), 0U);
     EXPECT_EQ(thread.getNumberOfForwardedBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfLostBlocks(), 0U);
 
     EXPECT_FALSE(mOutputQueue.receive(block, outpost::time::Duration::zero()));
 }
 
 TEST_F(DataProcessorThreadTest, processSingleBlock)
 {
-    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue);
+    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue, 2U, outpost::time::Duration::zero());
 
     outpost::utils::SharedBufferPointer p;
     ASSERT_TRUE(mPool.allocate(p));
@@ -122,9 +129,10 @@ TEST_F(DataProcessorThreadTest, processSingleBlock)
 
     thread.processSingleBlock(outpost::time::Duration::zero());
 
-    EXPECT_EQ(thread.getNumberOfIncomingBlocks(), 1U);
+    EXPECT_EQ(thread.getNumberOfReceivedBlocks(), 1U);
     EXPECT_EQ(thread.getNumberOfProcessedBlocks(), 1U);
     EXPECT_EQ(thread.getNumberOfForwardedBlocks(), 1U);
+    EXPECT_EQ(thread.getNumberOfLostBlocks(), 0U);
 
     EXPECT_TRUE(mOutputQueue.receive(block, outpost::time::Duration::zero()));
 
@@ -138,7 +146,7 @@ TEST_F(DataProcessorThreadTest, processSingleBlock)
 
 TEST_F(DataProcessorThreadTest, processMultipleBlocks)
 {
-    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue);
+    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue, 2U, outpost::time::Duration::zero());
 
     for (size_t blocks = 0; blocks < 10; blocks++)
     {
@@ -161,9 +169,10 @@ TEST_F(DataProcessorThreadTest, processMultipleBlocks)
         thread.processSingleBlock(outpost::time::Duration::zero());
     }
 
-    EXPECT_EQ(thread.getNumberOfIncomingBlocks(), 10U);
+    EXPECT_EQ(thread.getNumberOfReceivedBlocks(), 10U);
     EXPECT_EQ(thread.getNumberOfProcessedBlocks(), 10U);
     EXPECT_EQ(thread.getNumberOfForwardedBlocks(), 8U);
+    EXPECT_EQ(thread.getNumberOfLostBlocks(), 2U);
 
     DataBlock b;
     for (size_t blocks = 0; blocks < 8; blocks++)
@@ -171,6 +180,13 @@ TEST_F(DataProcessorThreadTest, processMultipleBlocks)
         EXPECT_TRUE(mOutputQueue.receive(b));
     }
     EXPECT_FALSE(mOutputQueue.receive(b, outpost::time::Duration::zero()));
+
+    thread.resetCounters();
+
+    EXPECT_EQ(thread.getNumberOfReceivedBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfProcessedBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfForwardedBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfLostBlocks(), 0U);
 }
 
 }  // namespace data_aggregation_test

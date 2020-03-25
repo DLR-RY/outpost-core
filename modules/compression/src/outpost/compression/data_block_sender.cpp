@@ -13,6 +13,8 @@
 
 #include "data_block_sender.h"
 
+#include <outpost/utils/container/reference_queue.h>
+
 namespace outpost
 {
 namespace compression

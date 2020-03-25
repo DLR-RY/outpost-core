@@ -13,6 +13,13 @@
 
 #include "data_aggregator.h"
 
+#include "data_block_sender.h"
+
+#include <outpost/base/fixpoint.h>
+#include <outpost/time/clock.h>
+#include <outpost/utils/container/reference_queue.h>
+#include <outpost/utils/container/shared_object_pool.h>
+
 namespace outpost
 {
 namespace compression
@@ -34,7 +41,9 @@ DataAggregator::DataAggregator(uint16_t parameterId,
     mDisableAfterCurrentBlock(false),
     mClock(clock),
     mMemoryPool(pool),
-    mSender(sender)
+    mSender(sender),
+    mNumCompletedBlocks(0),
+    mNumOverallSamples(0)
 {
 }
 
@@ -94,12 +103,14 @@ DataAggregator::push(Fixpoint fp)
             }
         }
 
-        if (mBlock.isValid())
+        if (mBlock.push(fp))
         {
-            res = mBlock.push(fp);
+            res = true;
+            mNumOverallSamples++;
 
             if (mBlock.isComplete())
             {
+                mNumCompletedBlocks++;
                 mSender.send(mBlock);
                 mBlock = {};
                 if (mDisableAfterCurrentBlock)

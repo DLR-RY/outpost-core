@@ -14,12 +14,18 @@
 #ifndef OUTPOST_UTILS_COMPRESSION_LEGALL_WAVELET_H
 #define OUTPOST_UTILS_COMPRESSION_LEGALL_WAVELET_H
 
-#include <outpost/base/fixpoint.h>
-#include <outpost/base/slice.h>
-#include <outpost/utils/log2.h>
+#include <stddef.h>
+#include <stdint.h>
 
 namespace outpost
 {
+template <typename T>
+class Slice;
+
+template <unsigned PREC>
+class FP;
+typedef FP<16> Fixpoint;
+
 namespace compression
 {
 /**

@@ -7,6 +7,7 @@
  */
 // ----------------------------------------------------------------------------
 
+#include <outpost/base/fixpoint.h>
 #include <outpost/compression/data_block.h>
 #include <outpost/compression/nls_encoder.h>
 #include <outpost/utils/container/shared_buffer.h>
@@ -199,7 +200,7 @@ TEST_F(DataBlockTest, Encode)
         block.push(Fixpoint(i));
     }
 
-    block.applyWaveletTransform();
+    ASSERT_TRUE(block.applyWaveletTransform());
 
     outpost::utils::SharedBufferPointer p_out;
     ASSERT_TRUE(mPool.allocate(p_out));
@@ -209,8 +210,17 @@ TEST_F(DataBlockTest, Encode)
                                               block.getSamplingRate(),
                                               block.getBlocksize());
 
-    EXPECT_TRUE(block.encode(block_out, encoder));
+    ASSERT_TRUE(block.encode(block_out, encoder));
     EXPECT_TRUE(block_out.isEncoded());
+
+    outpost::Slice<uint8_t> enc = block_out.getEncodedData();
+    EXPECT_EQ(enc.getNumberOfElements(), 23U);
+    EXPECT_EQ(enc[0], 1U);
+    EXPECT_EQ(enc[1], 0U);
+    EXPECT_EQ(enc[2], 123U);
+    uint8_t encoded_sr_bs = static_cast<uint8_t>(outpost::compression::SamplingRate::hz05) << 4;
+    encoded_sr_bs |= static_cast<uint8_t>(outpost::compression::Blocksize::bs16);
+    EXPECT_EQ(enc[11], encoded_sr_bs);
 }
 
 }  // namespace data_block_test

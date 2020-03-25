@@ -9,6 +9,10 @@
 
 #include <outpost/base/fixpoint.h>
 #include <outpost/compression/data_aggregator.h>
+#include <outpost/compression/data_block.h>
+#include <outpost/compression/data_block_sender.h>
+#include <outpost/utils/container/reference_queue.h>
+#include <outpost/utils/container/shared_object_pool.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

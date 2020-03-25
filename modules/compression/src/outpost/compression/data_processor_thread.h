@@ -14,18 +14,26 @@
 #ifndef OUTPOST_COMPRESSION_DATA_PROCESSOR_THREAD_H_
 #define OUTPOST_COMPRESSION_DATA_PROCESSOR_THREAD_H_
 
-#include "data_block.h"
 #include "nls_encoder.h"
 
 #include <outpost/rtos/checkpoint.h>
 #include <outpost/rtos/thread.h>
-#include <outpost/utils/container/reference_queue.h>
-#include <outpost/utils/container/shared_object_pool.h>
+#include <outpost/utils/storage/bitstream.h>
 
 namespace outpost
 {
+namespace utils
+{
+template <typename T>
+class ReferenceQueueBase;
+
+class SharedBufferPoolBase;
+}  // namespace utils
+
 namespace compression
 {
+class DataBlock;
+
 /**
  * The DataProcessorThread is responsible for taking over the workload of transforming and encoding
  * DataBlocks one at a time.
@@ -43,7 +51,9 @@ public:
     DataProcessorThread(uint8_t thread_priority,
                         outpost::utils::SharedBufferPoolBase& pool,
                         outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
-                        outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue);
+                        outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue,
+						uint8_t numOutputRetries = 5U,
+						outpost::time::Duration retryTimeout = outpost::time::Milliseconds(500));
 
     virtual ~DataProcessorThread();
 
@@ -72,7 +82,7 @@ public:
      * @return Returns the number of incoming blocks.
      */
     inline uint32_t
-    getNumberOfIncomingBlocks()
+    getNumberOfReceivedBlocks()
     {
         return numIncomingBlocks;
     }
@@ -98,6 +108,17 @@ public:
     }
 
     /**
+     * Getter for the number of DataBlocks that haven been lost because they could not be sent to
+     * the output queue.
+     * @return Returns the number of forwarded blocks.
+     */
+    inline uint32_t
+    getNumberOfLostBlocks()
+    {
+        return numLostBlocks;
+    }
+
+    /**
      * Getter for the thread's state.
      * @return Returns true if processing is currently enabled, false otherwise.
      */
@@ -113,6 +134,7 @@ public:
         numIncomingBlocks = 0;
         numProcessedBlocks = 0;
         numForwardedBlocks = 0;
+        numLostBlocks = 0;
     }
 
     /**
@@ -137,6 +159,7 @@ private:
     uint32_t numIncomingBlocks;
     uint32_t numProcessedBlocks;
     uint32_t numForwardedBlocks;
+    uint32_t numLostBlocks;
 
     NLSEncoder mEncoder;
 
@@ -144,6 +167,9 @@ private:
     uint8_t mEncodingBuffer[maximumEncodingBufferLength];
     outpost::Slice<uint8_t> mEncodingSlice;
     outpost::Bitstream mBitstream;
+
+    outpost::time::Duration mRetrySendTimeout;
+    uint8_t mMaxSendRetries;
 };
 
 }  // namespace compression

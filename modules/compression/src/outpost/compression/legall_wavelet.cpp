@@ -13,6 +13,10 @@
 
 #include "legall_wavelet.h"
 
+#include <outpost/base/fixpoint.h>
+#include <outpost/base/slice.h>
+#include <outpost/utils/log2.h>
+
 #include <string.h>
 
 namespace outpost

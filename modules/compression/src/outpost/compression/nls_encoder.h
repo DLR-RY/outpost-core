@@ -14,12 +14,16 @@
 #ifndef OUTPOST_UTILS_COMPRESSION_NLS_ENCODER_H_
 #define OUTPOST_UTILS_COMPRESSION_NLS_ENCODER_H_
 
-#include <outpost/base/slice.h>
-#include <outpost/utils/storage/bitstream.h>
-#include <outpost/utils/storage/serialize.h>
+#include <stddef.h>
+#include <stdint.h>
 
 namespace outpost
 {
+template <typename T>
+class Slice;
+
+class Bitstream;
+
 namespace compression
 {
 /**

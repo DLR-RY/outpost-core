@@ -14,19 +14,22 @@
 #ifndef OUTPOST_UTILS_COMPRESSION_DATA_BLOCK_H_
 #define OUTPOST_UTILS_COMPRESSION_DATA_BLOCK_H_
 
-#include <outpost/base/fixpoint.h>
-#include <outpost/base/slice.h>
-#include <outpost/compression/nls_encoder.h>
 #include <outpost/time.h>
 #include <outpost/utils/container/shared_buffer.h>
-#include <outpost/utils/storage/bitfield.h>
-#include <outpost/utils/storage/bitstream.h>
-#include <outpost/utils/storage/serializable_object.h>
 
 namespace outpost
 {
+template <unsigned PREC>
+class FP;
+typedef FP<16> Fixpoint;
+
+template <typename T>
+class Slice;
+
 namespace compression
 {
+class NLSEncoder;
+
 /**
  * SamplingRate is the efficient encoding of certain possible cadences. Has to be enforced by the
  * collecting entity.
@@ -92,7 +95,7 @@ public:
      * 8B GpsTime
      * 1B (3+3+2 Bits) for SamplingRate, Blocksize and CompressionScheme
      */
-    static constexpr size_t headerSize = 11U;
+    static constexpr size_t headerSize = 12U;
 
     /**
      * Empty and invalid DataBlock without any underlying memory.
@@ -199,8 +202,9 @@ public:
 
     /**
      * Applies the LeGall53 wavelet transform to the current block of samples
+     * @return Returns true if the transform could be applied, false otherwise.
      */
-    void
+    bool
     applyWaveletTransform();
 
     /**

@@ -15,18 +15,32 @@
 #define OUTPOST_COMPRESSION_DATA_AGGREGATOR_H_
 
 #include "data_block.h"
-#include "data_block_sender.h"
 
-#include <outpost/base/fixpoint.h>
-#include <outpost/time/clock.h>
 #include <outpost/utils/container/implicit_list.h>
-#include <outpost/utils/container/reference_queue.h>
-#include <outpost/utils/container/shared_object_pool.h>
 
 namespace outpost
 {
+template <unsigned PREC>
+class FP;
+typedef FP<16> Fixpoint;
+
+namespace time
+{
+class Clock;
+}
+
+namespace utils
+{
+template <typename T>
+class ReferenceQueueBase;
+
+class SharedBufferPoolBase;
+}  // namespace utils
+
 namespace compression
 {
+class DataBlockSender;
+
 /**
  * The DataAggregator is responsible for receiving samples of a single parameter (identified by its
  * ID) and handling allocation and transmission of DataBlocks using a given DataBlockSender.
@@ -198,8 +212,41 @@ public:
         mDisableAfterCurrentBlock = true;
     }
 
+    /**
+     * Registers a queue for outputting completed blocks.
+     */
     void
     registerOutputQueue(outpost::utils::ReferenceQueueBase<DataBlock>* queue);
+
+    /**
+     * Getter for the number of completed blocks.
+     * @return Returns the number of blocks completed by the DataAggregator.
+     */
+    inline size_t
+    getNumCompletedBlocks()
+    {
+        return mNumCompletedBlocks;
+    }
+
+    /**
+     * Getter for the number of acquired samples.
+     * @return Returns the number of overall samples acquired by the DataAggregator.
+     */
+    inline size_t
+    getNumOverallSamples()
+    {
+        return mNumOverallSamples;
+    }
+
+    /**
+     * Resets the DataAggregator's counters to 0.
+     */
+    inline void
+    resetCounters()
+    {
+        mNumCompletedBlocks = 0;
+        mNumOverallSamples = 0;
+    }
 
     /**
      * Finds a DataAggregator by its parameterId
@@ -240,6 +287,9 @@ protected:
     outpost::time::Clock& mClock;
     outpost::utils::SharedBufferPoolBase& mMemoryPool;
     DataBlockSender& mSender;
+
+    uint16_t mNumCompletedBlocks;
+    size_t mNumOverallSamples;
 };
 
 }  // namespace compression
