@@ -43,7 +43,7 @@ public:
      * Runtime optimized forward transformation using two buffers.
      * Lowpass coefficients will always occur before highpass coefficients.
      * @param inBuffer
-     *     Pointer to an array of FP<16> that shall be transformed to wavelet coefficients.
+     *     Pointer to an array of Fixpoint that shall be transformed to wavelet coefficients.
      *     WARNING: The array will also be used as a temporary buffer, its contents are subject to
      * change!
      * @param bufferLength
@@ -53,24 +53,27 @@ public:
      *     Pointer to store the resulting transformed data. Needs to be able to store bufferLength
      * elements.
      */
-    static void forwardTransform(outpost::Slice<FP<16>> inBuffer, outpost::Slice<FP<16>> outBuffer);
+    static void
+    forwardTransform(outpost::Slice<Fixpoint> inBuffer, outpost::Slice<Fixpoint> outBuffer);
 
     /**
      * Memory-optimized forward transformation requiring only one buffer.
      * Coefficients are stored according to the lifting-scheme (i.e. interleaving high- and lowpass
      * coefficients). In order to be NLS encoded, a call to reorder is required.
      * @param inBuffer
-     *     Pointer to an array of FP<16> that shall be transformed to wavelet coefficients.
+     *     Pointer to an array of Fixpoint that shall be transformed to wavelet coefficients.
      * @param length
      *     Number of elements in inBuffer
      */
-    static void forwardTransformInPlace(outpost::Slice<FP<16>> inBuffer);
+    static void
+    forwardTransformInPlace(outpost::Slice<Fixpoint> inBuffer);
 
     /**
      * Reorders the coefficients after in place transformation for further coding by using the bits
      * after the comma.
      */
-    static outpost::Slice<int16_t> reorder(outpost::Slice<FP<16>> inBuffer);
+    static outpost::Slice<int16_t>
+    reorder(outpost::Slice<Fixpoint> inBuffer);
 
     /**
      * Backward transformation for ground use (i.e. using floating point numbers)
@@ -88,23 +91,23 @@ public:
 
 private:
     // Forward lowpass coefficients
-    static const FP<16> h0;
-    static const FP<16> h1;
-    static const FP<16> h2;
-    static const FP<16> h3;
-    static const FP<16> h4;
+    static const Fixpoint h0;
+    static const Fixpoint h1;
+    static const Fixpoint h2;
+    static const Fixpoint h3;
+    static const Fixpoint h4;
 
     // Forward highpass coefficients
-    static const FP<16> g0;
-    static const FP<16> g1;
-    static const FP<16> g2;
+    static const Fixpoint g0;
+    static const Fixpoint g1;
+    static const Fixpoint g2;
 
     // Forward highpass coefficients for in place calculations using the lifting scheme
-    static const FP<16> ip_g0;
-    static const FP<16> ip_g1;
-    static const FP<16> ip_g2;
-    static const FP<16> ip_g3;
-    static const FP<16> ip_g4;
+    static const Fixpoint ip_g0;
+    static const Fixpoint ip_g1;
+    static const Fixpoint ip_g2;
+    static const Fixpoint ip_g3;
+    static const Fixpoint ip_g4;
 
     // Backward (inverse) lowpass coefficients
     static const double ih0;

@@ -71,6 +71,10 @@ TEST_F(DataBlockTest, Constructor)
                   outpost::time::GpsTime::afterEpoch(outpost::time::Duration::zero()));
         EXPECT_EQ(block.getSamples().getNumberOfElements(), 0U);
         EXPECT_EQ(block.getSampleCount(), 0);
+        EXPECT_FALSE(block.isValid());
+        EXPECT_FALSE(block.isTransformed());
+        EXPECT_FALSE(block.isEncoded());
+        EXPECT_FALSE(block.isComplete());
     }
 
     outpost::utils::SharedBufferPointer p;
@@ -89,6 +93,8 @@ TEST_F(DataBlockTest, Constructor)
                   outpost::time::GpsTime::afterEpoch(outpost::time::Hours(3U)));
         EXPECT_EQ(block.getSamples().getNumberOfElements(), 0U);
         EXPECT_EQ(block.getSampleCount(), 0);
+        EXPECT_TRUE(block.isValid());
+        EXPECT_FALSE(block.isComplete());
 
         EXPECT_EQ(block.getEncodedData().getNumberOfElements(), 0U);
 
@@ -113,10 +119,12 @@ TEST_F(DataBlockTest, Push)
         EXPECT_FALSE(block.isComplete());
         EXPECT_TRUE(block.push(Fixpoint(i)));
         EXPECT_EQ(block.getSampleCount(), i + 1);
+        EXPECT_TRUE(block.isValid());
     }
     EXPECT_TRUE(block.isComplete());
     EXPECT_FALSE(block.push(Fixpoint(123)));
     EXPECT_EQ(block.getSampleCount(), 16U);
+    EXPECT_TRUE(block.isValid());
 
     outpost::Slice<Fixpoint> slice = block.getSamples();
     EXPECT_EQ(slice.getNumberOfElements(), 16U);

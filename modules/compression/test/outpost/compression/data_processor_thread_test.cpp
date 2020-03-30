@@ -109,7 +109,8 @@ TEST_F(DataProcessorThreadTest, processSingleInvalidBlock)
 
 TEST_F(DataProcessorThreadTest, processSingleBlock)
 {
-    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue, 2U, outpost::time::Duration::zero());
+    DataProcessorThread thread(
+            123U, mPool, mInputQueue, mOutputQueue, 2U, outpost::time::Duration::zero());
 
     outpost::utils::SharedBufferPointer p;
     ASSERT_TRUE(mPool.allocate(p));
@@ -146,7 +147,8 @@ TEST_F(DataProcessorThreadTest, processSingleBlock)
 
 TEST_F(DataProcessorThreadTest, processMultipleBlocks)
 {
-    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue, 2U, outpost::time::Duration::zero());
+    DataProcessorThread thread(
+            123U, mPool, mInputQueue, mOutputQueue, 2U, outpost::time::Duration::zero());
 
     for (size_t blocks = 0; blocks < 10; blocks++)
     {

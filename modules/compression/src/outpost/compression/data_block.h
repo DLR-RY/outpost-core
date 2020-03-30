@@ -91,9 +91,10 @@ class DataBlock
 public:
     /**
      * headerSize comprises of:
+     * 1B Version / CompressionScheme
      * 2B ParameterId
      * 8B GpsTime
-     * 1B (3+3+2 Bits) for SamplingRate, Blocksize and CompressionScheme
+     * 1B (4+4 Bits) for SamplingRate and Blocksize
      */
     static constexpr size_t headerSize = 12U;
 
@@ -112,7 +113,7 @@ public:
      * @param bs Blocksize, i.e. the number of samples to be collected before this block is
      * considered complete
      */
-    DataBlock(outpost::utils::SharedBufferPointer p,
+    DataBlock(const outpost::utils::SharedBufferPointer& p,
               uint16_t parameterId,
               outpost::time::GpsTime startTime,
               SamplingRate rate,

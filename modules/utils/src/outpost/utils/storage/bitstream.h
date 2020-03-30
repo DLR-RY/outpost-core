@@ -32,7 +32,7 @@ private:
 public:
     static constexpr uint8_t headerSize = sizeof(bytePointer) + sizeof(bitPointer);
 
-    Bitstream(outpost::Slice<uint8_t>& byteArray) :
+    explicit Bitstream(outpost::Slice<uint8_t>& byteArray) :
         mData(byteArray),
         bytePointer(headerSize),
         bitPointer(initialBitPointer)
@@ -41,10 +41,16 @@ public:
 
     ~Bitstream() = default;
 
-    bool
+    inline bool
     isFull() const
     {
         return mData.getNumberOfElements() <= bytePointer;
+    }
+
+    inline bool
+    isEmpty() const
+    {
+        return bytePointer == headerSize && bitPointer == initialBitPointer;
     }
 
     /**
@@ -57,6 +63,10 @@ public:
     {
         if (!isFull())
         {
+            if (isEmpty())
+            {
+                mData[bytePointer] = 0;
+            }
             if (b)
             {
                 mData[bytePointer] |= (1 << bitPointer);
@@ -112,7 +122,7 @@ public:
     inline uint8_t
     getByte(uint16_t n) const
     {
-        if (n <= bytePointer - headerSize && !(bytePointer == headerSize && bitPointer == 7))
+        if (n <= bytePointer - headerSize)
         {
             return mData[n + headerSize];
         }
@@ -127,6 +137,7 @@ public:
     {
         bytePointer = headerSize;
         bitPointer = initialBitPointer;
+        mData[bytePointer] = 0;
     }
 
     /**

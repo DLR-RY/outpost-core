@@ -52,8 +52,8 @@ public:
                         outpost::utils::SharedBufferPoolBase& pool,
                         outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
                         outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue,
-						uint8_t numOutputRetries = 5U,
-						outpost::time::Duration retryTimeout = outpost::time::Milliseconds(500));
+                        uint8_t numOutputRetries = 5U,
+                        outpost::time::Duration retryTimeout = outpost::time::Milliseconds(500));
 
     virtual ~DataProcessorThread();
 
@@ -63,7 +63,7 @@ public:
      * DataBlock.
      */
     void
-    run();
+    run() override;
 
     /**
      * Enables the processing of DataBlocks
@@ -82,9 +82,9 @@ public:
      * @return Returns the number of incoming blocks.
      */
     inline uint32_t
-    getNumberOfReceivedBlocks()
+    getNumberOfReceivedBlocks() const
     {
-        return numIncomingBlocks;
+        return mNumIncomingBlocks;
     }
 
     /**
@@ -92,9 +92,9 @@ public:
      * @return Returns the number of processed blocks.
      */
     inline uint32_t
-    getNumberOfProcessedBlocks()
+    getNumberOfProcessedBlocks() const
     {
-        return numProcessedBlocks;
+        return mNumProcessedBlocks;
     }
 
     /**
@@ -102,20 +102,20 @@ public:
      * @return Returns the number of forwarded blocks.
      */
     inline uint32_t
-    getNumberOfForwardedBlocks()
+    getNumberOfForwardedBlocks() const
     {
-        return numForwardedBlocks;
+        return mNumForwardedBlocks;
     }
 
     /**
-     * Getter for the number of DataBlocks that haven been lost because they could not be sent to
+     * Getter for the number of DataBlocks that have been lost because they could not be sent to
      * the output queue.
      * @return Returns the number of forwarded blocks.
      */
     inline uint32_t
-    getNumberOfLostBlocks()
+    getNumberOfLostBlocks() const
     {
-        return numLostBlocks;
+        return mNumLostBlocks;
     }
 
     /**
@@ -123,7 +123,7 @@ public:
      * @return Returns true if processing is currently enabled, false otherwise.
      */
     bool
-    isEnabled();
+    isEnabled() const;
 
     /**
      * Resets the counters for incoming, processed and forwarded blocks.
@@ -131,10 +131,10 @@ public:
     inline void
     resetCounters()
     {
-        numIncomingBlocks = 0;
-        numProcessedBlocks = 0;
-        numForwardedBlocks = 0;
-        numLostBlocks = 0;
+        mNumIncomingBlocks = 0;
+        mNumProcessedBlocks = 0;
+        mNumForwardedBlocks = 0;
+        mNumLostBlocks = 0;
     }
 
     /**
@@ -156,10 +156,10 @@ private:
 
     outpost::rtos::Checkpoint mCheckpoint;
 
-    uint32_t numIncomingBlocks;
-    uint32_t numProcessedBlocks;
-    uint32_t numForwardedBlocks;
-    uint32_t numLostBlocks;
+    uint32_t mNumIncomingBlocks;
+    uint32_t mNumProcessedBlocks;
+    uint32_t mNumForwardedBlocks;
+    uint32_t mNumLostBlocks;
 
     NLSEncoder mEncoder;
 

@@ -19,29 +19,15 @@ namespace outpost
 {
 namespace compression
 {
-DataBlockSender::DataBlockSender(outpost::utils::ReferenceQueueBase<DataBlock>* queue) :
+OneTimeQueueSender::OneTimeQueueSender(utils::ReferenceQueueBase<DataBlock>& queue) :
     mOutputQueue(queue)
 {
 }
 
-void
-DataBlockSender::registerOutputQueue(utils::ReferenceQueueBase<DataBlock>* queue)
-{
-    mOutputQueue = queue;
-}
-
-OneTimeSender::OneTimeSender(utils::ReferenceQueueBase<DataBlock>* queue) : DataBlockSender(queue)
-{
-}
-
 bool
-OneTimeSender::send(DataBlock& b)
+OneTimeQueueSender::send(DataBlock& b)
 {
-    if (mOutputQueue != nullptr)
-    {
-        return mOutputQueue->send(b);
-    }
-    return false;
+    return mOutputQueue.send(b);
 }
 
 }  // namespace compression

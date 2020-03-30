@@ -204,7 +204,7 @@ public:
         if (outpost::rtos::Queue<size_t>::receive(index, timeout))
         {
             outpost::rtos::MutexGuard lock(mMutex);
-            data = T(mPointers[index]);
+            data = mPointers[index];
             mPointers[index] = mEmpty;
             mIsUsed[index] = false;
             mItemsInQueue--;

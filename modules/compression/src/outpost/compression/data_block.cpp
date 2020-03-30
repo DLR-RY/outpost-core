@@ -58,7 +58,7 @@ DataBlock::DataBlock() :
 {
 }
 
-DataBlock::DataBlock(outpost::utils::SharedBufferPointer p,
+DataBlock::DataBlock(const outpost::utils::SharedBufferPointer& p,
                      uint16_t parameterId,
                      outpost::time::GpsTime startTime,
                      SamplingRate rate,
@@ -182,6 +182,7 @@ DataBlock::encode(DataBlock& b, NLSEncoder& encoder) const
         uint8_t* pos = headerStream.getPointerToCurrentPosition();
         outpost::Bitfield::write<0, 3>(pos, static_cast<uint8_t>(mSamplingRate));
         outpost::Bitfield::write<4, 7>(pos, static_cast<uint8_t>(mBlocksize));
+        headerStream.skip(1U);
 
         return true;
     }

@@ -37,8 +37,9 @@ class DataBlockSender
 public:
     /**
      * Default constructor
+     * @param queue Output queue to send the DataBlocks to.
      */
-    DataBlockSender(outpost::utils::ReferenceQueueBase<DataBlock>* queue = nullptr);
+    DataBlockSender() = default;
 
     /**
      * Default destructor
@@ -52,32 +53,29 @@ public:
      */
     virtual bool
     send(DataBlock& block) = 0;
-
-    void
-    registerOutputQueue(outpost::utils::ReferenceQueueBase<DataBlock>* queue);
-
-protected:
-    outpost::utils::ReferenceQueueBase<DataBlock>* mOutputQueue;
 };
 
 /**
  * OneTimeSender tries to send the DataBlock to a ReferenceQueue once and returns the result.
  */
-class OneTimeSender : public DataBlockSender
+class OneTimeQueueSender : public DataBlockSender
 {
 public:
     /**
      * Constructor that is handed an outgoing queue.
      * @param queue ReferenceQueue to send DataBlocks to.
      */
-    OneTimeSender(outpost::utils::ReferenceQueueBase<DataBlock>* queue = nullptr);
-    ~OneTimeSender() = default;
+    explicit OneTimeQueueSender(outpost::utils::ReferenceQueueBase<DataBlock>& queue);
+    ~OneTimeQueueSender() = default;
 
     /**
      * @see DataBlockSender::send
      */
     bool
     send(DataBlock&) override;
+
+protected:
+    outpost::utils::ReferenceQueueBase<DataBlock>& mOutputQueue;
 };
 
 }  // namespace compression

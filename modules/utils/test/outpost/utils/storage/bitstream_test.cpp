@@ -40,6 +40,7 @@ TEST(BitstreamTest, constructor)
     EXPECT_EQ(bitstream.getSize(), 0U);
     EXPECT_EQ(bitstream.getSerializedSize(), 3U);
     EXPECT_FALSE(bitstream.isFull());
+    EXPECT_TRUE(bitstream.isEmpty());
 
     EXPECT_ARRAY_EQ(uint8_t, ref, buffer_in, ARRAY_LENGTH);
 }
@@ -55,6 +56,7 @@ TEST(BitstreamTest, isFull)
         {
             EXPECT_FALSE(bitstream.isFull());
             bitstream.pushBit(true);
+            EXPECT_FALSE(bitstream.isEmpty());
         }
         ref[i] = 0xFF;
     }
@@ -247,7 +249,7 @@ TEST(BistreamTest, deserialize)
     }
 
     outpost::Bitstream bitstream(data_in);
-    outpost::Deserialize stream(buffer_in);
+    outpost::Deserialize stream(data_in);
     bitstream.deserialize(stream);
 
     EXPECT_FALSE(bitstream.isFull());

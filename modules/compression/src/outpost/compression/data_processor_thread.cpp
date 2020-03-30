@@ -24,22 +24,21 @@ namespace outpost
 {
 namespace compression
 {
-DataProcessorThread::DataProcessorThread(
-        uint8_t thread_priority,
-        outpost::utils::SharedBufferPoolBase& pool,
-        outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
-        outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue,
-		uint8_t numOutputRetries,
-		outpost::time::Duration retryTimeout) :
+DataProcessorThread::DataProcessorThread(uint8_t thread_priority,
+                                         outpost::utils::SharedBufferPoolBase& pool,
+                                         outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
+                                         outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue,
+                                         uint8_t numOutputRetries,
+                                         outpost::time::Duration retryTimeout) :
     outpost::rtos::Thread(thread_priority, 1024, "DPT"),
     mInputQueue(inputQueue),
     mOutputQueue(outputQueue),
     mPool(pool),
     mCheckpoint(outpost::rtos::Checkpoint::State::suspending),
-    numIncomingBlocks(0),
-    numProcessedBlocks(0),
-    numForwardedBlocks(0),
-    numLostBlocks(0),
+    mNumIncomingBlocks(0),
+    mNumProcessedBlocks(0),
+    mNumForwardedBlocks(0),
+    mNumLostBlocks(0),
     mEncodingSlice(mEncodingBuffer),
     mBitstream(mEncodingSlice),
     mRetrySendTimeout(retryTimeout),
@@ -74,7 +73,7 @@ DataProcessorThread::disable()
 }
 
 bool
-DataProcessorThread::isEnabled()
+DataProcessorThread::isEnabled() const
 {
     return mCheckpoint.getState() == outpost::rtos::Checkpoint::State::running;
 }
@@ -85,10 +84,10 @@ DataProcessorThread::processSingleBlock(outpost::time::Duration timeout)
     DataBlock b;
     if (mInputQueue.receive(b, timeout))
     {
-        numIncomingBlocks++;
+        mNumIncomingBlocks++;
         if (compress(b))
         {
-            numProcessedBlocks++;
+            mNumProcessedBlocks++;
             bool success = false;
             for (uint8_t tries = 0; tries < mMaxSendRetries && !success; tries++)
             {
@@ -103,11 +102,11 @@ DataProcessorThread::processSingleBlock(outpost::time::Duration timeout)
             }
             if (success)
             {
-                numForwardedBlocks++;
+                mNumForwardedBlocks++;
             }
             else
             {
-                numLostBlocks++;
+                mNumLostBlocks++;
             }
         }
     }

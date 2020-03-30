@@ -50,12 +50,12 @@ class DataAggregator : public ImplicitList<DataAggregator>
 public:
     /**
      * Constructor for a DataAggregator of a single parameter ID.
-     * @param parameterId ID of the parameter to be managed by the aggregator
+     * @param paramId ID of the parameter to be managed by the aggregator
      * @param clock Clock from which the current time at the start of a new DataBlock is taken
      * @param pool SharedBufferPool to allocate the underlying memory of new DataBlocks
      * @param sender The DataAggregator's output for completed DataBlocks
      */
-    DataAggregator(uint16_t parameterId,
+    DataAggregator(uint16_t paramId,
                    outpost::time::Clock& clock,
                    outpost::utils::SharedBufferPoolBase& pool,
                    DataBlockSender& sender);
@@ -179,7 +179,7 @@ public:
      * @return True if the current DataBlock is valid, false otherwise.
      */
     bool
-    isBlockValid() const;
+    isAtStartOfNewBlock() const;
 
     /**
      * Enables the acquisition using a given SamplingRate and Blocksize.
@@ -213,12 +213,6 @@ public:
     }
 
     /**
-     * Registers a queue for outputting completed blocks.
-     */
-    void
-    registerOutputQueue(outpost::utils::ReferenceQueueBase<DataBlock>* queue);
-
-    /**
      * Getter for the number of completed blocks.
      * @return Returns the number of blocks completed by the DataAggregator.
      */
@@ -226,6 +220,26 @@ public:
     getNumCompletedBlocks()
     {
         return mNumCompletedBlocks;
+    }
+
+    /**
+     * Getter for the number of lost blocks.
+     * @return Returns the number of blocks that could not be sent and had to be dropped.
+     */
+    inline uint16_t
+    getNumLostBlocks()
+    {
+        return mNumLostBlocks;
+    }
+
+    /**
+     * Getter for the number of lost samples.
+     * @return Returns the number of samples that could not be stored to a block.
+     */
+    inline uint16_t
+    getNumLostSamples()
+    {
+        return mNumLostSamples;
     }
 
     /**
@@ -250,6 +264,7 @@ public:
 
     /**
      * Finds a DataAggregator by its parameterId
+     * @param paramId Parameter Id of the DataAggregator to find.
      * @return Returns a pointer to the corresponding DataAggregator if it was found, nullptr
      * otherwise.
      */
@@ -263,6 +278,10 @@ public:
     static uint16_t
     numberOfAggregators();
 
+    /**
+     * Provides the list of all DataAggregators
+     * @return Returns a pointer to the first DataAggregator in the list
+     */
     static inline DataAggregator*
     getList()
     {
@@ -289,6 +308,8 @@ protected:
     DataBlockSender& mSender;
 
     uint16_t mNumCompletedBlocks;
+    uint16_t mNumLostBlocks;
+    uint16_t mNumLostSamples;
     size_t mNumOverallSamples;
 };
 

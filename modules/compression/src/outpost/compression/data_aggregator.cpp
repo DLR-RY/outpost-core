@@ -17,7 +17,6 @@
 
 #include <outpost/base/fixpoint.h>
 #include <outpost/time/clock.h>
-#include <outpost/utils/container/reference_queue.h>
 #include <outpost/utils/container/shared_object_pool.h>
 
 namespace outpost
@@ -26,12 +25,12 @@ namespace compression
 {
 DataAggregator* DataAggregator::listOfAllDataAggregators = nullptr;
 
-DataAggregator::DataAggregator(uint16_t parameterId,
+DataAggregator::DataAggregator(uint16_t paramId,
                                outpost::time::Clock& clock,
                                outpost::utils::SharedBufferPoolBase& pool,
                                DataBlockSender& sender) :
     ImplicitList<DataAggregator>(DataAggregator::listOfAllDataAggregators, this),
-    mParameterId(parameterId),
+    mParameterId(paramId),
     mSamplingRate(SamplingRate::disabled),
     mNextSamplingRate(SamplingRate::disabled),
     mBlocksize(Blocksize::disabled),
@@ -43,6 +42,8 @@ DataAggregator::DataAggregator(uint16_t parameterId,
     mMemoryPool(pool),
     mSender(sender),
     mNumCompletedBlocks(0),
+    mNumLostBlocks(0),
+    mNumLostSamples(0),
     mNumOverallSamples(0)
 {
 }
@@ -53,14 +54,14 @@ DataAggregator::~DataAggregator()
 }
 
 DataAggregator*
-DataAggregator::findDataAggregator(uint16_t parameterId)
+DataAggregator::findDataAggregator(uint16_t paramId)
 {
     DataAggregator* aggregator = nullptr;
     for (DataAggregator* it = DataAggregator::listOfAllDataAggregators;
          (it != nullptr) && (aggregator == nullptr);
          it = it->getNext())
     {
-        if (it->getParameterId() == parameterId)
+        if (it->getParameterId() == paramId)
         {
             aggregator = it;
         }
@@ -111,20 +112,28 @@ DataAggregator::push(Fixpoint fp)
             if (mBlock.isComplete())
             {
                 mNumCompletedBlocks++;
-                mSender.send(mBlock);
-                mBlock = {};
+                if (!mSender.send(mBlock))
+                {
+                    mNumLostBlocks++;
+                }
                 if (mDisableAfterCurrentBlock)
                 {
                     disable();
                 }
+
+                mBlock = {};
             }
+        }
+        else
+        {
+            mNumLostSamples++;
         }
     }
     return res;
 }
 
 bool
-DataAggregator::isBlockValid() const
+DataAggregator::isAtStartOfNewBlock() const
 {
     return mBlock.isValid();
 }
@@ -152,12 +161,6 @@ DataAggregator::disable()
 {
     mEnabled = false;
     mBlock = DataBlock{};
-}
-
-void
-DataAggregator::registerOutputQueue(outpost::utils::ReferenceQueueBase<DataBlock>* queue)
-{
-    mSender.registerOutputQueue(queue);
 }
 
 }  // namespace compression

@@ -19,9 +19,6 @@
 #include <outpost/utils/storage/bitstream.h>
 #include <outpost/utils/storage/serialize.h>
 
-//#include <algorithm>
-//#include <iostream>
-
 namespace outpost
 {
 namespace compression
