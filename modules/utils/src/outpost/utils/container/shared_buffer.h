@@ -47,7 +47,7 @@ public:
      * bytes.
      * \param slice Slice holding the byte array.
      */
-    SharedBuffer(outpost::Slice<uint8_t> slice) : mReferenceCounter(0), mBuffer(slice)
+    explicit SharedBuffer(outpost::Slice<uint8_t> slice) : mReferenceCounter(0), mBuffer(slice)
     {
     }
 
@@ -239,7 +239,7 @@ public:
      *
      * \param pT Pointer to the SharedBuffer instance.
      */
-    SharedBufferPointer(SharedBuffer* pT) :
+    explicit SharedBufferPointer(SharedBuffer* pT) :
         mPtr(pT),
         mType(0),
         mOffset(0),
@@ -304,7 +304,7 @@ public:
      *
      * \param other Reference of the SharedBufferPointer instance to be moved.
      */
-    const SharedBufferPointer&
+    SharedBufferPointer&
     operator=(const SharedBufferPointer& other)
     {
         if (&other != this)
@@ -324,7 +324,7 @@ public:
      *
      * \param other Reference of the SharedBufferPointer instance to be moved.
      */
-    const SharedBufferPointer&
+    SharedBufferPointer&
     operator=(const SharedBufferPointer&& other)
     {
         if (&other != this)
@@ -551,7 +551,7 @@ public:
      * \return Returns the type id to be set for the current SharedBufferPointer
      */
     inline uint16_t
-    getType()
+    getType() const
     {
         return mType;
     }
@@ -622,7 +622,7 @@ public:
      *
      * \param other Reference of the SharedChildPointer instance to be assigned.
      */
-    const SharedChildPointer&
+    SharedChildPointer&
     operator=(const SharedChildPointer& other)
     {
         if (&other != this)
@@ -643,7 +643,7 @@ public:
      *
      * \param other Reference of the SharedChildPointer instance to be moved.
      */
-    const SharedChildPointer&
+    SharedChildPointer&
     operator=(const SharedChildPointer&& other)
     {
         if (&other != this)
@@ -690,7 +690,7 @@ public:
      * \return Returns true if the SharedChildPointer instance's parent is valid.
      */
     virtual inline bool
-    isChild() const
+    isChild() const override
     {
         return mParent.isValid();
     }

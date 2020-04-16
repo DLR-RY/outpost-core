@@ -11,7 +11,7 @@
 # - 2014, Murat Goeksu (DLR RY-AVS)
 # - 2017, Muhammad Bassam (DLR RY-AVS)
 
-MODULES_GLOBAL = base time rtos utils smpc hal comm support
+MODULES_GLOBAL = base time rtos utils smpc compression hal comm support
 MODULES_TEST = l3test
 
 MODULES_JSF = $(MODULES_GLOBAL) rtos

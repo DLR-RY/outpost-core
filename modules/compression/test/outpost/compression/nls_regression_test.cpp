@@ -11,7 +11,8 @@
 
 #include <outpost/base/fixpoint.h>
 #include <outpost/base/slice.h>
-#include <outpost/utils/compression/nls_encoder.h>
+#include <outpost/compression/nls_encoder.h>
+#include <outpost/utils/storage/bitstream.h>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

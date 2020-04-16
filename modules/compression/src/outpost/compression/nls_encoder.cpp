@@ -13,11 +13,11 @@
 
 #include "nls_encoder.h"
 
+#include <outpost/base/slice.h>
 #include <outpost/utils/log2.h>
 #include <outpost/utils/minmax.h>
-
-#include <algorithm>
-#include <iostream>
+#include <outpost/utils/storage/bitstream.h>
+#include <outpost/utils/storage/serialize.h>
 
 namespace outpost
 {

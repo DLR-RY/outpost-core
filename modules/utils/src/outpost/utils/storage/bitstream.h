@@ -27,22 +27,30 @@ private:
     outpost::Slice<uint8_t>& mData;  // Buffer for storing the bitstream
     uint16_t bytePointer;
     int8_t bitPointer;
-    static constexpr uint8_t headerSize = sizeof(bytePointer) + sizeof(bitPointer);
+    static constexpr int8_t initialBitPointer = 7;
 
 public:
-    Bitstream(outpost::Slice<uint8_t>& byteArray) :
+    static constexpr uint8_t headerSize = sizeof(bytePointer) + sizeof(bitPointer);
+
+    explicit Bitstream(outpost::Slice<uint8_t>& byteArray) :
         mData(byteArray),
         bytePointer(headerSize),
-        bitPointer(7)
+        bitPointer(initialBitPointer)
     {
     }
 
     ~Bitstream() = default;
 
-    bool
+    inline bool
     isFull() const
     {
         return mData.getNumberOfElements() <= bytePointer;
+    }
+
+    inline bool
+    isEmpty() const
+    {
+        return bytePointer == headerSize && bitPointer == initialBitPointer;
     }
 
     /**
@@ -55,6 +63,10 @@ public:
     {
         if (!isFull())
         {
+            if (isEmpty())
+            {
+                mData[bytePointer] = 0;
+            }
             if (b)
             {
                 mData[bytePointer] |= (1 << bitPointer);
@@ -70,6 +82,10 @@ public:
             {
                 bitPointer = 7;
                 bytePointer++;
+                if (!isFull())
+                {
+                    mData[bytePointer] = 0;
+                }
             }
         }
     }
@@ -106,11 +122,22 @@ public:
     inline uint8_t
     getByte(uint16_t n) const
     {
-        if (n < bytePointer - headerSize)
+        if (n <= bytePointer - headerSize)
         {
             return mData[n + headerSize];
         }
         return 0;
+    }
+
+    /**
+     * Resets byte and bit pointer
+     */
+    inline void
+    reset()
+    {
+        bytePointer = headerSize;
+        bitPointer = initialBitPointer;
+        mData[bytePointer] = 0;
     }
 
     /**
@@ -143,7 +170,7 @@ public:
     virtual void
     serialize(Serialize& stream) const override
     {
-        serialize(stream, bytePointer);
+        serialize(stream, getSerializedSize());
     }
 
     /**

@@ -78,7 +78,7 @@ public:
      *
      * @return Rounded int32_t
      */
-    explicit operator int32_t()
+    explicit operator int32_t() const
     {
         uint8_t round = 0;
         if (value > 0 && ((1 << (PREC - 1)) & value))
@@ -578,7 +578,7 @@ public:
      * @return Raw underlying value
      */
     int32_t
-    getValue()
+    getValue() const
     {
         return value;
     }
