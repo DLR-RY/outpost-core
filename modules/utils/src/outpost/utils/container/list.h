@@ -20,6 +20,33 @@
 
 namespace outpost
 {
+template <typename T>
+class List;
+
+class ListElement
+{
+    template <typename T>
+    friend class List;
+
+public:
+    ListElement() = default;
+
+    // Copying/Assignment does not put a element in a queue or removes it
+    ListElement(const ListElement&)
+    {
+        mNext = nullptr;
+    }
+
+    ListElement&
+    operator=(const ListElement&)
+    {
+        return *this;
+    }
+
+private:
+    ListElement* mNext = nullptr;
+};
+
 /**
  * Singly-linked list with external storage.
  *
@@ -224,10 +251,10 @@ public:
         const T* operator->() const;
 
     private:
-        explicit ConstIterator(T* node);
+        explicit ConstIterator(const T* node);
 
         /// Pointer to the current node. Set to NULL if end of list.
-        T* mNode;
+        const T* mNode;
     };
 
     Iterator
@@ -243,7 +270,7 @@ public:
     end() const;
 
 private:
-    T* mHead;
+    ListElement* mHead;
 
     // disable copy constructor
     List(const List&);
