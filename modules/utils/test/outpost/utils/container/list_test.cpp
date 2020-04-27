@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
+ * - 2020, Jan Malburg (DLR RY-AVS)
  */
 
 #include <outpost/utils/container/list.h>

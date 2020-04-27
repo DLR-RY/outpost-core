@@ -11,6 +11,7 @@
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Janosch Reinking (DLR RY-AVS)
  * - 2016, Jan Sommer (DLR SC-SRV)
+ * - 2020, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_LIST_IMPL_H
@@ -22,7 +23,7 @@
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::List<T>::List() : mHead(nullptr)
+outpost::List<T>::List() : mHead(nullptr), mTail(nullptr)
 {
     static_assert(std::is_base_of<outpost::ListElement, T>::value,
                   "T not derived from ListElement");
@@ -55,12 +56,26 @@ outpost::List<T>::first() const
 }
 
 template <typename T>
+const T*
+outpost::List<T>::last() const
+{
+    return static_cast<const T*>(mTail);
+}
+
+template <typename T>
+T*
+outpost::List<T>::last()
+{
+    return static_cast<T*>(mTail);
+}
+
+template <typename T>
 template <typename Condition>
 T*
 outpost::List<T>::get(Condition condition)
 {
     T* current = static_cast<T*>(mHead);
-    while ((current != 0) && !condition(*current))
+    while ((current != nullptr) && !condition(*current))
     {
         current = static_cast<T*>(current->mNext);
     }
@@ -71,24 +86,24 @@ template <typename T>
 T*
 outpost::List<T>::getN(size_t n)
 {
-    T* current = static_cast<T*>(mHead);
-    while ((current != 0) && (n > 0))
+    ListElement* current = mHead;
+    while ((current != nullptr) && (n > 0))
     {
-        current = static_cast<T*>(current->mNext);
+        current = current->mNext;
         n--;
     }
 
     if (n > 0)
     {
         // n is greater than the size
-        current = 0;
+        current = nullptr;
     }
     else
     {
         // current points to the n-th element.
     }
 
-    return current;
+    return static_cast<T*>(current);
 }
 
 template <typename T>
@@ -96,6 +111,7 @@ void
 outpost::List<T>::reset()
 {
     mHead = nullptr;
+    mTail = nullptr;
 }
 
 // ----------------------------------------------------------------------------
@@ -103,27 +119,67 @@ template <typename T>
 void
 outpost::List<T>::prepend(T* node)
 {
-    node->mNext = static_cast<T*>(mHead);
-    mHead = static_cast<T*>(node);
+    // for empty list we alos have to adapt the tail
+    if (mTail == nullptr)
+    {
+        mTail = node;
+    }
+
+    node->mNext = mHead;
+    mHead = node;
+}
+
+template <typename T>
+void
+outpost::List<T>::append(T* node)
+{
+    if (mHead == nullptr)
+    {
+        mHead = node;
+    }
+    else
+    {
+        mTail->mNext = node;
+    }
+    mTail = node;
+    node->mNext = nullptr;
 }
 
 template <typename T>
 void
 outpost::List<T>::insert(T* node)
 {
-    if ((mHead == nullptr) || (*node < *static_cast<T*>(mHead)))
+    node->mNext = nullptr;
+    if (mHead == nullptr)
+    {
+        // empty list
+        mHead = node;
+        mTail = node;
+    }
+    else if (*node < *static_cast<T*>(mHead))
     {
         // Node is the first in the list
         node->mNext = mHead;
         mHead = node;
     }
+    else if (*static_cast<T*>(mTail) < *node)
+    {
+        mTail->mNext = node;
+        mTail = node;
+    }
     else
     {
         // Traverse list until the list ends or a "bigger" entry is found.
-        T* current = static_cast<T*>(mHead);
+        ListElement* current = mHead;
         while ((current->mNext != nullptr) && (*static_cast<T*>(current->mNext) < *node))
         {
-            current = static_cast<T*>(current->mNext);
+            current = current->mNext;
+        }
+
+        // insert at end
+        if (current->mNext == nullptr)
+        {
+            mTail = node;
         }
 
         // Add to list
@@ -144,23 +200,37 @@ outpost::List<T>::removeNode(T* node)
         {
             // Entry is the first one in the list
             mHead = mHead->mNext;
+
+            if (mHead == nullptr)
+            {
+                mTail = nullptr;
+            }
+
+            node->mNext = nullptr;
             nodeFound = true;
         }
         else
         {
-            T* previous = static_cast<T*>(mHead);
-            T* current = static_cast<T*>(mHead->mNext);
+            ListElement* previous = mHead;
+            ListElement* current = mHead->mNext;
 
             // Iterate trough the list until the node is found
             while ((current != nullptr) && (current != node))
             {
                 previous = current;
-                current = static_cast<T*>(current->mNext);
+                current = current->mNext;
             }
 
             if (current != 0)
             {
                 previous->mNext = current->mNext;
+
+                if (previous->mNext == nullptr)
+                {
+                    mTail = previous;
+                }
+
+                node->mNext = nullptr;
                 nodeFound = true;
             }
         }
@@ -184,10 +254,17 @@ outpost::List<T>::remove(Condition condition)
             // Entry is the first one in the list
             node = static_cast<T*>(mHead);
             mHead = mHead->mNext;
+
+            if (mHead == nullptr)
+            {
+                mTail = nullptr;
+            }
+
+            node->mNext = nullptr;
         }
         else
         {
-            T* previous = static_cast<T*>(mHead);
+            ListElement* previous = mHead;
             node = static_cast<T*>(mHead->mNext);
 
             // Iterate trough the list until the node is found
@@ -201,6 +278,12 @@ outpost::List<T>::remove(Condition condition)
             {
                 // remove node from the list
                 previous->mNext = node->mNext;
+
+                if (previous->mNext == nullptr)
+                {
+                    mTail = previous;
+                }
+                node->mNext = nullptr;
             }
         }
     }
@@ -213,32 +296,39 @@ template <typename Condition>
 void
 outpost::List<T>::removeAll(Condition condition)
 {
-    if (mHead != nullptr)
-    {
-        // List is not empty
-        T* previous = static_cast<T*>(mHead);
-        T* current = static_cast<T*>(mHead->mNext);
+    ListElement* previous = nullptr;
+    ListElement* current = static_cast<T*>(mHead);
 
-        // Iterate trough the list and check all nodes. Iteration is started
-        // at the entry after the first one as the first entry needs a special
-        // handling.
-        while (current != nullptr)
+    // Iterate trough the list and check all nodes.
+    while (current != nullptr)
+    {
+        if (condition(*static_cast<T*>(current)))
         {
-            if (condition(*current))
+            // the removed one is the head -> correct list
+            if (previous == nullptr)
             {
-                previous->mNext = current->mNext;
+                mHead = current->mNext;
+                if (mHead == nullptr)
+                {
+                    mTail = nullptr;
+                }
             }
             else
             {
-                previous = current;
+                previous->mNext = current->mNext;
+                if (previous->mNext == nullptr)
+                {
+                    mTail = previous;
+                }
             }
-            current = static_cast<T*>(current->mNext);
+            ListElement* tmp = current;
+            current = current->mNext;
+            tmp->mNext = nullptr;
         }
-
-        // Check first entry in the list
-        if (condition(*static_cast<T*>(mHead)))
+        else
         {
-            mHead = mHead->mNext;
+            previous = current;
+            current = current->mNext;
         }
     }
 }
@@ -248,32 +338,41 @@ template <typename Condition, typename PostCondition>
 void
 outpost::List<T>::removeAll(Condition condition, PostCondition postCondition)
 {
-    T* previous = nullptr;
-    T* current = static_cast<T*>(mHead);
+    ListElement* previous = nullptr;
+    ListElement* current = static_cast<T*>(mHead);
 
     // Iterate trough the list and check all nodes.
     while (current != nullptr)
     {
-        T* node = current;
+        T* node = static_cast<T*>(current);
         if (condition(*node))
         {
             // the removed one is the head -> correct list
             if (previous == nullptr)
             {
-                mHead = static_cast<T*>(current->mNext);
+                mHead = current->mNext;
+                if (mHead == nullptr)
+                {
+                    mTail = nullptr;
+                }
             }
             else
             {
                 previous->mNext = current->mNext;
+                if (previous->mNext == nullptr)
+                {
+                    mTail = previous;
+                }
             }
-            current = static_cast<T*>(current->mNext);
+            current = current->mNext;
+            node->mNext = nullptr;
 
             postCondition(*node);
         }
         else
         {
             previous = current;
-            current = static_cast<T*>(current->mNext);
+            current = current->mNext;
         }
     }
 }
@@ -285,9 +384,14 @@ outpost::List<T>::removeFirst()
 {
     if (mHead != nullptr)
     {
-        T* next = static_cast<T*>(mHead->mNext);
+        ListElement* next = mHead->mNext;
         mHead->mNext = nullptr;
         mHead = next;
+
+        if (mHead == nullptr)
+        {
+            mTail = nullptr;
+        }
     }
 }
 
@@ -442,7 +546,7 @@ template <typename T>
 typename outpost::List<T>::Iterator
 outpost::List<T>::end()
 {
-    Iterator it(0);
+    Iterator it(nullptr);
     return it;
 }
 
@@ -458,7 +562,7 @@ template <typename T>
 typename outpost::List<T>::ConstIterator
 outpost::List<T>::end() const
 {
-    ConstIterator it(0);
+    ConstIterator it(nullptr);
     return it;
 }
 

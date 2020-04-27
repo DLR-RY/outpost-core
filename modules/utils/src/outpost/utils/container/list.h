@@ -11,6 +11,7 @@
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Janosch Reinking (DLR RY-AVS)
  * - 2016, Jan Sommer (DLR SC-SRV)
+ * - 2020, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_LIST_H
@@ -101,6 +102,22 @@ public:
     const T*
     first() const;
 
+    /**
+     * Get last element of the list.
+     *
+     * O(1)
+     */
+    T*
+    last();
+
+    /**
+     * Get last element of the list.
+     *
+     * O(1)
+     */
+    const T*
+    last() const;
+
     template <typename Condition>
     T*
     get(Condition condition);
@@ -120,6 +137,14 @@ public:
      */
     void
     prepend(T* node);
+
+    /**
+     * Add a node to the back of the list.
+     *
+     * O(1)
+     */
+    void
+    append(T* node);
 
     /**
      * Insert a node sorted into the list.
@@ -271,6 +296,7 @@ public:
 
 private:
     ListElement* mHead;
+    ListElement* mTail;
 
     // disable copy constructor
     List(const List&);
