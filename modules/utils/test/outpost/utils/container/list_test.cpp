@@ -15,14 +15,28 @@
 
 #include <unittest/harness.h>
 
+#include <vector>
+
 using namespace outpost;
 
-struct ListNode
+struct ListNode : public outpost::ListElement
 {
+    ListNode() : mValue(0){};
+    ListNode(uint8_t v) : mValue(v){};
+    uint8_t mValue;
+};
+
+struct RelationalListNode : public outpost::ListElement
+{
+    RelationalListNode() : mValue(0){};
+    RelationalListNode(uint8_t v) : mValue(v){};
     uint8_t mValue;
 
-    // needed for the list handling
-    ListNode* mNext;
+    bool
+    operator<(const RelationalListNode& other)
+    {
+        return mValue < other.mValue;
+    }
 };
 
 TEST(ListTest, createAndAdd)
@@ -61,9 +75,9 @@ TEST(ListTest, get)
 
     EXPECT_EQ(0, list.get(Condition(2)));
 
-    ListNode node1 = {1, 0};
-    ListNode node2 = {3, 0};
-    ListNode node3 = {5, 0};
+    ListNode node1(1);
+    ListNode node2(3);
+    ListNode node3(5);
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -74,6 +88,46 @@ TEST(ListTest, get)
     EXPECT_EQ(&node3, list.get(Condition(5)));
 
     EXPECT_EQ(0, list.get(Condition(2)));
+}
+
+TEST(ListTest, getN)
+{
+    List<ListNode> list;
+
+    ListNode node1(1);
+    ListNode node2(3);
+    ListNode node3(5);
+
+    list.prepend(&node1);
+    list.prepend(&node2);
+    list.prepend(&node3);
+
+    EXPECT_EQ(&node1, list.getN(2));
+    EXPECT_EQ(&node2, list.getN(1));
+    EXPECT_EQ(&node3, list.getN(0));
+}
+
+TEST(ListTest, insert)
+{
+    List<RelationalListNode> list;
+
+    RelationalListNode node1(1);
+    RelationalListNode node2(2);
+    RelationalListNode node3(3);
+    RelationalListNode node4(4);
+    RelationalListNode node5(5);
+
+    list.insert(&node4);
+    list.insert(&node3);
+    list.insert(&node2);
+    list.insert(&node1);
+    list.insert(&node5);
+
+    EXPECT_EQ(&node1, list.getN(0));
+    EXPECT_EQ(&node2, list.getN(1));
+    EXPECT_EQ(&node3, list.getN(2));
+    EXPECT_EQ(&node4, list.getN(3));
+    EXPECT_EQ(&node5, list.getN(4));
 }
 
 TEST(ListTest, remove)
@@ -105,9 +159,9 @@ TEST(ListTest, removeWithFunctor)
 {
     List<ListNode> list;
 
-    ListNode node1 = {1, 0};
-    ListNode node2 = {3, 0};
-    ListNode node3 = {5, 0};
+    ListNode node1(1);
+    ListNode node2(3);
+    ListNode node3(5);
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -150,9 +204,9 @@ TEST(ListTest, removeWithFunction)
 {
     List<ListNode> list;
 
-    ListNode node1 = {1, 0};
-    ListNode node2 = {3, 0};
-    ListNode node3 = {5, 0};
+    ListNode node1(1);
+    ListNode node2(3);
+    ListNode node3(5);
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -175,10 +229,10 @@ TEST(ListTest, removeAll)
 {
     List<ListNode> list;
 
-    ListNode node1 = {1, 0};
-    ListNode node2 = {3, 0};
-    ListNode node3 = {5, 0};
-    ListNode node4 = {3, 0};
+    ListNode node1(1);
+    ListNode node2(3);
+    ListNode node3(5);
+    ListNode node4(3);
 
     list.prepend(&node1);
     list.prepend(&node2);
@@ -195,13 +249,49 @@ TEST(ListTest, removeAll)
     EXPECT_TRUE(list.removeNode(&node3));
 }
 
+TEST(ListTest, removeAllWithPostCondition)
+{
+    List<ListNode> list;
+
+    ListNode node1(1);
+    ListNode node2(3);
+    ListNode node3(5);
+    ListNode node4(3);
+    ListNode node5(5);
+    ListNode node6(4);
+
+    list.prepend(&node1);
+    list.prepend(&node2);
+    list.prepend(&node3);
+    list.prepend(&node4);
+    list.prepend(&node5);
+    list.prepend(&node6);
+
+    std::vector<ListNode*> v;
+
+    list.removeAll([](ListNode& l) { return l.mValue > 3; },
+                   [&v](ListNode& l) { v.push_back(&l); });
+
+    EXPECT_EQ(3u, list.size());
+
+    EXPECT_EQ(&node4, list.getN(0));
+    EXPECT_EQ(&node2, list.getN(1));
+    EXPECT_EQ(&node1, list.getN(2));
+
+    EXPECT_EQ(3u, v.size());
+
+    EXPECT_EQ(&node6, v[0]);
+    EXPECT_EQ(&node5, v[1]);
+    EXPECT_EQ(&node3, v[2]);
+}
+
 TEST(ListTest, shouldIterateOverElements)
 {
     List<ListNode> list;
 
-    ListNode node1 = {1, 0};
-    ListNode node2 = {3, 0};
-    ListNode node3 = {5, 0};
+    ListNode node1(1);
+    ListNode node2(3);
+    ListNode node3(5);
 
     list.prepend(&node3);
     list.prepend(&node2);
