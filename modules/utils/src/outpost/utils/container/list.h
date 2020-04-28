@@ -241,6 +241,8 @@ public:
 
         T* operator->();
 
+        explicit operator T*();
+
     private:
         explicit Iterator(T* node);
 
@@ -274,6 +276,8 @@ public:
         const T& operator*() const;
 
         const T* operator->() const;
+
+        explicit operator const T*() const;
 
     private:
         explicit ConstIterator(const T* node);

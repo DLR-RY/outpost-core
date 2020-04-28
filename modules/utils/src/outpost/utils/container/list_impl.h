@@ -533,6 +533,12 @@ const T* outpost::List<T>::ConstIterator::operator->() const
     return this->mNode;
 }
 
+template <typename T>
+outpost::List<T>::ConstIterator::operator const T*() const
+{
+    return mNode;
+}
+
 // ----------------------------------------------------------------------------
 template <typename T>
 typename outpost::List<T>::Iterator
@@ -564,6 +570,12 @@ outpost::List<T>::end() const
 {
     ConstIterator it(nullptr);
     return it;
+}
+
+template <typename T>
+outpost::List<T>::Iterator::operator T*()
+{
+    return mNode;
 }
 
 #endif

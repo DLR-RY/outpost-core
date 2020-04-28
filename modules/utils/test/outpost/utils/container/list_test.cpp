@@ -417,6 +417,9 @@ TEST(ListTest, IteratorTest)
     ++it2;
     it = it2;
     EXPECT_EQ(it->mValue, 5);
+
+    ListNode* p = static_cast<ListNode*>(it);
+    EXPECT_EQ(p->mValue, 5);
 }
 
 TEST(ListTest, ConstIteratorTest)
@@ -456,6 +459,9 @@ TEST(ListTest, ConstIteratorTest)
 
     List<ListNode>::ConstIterator it3(l.begin());
     EXPECT_EQ(it3->mValue, 1);
+
+    const ListNode* p = static_cast<const ListNode*>(it3);
+    EXPECT_EQ(p->mValue, 1);
 }
 
 TEST(ListTest, ConstFirstLastTest)
