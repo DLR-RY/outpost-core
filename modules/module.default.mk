@@ -77,13 +77,19 @@ build-lua-default:
 
 build-test:
 	@scons -C test/ -Q $(MAKEJOBS) build
-	
+
 test-default:
 	@scons -C test/ -Q $(MAKEJOBS) build
 	@$(BUILDPATH)/$(MODULE)/test/unittest/runner --gtest_filter=$(GTEST_FILTER) --gtest_output=xml:$(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml
 	@mkdir -p $(BUILDPATH)/test
 	@python3 $(ROOTPATH)/tools/gtest_process_skipped.py $(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml $(BUILDPATH)/test/$(MODULE).xml
 
+test-verbose-default:
+	@scons -C test/ -Q $(MAKEJOBS) build
+	@$(BUILDPATH)/$(MODULE)/test/unittest/runner --gtest_filter=$(GTEST_FILTER) --gtest_output=xml:$(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml --verbose
+	@mkdir -p $(BUILDPATH)/test
+	@python3 $(ROOTPATH)/tools/gtest_process_skipped.py $(BUILDPATH)/$(MODULE)/test/unittest/coverage.xml $(BUILDPATH)/test/$(MODULE).xml
+    
 cppcheck:
 	@scons -C test/ compiledb -D append_buildpath=compiledb
 	@mkdir -p $(BUILDPATH)/cppcheck;

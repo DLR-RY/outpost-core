@@ -177,7 +177,7 @@ protected:
 };
 
 ConfigurableEventListener*
-registerConfigurableEventListener();
+registerConfigurableEventListener(int argc = 0, char** argv = nullptr);
 
 }  // namespace unittest
 

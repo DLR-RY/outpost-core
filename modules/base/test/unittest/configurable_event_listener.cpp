@@ -34,8 +34,20 @@ ConfigurableEventListener::OnTestEnd(const testing::TestInfo& test_info)
     }
 }
 
+static bool inArgumentList(int argc, char** argv, const char* str)
+{
+	for(int i = 0; i < argc; i++)
+	{
+		if(strcmp(argv[i], str) == 0)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 ConfigurableEventListener*
-registerConfigurableEventListener()
+registerConfigurableEventListener(int argc, char** argv)
 {
     // Remove the default listener
     testing::TestEventListeners& listeners = testing::UnitTest::GetInstance()->listeners();
@@ -46,6 +58,13 @@ registerConfigurableEventListener()
     // [==========] 149 tests from 53 test cases ran. (1 ms total)
     // [ PASSED ] 149 tests.
     ConfigurableEventListener* listener = new ConfigurableEventListener(defaultPrinter);
+
+    if(inArgumentList(argc, argv, "--verbose"))
+    {
+        listener->showTestNames = true;
+        listener->showSuccesses = true;
+    }
+
     listeners.Append(listener);
 
     return listener;

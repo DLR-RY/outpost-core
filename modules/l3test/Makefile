@@ -25,6 +25,8 @@ test-lua: build-lua
 
 test: build-lua test-lua test-default
 
+test-verbose: build-lua test-lua test-verbose-default
+
 coverage: coverage-default
 
 clean: clean-default

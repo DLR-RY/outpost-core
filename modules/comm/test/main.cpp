@@ -20,7 +20,7 @@ int
 main(int argc, char** argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
-    unittest::registerConfigurableEventListener();
+    unittest::registerConfigurableEventListener(argc, argv);
 
     return RUN_ALL_TESTS();
 }
