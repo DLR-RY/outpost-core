@@ -11,6 +11,7 @@
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Janosch Reinking (DLR RY-AVS)
  * - 2016, Jan Sommer (DLR SC-SRV)
+ * - 2020, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_LIST_H
@@ -20,6 +21,33 @@
 
 namespace outpost
 {
+template <typename T>
+class List;
+
+class ListElement
+{
+    template <typename T>
+    friend class List;
+
+public:
+    ListElement() = default;
+
+    // Copying/Assignment does not put a element in a queue or removes it
+    ListElement(const ListElement&)
+    {
+        mNext = nullptr;
+    }
+
+    ListElement&
+    operator=(const ListElement&)
+    {
+        return *this;
+    }
+
+private:
+    ListElement* mNext = nullptr;
+};
+
 /**
  * Singly-linked list with external storage.
  *
@@ -74,6 +102,22 @@ public:
     const T*
     first() const;
 
+    /**
+     * Get last element of the list.
+     *
+     * O(1)
+     */
+    T*
+    last();
+
+    /**
+     * Get last element of the list.
+     *
+     * O(1)
+     */
+    const T*
+    last() const;
+
     template <typename Condition>
     T*
     get(Condition condition);
@@ -93,6 +137,14 @@ public:
      */
     void
     prepend(T* node);
+
+    /**
+     * Add a node to the back of the list.
+     *
+     * O(1)
+     */
+    void
+    append(T* node);
 
     /**
      * Insert a node sorted into the list.
@@ -189,6 +241,8 @@ public:
 
         T* operator->();
 
+        explicit operator T*();
+
     private:
         explicit Iterator(T* node);
 
@@ -223,11 +277,13 @@ public:
 
         const T* operator->() const;
 
+        explicit operator const T*() const;
+
     private:
-        explicit ConstIterator(T* node);
+        explicit ConstIterator(const T* node);
 
         /// Pointer to the current node. Set to NULL if end of list.
-        T* mNode;
+        const T* mNode;
     };
 
     Iterator
@@ -243,7 +299,8 @@ public:
     end() const;
 
 private:
-    T* mHead;
+    ListElement* mHead;
+    ListElement* mTail;
 
     // disable copy constructor
     List(const List&);
