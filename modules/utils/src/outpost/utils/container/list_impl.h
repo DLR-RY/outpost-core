@@ -338,41 +338,53 @@ template <typename Condition, typename PostCondition>
 void
 outpost::List<T>::removeAll(Condition condition, PostCondition postCondition)
 {
+    // we only want a single pointer between iterations such that
+    // a postcondition adding a node cannot destory assumption about the
+    // relation between pointer
     ListElement* previous = nullptr;
-    ListElement* current = static_cast<T*>(mHead);
 
-    // Iterate trough the list and check all nodes.
-    while (current != nullptr)
+    while (previous == nullptr && mHead != nullptr)
     {
-        T* node = static_cast<T*>(current);
-        if (condition(*node))
+        if (condition(*static_cast<T*>(mHead)))
         {
-            // the removed one is the head -> correct list
-            if (previous == nullptr)
+            T* tmp = static_cast<T*>(mHead);
+            mHead = tmp->mNext;
+            if (mHead == nullptr)
             {
-                mHead = current->mNext;
-                if (mHead == nullptr)
-                {
-                    mTail = nullptr;
-                }
+                mTail = nullptr;
             }
-            else
-            {
-                previous->mNext = current->mNext;
-                if (previous->mNext == nullptr)
-                {
-                    mTail = previous;
-                }
-            }
-            current = current->mNext;
-            node->mNext = nullptr;
+            tmp->mNext = nullptr;
+            postCondition(*tmp);
+        }
+        else
+        {
+            previous = mHead;
+        }
+    }
 
-            postCondition(*node);
+    if (previous == nullptr)
+    {
+        return;
+    }
+
+    // Iterate trough the rest of the list and check the remaining nodes.
+    while (previous->mNext != nullptr)
+    {
+        T* current = static_cast<T*>(previous->mNext);
+        if (condition(*current))
+        {
+            previous->mNext = current->mNext;
+            if (previous->mNext == nullptr)
+            {
+                mTail = previous;
+            }
+            current->mNext = nullptr;
+
+            postCondition(*current);
         }
         else
         {
             previous = current;
-            current = current->mNext;
         }
     }
 }
