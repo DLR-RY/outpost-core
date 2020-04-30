@@ -191,6 +191,41 @@ TEST(ListTest, insert)
     EXPECT_EQ(&node6, list.getN(5));
 }
 
+TEST(ListTest, removeAlInsertInPost)
+{
+    List<RelationalListNode> list;
+
+    RelationalListNode node0(0);
+    RelationalListNode node1(1);
+    RelationalListNode node2(2);
+    RelationalListNode node3(3);
+    RelationalListNode node4(4);
+    RelationalListNode node5(5);
+    RelationalListNode node6(6);
+
+    list.insert(&node1);
+    list.insert(&node3);
+    list.insert(&node5);
+
+    // remove one and put new elements beside it and beside its neighbors
+    // for max chance of destroying some internal pointers
+    list.removeAll([](RelationalListNode& l) { return l.mValue == 3; },
+                   [&](RelationalListNode&) {
+                       list.insert(&node0);
+                       list.insert(&node2);
+                       list.insert(&node4);
+                       list.insert(&node6);
+                   });
+
+    EXPECT_EQ(6u, list.size());
+    EXPECT_EQ(&node0, list.getN(0));
+    EXPECT_EQ(&node1, list.getN(1));
+    EXPECT_EQ(&node2, list.getN(2));
+    EXPECT_EQ(&node4, list.getN(3));
+    EXPECT_EQ(&node5, list.getN(4));
+    EXPECT_EQ(&node6, list.getN(5));
+}
+
 TEST(ListTest, remove)
 {
     List<ListNode> list;
