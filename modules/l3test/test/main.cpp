@@ -24,7 +24,7 @@ main(int argc, char** argv)
     ::testing::InitGoogleMock(&argc, argv);
 
     // Using the default listener from outpost/utils/unittest for customized gtest output
-    unittest::registerConfigurableEventListener();
+    unittest::registerConfigurableEventListener(argc, argv);
 
     outpost::l3test::LuaPath::setDefaultPathPrefix("./");
 

@@ -21,6 +21,8 @@ include ../module.default.mk
 
 test: test-default
 
+test-verbose: test-verbose-default
+
 coverage: coverage-default
 
 clean: clean-default

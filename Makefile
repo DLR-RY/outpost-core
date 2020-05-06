@@ -67,6 +67,13 @@ test:
 		make -C modules/$$m test --no-print-directory || return 1 ; \
 	done
 	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
+	
+test-verbose:
+	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
+		printf "\n$(CINFO)Run unit tests for module \"$$m\":$(CEND)\n" ; \
+		make -C modules/$$m test-verbose --no-print-directory || return 1 ; \
+	done
+	@printf "\n$(COK)[PASS] All unit tests passed!$(CEND)\n"
 
 cppcheck:
 	@for m in $(MODULES_GLOBAL) $(MODULES_TEST); do \
