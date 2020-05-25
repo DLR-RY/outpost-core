@@ -63,3 +63,9 @@ outpost::rtos::Thread::getPriority() const
 {
     return 0;
 }
+
+void
+__attribute__((weak)) outpost::rtos::Thread::sleep(::outpost::time::Duration duration)
+{
+    (void) duration;
+}
