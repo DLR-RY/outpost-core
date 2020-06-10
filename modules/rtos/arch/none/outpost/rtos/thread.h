@@ -168,11 +168,8 @@ public:
      * \param timeout
      *         Time to sleep.
      */
-    static inline void
-    sleep(::outpost::time::Duration duration)
-    {
-        (void) duration;
-    }
+    static void
+    sleep(::outpost::time::Duration duration);
 
 protected:
     /**
