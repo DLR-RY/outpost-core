@@ -30,9 +30,7 @@ public:
     static constexpr outpost::time::Duration executionTimeoutShort = outpost::time::Seconds(2);
 
     HeartbeatLimiterTest() :
-        mClock(),
-        mHeartbeat(mClock, heartbeatInterval, source),
-        mLogger(watchdogHeartbeat)
+        mClock(), mHeartbeat(mClock, heartbeatInterval, source), mLogger(watchdogHeartbeat)
     {
     }
 

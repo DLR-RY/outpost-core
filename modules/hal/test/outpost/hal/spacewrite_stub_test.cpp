@@ -114,9 +114,10 @@ TEST_F(SpaceWireStubTest, shouldTransmitData)
     std::vector<uint8_t> expectedData = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0xAB, 0xCD};
 
     SpaceWire::TransmitBuffer* buffer = nullptr;
-    mSpaceWire.requestBuffer(buffer, outpost::time::Duration::zero());
+    ASSERT_EQ(SpaceWire::Result::success,
+              mSpaceWire.requestBuffer(buffer, outpost::time::Duration::zero()));
 
-    memcpy(buffer->getData().begin(), &expectedData.front(), expectedData.size());
+    ASSERT_TRUE(buffer->getData().copyFrom(&expectedData.front(), expectedData.size()));
     buffer->setLength(expectedData.size());
     buffer->setEndMarker(SpaceWire::eop);
 
@@ -127,6 +128,13 @@ TEST_F(SpaceWireStubTest, shouldTransmitData)
     auto& packet = mSpaceWire.mSentPackets.front();
     EXPECT_EQ(expectedData, packet.data);
     EXPECT_EQ(SpaceWire::eop, packet.end);
+}
+
+TEST_F(SpaceWireStubTest, shouldReceiveTimeout)
+{
+    SpaceWire::ReceiveBuffer buffer;
+    ASSERT_EQ(SpaceWire::Result::timeout,
+              mSpaceWire.receive(buffer, outpost::time::Duration::zero()));
 }
 
 TEST_F(SpaceWireStubTest, shouldReceiveData)

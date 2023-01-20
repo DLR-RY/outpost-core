@@ -18,8 +18,7 @@
 #include <unittest/smpc/testing_subscription_raw.h>
 
 #include <stdint.h>
-
-#include <cstring>
+#include <string.h>
 
 using namespace outpost::smpc;
 
@@ -38,9 +37,13 @@ public:
     }
 
     void
-    onReceiveData0(const void*, size_t)
+    onReceiveData0(const void* data, size_t)
     {
-        received[0] = true;
+        const Data* d = reinterpret_cast<const Data*>(data);
+        if (d->foo == 0x12345678 && d->bar == 0x9876)
+        {
+            received[0] = true;
+        }
     }
 
     void

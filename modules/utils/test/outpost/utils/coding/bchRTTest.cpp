@@ -1955,7 +1955,7 @@ TEST(BCHRTest, compareKnown)
 
     for (uint32_t iteration = 0; iteration < 50; ++iteration)
     {
-        std::array<uint8_t, dataSize + spareSize> encoded;
+        std::array<uint8_t, (dataSize + spareSize)> encoded;
 
         EXPECT_TRUE(bch.encode(outpost::asSlice(data[iteration]), outpost::asSlice(encoded)));
 
@@ -2057,7 +2057,6 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, failsTooSmallEncoded, ())
 {
     std::array<uint8_t, dataSize> input;
     std::array<uint8_t, dataSize> output;
-    std::array<uint8_t, dataSize> expected;
 
     auto rand256 = rc::gen::arbitrary<uint8_t>();
 
@@ -2067,8 +2066,6 @@ RC_GTEST_FIXTURE_PROP(BCHRTest, failsTooSmallEncoded, ())
     }
 
     std::array<uint8_t, dataSize + spareSize> encoded;
-
-    expected = input;
 
     EXPECT_FALSE(bch.encode(outpost::asSlice(input),
                             outpost::asSlice(encoded).first(dataSize + spareSize - 1)));

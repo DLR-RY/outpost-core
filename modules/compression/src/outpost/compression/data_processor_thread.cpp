@@ -17,6 +17,7 @@
 #include "legall_wavelet.h"
 
 #include <outpost/base/fixpoint.h>
+#include <outpost/support/heartbeat.h>
 #include <outpost/utils/container/reference_queue.h>
 #include <outpost/utils/container/shared_object_pool.h>
 
@@ -24,13 +25,19 @@ namespace outpost
 {
 namespace compression
 {
-DataProcessorThread::DataProcessorThread(uint8_t thread_priority,
-                                         outpost::utils::SharedBufferPoolBase& pool,
-                                         outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
-                                         outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue,
-                                         uint8_t numOutputRetries,
-                                         outpost::time::Duration retryTimeout) :
+constexpr outpost::time::Duration DataProcessorThread::waitForBlockTimeout;
+constexpr outpost::time::Duration DataProcessorThread::processingTimeout;
+
+DataProcessorThread::DataProcessorThread(
+        uint8_t thread_priority,
+        outpost::support::parameter::HeartbeatSource heartbeatSource,
+        outpost::utils::SharedBufferPoolBase& pool,
+        outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
+        outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue,
+        uint8_t numOutputRetries,
+        outpost::time::Duration retryTimeout) :
     outpost::rtos::Thread(thread_priority, 1024, "DPT"),
+    mHeartbeatSource(heartbeatSource),
     mInputQueue(inputQueue),
     mOutputQueue(outputQueue),
     mPool(pool),
@@ -39,8 +46,6 @@ DataProcessorThread::DataProcessorThread(uint8_t thread_priority,
     mNumProcessedBlocks(0),
     mNumForwardedBlocks(0),
     mNumLostBlocks(0),
-    mEncodingSlice(mEncodingBuffer),
-    mBitstream(mEncodingSlice),
     mRetrySendTimeout(retryTimeout),
     mMaxSendRetries(numOutputRetries)
 {
@@ -55,6 +60,7 @@ DataProcessorThread::run()
 {
     while (1)
     {
+        outpost::support::Heartbeat::suspend(mHeartbeatSource);
         mCheckpoint.pass();
         processSingleBlock();
     }
@@ -82,6 +88,9 @@ void
 DataProcessorThread::processSingleBlock(outpost::time::Duration timeout)
 {
     DataBlock b;
+    outpost::support::Heartbeat::send(mHeartbeatSource,
+                                      timeout + processingTimeout * 2U
+                                              + mRetrySendTimeout * mMaxSendRetries);
     if (mInputQueue.receive(b, timeout))
     {
         mNumIncomingBlocks++;
@@ -108,6 +117,10 @@ DataProcessorThread::processSingleBlock(outpost::time::Duration timeout)
             {
                 mNumLostBlocks++;
             }
+        }
+        else
+        {
+            mNumLostBlocks++;
         }
     }
 }

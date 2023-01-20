@@ -69,8 +69,7 @@ public:
     FixedOrderedMap(Entry* entries, size_t numberOfEntries);
 
     explicit inline FixedOrderedMap(Slice<Entry> array) :
-        mEntries(&array[0]),
-        mNumberOfEntries(array.getNumberOfElements())
+        mEntries(&array[0]), mNumberOfEntries(array.getNumberOfElements())
     {
     }
 

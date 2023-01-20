@@ -21,6 +21,7 @@ template <typename T>
 volatile T&
 outpost::hal::Register::access(uint32_t address)
 {
+    // cppcheck-suppress constVariable
     volatile T* reg = reinterpret_cast<volatile T*>(address);
     return *reg;
 }

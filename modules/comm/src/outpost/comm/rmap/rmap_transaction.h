@@ -16,9 +16,9 @@
 
 #include "rmap_packet.h"
 
+#include <outpost/hal/space_wire_multi_protocol_handler.h>
 #include <outpost/rtos.h>
 #include <outpost/time/duration.h>
-#include <outpost/utils/container/shared_buffer.h>
 
 namespace outpost
 {
@@ -141,13 +141,13 @@ public:
     }
 
     inline void
-    setReplyPacket(RmapPacket* replyPacket)
+    setReplyPacket(const RmapPacket* replyPacket)
     {
         mReplyPacket = *replyPacket;
     }
 
     inline void
-    setBuffer(outpost::utils::SharedBufferPointer& buffer)
+    setBuffer(const outpost::hal::SpWMessage& buffer)
     {
         mBuffer = buffer;
     }
@@ -198,7 +198,7 @@ private:
     RmapPacket mReplyPacket;
     RmapPacket mCommandPacket;
     outpost::rtos::BinarySemaphore mReplyLock;
-    outpost::utils::SharedBufferPointer mBuffer;
+    outpost::hal::SpWMessage mBuffer;
 };
 }  // namespace comm
 }  // namespace outpost

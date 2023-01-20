@@ -90,8 +90,8 @@ private:
     Crc8Ccitt&
     operator=(const Crc8Ccitt&);
 
-    static const uint8_t initialValue = 0x00;
-    static const int numberOfValuesPerByte = 256;
+    static constexpr uint8_t initialValue = 0x00;
+    static constexpr int32_t numberOfValuesPerByte = 256;
 
     /// Pre-calculated CRC table for one byte
     static const uint8_t crcTable[numberOfValuesPerByte];
@@ -170,8 +170,8 @@ private:
     Crc8CcittReversed&
     operator=(const Crc8CcittReversed&);
 
-    static const uint8_t initialValue = 0x00;
-    static const int numberOfValuesPerByte = 256;
+    static constexpr uint8_t initialValue = 0x00;
+    static constexpr int32_t numberOfValuesPerByte = 256;
 
     /// Pre-calculated CRC table for one byte
     static const uint8_t crcTable[numberOfValuesPerByte];

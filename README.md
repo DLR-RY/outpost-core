@@ -11,22 +11,46 @@ OUTPOST is split into two repositories: *outpost-core* contains the open-source
 base environment and *outpost-satellite* contains the closed-source satellite
 specific modules.
 
+IMPORTANT NOTICE
+-------
+
+This repositry is only a snapshot of the current state of development in progress at DLR.
+If you want to participate or are interested in the satellite specific modules, please contact
+jan-gerd.mess[at]dlr.de
+
 
 Modules
 -------
 
 This repository contains the following software modules:
+- `base`
+
+    Most basic data structures and arithmetic helper classes used throughout the library.
 
 - `utils`
 
     A collection of useful bits and pieces. The reuseable unit
     test harness is located here.
+    
+- `comm`
+
+    Implementation of the Remote Memory Access Protocol (RMAP) via SpaceWire.
+    
+- `compression`
+
+    Algorithms for (de)compression and de-/encoding of time-series data using wavelet compression and 
+    set-partitioning-in-hierarchical-trees.
 
 - `time`
 
     Type safe time management functions. Provides classes to convert
     between time representations, e.g. Unix Time to GPS or TAI.
 
+- `parameter`
+
+   Provides system-wide access to variables that need to be read/written by different
+   parts of the (loosely coupled) system.
+    
 - `rtos`
 
     RTOS wrapper layer. Allows to build OUTPOST on different operating
@@ -36,16 +60,24 @@ This repository contains the following software modules:
 
     Hardware abstraction layer for communication interfaces.
 
+- `sip`
+
+    Simple Interface Protocol. A minimal packet-based communication protocol for hardware links,
+    includes specifications for UART, SpaceWire and UDP
+    
 - `smpc`
 
     Simple Message Passing Channel. Provides a very basic, but fast
     publish/subscribe based communication middleware for objects living in
     the same address space.
+    
+- `swb`
 
-- `l3test`
+    Software Bus. An asynchronous mean of communication between software modules based on the publish/subscribe paradigm.
 
-    Lua based testing framework. Allows to run Lua scripts as part of
-    the unit tests.
+- `support`
+
+    A heartbeat-mechanism that serves as a software watchdog on thread-level.
 
 
 Installation

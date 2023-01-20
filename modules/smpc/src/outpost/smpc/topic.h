@@ -16,9 +16,10 @@
 
 #include <outpost/rtos/mutex.h>
 #include <outpost/utils/container/implicit_list.h>
-#include <outpost/utils/meta.h>
 
 #include <stdint.h>
+
+#include <type_traits>
 
 namespace outpost
 {
@@ -121,7 +122,7 @@ public:
 
     /// Type of the data distributed by this topic.
     typedef T Type;
-    typedef typename outpost::remove_const<T>::type NonConstType;
+    typedef typename std::remove_const<T>::type NonConstType;
 
     /**
      * Constructor.

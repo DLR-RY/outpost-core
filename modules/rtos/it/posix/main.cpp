@@ -28,13 +28,13 @@ Consumer consumer(queue);
 int
 main(void)
 {
-    timespec relative = outpost::rtos::toRelativeTime(outpost::time::Duration::infinity());
+    timespec relative = outpost::rtos::toRelativeTime(std::numeric_limits<outpost::time::Duration>::max());
     printf("%lu %li\n", relative.tv_sec, relative.tv_nsec);
 
     timespec negative = outpost::rtos::toRelativeTime(-outpost::time::Milliseconds(1500));
     printf("%li %li\n", negative.tv_sec, negative.tv_nsec);
 
-    timespec absolute = outpost::rtos::toAbsoluteTime(CLOCK_MONOTONIC, outpost::time::Duration::infinity());
+    timespec absolute = outpost::rtos::toAbsoluteTime(CLOCK_MONOTONIC, std::numeric_limits<outpost::time::Duration>::max());
     printf("%lu %li\n", absolute.tv_sec, absolute.tv_nsec);
 
     producer.start();

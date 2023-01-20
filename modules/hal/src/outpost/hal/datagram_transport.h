@@ -55,7 +55,7 @@ public:
          *
          * \param ipAddress IPv4 Address provided in host-byte-order
          */
-        constexpr IpAddress(std::array<uint8_t, 4> ipAddress) : mIpAddress(ipAddress)
+        explicit constexpr IpAddress(std::array<uint8_t, 4> ipAddress) : mIpAddress(ipAddress)
         {
         }
 
@@ -90,9 +90,22 @@ public:
             return mIpAddress;
         }
 
-        inline constexpr uint8_t operator[](size_t index) const
+        inline constexpr uint8_t
+        operator[](size_t index) const
         {
             return mIpAddress[index];
+        }
+
+        bool
+        operator==(const IpAddress& other) const
+        {
+            return (mIpAddress == other.mIpAddress);
+        }
+
+        bool
+        operator!=(const IpAddress& other) const
+        {
+            return !operator==(other);
         }
 
     private:
@@ -112,7 +125,7 @@ public:
         {
         }
 
-        inline constexpr Address(IpAddress ip, uint16_t port) : mIpAddress(ip), mPort(port)
+        inline constexpr Address(const IpAddress& ip, uint16_t port) : mIpAddress(ip), mPort(port)
         {
         }
 
@@ -129,6 +142,18 @@ public:
         getIpAddress() const
         {
             return mIpAddress;
+        }
+
+        bool
+        operator==(const Address& other) const
+        {
+            return (mIpAddress == other.mIpAddress) && (mPort == other.mPort);
+        }
+
+        bool
+        operator!=(const Address& other) const
+        {
+            return !operator==(other);
         }
 
     protected:
@@ -214,7 +239,8 @@ public:
     virtual size_t
     sendTo(outpost::Slice<const uint8_t> data,
            const Address& address,
-           outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
+           outpost::time::Duration timeout =
+                   std::numeric_limits<outpost::time::Duration>::max()) = 0;
 
     /**
      * Read a datagram received from a remote address with timeout.
@@ -238,9 +264,10 @@ public:
      *      Number of bytes written to data, maximal data.getNumberOfElements()
      */
     virtual size_t
-    receiveFrom(outpost::Slice<uint8_t>& data,
+    receiveFrom(outpost::Slice<uint8_t> data,
                 Address& address,
-                outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
+                outpost::time::Duration timeout =
+                        std::numeric_limits<outpost::time::Duration>::max()) = 0;
 
     /**
      * Drop all datagrams which are currently in the receive buffer

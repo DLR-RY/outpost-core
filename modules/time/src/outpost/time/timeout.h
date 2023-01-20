@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2016-2022, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2016-2017, Fabian Greif (DLR RY-AVS)
+ * - 2022, Felix Passenberg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_TIME_TIMEOUT_H
@@ -50,8 +51,20 @@ public:
      */
     Timeout(const outpost::time::Clock& clock, outpost::time::Duration time);
 
+    /**
+     * Starts the time with a new EndTime.
+     */
     void
     restart(const outpost::time::Clock& clock, outpost::time::Duration time);
+
+    /**
+     * Updates a running Timeouts EndTime.
+     *
+     * Checks if a Timeout expired before updating the EndTime.
+     * A stopped timer is not restarted.
+     */
+    void
+    changeDuration(const outpost::time::Clock& clock, outpost::time::Duration time);
 
     /**
      * Stop the timeout.
@@ -59,35 +72,35 @@ public:
      * A stopped timeout will never expire.
      */
     inline void
-    stop()
+    stop() const
     {
         mState = stopped;
     }
 
     State
-    getState(const outpost::time::Clock& clock);
+    getState(const outpost::time::Clock& clock) const;
 
-    inline bool
-    isStopped() const
+    inline bool constexpr isStopped() const
     {
         return (mState == stopped);
     }
 
     inline bool
-    isExpired(const outpost::time::Clock& clock)
+    isExpired(const outpost::time::Clock& clock) const
     {
         return (getState(clock) == expired);
     }
 
     bool
-    isArmed(const outpost::time::Clock& clock)
+    isArmed(const outpost::time::Clock& clock) const
     {
         return (getState(clock) == armed);
     }
 
 private:
-    outpost::time::SpacecraftElapsedTime mEndtime;
-    State mState;
+    outpost::time::SpacecraftElapsedTime mStartTime;
+    outpost::time::SpacecraftElapsedTime mEndTime;
+    mutable State mState;
 };
 
 }  // namespace time

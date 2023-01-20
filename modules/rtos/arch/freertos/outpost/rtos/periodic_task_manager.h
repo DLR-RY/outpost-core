@@ -109,8 +109,8 @@ public:
 private:
     Mutex mMutex;
     bool mTimerRunning;
-    portTickType mLastWakeTime;
-    portTickType mCurrentPeriod;
+    TickType_t mLastWakeTime;
+    TickType_t mCurrentPeriod;
 };
 }  // namespace rtos
 }  // namespace outpost

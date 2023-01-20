@@ -44,5 +44,5 @@ RmapTransaction::reset()
     mBlockingMode = false;
     mReplyPacket.reset();
     mCommandPacket.reset();
-    mBuffer = outpost::utils::SharedBufferPointer();
+    mBuffer = outpost::hal::SpWMessage();
 }

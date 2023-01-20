@@ -24,9 +24,7 @@ struct RMapOptions
 {
     constexpr RMapOptions() : mIncrementMode(true), mVerifyMode(true), mReplyMode(true){};
     constexpr RMapOptions(bool increment, bool verify, bool reply) :
-        mIncrementMode(increment),
-        mVerifyMode(verify),
-        mReplyMode(reply){};
+        mIncrementMode(increment), mVerifyMode(verify), mReplyMode(reply){};
 
     bool mIncrementMode;
     bool mVerifyMode;

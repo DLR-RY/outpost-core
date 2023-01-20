@@ -33,9 +33,7 @@ public:
     static constexpr uint8_t headerSize = sizeof(bytePointer) + sizeof(bitPointer);
 
     explicit Bitstream(outpost::Slice<uint8_t>& byteArray) :
-        mData(byteArray),
-        bytePointer(headerSize),
-        bitPointer(initialBitPointer)
+        mData(byteArray), bytePointer(headerSize), bitPointer(initialBitPointer)
     {
     }
 
@@ -184,28 +182,27 @@ public:
     virtual void
     serialize(Serialize& stream, uint16_t maxLength) const
     {
-        uint16_t tmpBytePointer = maxLength;
-        uint8_t tmpBitPointer = bitPointer;
-        if (tmpBytePointer > bytePointer)
+        if (maxLength >= headerSize)
         {
-            tmpBytePointer = bytePointer;
-        }
-        else if (tmpBytePointer < bytePointer)
-        {
-            tmpBytePointer++;
-            tmpBitPointer = 7;
-        }
+            uint16_t tmpBytePointer = getSize();
+            uint8_t tmpBitPointer = bitPointer;
+            if (maxLength < bytePointer)
+            {
+                tmpBytePointer = maxLength - headerSize;
+                tmpBitPointer = 7;
+            }
 
-        stream.store(tmpBytePointer);
-        stream.store(tmpBitPointer);
+            stream.store(tmpBitPointer);
+            stream.store(tmpBytePointer);
 
-        if (stream.getPointer() != &mData[0])
-        {
-            stream.store(mData.skipFirst(headerSize).first(maxLength - headerSize));
-        }
-        else
-        {
-            stream.skip(maxLength - headerSize);
+            if (stream.getPointer() != &mData[0])
+            {
+                stream.store(mData.skipFirst(headerSize).first(tmpBytePointer));
+            }
+            else
+            {
+                stream.skip(tmpBytePointer);
+            }
         }
     }
 
@@ -220,19 +217,21 @@ public:
     virtual bool
     deserialize(Deserialize& stream) override
     {
-        uint16_t bytePointer_tmp = stream.read<uint16_t>();
         uint16_t bitPointer_tmp = stream.read<int8_t>();
+        uint16_t bytePointer_tmp = stream.read<uint16_t>() + headerSize;
+        if (bitPointer_tmp < 7)
+            bytePointer_tmp--;
         if (bytePointer_tmp < mData.getNumberOfElements())
         {
             bytePointer = bytePointer_tmp;
             bitPointer = bitPointer_tmp;
             if (stream.getPointer() != &mData[0])
             {
-                stream.readBuffer(&mData[headerSize], bytePointer - headerSize);
+                stream.readBuffer(&mData[headerSize], bytePointer);
             }
             else
             {
-                stream.skip(bytePointer - headerSize);
+                stream.skip(bytePointer);
             }
             return true;
         }

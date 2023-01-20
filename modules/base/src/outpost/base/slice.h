@@ -15,6 +15,7 @@
 #define OUTPOST_SLICE_H
 
 #include <stddef.h>
+#include <string.h>
 
 #include <gsl/span>
 #include <type_traits>
@@ -43,11 +44,22 @@ public:
 
     // constants and types for compatibility with STL/GSL
     using value_type = ElementType;
-    using pointer = ElementType*;
     using reference = ElementType&;
+    using const_reference = const ElementType&;
+    using pointer = ElementType*;
+    using const_pointer = const ElementType*;
 
-    using Iterator = pointer;
-    using ReverseIterator = std::reverse_iterator<pointer>;
+    using iterator = pointer;
+    using const_iterator = const_pointer;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
+
+    // old member types
+    using Iterator = iterator;
+    using ReverseIterator = reverse_iterator;
 
     using uint8Type = typename std::
             conditional<std::is_const<ElementType>::value, const uint8_t, uint8_t>::type;
@@ -62,13 +74,16 @@ public:
     friend constexpr Slice<T>
     asSlice(std::array<T, N>& arr);
 
+    template <class T, size_t N>
+    friend constexpr Slice<const T>
+    asSlice(const std::array<T, N>& arr);
+
     /**
      * Create from a fixed size gsl::span.
      */
     template <size_t N>
-    constexpr inline Slice(gsl::span<ElementType, N> span) :
-        mData(span.data()),
-        mNumberOfElements(N)
+    explicit constexpr inline Slice(gsl::span<ElementType, N> span) :
+        mData(span.data()), mNumberOfElements(N)
     {
     }
 
@@ -78,18 +93,16 @@ public:
      * This allows creation from e.g. STL standard containers and C style
      * arrays.
      */
-    constexpr inline Slice(gsl::span<ElementType> span) :
-        mData(span.data()),
-        mNumberOfElements(span.size())
+    explicit constexpr inline Slice(gsl::span<ElementType> span) :
+        mData(span.data()), mNumberOfElements(span.size())
     {
     }
 
     /**
      * Create from an iterator pair.
      */
-    constexpr inline Slice(Iterator firstElement, Iterator lastElement) :
-        mData(firstElement),
-        mNumberOfElements(std::distance(firstElement, lastElement))
+    constexpr inline Slice(const iterator& firstElement, const iterator& lastElement) :
+        mData(firstElement), mNumberOfElements(std::distance(firstElement, lastElement))
     {
     }
 
@@ -133,7 +146,7 @@ public:
      *      Number of elements in the array.
      */
     static constexpr inline Slice
-    unsafe(ElementType* array, LengthType numberOfElements)
+    unsafe(ElementType* array, const LengthType& numberOfElements)
     {
         return Slice(array, numberOfElements);
     }
@@ -162,33 +175,74 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline constexpr ElementType& operator[](IndexType index) const
+    inline constexpr ElementType&
+    operator[](const IndexType& index) const
     {
         return mData[index];
     }
 
-    inline Iterator
+    /**
+     * Get raw pointer to data.
+     *
+     * \warning
+     *      Operations working directly with the raw pointer are unsafe.
+     */
+    inline constexpr ElementType*
+    getDataPointer() const
+    {
+        return mData;
+    }
+
+    /*
+     * Begin Iterator
+     *
+     * Iterators of Slice<T> and const Slice<T> provide write access.
+     * Iterators of Slice<const T> and const Slice<const T> are per return type iterators,
+     * but writing is inhibited to mData by its constness.
+     */
+    inline constexpr iterator
     begin() const
     {
-        return Iterator(&mData[0]);
+        return iterator(mData);
     }
 
-    inline Iterator
+    /*
+     * End Iterator
+     *
+     * Iterators of Slice<T> and const Slice<T> provide write access.
+     * Iterators of Slice<const T> and const Slice<const T> are per return type iterators,
+     * but writing is inhibited to mData by its constness.
+     */
+    inline constexpr iterator
     end() const
     {
-        return Iterator(&mData[mNumberOfElements]);
+        return iterator(&mData[mNumberOfElements]);
     }
 
-    inline ReverseIterator
+    /*
+     * Reverse Begin Iterator
+     *
+     * Iterators of Slice<T> and const Slice<T> provide write access.
+     * Iterators of Slice<const T> and const Slice<const T> are per return type iterators,
+     * but writing is inhibited to mData by its constness.
+     */
+    inline constexpr reverse_iterator
     rbegin() const
     {
-        return ReverseIterator(end());
+        return reverse_iterator(end());
     }
 
-    inline ReverseIterator
+    /*
+     * Reverse end Iterator
+     *
+     * Iterators of Slice<T> and const Slice<T> provide write access.
+     * Iterators of Slice<const T> and const Slice<const T> are per return type iterators,
+     * but writing is inhibited to mData by its constness.
+     */
+    inline constexpr reverse_iterator
     rend() const
     {
-        return ReverseIterator(begin());
+        return reverse_iterator(begin());
     }
 
     /**
@@ -198,7 +252,7 @@ public:
     inline void
     fill(const ElementType& v)
     {
-        for (IndexType i = 0; i < mNumberOfElements; i++)
+        for (IndexType i = 0; i < mNumberOfElements; ++i)
         {
             mData[i] = v;
         }
@@ -208,7 +262,7 @@ public:
      * Create a sub-slice from the beginning of the slice.
      */
     inline Slice
-    first(LengthType firstElements) const
+    first(const LengthType& firstElements) const
     {
         if (firstElements > mNumberOfElements)
         {
@@ -229,7 +283,7 @@ public:
      * end of the array.
      */
     inline Slice
-    skipFirst(LengthType numberOfElements) const
+    skipFirst(const LengthType& numberOfElements) const
     {
         if (numberOfElements >= mNumberOfElements)
         {
@@ -245,7 +299,7 @@ public:
      * Create a sub-slice from the end of the slice.
      */
     inline Slice
-    last(LengthType lastElements) const
+    last(const LengthType& lastElements) const
     {
         if (lastElements > mNumberOfElements)
         {
@@ -264,7 +318,7 @@ public:
      * the given number of elements from the end.
      */
     inline Slice
-    skipLast(LengthType numberOfElements) const
+    skipLast(const LengthType& numberOfElements) const
     {
         if (numberOfElements >= mNumberOfElements)
         {
@@ -280,7 +334,7 @@ public:
      * Create a sub-slice from a starting index and a length.
      */
     inline Slice
-    subSlice(IndexType offset, LengthType length) const
+    subSlice(const IndexType& offset, const LengthType& length) const
     {
         return first(offset + length).last(length);
     }
@@ -294,7 +348,7 @@ public:
      *      Last index which **is not included** in range.
      */
     inline Slice
-    subRange(IndexType firstIndex, IndexType lastIndex) const
+    subRange(const IndexType& firstIndex, const IndexType& lastIndex) const
     {
         // TODO check that end is larger than start.
         return subSlice(firstIndex, lastIndex - firstIndex);
@@ -322,10 +376,58 @@ public:
                                                 * (sizeof(ElementType) / sizeof(uint8Type)));
     }
 
+    /**
+     * @brief Length-checking memcpy of source to the beginning of the slice.
+     *
+     * @warning Source and target must not overlap.
+     * @warning Only available for trivially copyable classes
+     *
+     * @param src Pointer to source data.
+     * @param length Length of source data to be copied.
+     * @return true The slice was large enough, data was copied.
+     * @return false Not enough space in the slice to copy all data, or non-zero length nullptr
+     * source.
+     */
+    template <typename U = ElementType>
+    typename std::enable_if<std::is_trivially_copyable<U>::value, bool>::type
+    copyFrom(const void* __restrict src, size_t length)
+    {
+        if (0 == length)
+        {
+            // zero length always fits
+            return true;
+        }
+        if (nullptr == src)
+        {
+            // prevents using memcpy with nullptr
+            return false;
+        }
+        if (length <= getNumberOfElements())
+        {
+            memcpy(mData, src, length);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @brief Convenient overload for slice to slice copy.
+     *
+     * @warning Source and target must not overlap.
+     *
+     * @param source Slice containing source data.
+     * @return true Slice data has been copied to destination slice.
+     * @return false Source slice to large or invalid.
+     */
+    inline bool
+    copyFrom(const Slice<const ElementType>& source)
+    {
+        return copyFrom(source.getDataPointer(), source.getNumberOfElements());
+    }
+
 private:
     inline constexpr Slice(ElementType* array, size_t numberOfElements) :
-        mData(array),
-        mNumberOfElements(numberOfElements)
+        mData(array), mNumberOfElements(numberOfElements)
     {
     }
 
@@ -366,7 +468,8 @@ asSlice(ElementType* firstElement, ElementType* lastElement)
  * Create slice from a C-style array.
  */
 template <class ElementType, size_t N>
-constexpr Slice<ElementType> asSlice(ElementType (&arr)[N])
+constexpr Slice<ElementType>
+asSlice(ElementType (&arr)[N])
 {
     return Slice<ElementType>(arr, N);
 }
@@ -379,6 +482,20 @@ constexpr Slice<ElementType>
 asSlice(std::array<ElementType, N>& arr)
 {
     return Slice<ElementType>(&std::get<0>(arr), N);
+}
+
+template <class ElementType, size_t N>
+constexpr Slice<const ElementType>
+asSlice(const std::array<ElementType, N>& arr)
+{
+    return Slice<const ElementType>(&std::get<0>(arr), N);
+}
+
+template <class ElementType>
+constexpr Slice<ElementType>
+asSlice(std::array<ElementType, 0>&)
+{
+    return Slice<ElementType>::empty();
 }
 
 /**

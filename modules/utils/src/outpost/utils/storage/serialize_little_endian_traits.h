@@ -38,6 +38,39 @@ struct SerializeLittleEndianTraits
 };
 
 template <>
+struct SerializeLittleEndianTraits<bool>
+{
+    static inline void
+    store(uint8_t*& buffer, bool data)
+    {
+        buffer[0] = data ? 1u : 0u;
+        buffer += 1;
+    }
+
+    static inline bool
+    read(const uint8_t*& buffer)
+    {
+        uint8_t value;
+        value = buffer[0];
+        buffer += 1;
+
+        return value != 0;
+    }
+
+    static inline bool
+    peek(const uint8_t* const& buffer, size_t n)
+    {
+        return buffer[n] != 0;
+    }
+
+    static inline constexpr size_t
+    size()
+    {
+        return 1;
+    }
+};
+
+template <>
 struct SerializeLittleEndianTraits<uint8_t>
 {
     static inline void
@@ -350,6 +383,7 @@ struct SerializeLittleEndianTraits<float>
     static inline void
     store(uint8_t*& buffer, float data)
     {
+        // cppcheck-suppress invalidPointerCast
         const uint32_t* ptr = reinterpret_cast<const uint32_t*>(&data);
         SerializeLittleEndianTraits<uint32_t>::store(buffer, *ptr);
     }
@@ -387,6 +421,7 @@ struct SerializeLittleEndianTraits<double>
     static inline void
     store(uint8_t*& buffer, double data)
     {
+        // cppcheck-suppress invalidPointerCast
         const uint64_t* ptr = reinterpret_cast<const uint64_t*>(&data);
         SerializeLittleEndianTraits<uint64_t>::store(buffer, *ptr);
     }

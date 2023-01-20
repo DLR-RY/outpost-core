@@ -20,7 +20,7 @@
  * \brief RTEMS usage example for the Nexys3 (LEON3).
  */
 
-#include <cstring>
+#include <string.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <stdio.h>

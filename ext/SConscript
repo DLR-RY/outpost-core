@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+
+import os
+
+Import('envGlobal')
+
+if envGlobal['ARCHITECTURE'] == 'hosted':
+    # Build GoogleTest
+    googletest = 'googletest-1.12.1-fused'
+    envGlobal.Append(CPPPATH=[
+        os.path.abspath('%s' % googletest),
+    ])
+
+    env = envGlobal.Clone()
+    env['CXXFLAGS_language'] = ['-std=c++11']
+
+    env.RemoveFromList('CCFLAGS_warning', [
+        '-Wconversion',
+        '-Wundef',
+        '-Wmissing-declarations'])
+    env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+
+    files = env.Glob('%s/*.cc' % googletest)
+    objects = []
+    for file in files:
+        objects.append(env.Object(file))
+    envGlobal.Append(objects={'googletest': objects})
+
+    env.StaticLibrary('$BUILDPATH/lib/googletest-local', objects)    
+
+    # Build RapidCheck
+    #
+    # The build is disabled for GCC versions < 4.9. Although GCC > 4.8.1 should
+    # have full C++11 support an internal error throws errors for RapidCheck.
+    # The error is only fixed for GCC > 4.9 (see
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55914)
+    if env['GCC_version'] == 0 or env['GCC_version'] >= 40900:
+        envGlobal.Append(CPPPATH=[
+            os.path.abspath('rapidcheck/include'),
+            os.path.abspath('rapidcheck/extras/gmock/include/'),
+            os.path.abspath('rapidcheck/extras/gtest/include/'),
+        ])
+
+        env = envGlobal.Clone()
+        env['CXXFLAGS_language'] = ['-std=c++11']
+
+        env.RemoveFromList('CCFLAGS_warning', [
+            '-Wshadow',
+        ])
+
+        files = env.Glob('rapidcheck/src/*.cpp')
+        files += env.Glob('rapidcheck/src/*/*.cpp')
+        files += env.Glob('rapidcheck/src/*/*/*.cpp')
+        env.StaticLibrary('$BUILDPATH/lib/rapidcheck', files)        
+    else:
+        print("Disable RapidCheck for GCC older than 4.9.0. Found %s" % env['GCC_version'])
+
+    envGlobal.Append(LIBS=['pthread'])
+
+    # Add icecream-cpp library
+    envGlobal.Append(CPPPATH=[
+        os.path.abspath('icecream-0.3.1'),
+    ])

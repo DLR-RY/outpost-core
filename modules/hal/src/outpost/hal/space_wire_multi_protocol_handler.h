@@ -8,17 +8,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  *
  * Authors:
- * - 2019, Jan Malburg (DLR RY-AVS)
+ * - 2019, 2021, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_HANDLER_H_
 #define OUTPOST_HAL_SPACEWIRE_MULTI_PROTOCOL_HANDLER_H_
 
-#include "protocol_dispatcher.h"
-#include "protocol_dispatcher_thread.h"
 #include "spacewire.h"
 
+#include <outpost/swb/bus_channel.h>
+#include <outpost/swb/bus_distributor.h>
 #include <outpost/time/clock.h>
+#include <outpost/utils/communicator.h>
+#include <outpost/utils/container/shared_object_pool.h>
 
 #include <array>
 
@@ -26,11 +28,66 @@ namespace outpost
 {
 namespace hal
 {
-class SpaceWireMultiProtocolHandlerInterface : public virtual ProtocolDispatcherInterface<uint8_t>,
+struct MessageID
+{
+    uint8_t protocol = 0;
+    SpaceWire::EndMarker end = SpaceWire::EndMarker::unknown;
+};
+
+class SpwPackageFilter : public outpost::swb::MessageFilter<MessageID>
+{
+public:
+    SpwPackageFilter() = default;
+    virtual ~SpwPackageFilter() = default;
+
+    void
+    setProtocol(uint8_t protocol)
+    {
+        mProtocol = protocol;
+    }
+
+    void
+    setAllowPartial(bool partial)
+    {
+        mPartial = partial;
+    }
+
+    void
+    setMaxSize(uint32_t maxSize)
+    {
+        mMaxSize = maxSize;
+    }
+
+protected:
+    bool
+    filter(const MessageID& id, const outpost::Slice<const uint8_t>& m) const override
+    {
+        return id.protocol == mProtocol && m.getNumberOfElements() <= mMaxSize
+               && (mPartial || id.end == SpaceWire::EndMarker::eop);
+    }
+
+    uint16_t mProtocol = UINT8_MAX + 1;  // prevents any match before the protocol is set
+    bool mPartial = false;
+    uint32_t mMaxSize = UINT32_MAX;
+};
+
+using SpWChannelInterface = outpost::swb::BusChannel<MessageID>;
+using SpWFilteredChannelInterface = outpost::swb::FilteredBusChannel<MessageID, SpwPackageFilter>;
+template <size_t size>
+using SpWChannel = outpost::swb::BufferedBusChannelWithMemory<size, MessageID, SpwPackageFilter>;
+using SpWMessage = outpost::swb::Message<MessageID>;
+
+class SpaceWireMultiProtocolHandlerInterface : public outpost::swb::BusDistributor<MessageID>,
                                                public TimeCodeProvider
 {
 public:
-    SpaceWireMultiProtocolHandlerInterface() = default;
+    SpaceWireMultiProtocolHandlerInterface(
+            outpost::utils::Receiver<SpWMessage>& queue,
+            uint8_t priority,
+            outpost::support::parameter::HeartbeatSource heartbeatSource) :
+        outpost::swb::BusDistributor<MessageID>(queue, priority, heartbeatSource)
+    {
+    }
     virtual ~SpaceWireMultiProtocolHandlerInterface() = default;
     /**
      * Send the contents of buffer
@@ -45,30 +102,20 @@ public:
      */
     virtual bool
     send(const outpost::Slice<const uint8_t>& buffer,
-         outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
+         outpost::time::Duration timeout = outpost::time::Duration::zero()) = 0;
 };
 
-template <uint32_t numberOfQueues,       // how many queues can be included
+template <uint32_t maxPackages,          // number of packages that the system can store
           uint32_t maxPacketSize = 4500  // max number of bytes a received package can contain
           >
-class SpaceWireMultiProtocolHandler : public ProtocolDispatcher<uint8_t, numberOfQueues>,
-                                      public SpaceWireMultiProtocolHandlerInterface
+class SpaceWireMultiProtocolHandler : public SpaceWireMultiProtocolHandlerInterface
 {
 public:
     SpaceWireMultiProtocolHandler(SpaceWire& spw,
                                   uint8_t priority,
-                                  size_t stackSize,
-                                  char* threadName,
                                   outpost::support::parameter::HeartbeatSource heartbeatSource,
                                   outpost::time::Clock& clock) :
-        outpost::hal::ProtocolDispatcher<uint8_t, numberOfQueues>(1),
-        mThread(*this,
-                mSpWHandle,
-                outpost::asSlice(mBuffer),
-                priority,
-                stackSize,
-                threadName,
-                heartbeatSource),
+        SpaceWireMultiProtocolHandlerInterface(mSpWHandle, priority, heartbeatSource),
         mSpWHandle(spw),
         mClock(clock){
 
@@ -107,10 +154,11 @@ public:
 
 private:
     // As an private inner class so we don't expose an unchecked receive
-    class SpaceWireHandle : public ReceiverInterface
+    class SpaceWireHandle : public outpost::utils::Receiver<SpWMessage>
     {
     public:
-        SpaceWireHandle(SpaceWire& spw) : mSpw(spw){};
+        static constexpr size_t protocolByteOffset = 1;
+        explicit SpaceWireHandle(SpaceWire& spw) : mSpw(spw){};
 
         virtual ~SpaceWireHandle() = default;
 
@@ -124,8 +172,8 @@ private:
          * 		   >0   Number of bytes received in package, if larger then
          * buffer.getNumberOfElements(), data has been lost
          */
-        virtual uint32_t
-        receive(outpost::Slice<uint8_t>& buffer, outpost::time::Duration timeout);
+        bool
+        receive(SpWMessage& data, outpost::time::Duration timeout) override;
 
         /**
          * returns the spacewire interface
@@ -135,14 +183,11 @@ private:
 
     private:
         SpaceWire& mSpw;
+        outpost::utils::SharedBufferPool<maxPacketSize, maxPackages> mPool;
     };
-
-    outpost::hal::ProtocolDispatcherThread mThread;
 
     // use the receiver implementation also to store the spw object for send.
     SpaceWireHandle mSpWHandle;
-
-    std::array<uint8_t, maxPacketSize> mBuffer;
 
     outpost::time::Clock& mClock;
 };

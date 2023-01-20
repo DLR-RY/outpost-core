@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2022, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,33 +9,41 @@
  *
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2022, Felix Passenberg (DLR RY-AVS)
  */
 
 #include "timeout.h"
 
 using outpost::time::Timeout;
 
-Timeout::Timeout() : mEndtime(), mState(stopped)
+Timeout::Timeout() : mStartTime(), mEndTime(), mState(stopped)
 {
 }
 
 Timeout::Timeout(const outpost::time::Clock& clock, outpost::time::Duration time) :
-    mEndtime(clock.now() + time),
-    mState(armed)
+    mStartTime(clock.now()), mEndTime(mStartTime + time), mState(armed)
 {
 }
 
 void
 Timeout::restart(const outpost::time::Clock& clock, outpost::time::Duration time)
 {
-    mEndtime = clock.now() + time;
+    mStartTime = clock.now();
+    mEndTime = mStartTime + time;
     mState = armed;
 }
 
-Timeout::State
-Timeout::getState(const outpost::time::Clock& clock)
+void
+Timeout::changeDuration(const outpost::time::Clock& clock, outpost::time::Duration time)
 {
-    if ((mState == armed) && (clock.now() >= mEndtime))
+    getState(clock);
+    mEndTime = mStartTime + time;
+}
+
+Timeout::State
+Timeout::getState(const outpost::time::Clock& clock) const
+{
+    if ((mState == armed) && (clock.now() >= mEndTime))
     {
         mState = expired;
     }

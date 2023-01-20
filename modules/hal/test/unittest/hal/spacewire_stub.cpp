@@ -17,9 +17,7 @@
 using unittest::hal::SpaceWireStub;
 
 SpaceWireStub::SpaceWireStub(size_t maximumLength) :
-    mMaximumLength(maximumLength),
-    mOpen(false),
-    mUp(false)
+    mMaximumLength(maximumLength), mOpen(false), mUp(false)
 {
 }
 
@@ -47,7 +45,8 @@ SpaceWireStub::close()
     mUp = false;
 }
 
-bool SpaceWireStub::up(outpost::time::Duration /*timeout*/)
+bool
+SpaceWireStub::up(outpost::time::Duration /*timeout*/)
 {
     if (mOpen)
     {
@@ -56,7 +55,8 @@ bool SpaceWireStub::up(outpost::time::Duration /*timeout*/)
     return mUp;
 }
 
-void SpaceWireStub::down(outpost::time::Duration /*timeout*/)
+void
+SpaceWireStub::down(outpost::time::Duration /*timeout*/)
 {
     mUp = false;
 }
@@ -116,11 +116,18 @@ SpaceWireStub::receive(ReceiveBuffer& buffer, outpost::time::Duration /*timeout*
     Result::Type result = Result::success;
     if (mUp)
     {
-        std::unique_ptr<ReceiveBufferEntry> entry(new ReceiveBufferEntry(
-                std::move(mPacketsToReceive.front().data), mPacketsToReceive.front().end));
-        buffer = entry->header;
-        mReceiveBuffers.emplace(make_pair(entry->header.getData().begin(), std::move(entry)));
-        mPacketsToReceive.pop_front();
+        if (!mPacketsToReceive.empty())
+        {
+            std::unique_ptr<ReceiveBufferEntry> entry(new ReceiveBufferEntry(
+                    std::move(mPacketsToReceive.front().data), mPacketsToReceive.front().end));
+            buffer = entry->header;
+            mReceiveBuffers.emplace(make_pair(entry->header.getData().begin(), std::move(entry)));
+            mPacketsToReceive.pop_front();
+        }
+        else
+        {
+            result = Result::timeout;
+        }
     }
     else
     {
@@ -145,6 +152,6 @@ SpaceWireStub::flushReceiveBuffer()
 void
 SpaceWireStub::triggerSpWInterrupt(void)
 {
-    outpost::hal::TimeCode tc;
+    outpost::hal::TimeCode tc{0, 0};
     mTCD.dispatchTimeCode(tc);
 }

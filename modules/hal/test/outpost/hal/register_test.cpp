@@ -47,29 +47,30 @@ TEST(RegisterTest, shouldCompile)
     // the templates as intended.
     if (false)
     {
+        // Writing multiple values in one access
+        uint32_t value_1 = Register::getValue<TestRegister::General::Prescaler>(100)
+                           | Register::getValue<TestRegister::General::Enable>(1);
+        Register::write<TestRegister::General::All>(value_1);
+
         // Direct read and write access
-        uint32_t value = Register::read<TestRegister::General::Prescaler>();
+        // cppcheck-suppress unreadVariable
+        value_1 = Register::read<TestRegister::General::Prescaler>();
         Register::write<TestRegister::General::Prescaler>(100);
 
-        // Writing multiple values in one access
-        value = Register::getValue<TestRegister::General::Prescaler>(100)
-                | Register::getValue<TestRegister::General::Enable>(1);
-        Register::write<TestRegister::General::All>(value);
-
         // Bit operator access
-        value = Register::read<TestRegister::General::All>();
-        value &= ~Register::getMask<TestRegister::General::Enable>();
-        value |= Register::getValue<TestRegister::General::Enable>(1);
-        Register::write<TestRegister::General::All>(value);
+        uint32_t value_2 = Register::read<TestRegister::General::All>();
+        value_2 &= ~Register::getMask<TestRegister::General::Enable>();
+        value_2 |= Register::getValue<TestRegister::General::Enable>(1);
+        Register::write<TestRegister::General::All>(value_2);
 
         // Read modify write for two values
-        value = Register::read<TestRegister::General::All>();
-        Register::writeToMemory<TestRegister::General::Prescaler>(100, value);
-        Register::writeToMemory<TestRegister::General::Enable>(1, value);
-        Register::write<TestRegister::General::All>(value);
+        value_2 = Register::read<TestRegister::General::All>();
+        Register::writeToMemory<TestRegister::General::Prescaler>(100, value_2);
+        Register::writeToMemory<TestRegister::General::Enable>(1, value_2);
+        Register::write<TestRegister::General::All>(value_2);
 
         // Read complete value to memory and extract needed bits
-        value = Register::read<TestRegister::General::All>();
+        value_2 = Register::read<TestRegister::General::All>();
     }
 }
 
@@ -89,8 +90,8 @@ TEST(RegisterTest, shouldAccessMemory)
 
 TEST(RegisterTest, shouldCastToPointer)
 {
-    volatile uint32_t* expected = reinterpret_cast<volatile uint32_t*>(0xE0000010);
-    volatile uint32_t* output = Register::getPointer<volatile uint32_t>(
+    volatile const uint32_t* expected = reinterpret_cast<volatile uint32_t*>(0xE0000010);
+    volatile const uint32_t* output = Register::getPointer<volatile uint32_t>(
             TestRegister::General::address + 4 * sizeof(uint32_t));
     EXPECT_EQ(expected, output);
 }

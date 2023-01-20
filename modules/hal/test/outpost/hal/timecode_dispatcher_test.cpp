@@ -25,9 +25,10 @@ operator==(const outpost::hal::TimeCode& a, const outpost::hal::TimeCode& b)
 
 TEST(TimeCodeDispatcherTest, dispatchWithoutQueue)
 {
-    outpost::hal::TimeCode tc;
+    outpost::hal::TimeCode tc{0, 0};
     outpost::hal::TimeCodeDispatcher<2> tcd;
     tcd.dispatchTimeCode(tc);
+    // does this test anything?
 }
 
 TEST(TimeCodeDispatcherTest, dispatchSingleQueue)

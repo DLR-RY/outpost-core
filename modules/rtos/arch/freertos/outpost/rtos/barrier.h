@@ -41,7 +41,7 @@ public:
     /**
      * Create a new Barrier. Parameter here for same interface with versions for other OSs.
      */
-    Barrier(uint32_t numberOfThreads);
+    explicit Barrier(uint32_t numberOfThreads);
 
     // disable copy constructor
     Barrier(const Barrier& other) = delete;

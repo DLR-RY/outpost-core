@@ -40,7 +40,7 @@ namespace rtos
 template <typename T>
 class Queue
 {
-    static_assert(std::is_pod<T>::value, "T must be POD");
+    static_assert(std::is_trivial<T>::value && std::is_standard_layout<T>::value, "T must be POD");
 
 public:
     /**
@@ -51,7 +51,7 @@ public:
      * \param numberOfItems
      *      The maximum number of items that the queue can contain.
      */
-    Queue(size_t numberOfItems);
+    explicit Queue(size_t numberOfItems);
 
     // disable copy constructor
     Queue(const Queue& other) = delete;
@@ -78,6 +78,24 @@ public:
     send(const T& data);
 
     /**
+     * Send data to the queue. Not needed in bare-metal.
+     *
+     * \param data
+     *      Reference to the item that is to be placed on the queue.
+     * \param taskWoken
+     *      Is set to 0 if the send operation wakes a higher priority task.
+     *      In that case, a yield should be executed before exiting the ISR.
+     * \retval true     Value was successfully stored in the queue.
+     * \retval false    Queue is full, data could not be appended.
+     */
+    inline bool
+    sendFromISR(const T& data, bool& hasWokenTask)
+    {
+        hasWokenTask = false;
+        return send(data);
+    }
+
+    /**
      * Receive data from the queue.
      *
      * \param data
@@ -90,6 +108,25 @@ public:
      */
     bool
     receive(T& data, outpost::time::Duration timeout);
+
+    /**
+     * Receive data from the queue. Not needed in bare-metal.
+     *
+     * \param data
+     *      Reference to the buffer into which the received item will be copied.
+     * \param taskWoken
+     *      Is set to true if the receive operation wakes a higher priority task.
+     *      In that case, a yield should be executed before exiting the ISR.
+     *
+     * \retval true     Value was received correctly and put in \p data.
+     * \retval false    No data available or some other error occured, \p data was not changed.
+     */
+    inline bool
+    receiveFromISR(T& data, bool& hasWokenTask)
+    {
+        hasWokenTask = false;
+        return receive(data, outpost::time::Duration::zero());
+    }
 
 private:
     size_t

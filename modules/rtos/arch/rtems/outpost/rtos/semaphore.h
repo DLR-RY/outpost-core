@@ -93,6 +93,23 @@ public:
     acquire(time::Duration timeout);
 
     /**
+     * Decrement the count. Only to be used from within ISRs.
+     *
+     * \param taskWoken
+     *     Is set to true if a higher priority task was woken by the call.
+     *     In that case, a yield shout be called before exiting the ISR.
+     *
+     * \return True if the count is currently greater than zero and the semaphore could be obtained,
+     *     false otherwise.
+     */
+    inline bool
+    acquireFromISR(bool& hasWokenTask)
+    {
+        hasWokenTask = false;
+        return acquire();
+    }
+
+    /**
      * Increment the count.
      *
      * This function will never block, but may preempt if an other
@@ -102,6 +119,23 @@ public:
     release()
     {
         rtems_semaphore_release(mId);
+    }
+
+    /**
+     * Decrement the count. Only to be used from within ISRs.
+     *
+     * This function will never block, but may preempt if an other
+     * thread waiting for this semaphore has a higher priority.
+     *
+     * \param taskWoken
+     *     Is set to true if a higher priority task was woken by the call.
+     *     In that case, a yield shout be called before exiting the ISR.
+     */
+    inline void
+    releaseFromISR(bool& hasWokenTask)
+    {
+        release();
+        hasWokenTask = false;
     }
 
 private:

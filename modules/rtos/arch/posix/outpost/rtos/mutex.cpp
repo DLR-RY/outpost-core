@@ -43,7 +43,7 @@ bool
 Mutex::acquire(outpost::time::Duration timeout)
 {
     bool success = false;
-    if (timeout == time::Duration::infinity())
+    if (timeout >= time::Duration::myriad())
     {
         success = acquire();
     }

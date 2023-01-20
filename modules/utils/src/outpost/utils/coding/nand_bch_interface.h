@@ -69,6 +69,11 @@ public:
 
     virtual bool
     isTemplateParameterValid(void) const = 0;
+
+    // JSF++ (68): Unneeded implicitly generated member functions shall be explicitly disallowed.
+    NandBCHInterface(NandBCHInterface&) = delete;
+    NandBCHInterface&
+    operator=(NandBCHInterface&) = delete;
 };
 
 }  // namespace utils

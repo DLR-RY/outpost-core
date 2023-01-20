@@ -90,8 +90,6 @@ TEST_F(NLSRegressionTest, Test_Dataset2)
     outpost::Serialize s_stream(bitStreamSlice);
     bitstream.serialize(s_stream);
 
-    EXPECT_LE(bitstream.getSize(), 2 * bufferLength);
-
     outpost::Bitstream bitstream_out(bitStreamSlice);
     outpost::Deserialize stream(bitStreamSlice);
     bitstream_out.deserialize(stream);

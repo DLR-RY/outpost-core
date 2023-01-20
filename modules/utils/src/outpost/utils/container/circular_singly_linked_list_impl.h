@@ -16,48 +16,51 @@
 
 #include "circular_singly_linked_list.h"
 
+namespace outpost
+{
+
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::CircularSinglyLinkedList() : mHead(0)
+CircularSinglyLinkedList<T>::CircularSinglyLinkedList() : mHead(0)
 {
 }
 
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::~CircularSinglyLinkedList()
+CircularSinglyLinkedList<T>::~CircularSinglyLinkedList()
 {
 }
 
 template <typename T>
 bool
-outpost::CircularSinglyLinkedList<T>::isEmpty() const
+CircularSinglyLinkedList<T>::isEmpty() const
 {
     return (mHead == 0);
 }
 
 template <typename T>
 T*
-outpost::CircularSinglyLinkedList<T>::first()
+CircularSinglyLinkedList<T>::first()
 {
     return mHead->mNext;
 }
 
 template <typename T>
 const T*
-outpost::CircularSinglyLinkedList<T>::first() const
+CircularSinglyLinkedList<T>::first() const
 {
     return mHead->mNext;
 }
 
 template <typename T>
 T*
-outpost::CircularSinglyLinkedList<T>::last()
+CircularSinglyLinkedList<T>::last()
 {
     return mHead;
 }
 
 template <typename T>
 const T*
-outpost::CircularSinglyLinkedList<T>::last() const
+CircularSinglyLinkedList<T>::last() const
 {
     return mHead;
 }
@@ -65,7 +68,7 @@ outpost::CircularSinglyLinkedList<T>::last() const
 template <typename T>
 template <typename Condition>
 T*
-outpost::CircularSinglyLinkedList<T>::get(Condition condition)
+CircularSinglyLinkedList<T>::get(Condition condition)
 {
     T* result = 0;
     if (mHead != 0)
@@ -85,7 +88,53 @@ outpost::CircularSinglyLinkedList<T>::get(Condition condition)
 
 template <typename T>
 T*
-outpost::CircularSinglyLinkedList<T>::getN(size_t n)
+CircularSinglyLinkedList<T>::getN(size_t n)
+{
+    T* result = 0;
+    if (mHead != 0)
+    {
+        n++;
+        T* current = mHead;
+        do
+        {
+            current = current->mNext;
+            n--;
+        } while ((n > 0) && (current != mHead));
+
+        if (n == 0)
+        {
+            // current points to the n-th element.
+            result = current;
+        }
+    }
+
+    return result;
+}
+
+template <typename T>
+template <typename Condition>
+const T*
+CircularSinglyLinkedList<T>::get(Condition condition) const
+{
+    T* result = 0;
+    if (mHead != 0)
+    {
+        T* current = mHead;
+        do
+        {
+            current = current->mNext;
+            if (condition(*current))
+            {
+                result = current;
+            }
+        } while ((result == 0) && (current != mHead));
+    }
+    return result;
+}
+
+template <typename T>
+const T*
+CircularSinglyLinkedList<T>::getN(size_t n) const
 {
     T* result = 0;
     if (mHead != 0)
@@ -110,7 +159,7 @@ outpost::CircularSinglyLinkedList<T>::getN(size_t n)
 
 template <typename T>
 void
-outpost::CircularSinglyLinkedList<T>::reset()
+CircularSinglyLinkedList<T>::reset()
 {
     mHead = 0;
 }
@@ -118,7 +167,7 @@ outpost::CircularSinglyLinkedList<T>::reset()
 // ----------------------------------------------------------------------------
 template <typename T>
 void
-outpost::CircularSinglyLinkedList<T>::prepend(T* node)
+CircularSinglyLinkedList<T>::prepend(T* node)
 {
     if (mHead == 0)
     {
@@ -135,7 +184,7 @@ outpost::CircularSinglyLinkedList<T>::prepend(T* node)
 // ----------------------------------------------------------------------------
 template <typename T>
 void
-outpost::CircularSinglyLinkedList<T>::append(T* node)
+CircularSinglyLinkedList<T>::append(T* node)
 {
     if (mHead == 0)
     {
@@ -193,7 +242,7 @@ outpost::CircularSinglyLinkedList<T>::insert(T* node)
 //// ----------------------------------------------------------------------------
 template <typename T>
 bool
-outpost::CircularSinglyLinkedList<T>::removeNode(T* node)
+CircularSinglyLinkedList<T>::removeNode(T* node)
 {
     bool nodeFound = false;
     if (mHead != 0)
@@ -238,7 +287,7 @@ outpost::CircularSinglyLinkedList<T>::removeNode(T* node)
 template <typename T>
 template <typename Condition>
 T*
-outpost::CircularSinglyLinkedList<T>::remove(Condition condition)
+CircularSinglyLinkedList<T>::remove(Condition condition)
 {
     T* result = 0;
     if (mHead != 0)
@@ -280,12 +329,12 @@ outpost::CircularSinglyLinkedList<T>::remove(Condition condition)
 template <typename T>
 template <typename Condition>
 void
-outpost::CircularSinglyLinkedList<T>::removeAll(Condition condition)
+CircularSinglyLinkedList<T>::removeAll(Condition condition)
 {
     if (mHead != 0)
     {
-        T* previous = 0;
-        T* current = 0;
+        T* previous{nullptr};
+        T* current{nullptr};
 
         T* nextPrevious = mHead;
         T* nextCurrent = mHead->mNext;
@@ -331,12 +380,12 @@ outpost::CircularSinglyLinkedList<T>::removeAll(Condition condition)
 template <typename T>
 template <typename Condition, typename PostCondition>
 void
-outpost::CircularSinglyLinkedList<T>::removeAll(Condition condition, PostCondition postCondition)
+CircularSinglyLinkedList<T>::removeAll(Condition condition, PostCondition postCondition)
 {
     if (mHead != 0)
     {
-        T* previous = 0;
-        T* current = 0;
+        T* previous{nullptr};
+        T* current{nullptr};
 
         T* nextPrevious = mHead;
         T* nextCurrent = mHead->mNext;
@@ -384,7 +433,7 @@ outpost::CircularSinglyLinkedList<T>::removeAll(Condition condition, PostConditi
 // ----------------------------------------------------------------------------
 template <typename T>
 void
-outpost::CircularSinglyLinkedList<T>::removeFirst()
+CircularSinglyLinkedList<T>::removeFirst()
 {
     if (mHead != 0)
     {
@@ -405,7 +454,7 @@ outpost::CircularSinglyLinkedList<T>::removeFirst()
 // ----------------------------------------------------------------------------
 template <typename T>
 size_t
-outpost::CircularSinglyLinkedList<T>::size() const
+CircularSinglyLinkedList<T>::size() const
 {
     size_t numberOfElements = 0;
     if (mHead != 0)
@@ -422,27 +471,25 @@ outpost::CircularSinglyLinkedList<T>::size() const
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::Iterator::Iterator() : mNode(0), mLastNode(0)
+CircularSinglyLinkedList<T>::Iterator::Iterator() : mNode(0), mLastNode(0)
 {
 }
 
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::Iterator::Iterator(T* node, T* lastNode) :
-    mNode(node),
-    mLastNode(lastNode)
+CircularSinglyLinkedList<T>::Iterator::Iterator(T* node, T* lastNode) :
+    mNode(node), mLastNode(lastNode)
 {
 }
 
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::Iterator::Iterator(const Iterator& other) :
-    mNode(other.mNode),
-    mLastNode(other.mLastNode)
+CircularSinglyLinkedList<T>::Iterator::Iterator(const Iterator& other) :
+    mNode(other.mNode), mLastNode(other.mLastNode)
 {
 }
 
 template <typename T>
-typename outpost::CircularSinglyLinkedList<T>::Iterator&
-outpost::CircularSinglyLinkedList<T>::Iterator::operator=(const Iterator& other)
+typename CircularSinglyLinkedList<T>::Iterator&
+CircularSinglyLinkedList<T>::Iterator::operator=(const Iterator& other)
 {
     // Handles self assignment correctly
     this->mNode = other.mNode;
@@ -452,7 +499,7 @@ outpost::CircularSinglyLinkedList<T>::Iterator::operator=(const Iterator& other)
 
 template <typename T>
 typename outpost::CircularSinglyLinkedList<T>::Iterator&
-outpost::CircularSinglyLinkedList<T>::Iterator::operator++()
+CircularSinglyLinkedList<T>::Iterator::operator++()
 {
     if (mNode == mLastNode)
     {
@@ -467,60 +514,68 @@ outpost::CircularSinglyLinkedList<T>::Iterator::operator++()
 
 template <typename T>
 bool
-outpost::CircularSinglyLinkedList<T>::Iterator::operator==(const Iterator& other) const
+CircularSinglyLinkedList<T>::Iterator::operator==(const Iterator& other) const
 {
     return (mNode == other.mNode);
 }
 
 template <typename T>
 bool
-outpost::CircularSinglyLinkedList<T>::Iterator::operator!=(const Iterator& other) const
+CircularSinglyLinkedList<T>::Iterator::operator!=(const Iterator& other) const
 {
     return (mNode != other.mNode);
 }
 
 template <typename T>
-T& outpost::CircularSinglyLinkedList<T>::Iterator::operator*()
+T&
+CircularSinglyLinkedList<T>::Iterator::operator*()
 {
     return *this->mNode;
 }
 
 template <typename T>
-T* outpost::CircularSinglyLinkedList<T>::Iterator::operator->()
+T*
+CircularSinglyLinkedList<T>::Iterator::operator->()
 {
     return this->mNode;
 }
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator() : mNode(0), mLastNode(0)
+CircularSinglyLinkedList<T>::ConstIterator::ConstIterator() : mNode(0), mLastNode(0)
 {
 }
 
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(T* node, T* lastNode) :
-    mNode(node),
-    mLastNode(lastNode)
+CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(T* node, T* lastNode) :
+    mNode(node), mLastNode(lastNode)
 {
 }
 
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(const Iterator& other) :
-    mNode(other.mNode),
-    mLastNode(other.mLastNode)
+CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(const Iterator& other) :
+    mNode(other.mNode), mLastNode(other.mLastNode)
 {
 }
 
 template <typename T>
-outpost::CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(const ConstIterator& other) :
-    mNode(other.mNode),
-    mLastNode(other.mLastNode)
+CircularSinglyLinkedList<T>::ConstIterator::ConstIterator(const ConstIterator& other) :
+    mNode(other.mNode), mLastNode(other.mLastNode)
 {
+}
+
+template <typename T>
+typename CircularSinglyLinkedList<T>::ConstIterator&
+CircularSinglyLinkedList<T>::ConstIterator::operator=(const Iterator& other)
+{
+    this->mNode = other.mNode;
+    this->mLastNode = other.mLastNode;
+    return *this;
 }
 
 template <typename T>
 typename outpost::CircularSinglyLinkedList<T>::ConstIterator&
-outpost::CircularSinglyLinkedList<T>::ConstIterator::operator=(const ConstIterator& other)
+CircularSinglyLinkedList<T>::ConstIterator::operator=(const ConstIterator& other)
 {
     // Handles self assignment correctly
     this->mNode = other.mNode;
@@ -530,7 +585,7 @@ outpost::CircularSinglyLinkedList<T>::ConstIterator::operator=(const ConstIterat
 
 template <typename T>
 typename outpost::CircularSinglyLinkedList<T>::ConstIterator&
-outpost::CircularSinglyLinkedList<T>::ConstIterator::operator++()
+CircularSinglyLinkedList<T>::ConstIterator::operator++()
 {
     if (mNode == mLastNode)
     {
@@ -545,26 +600,28 @@ outpost::CircularSinglyLinkedList<T>::ConstIterator::operator++()
 
 template <typename T>
 bool
-outpost::CircularSinglyLinkedList<T>::ConstIterator::operator==(const ConstIterator& other) const
+CircularSinglyLinkedList<T>::ConstIterator::operator==(const ConstIterator& other) const
 {
     return (mNode == other.mNode);
 }
 
 template <typename T>
 bool
-outpost::CircularSinglyLinkedList<T>::ConstIterator::operator!=(const ConstIterator& other) const
+CircularSinglyLinkedList<T>::ConstIterator::operator!=(const ConstIterator& other) const
 {
     return (mNode != other.mNode);
 }
 
 template <typename T>
-const T& outpost::CircularSinglyLinkedList<T>::ConstIterator::operator*() const
+const T&
+CircularSinglyLinkedList<T>::ConstIterator::operator*() const
 {
     return *this->mNode;
 }
 
 template <typename T>
-const T* outpost::CircularSinglyLinkedList<T>::ConstIterator::operator->() const
+const T*
+CircularSinglyLinkedList<T>::ConstIterator::operator->() const
 {
     return this->mNode;
 }
@@ -572,7 +629,7 @@ const T* outpost::CircularSinglyLinkedList<T>::ConstIterator::operator->() const
 // ----------------------------------------------------------------------------
 template <typename T>
 typename outpost::CircularSinglyLinkedList<T>::Iterator
-outpost::CircularSinglyLinkedList<T>::begin()
+CircularSinglyLinkedList<T>::begin()
 {
     Iterator it(0, 0);
     if (mHead != 0)
@@ -584,7 +641,7 @@ outpost::CircularSinglyLinkedList<T>::begin()
 
 template <typename T>
 typename outpost::CircularSinglyLinkedList<T>::Iterator
-outpost::CircularSinglyLinkedList<T>::end()
+CircularSinglyLinkedList<T>::end()
 {
     Iterator it(0, 0);
     return it;
@@ -592,7 +649,7 @@ outpost::CircularSinglyLinkedList<T>::end()
 
 template <typename T>
 typename outpost::CircularSinglyLinkedList<T>::ConstIterator
-outpost::CircularSinglyLinkedList<T>::begin() const
+CircularSinglyLinkedList<T>::begin() const
 {
     ConstIterator it(0, 0);
     if (mHead != 0)
@@ -604,10 +661,12 @@ outpost::CircularSinglyLinkedList<T>::begin() const
 
 template <typename T>
 typename outpost::CircularSinglyLinkedList<T>::ConstIterator
-outpost::CircularSinglyLinkedList<T>::end() const
+CircularSinglyLinkedList<T>::end() const
 {
     ConstIterator it(0, 0);
     return it;
 }
+
+}  // namespace outpost
 
 #endif

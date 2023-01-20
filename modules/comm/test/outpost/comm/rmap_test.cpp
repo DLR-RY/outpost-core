@@ -21,6 +21,7 @@
 
 #include <unittest/hal/spacewire_stub.h>
 #include <unittest/harness.h>
+#include <unittest/swb/testing_software_bus.h>
 #include <unittest/time/testing_clock.h>
 
 #include <cstdlib>
@@ -34,76 +35,74 @@ namespace comm
 class TestingRmap
 {
 public:
-    uint8_t
+    static uint8_t
     getActiveTransactions(RmapInitiator& init)
     {
         return init.mTransactionsList.getNumberOfActiveTransactions();
     }
 
-    RmapTransaction*
+    static RmapTransaction*
     getFreeTransaction(RmapInitiator& init)
     {
         return init.mTransactionsList.getFreeTransaction();
     }
 
-    void
+    static void
     removeTransaction(RmapInitiator& init, uint16_t tid)
     {
         init.mTransactionsList.removeTransaction(tid);
     }
 
-    RmapTransaction*
+    static RmapTransaction*
     getTransaction(RmapInitiator& init, uint16_t tid)
     {
         return init.mTransactionsList.getTransaction(tid);
     }
 
-    bool
+    static bool
     isUsedTransaction(RmapInitiator& init, uint16_t tid)
     {
         return init.mTransactionsList.isTransactionIdUsed(tid);
     }
 
-    bool
+    static bool
     sendPacket(RmapInitiator& init, RmapTransaction* trans)
     {
         return init.sendPacket(trans);
     }
 
-    bool
-    receivePacket(RmapInitiator& init,
-                  RmapPacket* pkt,
-                  outpost::utils::SharedBufferPointer& rxBuffer)
+    static bool
+    receivePacket(RmapInitiator& init, RmapPacket* pkt, outpost::hal::SpWMessage& rxBuffer)
     {
         return init.receivePacket(pkt, rxBuffer);
     }
 
-    void
+    static void
     constructPacketHeader(RmapPacket& pckt, uint8_t* buffer)
     {
         outpost::Serialize stream(buffer);
         pckt.constructHeader(stream);
     }
 
-    void
-    initalize(RmapInitiator& init)
+    static void
+    initialize(RmapInitiator& init)
     {
-        init.mSpW.addQueue(rmap::protocolIdentifier, &init.mPool, &init.mQueue, true);
+        init.mSpW.registerChannel(init.mChannel);
     }
 
-    void
+    static void
     step(RmapInitiator& init)
     {
         init.doSingleStep();
     }
 
-    void
+    static void
     clear(RmapInitiator& init)
     {
-        outpost::utils::SharedBufferPointer p;
-        while (!init.mQueue.isEmpty())
+        outpost::hal::SpWMessage p;
+        while (init.mChannel.receiveMessage(p, outpost::time::Duration::zero())
+               == outpost::swb::OperationResult::success)
         {
-            init.mQueue.receive(p);
         }
     }
 };
@@ -113,8 +112,6 @@ public:
 using outpost::hal::SpaceWire;
 
 using namespace outpost::comm;
-
-static char name[] = "Test";
 
 static unittest::time::TestingClock Clock;
 
@@ -131,12 +128,7 @@ public:
 
     RmapTest() :
         mSpaceWire(100),
-        mHandler(mSpaceWire,
-                 1,
-                 1,
-                 name,
-                 outpost::support::parameter::HeartbeatSource::default0,
-                 Clock),
+        mHandler(mSpaceWire, 100, outpost::support::parameter::HeartbeatSource::default0, Clock),
         mRmapTarget(targetName, 1, targetLogicalAddress, key),
         mTargetNodes(),
         mRmapInitiator(mHandler,
@@ -144,9 +136,11 @@ public:
                        100,
                        4096,
                        outpost::support::parameter::HeartbeatSource::default0),
-        mTestingRmap()
+        mTestingRmap(),
+        mTestingBus(mHandler)
+
     {
-        mTestingRmap.initalize(mRmapInitiator);
+        mTestingRmap.initialize(mRmapInitiator);
     }
 
     virtual void
@@ -164,19 +158,35 @@ public:
     {
     }
 
+    void
+    handlePackage(outpost::Slice<uint8_t> data)
+    {
+        unittest::hal::SpaceWireStub::Packet packet;
+        packet.end = outpost::hal::SpaceWire::eop;
+        for (auto it = data.begin(); it != data.end(); ++it)
+        {
+            packet.data.push_back(*it);
+        }
+        mSpaceWire.mPacketsToReceive.push_back(packet);
+        mTestingBus.singleMessage();
+    }
+
     unittest::hal::SpaceWireStub mSpaceWire;
-    outpost::hal::SpaceWireMultiProtocolHandler<1> mHandler;
+    outpost::hal::SpaceWireMultiProtocolHandler<2> mHandler;
     RmapTargetNode mRmapTarget;
     RmapTargetsList mTargetNodes;
     RmapInitiator mRmapInitiator;
     TestingRmap mTestingRmap;
+    unittest::swb::TestingSoftwareBus mTestingBus;
 };
 
 /**
  * Note: Only working for command with logical addressing!!!
  */
 static std::vector<uint8_t>
-constructReadReplyPacket(std::vector<uint8_t>& command, uint8_t readValue, uint16_t countRead)
+constructReadReplyPacket(const std::vector<uint8_t>& command,
+                         const uint8_t readValue,
+                         const uint16_t countRead)
 {
     std::vector<uint8_t> ret;
     ret.resize(countRead + 13);
@@ -215,8 +225,8 @@ constructReadReplyPacket(std::vector<uint8_t>& command, uint8_t readValue, uint1
  * Note: Only working for command with logical addressing!!!
  */
 static std::vector<uint8_t>
-constructReadReplyErrorPacket(std::vector<uint8_t>& command,
-                              RmapReplyStatus::ErrorStatusCodes error)
+constructReadReplyErrorPacket(const std::vector<uint8_t>& command,
+                              const RmapReplyStatus::ErrorStatusCodes error)
 {
     std::vector<uint8_t> ret;
     ret.resize(13);
@@ -251,9 +261,9 @@ constructReadReplyErrorPacket(std::vector<uint8_t>& command,
  * Note: Only working for command with logical addressing!!!
  */
 static std::vector<uint8_t>
-constructWriteReplyPacket(
-        std::vector<uint8_t>& command,
-        RmapReplyStatus::ErrorStatusCodes error = RmapReplyStatus::commandExecutedSuccessfully)
+constructWriteReplyPacket(const std::vector<uint8_t>& command,
+                          const RmapReplyStatus::ErrorStatusCodes error =
+                                  RmapReplyStatus::commandExecutedSuccessfully)
 {
     std::vector<uint8_t> ret;
     ret.resize(rmap::writeReplyOverhead);
@@ -437,7 +447,7 @@ TEST_F(RmapTest, shouldSendWriteCommandPacket)
 
 TEST_F(RmapTest, shouldReceiveReplyOfWriteCommandPacket)
 {
-    outpost::utils::SharedBufferPointer rxBuffer;
+    outpost::hal::SpWMessage rxBuffer;
     // *** Constructing and sending write reply packet acc. to RMAP standard ***
     uint8_t reply[20];
     outpost::Serialize stream{outpost::asSlice(reply)};
@@ -459,8 +469,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfWriteCommandPacket)
             outpost::Slice<uint8_t>::unsafe(stream.getPointer(), stream.getPosition()));
     stream.store<uint8_t>(crc);  // Header CRC
 
-    mHandler.handlePackage(outpost::asSlice(reply).first(stream.getPosition()),
-                           stream.getPosition());
+    handlePackage(outpost::asSlice(reply).first(stream.getPosition()));
 
     RmapPacket receivedPacket;
     EXPECT_TRUE(mTestingRmap.receivePacket(mRmapInitiator, &receivedPacket, rxBuffer));
@@ -505,7 +514,7 @@ TEST_F(RmapTest, shouldSendReadCommandPacket)
 
 TEST_F(RmapTest, shouldReceiveReplyOfReadCommandPacket)
 {
-    outpost::utils::SharedBufferPointer rxBuffer;
+    outpost::hal::SpWMessage rxBuffer;
     uint8_t data[4] = {0x01, 0x02, 0x03, 0x04};
     uint8_t reply[20];
     outpost::Serialize stream{outpost::Slice<uint8_t>(reply)};
@@ -537,8 +546,7 @@ TEST_F(RmapTest, shouldReceiveReplyOfReadCommandPacket)
 
     stream.store<uint8_t>(crc);  // Data CRC
 
-    mHandler.handlePackage(outpost::asSlice(reply).first(stream.getPosition()),
-                           stream.getPosition());
+    handlePackage(outpost::asSlice(reply).first(stream.getPosition()));
 
     RmapPacket rxedPacket;
     EXPECT_TRUE(mTestingRmap.receivePacket(mRmapInitiator, &rxedPacket, rxBuffer));
@@ -584,7 +592,7 @@ TEST_F(RmapTest, shouldSendHigherLevelWriteCommandPacket)
 
     // we start with the compare at the extended memory address as we can find it nicely
     uint32_t start = 0;
-    while ((packet.data[start] != extaddress) && start < packet.data.size())
+    while (start < packet.data.size() && (packet.data[start] != extaddress))
     {
         start++;
     }
@@ -646,7 +654,7 @@ TEST_F(RmapTest, testRead)
 
     auto answer = constructReadReplyPacket(packet.data, readValue, sizeof(readBuffer));
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -706,7 +714,7 @@ TEST_F(RmapTest, testAnswerToLong)
     // too long answers are invalid
     auto answer = constructReadReplyPacket(packet.data, readValue, sizeof(readBuffer) + 1);
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -771,7 +779,7 @@ TEST_F(RmapTest, testReadAnswerTooShort)
 
     auto answer = constructReadReplyPacket(packet.data, readValue, answerSize);
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -840,7 +848,7 @@ TEST_F(RmapTest, testReadFailed)
 
     auto answer = constructReadReplyErrorPacket(packet.data, executionstatus);
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -957,7 +965,7 @@ TEST_F(RmapTest, testReverseReplyOrder)
 
     auto answer2 = constructReadReplyPacket(packet2.data, readValue2, sizeof(readBuffer2));
 
-    mHandler.handlePackage(outpost::asSlice(answer2), answer2.size());
+    handlePackage(outpost::asSlice(answer2));
     mTestingRmap.step(mRmapInitiator);
 
     auto status = read2.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -974,7 +982,7 @@ TEST_F(RmapTest, testReverseReplyOrder)
 
     auto answer1 = constructReadReplyPacket(packet1.data, readValue1, sizeof(readBuffer1));
 
-    mHandler.handlePackage(outpost::asSlice(answer1), answer1.size());
+    handlePackage(outpost::asSlice(answer1));
     mTestingRmap.step(mRmapInitiator);
 
     status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1043,7 +1051,7 @@ TEST_F(RmapTest, testBufferDoNotLeak)
 
         auto answer = constructReadReplyPacket(packet.data, readValue, sizeof(readBuffer));
 
-        mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+        handlePackage(outpost::asSlice(answer));
         mTestingRmap.step(mRmapInitiator);
 
         auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1124,7 +1132,7 @@ TEST_F(RmapTest, testInvaldRepliesAndErrorCounters)
     auto answer = constructReadReplyPacket(packet.data, readValueInCor1, sizeof(readBuffer));
     answer[11]++;
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     auto status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1146,7 +1154,7 @@ TEST_F(RmapTest, testInvaldRepliesAndErrorCounters)
     answer = constructReadReplyPacket(packet.data, readValueInCor2, sizeof(readBuffer));
     (*answer.rbegin())++;
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1164,10 +1172,10 @@ TEST_F(RmapTest, testInvaldRepliesAndErrorCounters)
     EXPECT_EQ(0u, errorCounters.mUnknownTransactionID);
     EXPECT_EQ(0u, errorCounters.mInvalidSize);
 
-    // partial package package
+    // partial package
     answer = constructReadReplyPacket(packet.data, readValueInCor3, sizeof(readBuffer));
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size() - 1);
+    handlePackage(outpost::asSlice(answer).skipLast(1));
     mTestingRmap.step(mRmapInitiator);
 
     status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1188,7 +1196,7 @@ TEST_F(RmapTest, testInvaldRepliesAndErrorCounters)
     // partial package very small
     answer = constructReadReplyPacket(packet.data, readValueInCor3, sizeof(readBuffer));
 
-    mHandler.handlePackage(outpost::asSlice(answer), rmap::minimumReplySize - 1);
+    handlePackage(outpost::asSlice(answer).first(rmap::minimumReplySize - 1));
     mTestingRmap.step(mRmapInitiator);
 
     status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1212,7 +1220,7 @@ TEST_F(RmapTest, testInvaldRepliesAndErrorCounters)
 
     answer = constructReadReplyPacket(tmp, readValueInCor4, sizeof(readBuffer));
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1235,7 +1243,7 @@ TEST_F(RmapTest, testInvaldRepliesAndErrorCounters)
     tmp[6] += 1;
     answer = constructReadReplyPacket(tmp, readValueInCor5, sizeof(readBuffer));
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1256,7 +1264,7 @@ TEST_F(RmapTest, testInvaldRepliesAndErrorCounters)
     // correct version
     answer = constructReadReplyPacket(packet.data, readValue, sizeof(readBuffer));
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     status = read1.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1376,7 +1384,7 @@ TEST_F(RmapTest, testWrite)
 
     auto answer = constructWriteReplyPacket(packet.data);
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     auto status = write.wait_for(std::chrono::milliseconds(50));  // give it time process reply
@@ -1436,7 +1444,7 @@ TEST_F(RmapTest, testWriteFailed)
 
     auto answer = constructWriteReplyPacket(packet.data, error);
 
-    mHandler.handlePackage(outpost::asSlice(answer), answer.size());
+    handlePackage(outpost::asSlice(answer));
     mTestingRmap.step(mRmapInitiator);
 
     auto status = write.wait_for(std::chrono::milliseconds(50));  // give it time process reply

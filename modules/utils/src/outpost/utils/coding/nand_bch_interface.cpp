@@ -25,15 +25,15 @@ DecodeStatus
 combine(DecodeStatus a, DecodeStatus b)
 {
     // order of ifs are relevant
-    if (a == DecodeStatus::invalidParameters || b == DecodeStatus::invalidParameters)
+    if ((a == DecodeStatus::invalidParameters) || (b == DecodeStatus::invalidParameters))
     {
         return DecodeStatus::invalidParameters;
     }
-    else if (a == DecodeStatus::uncorrectable || b == DecodeStatus::uncorrectable)
+    else if ((a == DecodeStatus::uncorrectable) || (b == DecodeStatus::uncorrectable))
     {
         return DecodeStatus::uncorrectable;
     }
-    else if (a == DecodeStatus::corrected || b == DecodeStatus::corrected)
+    else if ((a == DecodeStatus::corrected) || (b == DecodeStatus::corrected))
     {
         return DecodeStatus::corrected;
     }

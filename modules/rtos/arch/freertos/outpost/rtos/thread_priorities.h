@@ -25,7 +25,12 @@
 static inline uint8_t
 toFreeRtosPriority(uint8_t priority, size_t numPriorities)
 {
-    const uint8_t stepWidth = 256 / numPriorities;
+    if (numPriorities == 0)
+    {
+        return 0;
+    }
+
+    const uint8_t stepWidth = 255 / numPriorities;
 
     uint8_t out = (priority / stepWidth);
 
@@ -42,7 +47,12 @@ toFreeRtosPriority(uint8_t priority, size_t numPriorities)
 static inline uint8_t
 fromFreeRtosPriority(uint8_t priority, size_t numPriorities)
 {
-    const uint8_t stepWidth = 256 / numPriorities;
+    if (numPriorities == 0)
+    {
+        return 0;
+    }
+
+    const uint8_t stepWidth = 255 / numPriorities;
     const uint8_t offset = stepWidth / 2;
 
     return (priority * stepWidth + offset);

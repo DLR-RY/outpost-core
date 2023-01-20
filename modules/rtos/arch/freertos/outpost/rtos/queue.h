@@ -15,6 +15,9 @@
 #ifndef OUTPOST_RTOS_FREERTOS_QUEUE_H
 #define OUTPOST_RTOS_FREERTOS_QUEUE_H
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+
 #include <outpost/time/duration.h>
 
 #include <stddef.h>
@@ -43,7 +46,7 @@ namespace rtos
 template <typename T>
 class Queue
 {
-    static_assert(std::is_pod<T>::value, "T must be POD");
+    static_assert(std::is_trivial<T>::value && std::is_standard_layout<T>::value, "T must be POD");
 
 public:
     /**
@@ -52,7 +55,7 @@ public:
      * \param numberOfItems
      *      The maximum number of items that the queue can contain.
      */
-    Queue(size_t numberOfItems);
+    explicit Queue(size_t numberOfItems);
 
     // disable copy constructor
     Queue(const Queue& other) = delete;
@@ -67,7 +70,7 @@ public:
     ~Queue();
 
     /**
-     * Send data to the queue.
+     * Send data to the queue. May not be used from ISRs.
      *
      * \param data
      *      Reference to the item that is to be placed on the queue.
@@ -79,7 +82,21 @@ public:
     send(const T& data);
 
     /**
-     * Receive data from the queue.
+     * Send data to the queue. Only to be used from within ISRs.
+     *
+     * \param data
+     *      Reference to the item that is to be placed on the queue.
+     * \param hasWokenTask
+     *      Is set to true if the send operation wakes a higher priority task.
+     *      In that case, a yield should be executed before exiting the ISR.
+     * \retval true     Value was successfully stored in the queue.
+     * \retval false    Queue is full, data could not be appended.
+     */
+    bool
+    sendFromISR(const T& data, bool& hasWokenTask);
+
+    /**
+     * Receive data from the queue. May not be used from ISRs.
      *
      * \param data
      *      Reference to the buffer into which the received item will be copied.
@@ -92,8 +109,24 @@ public:
     bool
     receive(T& data, outpost::time::Duration timeout);
 
+    /**
+     * Receive data from the queue. Only to be used from within ISRs.
+     *
+     * \param data
+     *      Reference to the buffer into which the received item will be copied.
+     * \param hasWokenTask
+     *      Is set to true if the receive operation wakes a higher priority task.
+     *      In that case, a yield should be executed before exiting the ISR.
+     *
+     * \retval true     Value was received correctly and put in \p data.
+     * \retval false    No data available or some other error occured, hence \p data was not
+     * changed.
+     */
+    bool
+    receiveFromISR(T& data, bool& hasWokenTask);
+
 private:
-    void* mHandle;
+    QueueDefinition* mHandle;
 };
 
 }  // namespace rtos

@@ -84,6 +84,9 @@ public:
     const T*
     last() const;
 
+    /*
+     *Get node that satisfies given condition
+     */
     template <typename Condition>
     T*
     get(Condition condition);
@@ -96,7 +99,22 @@ public:
     T*
     getN(size_t n);
 
-    /**
+    /*
+     *Get node that satisfies given condition
+     */
+    template <typename Condition>
+    const T*
+    get(Condition condition) const;
+
+    /*
+     * Get the nth element of the list.
+     *
+     * O(N)
+     */
+    const T*
+    getN(size_t n) const;
+
+    /*
      * Add a node to the front of the list.
      *
      * O(1)
@@ -202,9 +220,11 @@ public:
         bool
         operator!=(const Iterator& other) const;
 
-        T& operator*();
+        T&
+        operator*();
 
-        T* operator->();
+        T*
+        operator->();
 
     private:
         explicit Iterator(T* node, T* lastNode);
@@ -227,6 +247,9 @@ public:
         ConstIterator(const ConstIterator& other);
 
         ConstIterator&
+        operator=(const Iterator& other);
+
+        ConstIterator&
         operator=(const ConstIterator& other);
 
         ConstIterator&
@@ -238,9 +261,11 @@ public:
         bool
         operator!=(const ConstIterator& other) const;
 
-        const T& operator*() const;
+        const T&
+        operator*() const;
 
-        const T* operator->() const;
+        const T*
+        operator->() const;
 
     private:
         explicit ConstIterator(T* node, T* lastNode);

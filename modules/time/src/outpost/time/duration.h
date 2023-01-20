@@ -11,11 +11,13 @@
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
  * - 2015, Annika Ofenloch (DLR RY-AVS)
  * - 2016, Jan Sommer (DLR SC-SRV)
+ * - 2021, Felix Passenberg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_TIME_DURATION_H
 #define OUTPOST_TIME_DURATION_H
 
+#include <limits>
 #include <stdint.h>
 
 namespace outpost
@@ -33,6 +35,8 @@ namespace time
  *     Duration * Integer   --> Duration
  *     Integer  * Duration  --> Duration
  *     Duration / Integer   --> Duration  (Integer Division rules)
+ *     Duration / Duration  --> Integer   (Integer Division rules)
+ *     Duration % Duration  --> Duration
  *
  * Resolution is microseconds.
  *
@@ -41,6 +45,12 @@ namespace time
  */
 class Duration
 {
+    friend constexpr Duration
+    operator*(int64_t muliplier, const Duration& duration);
+
+    template <class T>
+    friend struct std::numeric_limits;
+
 public:
     template <typename ReferenceEpoch>
     friend class TimePoint;
@@ -54,6 +64,13 @@ public:
     static constexpr int64_t secondsPerDay = 86400;
 
     inline ~Duration() = default;
+
+    /**
+     * Default constructor
+     */
+    inline constexpr Duration() : mTicks(0)
+    {
+    }
 
     /**
      * Copy constructor
@@ -129,16 +146,42 @@ public:
         return mTicks;
     }
 
+    /**
+     * the maximum value the type can hold
+     *
+     * for reasonably long durations better use myriad
+     * they are safer against calculations.
+     * maximum will overflow.
+     *
+     */
     static inline constexpr Duration
     maximum()
     {
         return Duration(maximumValue);
     }
 
+#if __cplusplus >= 201309L
+    [[deprecated("ambiguous: use myriad for long time, use numeric_limits<Duration>::max() for the "
+                 "absolute maximum value")]]
+#endif
     static inline constexpr Duration
     infinity()
     {
         return Duration(maximumValue);
+    }
+
+    /**
+     * approximately 10000 years.
+     *
+     * does not calculate leap years, leap seconds and other stuff.
+     * some places use it to consider the timeout as never happening.
+     * Banzai!
+     */
+    static inline constexpr Duration
+    myriad()  // 10000 years
+    {
+        return Duration(10000 * 365 * 24 * minutesPerHour * secondsPerMinute * millisecondsPerSecond
+                        * microsecondsPerMillisecond);
     }
 
     static inline constexpr Duration
@@ -165,15 +208,22 @@ public:
         return Duration(mTicks + other.mTicks);
     }
 
-    inline constexpr Duration operator*(Duration other) const
+    inline constexpr Duration
+    operator/(int32_t divisor) const
     {
-        return Duration(mTicks + other.mTicks);
+        return Duration(mTicks / divisor);
+    }
+
+    inline constexpr int64_t
+    operator/(Duration divisor) const
+    {
+        return mTicks / divisor.mTicks;
     }
 
     inline constexpr Duration
-    operator/(int divisor) const
+    operator%(Duration divisor) const
     {
-        return Duration(mTicks / divisor);
+        return Duration(mTicks % divisor.mTicks);
     }
 
     inline Duration
@@ -191,19 +241,20 @@ public:
     }
 
     inline Duration
-    operator/=(int divisor)
+    operator/=(int64_t divisor)
     {
         mTicks = mTicks / divisor;
         return Duration(mTicks);
     }
 
-    inline constexpr Duration operator*(int rhs) const
+    inline constexpr Duration
+    operator*(int32_t rhs) const
     {
         return Duration(mTicks * rhs);
     }
 
     inline Duration
-    operator*=(int divisor)
+    operator*=(int64_t divisor)
     {
         mTicks = mTicks * divisor;
         return Duration(mTicks);
@@ -262,11 +313,19 @@ private:
     //
     // With 64 bit a time span of 9 * 10^12 seconds is possible:
     // (2^63 - 1) / 1,000,000 / 60 / 60 / 24 /365 = 292,471 years
+    //
+    // times longer than 10,000 years may be considered to never happen.
     int64_t mTicks;
 
     static constexpr int64_t maximumValue = 9223372036854775807LL;
     static constexpr int64_t minimalValue = -maximumValue - 1;
 };
+
+inline constexpr Duration
+operator*(int64_t muliplier, const Duration& duration)
+{
+    return Duration(duration.mTicks * muliplier);
+}
 
 class Hours : public Duration
 {
@@ -330,5 +389,37 @@ public:
 
 }  // namespace time
 }  // namespace outpost
+
+namespace std
+{
+// only replacing where the return type was int64_t, thus the rest is inherited
+template <>
+struct numeric_limits<outpost::time::Duration> : public numeric_limits<int64_t>
+{
+    static constexpr outpost::time::Duration
+    max()
+    {
+        return outpost::time::Duration(numeric_limits<int64_t>::max());
+    }
+
+    static constexpr outpost::time::Duration
+    min()
+    {
+        return outpost::time::Duration(numeric_limits<int64_t>::min());
+    }
+#if __cplusplus >= 201103L
+    static constexpr outpost::time::Duration
+    lowest() noexcept
+    {
+        return min();
+    }
+#endif
+    static constexpr outpost::time::Duration
+    epsilon() noexcept
+    {
+        return outpost::time::Duration::zero();
+    }
+};
+}  // namespace std
 
 #endif

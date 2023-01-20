@@ -50,7 +50,7 @@ public:
         suspending
     };
 
-    Checkpoint(State initialState = suspending);
+    explicit Checkpoint(State initialState = suspending);
 
     ~Checkpoint();
 

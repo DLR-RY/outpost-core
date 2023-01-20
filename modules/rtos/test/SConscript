@@ -15,18 +15,45 @@
 
 import os
 
+module = os.path.basename(os.path.abspath('../'))
+
 Import('envGlobal')
 
-envGlobal.Append(CPPPATH=[os.path.abspath('.') ])
+envGlobal.Append(CPPPATH=[os.path.abspath('.')])
 
-env = envGlobal.Clone()
+### == UNITTEST LIBRARY ==
 
-files  = env.Glob('unittest/*.cpp')
-files += env.Glob('unittest/*/*.cpp')
-files += env.Glob('unittest/*/*/*.cpp')
+envLib = envGlobal.Clone()
+
+files = envLib.Glob('unittest/*.cpp')
+files += envLib.Glob('unittest/*/*.cpp')
+files += envLib.Glob('unittest/*/*/*.cpp')
+files += envLib.Glob('unittest/*/*/*/*.cpp')
 
 objects = []
 for file in files:
-	objects.append(env.Object(file))
+    objects.append(envGlobal.Object(file))
 envGlobal.Append(objects_unittest=objects)
 envGlobal.Append(sources_unittest=files)
+
+### == TEST BUILD ==
+
+envTest = envGlobal.Clone()
+
+envTest.AppendUnique(LIBS=[    
+    'outpost_time',
+    'outpost_utils',
+])
+
+files = envTest.Glob('*.cpp')
+files += envTest.Glob('outpost/*.cpp')
+files += envTest.Glob('outpost/*/*.cpp')
+files += envTest.Glob('outpost/*/*/*.cpp')
+files += envTest.Glob('outpost/*/*/*/*.cpp')
+
+files += envTest['objects'][module]
+
+envGlobal.Alias(module, envTest.Program('runner', files))
+
+envTest['COMPILATIONDB_PATH_FILTER'] = os.path.join('$BUILDPATH', 'modules', module, '*')
+envGlobal.Alias(module + '_db', envTest.CompilationDatabase(os.path.join('$BUILDPATH', module, 'compile_commands.json')))

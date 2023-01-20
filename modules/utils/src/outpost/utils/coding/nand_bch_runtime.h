@@ -54,7 +54,7 @@ public:
 
     DecodeStatus
     decode(const outpost::Slice<const uint8_t>& coded_data,
-           const outpost::Slice<uint8_t>& dst_data) override;
+           const outpost::Slice<uint8_t>& dest_data) override;
 
     inline uint32_t
     getNumberOfRedundantBytes(void) const override
@@ -127,25 +127,25 @@ private:
     std::bitset<mFFSize> generatedRoots;  // need the place here otherwise blow stack
 
     int32_t
-    ffMult(int32_t a, int32_t b);
+    ffMult(int32_t a, int32_t b) const;
 
     int32_t
-    ffInv(int32_t opa, bool& success);
+    ffInv(int32_t opa, bool& success) const;
 
     int32_t
-    ffDiv(int32_t opa, int32_t opb, bool& success);
+    ffDiv(int32_t opa, int32_t opb, bool& success) const;
 
     void
     buildLogTables(void);
 
     bool
-    checkLogTables(void);
+    checkLogTables(void) const;
 
     int32_t
-    ffSquareRoot(int32_t opa);
+    ffSquareRoot(int32_t opa) const;
 
     int32_t
-    ffCubeRoot(int32_t opa, bool& success);
+    ffCubeRoot(int32_t opa, bool& success) const;
 
     void
     genTraceTestVal(void);
@@ -154,7 +154,7 @@ private:
     genQuadCompTable(void);
 
     int32_t
-    ffQuadFun(int32_t c);
+    ffQuadFun(int32_t c) const;
 
     void
     bchInit(void);

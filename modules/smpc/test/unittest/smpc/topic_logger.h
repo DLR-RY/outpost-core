@@ -29,7 +29,7 @@ template <typename T>
 class TopicLogger
 {
 public:
-    TopicLogger(outpost::smpc::Topic<T>& topic);
+    explicit TopicLogger(outpost::smpc::Topic<T>& topic);
 
     void
     clear();
@@ -44,7 +44,7 @@ public:
     isEmpty() const;
 
 private:
-    typedef typename outpost::remove_const<T>::type NonConstType;
+    typedef typename std::remove_const<T>::type NonConstType;
 
     void
     onReceive(T* item);

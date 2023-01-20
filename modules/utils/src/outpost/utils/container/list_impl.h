@@ -21,50 +21,52 @@
 
 #include <type_traits>
 
+namespace outpost
+{
+
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::List<T>::List() : mHead(nullptr), mTail(nullptr)
+List<T>::List() : mHead(nullptr), mTail(nullptr)
 {
-    static_assert(std::is_base_of<outpost::ListElement, T>::value,
-                  "T not derived from ListElement");
+    static_assert(std::is_base_of<ListElement, T>::value, "T not derived from ListElement");
 }
 
 template <typename T>
-outpost::List<T>::~List()
+List<T>::~List()
 {
 }
 
 template <typename T>
 bool
-outpost::List<T>::isEmpty() const
+List<T>::isEmpty() const
 {
-    return (mHead == nullptr);
+    return (nullptr == mHead);
 }
 
 template <typename T>
 T*
-outpost::List<T>::first()
+List<T>::first()
 {
     return static_cast<T*>(mHead);
 }
 
 template <typename T>
 const T*
-outpost::List<T>::first() const
+List<T>::first() const
 {
     return static_cast<const T*>(mHead);
 }
 
 template <typename T>
 const T*
-outpost::List<T>::last() const
+List<T>::last() const
 {
     return static_cast<const T*>(mTail);
 }
 
 template <typename T>
 T*
-outpost::List<T>::last()
+List<T>::last()
 {
     return static_cast<T*>(mTail);
 }
@@ -72,10 +74,10 @@ outpost::List<T>::last()
 template <typename T>
 template <typename Condition>
 T*
-outpost::List<T>::get(Condition condition)
+List<T>::get(Condition condition)
 {
     T* current = static_cast<T*>(mHead);
-    while ((current != nullptr) && !condition(*current))
+    while ((nullptr != current) && !condition(*current))
     {
         current = static_cast<T*>(current->mNext);
     }
@@ -84,31 +86,50 @@ outpost::List<T>::get(Condition condition)
 
 template <typename T>
 T*
-outpost::List<T>::getN(size_t n)
+List<T>::getN(size_t n)
 {
     ListElement* current = mHead;
-    while ((current != nullptr) && (n > 0))
+    while ((nullptr != current) && (n > 0))
     {
         current = current->mNext;
         n--;
     }
 
-    if (n > 0)
+    // will be nullptr if to few elements contained
+    return static_cast<T*>(current);
+}
+
+template <typename T>
+template <typename Condition>
+const T*
+List<T>::get(Condition condition) const
+{
+    T* current = static_cast<T*>(mHead);
+    while ((nullptr != current) && !condition(*current))
     {
-        // n is greater than the size
-        current = nullptr;
+        current = static_cast<T*>(current->mNext);
     }
-    else
+    return current;
+}
+
+template <typename T>
+const T*
+List<T>::getN(size_t n) const
+{
+    ListElement* current = mHead;
+    while ((nullptr != current) && (n > 0))
     {
-        // current points to the n-th element.
+        current = current->mNext;
+        n--;
     }
 
+    // will be nullptr if to few elements contained
     return static_cast<T*>(current);
 }
 
 template <typename T>
 void
-outpost::List<T>::reset()
+List<T>::reset()
 {
     mHead = nullptr;
     mTail = nullptr;
@@ -117,10 +138,10 @@ outpost::List<T>::reset()
 // ----------------------------------------------------------------------------
 template <typename T>
 void
-outpost::List<T>::prepend(T* node)
+List<T>::prepend(T* node)
 {
     // for empty list we alos have to adapt the tail
-    if (mTail == nullptr)
+    if (nullptr == mTail)
     {
         mTail = node;
     }
@@ -131,9 +152,9 @@ outpost::List<T>::prepend(T* node)
 
 template <typename T>
 void
-outpost::List<T>::append(T* node)
+List<T>::append(T* node)
 {
-    if (mHead == nullptr)
+    if (nullptr == mHead)
     {
         mHead = node;
     }
@@ -147,10 +168,10 @@ outpost::List<T>::append(T* node)
 
 template <typename T>
 void
-outpost::List<T>::insert(T* node)
+List<T>::insert(T* node)
 {
     node->mNext = nullptr;
-    if (mHead == nullptr)
+    if (nullptr == mHead)
     {
         // empty list
         mHead = node;
@@ -191,17 +212,17 @@ outpost::List<T>::insert(T* node)
 // ----------------------------------------------------------------------------
 template <typename T>
 bool
-outpost::List<T>::removeNode(T* node)
+List<T>::removeNode(T* node)
 {
     bool nodeFound = false;
-    if (mHead != nullptr)
+    if (nullptr != mHead)
     {
         if (mHead == node)
         {
             // Entry is the first one in the list
             mHead = mHead->mNext;
 
-            if (mHead == nullptr)
+            if (nullptr == mHead)
             {
                 mTail = nullptr;
             }
@@ -215,7 +236,7 @@ outpost::List<T>::removeNode(T* node)
             ListElement* current = mHead->mNext;
 
             // Iterate trough the list until the node is found
-            while ((current != nullptr) && (current != node))
+            while ((nullptr != current) && (current != node))
             {
                 previous = current;
                 current = current->mNext;
@@ -243,11 +264,11 @@ outpost::List<T>::removeNode(T* node)
 template <typename T>
 template <typename Condition>
 T*
-outpost::List<T>::remove(Condition condition)
+List<T>::remove(Condition condition)
 {
     T* node = nullptr;
 
-    if (mHead != nullptr)
+    if (nullptr != mHead)
     {
         if (condition(*static_cast<T*>(mHead)))
         {
@@ -255,7 +276,7 @@ outpost::List<T>::remove(Condition condition)
             node = static_cast<T*>(mHead);
             mHead = mHead->mNext;
 
-            if (mHead == nullptr)
+            if (nullptr == mHead)
             {
                 mTail = nullptr;
             }
@@ -268,13 +289,13 @@ outpost::List<T>::remove(Condition condition)
             node = static_cast<T*>(mHead->mNext);
 
             // Iterate trough the list until the node is found
-            while ((node != nullptr) && !condition(*node))
+            while ((nullptr != node) && !condition(*node))
             {
                 previous = node;
                 node = static_cast<T*>(node->mNext);
             }
 
-            if (node != nullptr)
+            if (nullptr != node)
             {
                 // remove node from the list
                 previous->mNext = node->mNext;
@@ -294,21 +315,21 @@ outpost::List<T>::remove(Condition condition)
 template <typename T>
 template <typename Condition>
 void
-outpost::List<T>::removeAll(Condition condition)
+List<T>::removeAll(Condition condition)
 {
     ListElement* previous = nullptr;
     ListElement* current = static_cast<T*>(mHead);
 
     // Iterate trough the list and check all nodes.
-    while (current != nullptr)
+    while (nullptr != current)
     {
         if (condition(*static_cast<T*>(current)))
         {
             // the removed one is the head -> correct list
-            if (previous == nullptr)
+            if (nullptr == previous)
             {
                 mHead = current->mNext;
-                if (mHead == nullptr)
+                if (nullptr == mHead)
                 {
                     mTail = nullptr;
                 }
@@ -336,7 +357,7 @@ outpost::List<T>::removeAll(Condition condition)
 template <typename T>
 template <typename Condition, typename PostCondition>
 void
-outpost::List<T>::removeAll(Condition condition, PostCondition postCondition)
+List<T>::removeAll(Condition condition, PostCondition postCondition)
 {
     // we only want a single pointer between iterations such that
     // a postcondition adding a node cannot destory assumption about the
@@ -349,7 +370,7 @@ outpost::List<T>::removeAll(Condition condition, PostCondition postCondition)
         {
             T* tmp = static_cast<T*>(mHead);
             mHead = tmp->mNext;
-            if (mHead == nullptr)
+            if (nullptr == mHead)
             {
                 mTail = nullptr;
             }
@@ -362,7 +383,7 @@ outpost::List<T>::removeAll(Condition condition, PostCondition postCondition)
         }
     }
 
-    if (previous == nullptr)
+    if (nullptr == previous)
     {
         return;
     }
@@ -392,15 +413,15 @@ outpost::List<T>::removeAll(Condition condition, PostCondition postCondition)
 // ----------------------------------------------------------------------------
 template <typename T>
 void
-outpost::List<T>::removeFirst()
+List<T>::removeFirst()
 {
-    if (mHead != nullptr)
+    if (nullptr != mHead)
     {
         ListElement* next = mHead->mNext;
         mHead->mNext = nullptr;
         mHead = next;
 
-        if (mHead == nullptr)
+        if (nullptr == mHead)
         {
             mTail = nullptr;
         }
@@ -410,11 +431,11 @@ outpost::List<T>::removeFirst()
 // ----------------------------------------------------------------------------
 template <typename T>
 size_t
-outpost::List<T>::size() const
+List<T>::size() const
 {
     size_t numberOfElements = 0;
     ListElement* current = mHead;
-    while (current != nullptr)
+    while (nullptr != current)
     {
         current = current->mNext;
         numberOfElements++;
@@ -424,23 +445,23 @@ outpost::List<T>::size() const
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::List<T>::Iterator::Iterator() : mNode(nullptr)
+List<T>::Iterator::Iterator() : mNode(nullptr)
 {
 }
 
 template <typename T>
-outpost::List<T>::Iterator::Iterator(T* node) : mNode(node)
+List<T>::Iterator::Iterator(T* node) : mNode(node)
 {
 }
 
 template <typename T>
-outpost::List<T>::Iterator::Iterator(const Iterator& other) : mNode(other.mNode)
+List<T>::Iterator::Iterator(const Iterator& other) : mNode(other.mNode)
 {
 }
 
 template <typename T>
-typename outpost::List<T>::Iterator&
-outpost::List<T>::Iterator::operator=(const Iterator& other)
+typename List<T>::Iterator&
+List<T>::Iterator::operator=(const Iterator& other)
 {
     // Handles self assignment correctly
     this->mNode = other.mNode;
@@ -448,8 +469,8 @@ outpost::List<T>::Iterator::operator=(const Iterator& other)
 }
 
 template <typename T>
-typename outpost::List<T>::Iterator&
-outpost::List<T>::Iterator::operator++()
+typename List<T>::Iterator&
+List<T>::Iterator::operator++()
 {
     this->mNode = static_cast<T*>(this->mNode->mNext);
     return *this;
@@ -457,54 +478,56 @@ outpost::List<T>::Iterator::operator++()
 
 template <typename T>
 bool
-outpost::List<T>::Iterator::operator==(const Iterator& other) const
+List<T>::Iterator::operator==(const Iterator& other) const
 {
     return (mNode == other.mNode);
 }
 
 template <typename T>
 bool
-outpost::List<T>::Iterator::operator!=(const Iterator& other) const
+List<T>::Iterator::operator!=(const Iterator& other) const
 {
     return (mNode != other.mNode);
 }
 
 template <typename T>
-T& outpost::List<T>::Iterator::operator*()
+T&
+List<T>::Iterator::operator*()
 {
     return *this->mNode;
 }
 
 template <typename T>
-T* outpost::List<T>::Iterator::operator->()
+T*
+List<T>::Iterator::operator->()
 {
     return this->mNode;
 }
 
 // ----------------------------------------------------------------------------
 template <typename T>
-outpost::List<T>::ConstIterator::ConstIterator() : mNode(0)
+List<T>::ConstIterator::ConstIterator() : mNode(0)
 {
 }
 
 template <typename T>
-outpost::List<T>::ConstIterator::ConstIterator(const T* node) : mNode(node)
+List<T>::ConstIterator::ConstIterator(const T* node) : mNode(node)
 {
 }
 
 template <typename T>
-outpost::List<T>::ConstIterator::ConstIterator(const ConstIterator& other) : mNode(other.mNode)
+List<T>::ConstIterator::ConstIterator(const ConstIterator& other) : mNode(other.mNode)
 {
 }
 
 template <typename T>
-outpost::List<T>::ConstIterator::ConstIterator(const Iterator& other) : mNode(other.mNode)
+List<T>::ConstIterator::ConstIterator(const Iterator& other) : mNode(other.mNode)
 {
 }
 
 template <typename T>
-typename outpost::List<T>::ConstIterator&
-outpost::List<T>::ConstIterator::operator=(const ConstIterator& other)
+typename List<T>::ConstIterator&
+List<T>::ConstIterator::operator=(const ConstIterator& other)
 {
     // Handles self assignment correctly
     this->mNode = other.mNode;
@@ -512,8 +535,8 @@ outpost::List<T>::ConstIterator::operator=(const ConstIterator& other)
 }
 
 template <typename T>
-typename outpost::List<T>::ConstIterator&
-outpost::List<T>::ConstIterator::operator++()
+typename List<T>::ConstIterator&
+List<T>::ConstIterator::operator++()
 {
     this->mNode = static_cast<const T*>(this->mNode->mNext);
     return *this;
@@ -521,73 +544,77 @@ outpost::List<T>::ConstIterator::operator++()
 
 template <typename T>
 bool
-outpost::List<T>::ConstIterator::operator==(const ConstIterator& other) const
+List<T>::ConstIterator::operator==(const ConstIterator& other) const
 {
     return (mNode == other.mNode);
 }
 
 template <typename T>
 bool
-outpost::List<T>::ConstIterator::operator!=(const ConstIterator& other) const
+List<T>::ConstIterator::operator!=(const ConstIterator& other) const
 {
     return (mNode != other.mNode);
 }
 
 template <typename T>
-const T& outpost::List<T>::ConstIterator::operator*() const
+const T&
+List<T>::ConstIterator::operator*() const
 {
     return *this->mNode;
 }
 
 template <typename T>
-const T* outpost::List<T>::ConstIterator::operator->() const
+const T*
+List<T>::ConstIterator::operator->() const
 {
     return this->mNode;
 }
 
 template <typename T>
-outpost::List<T>::ConstIterator::operator const T*() const
+List<T>::ConstIterator::operator const T*() const
 {
     return mNode;
 }
 
 // ----------------------------------------------------------------------------
 template <typename T>
-typename outpost::List<T>::Iterator
-outpost::List<T>::begin()
+typename List<T>::Iterator
+List<T>::begin()
 {
     Iterator it(static_cast<T*>(this->mHead));
     return it;
 }
 
 template <typename T>
-typename outpost::List<T>::Iterator
-outpost::List<T>::end()
+typename List<T>::Iterator
+List<T>::end()
 {
     Iterator it(nullptr);
     return it;
 }
 
 template <typename T>
-typename outpost::List<T>::ConstIterator
-outpost::List<T>::begin() const
+typename List<T>::ConstIterator
+List<T>::begin() const
 {
     ConstIterator it(static_cast<const T*>(this->mHead));
     return it;
 }
 
 template <typename T>
-typename outpost::List<T>::ConstIterator
-outpost::List<T>::end() const
+typename List<T>::ConstIterator
+List<T>::end() const
 {
     ConstIterator it(nullptr);
     return it;
 }
 
 template <typename T>
-outpost::List<T>::Iterator::operator T*()
+List<T>::Iterator::operator T*()
 {
     return mNode;
 }
+
+}  // namespace outpost
 
 #endif

@@ -52,10 +52,7 @@ constexpr uint32_t NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 constexpr NandBCHCTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHCTime(void) :
-    mLoc{0},
-    mSyndromes{0},
-    mCodeWord{0},
-    mRemainderBytes{0}
+    mLoc{0}, mSyndromes{0}, mCodeWord{0}, mRemainderBytes{0}
 {
     static_assert(checkLogTables() && mPolynom.valid,
                   "Template parameters does not create a valid encoder");

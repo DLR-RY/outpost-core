@@ -41,7 +41,7 @@ namespace smpc
  * \author  Fabian Greif
  */
 class SubscriptionRaw : public ImplicitList<SubscriptionRaw>,
-                        protected Functor2<void(const void* message, size_t length)>
+                        protected Functor<void(const void* message, size_t length)>
 {
 public:
     friend class TopicRaw;
@@ -122,7 +122,7 @@ SubscriptionRaw::SubscriptionRaw(TopicRaw& topic,
                                  S* subscriber,
                                  typename FunctionType<S>::Type function) :
     ImplicitList<SubscriptionRaw>(listOfAllSubscriptions, this),
-    Functor2<void(const void* message, size_t length)>(*subscriber, function),
+    Functor<void(const void* message, size_t length)>(*subscriber, function),
     mTopic(&topic),
     mNextTopicSubscription(0)
 {

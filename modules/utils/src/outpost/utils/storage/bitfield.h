@@ -10,12 +10,16 @@
  * Authors:
  * - 2014-2017, Fabian Greif (DLR RY-AVS)
  * - 2018, Jan Malburg (DLR RY-AVS)
+ * - 2021, Jan Sommer (DLR SC-SRV)
  */
 
 #ifndef OUTPOST_UTILS_BITFIELD_H
 #define OUTPOST_UTILS_BITFIELD_H
 
+#include <limits>
 #include <stdint.h>
+
+#include <type_traits>  // std::conditional
 
 namespace outpost
 {
@@ -30,6 +34,24 @@ namespace outpost
 class Bitfield
 {
 public:
+    // Determine the most appropriate underlying type for the BitField
+    template <unsigned int N>
+    struct IntegerFromBitSize
+    {
+        static_assert(N <= 64, "BitField can read/write at most 64 bits");
+        using type = typename std::conditional<
+                N <= 8,
+                uint8_t,
+                typename std::conditional<
+                        N <= 16,
+                        uint16_t,
+                        typename std::conditional<N <= 32, uint32_t, uint64_t>::type>::type>::type;
+        static constexpr uint32_t size = 8 * sizeof(type);
+    };
+
+    template <unsigned int start, unsigned int end>
+    using UInteger = typename IntegerFromBitSize<end - start + 1>::type;
+
     // Disable compiler generated functions
     Bitfield() = delete;
 
@@ -51,17 +73,15 @@ public:
      *
      * \return  Value of the bit.
      */
-    template <int offset>
+    template <unsigned int offset>
     static bool
     read(const uint8_t* byteArray);
 
     /**
      * Read multiple bits from a byte stream.
      *
-     * Reads up to 16 bit. The bits must fit into consecutive bytes in the
-     * byte array! E.g. it is possible to do read<0, 15>() but not
-     * read<1, 16>(). The first requires to read the first two bytes, the later
-     * to read the first three bytes.
+     * Reads up to 64 bits. The bits must fit into consecutive bytes in the
+     * byte array!
      *
      * \tparam  start
      *      First bit of the bitfield
@@ -74,8 +94,8 @@ public:
      *
      * \return  Value contained in the bits given.
      */
-    template <int start, int end>
-    static uint16_t
+    template <unsigned int start, unsigned int end>
+    static UInteger<start, end>
     read(const uint8_t* byteArray);
 
     /**
@@ -89,7 +109,7 @@ public:
      * \param value
      *      Value to write to the array.
      */
-    template <int offset>
+    template <unsigned int offset>
     static void
     write(uint8_t* byteArray, bool value);
 
@@ -109,67 +129,148 @@ public:
      *      and \c end are first cleared and then overwritten with the value
      *      defined through this parameter.
      */
-    template <int start, int end>
+    template <unsigned int start, unsigned int end>
     static void
-    write(uint8_t* byteArray, uint16_t value);
+    write(uint8_t* byteArray, UInteger<start, end> value);
 
 private:
-    static constexpr int numberOfBitsPerByte = 8;
+    static constexpr unsigned int numberOfBitsPerByte = 8;
 
-    static constexpr inline int
-    affectedBytes(int start, int end)
+    static constexpr inline unsigned int
+    affectedBytes(unsigned int start, unsigned int end)
     {
         return ((end / numberOfBitsPerByte) - (start / numberOfBitsPerByte)) + 1;
     }
 
-    /**
-     * Base Version no instantiation, only specializations are used
-     */
-    template <int start, int end, int affectedBytes>
-    struct Access
+    template <typename T>
+    static constexpr T
+    getMask(uint32_t numBits = sizeof(T) * numberOfBitsPerByte)
     {
-        inline static uint16_t
-        read(const uint8_t* byteArray);
-    };
+        return (std::numeric_limits<T>::max() >> (sizeof(T) * numberOfBitsPerByte - numBits));
+    }
+};
 
-    /**
-     * The specialization when a single byte is affected
-     */
-    template <int start, int end>
-    struct Access<start, end, 1>
-    {
-        inline static uint16_t
-        read(const uint8_t* byteArray);
+/**
+ * Set and get multiple bits from a byte array.
+ *
+ * The data in the bytes is assumed to be in little endian order (lower byte
+ * first). Uses MSB 0 bit ordering (bit 0 is the MSB).
+ *
+ * \author  Jan Sommer
+ */
+class BitfieldLittleEndian
+{
+public:
+    template <unsigned int start, unsigned int end>
+    using UInteger = Bitfield::UInteger<start, end>;
 
-        inline static void
-        write(uint8_t* byteArray, uint16_t value);
-    };
+    // Disable compiler generated functions
+    BitfieldLittleEndian() = delete;
 
-    /**
-     * The specialization when two bytes are affected
-     */
-    template <int start, int end>
-    struct Access<start, end, 2>
-    {
-        inline static uint16_t
-        read(const uint8_t* byteArray);
+    ~BitfieldLittleEndian() = delete;
 
-        inline static void
-        write(uint8_t* byteArray, uint16_t value);
-    };
+    BitfieldLittleEndian(const BitfieldLittleEndian& other) = delete;
+
+    BitfieldLittleEndian&
+    operator=(const BitfieldLittleEndian& other) = delete;
 
     /**
-     * The specialization when three bytes are affected
+     * Read a single bit from a byte stream.
+     *
+     * \tparam  offset
+     *      Offset of the bit to read.
+     *
+     * \param byteArray
+     *      Pointer to the byte array to access.
+     *
+     * \return  Value of the bit.
      */
-    template <int start, int end>
-    struct Access<start, end, 3>
+    template <unsigned int offset>
+    static bool
+    read(const uint8_t* byteArray)
     {
-        inline static uint16_t
-        read(const uint8_t* byteArray);
+        return Bitfield::read<offset>(byteArray);
+    }
 
-        inline static void
-        write(uint8_t* byteArray, uint16_t value);
-    };
+    /**
+     * Read multiple bits from a byte stream.
+     *
+     * Reads up to 64 bit. The bits must fit into consecutive bytes in the
+     * byte array!
+     *
+     * \tparam  start
+     *      First bit of the bitfield
+     * \tparam  end
+     *      Last bit of the bifield. E.g. start=0, end=15 reads the full
+     *      first two bytes.
+     *
+     * \param byteArray
+     *      Pointer to the byte array to access.
+     *
+     * \return  Value contained in the bits given.
+     */
+    template <unsigned int start, unsigned int end>
+    static UInteger<start, end>
+    read(const uint8_t* byteArray);
+
+    /**
+     * Write a single bit.
+     *
+     * \tparam  offset
+     *      Offset of the bit to read.
+     *
+     * \param byteArray
+     *      Pointer to the byte array to write.
+     * \param value
+     *      Value to write to the array.
+     */
+    template <unsigned int offset>
+    static void
+    write(uint8_t* byteArray, bool value)
+    {
+        Bitfield::write<offset>(byteArray, value);
+    }
+
+    /**
+     * Write multiple bits.
+     *
+     * \tparam  start
+     *      First bit of the bitfield
+     * \tparam  end
+     *      Last bit of the bifield. E.g. start=0, end=15 reads the full
+     *      first two bytes.
+     *
+     * \param byteArray
+     *      Pointer to the byte array to access.
+     * \param value
+     *      Value to write to the array. The bits defined through \c start
+     *      and \c end are first cleared and then overwritten with the value
+     *      defined through this parameter.
+     */
+    template <unsigned int start, unsigned int end>
+    static void
+    write(uint8_t* byteArray, UInteger<start, end> value);
+
+private:
+    static constexpr uint8_t numberOfBitsPerByte = 8;
+    /**
+     * Swap the endianness of a given value
+     *
+     * see https://stackoverflow.com/a/36937049
+     *
+     * For constant values this function is optimized away by compiler
+     *
+     * TODO: When outpost moves to  C++17 a version without recursion is possible
+     */
+    template <typename T>
+    static constexpr T
+    byteSwap(T i, T j = 0u, uint32_t n = 0u)
+    {
+        return n == sizeof(T) ? j
+                              : byteSwap<T>(i >> numberOfBitsPerByte,
+                                            (j << numberOfBitsPerByte) | (i & static_cast<T>(0xFF)),
+                                            n + 1);
+    }
 };
 
 }  // namespace outpost

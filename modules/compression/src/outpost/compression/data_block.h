@@ -93,10 +93,13 @@ public:
      * headerSize comprises of:
      * 1B Version / CompressionScheme
      * 2B ParameterId
-     * 8B GpsTime
+     * 6B GpsTime
      * 1B (4+4 Bits) for SamplingRate and Blocksize
+     * 2B Reserved for 4-Byte Alignment
      */
-    static constexpr size_t headerSize = 12U;
+    static constexpr size_t headerPadding = 2U;
+    static constexpr size_t headerSize = 10U + headerPadding;
+    static_assert((headerSize) % 4 == 0, "compression::DataBlock needs to be 4-byte Aligned");
 
     /**
      * Empty and invalid DataBlock without any underlying memory.

@@ -64,7 +64,7 @@ template <size_t Resources>
 class ContinuousIntervalQuota : public Quota
 {
 public:
-    ContinuousIntervalQuota(outpost::time::Duration interval);
+    explicit ContinuousIntervalQuota(outpost::time::Duration interval);
 
     void
     setTimeInterval(outpost::time::Duration interval) override;
@@ -129,11 +129,13 @@ class UnlimitedQuota : public Quota
 public:
     UnlimitedQuota() = default;
 
-    void setTimeInterval(outpost::time::Duration /*interval*/) final
+    void
+    setTimeInterval(outpost::time::Duration /*interval*/) final
     {
     }
 
-    bool access(outpost::time::SpacecraftElapsedTime /*now*/) final
+    bool
+    access(outpost::time::SpacecraftElapsedTime /*now*/) final
     {
         return true;
     }

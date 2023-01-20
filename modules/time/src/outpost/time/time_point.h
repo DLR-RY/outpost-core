@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2013-2022, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2013-2017, Fabian Greif (DLR RY-AVS)
+ * - 2022, Tobias Pfeffer (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_TIME_TIME_POINT_H
@@ -115,25 +116,25 @@ public:
     inline constexpr bool
     operator<(TimePoint other) const
     {
-        return (mDuration - other.mDuration) < Duration::zero();
+        return (mDuration < other.mDuration);
     }
 
     inline constexpr bool
     operator>(TimePoint other) const
     {
-        return (mDuration - other.mDuration) > Duration::zero();
+        return (mDuration > other.mDuration);
     }
 
     inline constexpr bool
     operator<=(TimePoint other) const
     {
-        return (mDuration - other.mDuration) <= Duration::zero();
+        return (mDuration <= other.mDuration);
     }
 
     inline constexpr bool
     operator>=(TimePoint other) const
     {
-        return (mDuration - other.mDuration) >= Duration::zero();
+        return (mDuration >= other.mDuration);
     }
 
     inline TimePoint&
@@ -171,7 +172,7 @@ public:
     static inline constexpr TimePoint<ReferenceEpoch>
     endOfEpoch()
     {
-        return TimePoint(Duration::maximum());
+        return TimePoint(Duration::myriad());
     }
 
     template <typename To>

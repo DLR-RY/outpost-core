@@ -22,9 +22,9 @@ namespace outpost
 {
 namespace hal
 {
-template <uint32_t numberOfQueues, uint32_t maxPacketSize>
+template <uint32_t maxPackages, uint32_t maxPacketSize>
 bool
-SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::send(
+SpaceWireMultiProtocolHandler<maxPackages, maxPacketSize>::send(
         const outpost::Slice<const uint8_t>& buffer, outpost::time::Duration timeout)
 {
     outpost::time::SpacecraftElapsedTime startTime = mClock.now();
@@ -42,13 +42,16 @@ SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::send(
     }
     else
     {
-        memcpy(&transmitBuffer->getData()[0], &buffer[0], buffer.getNumberOfElements());
+        if (!transmitBuffer->getData().copyFrom(buffer))
+        {
+            // buffer invalid?
+            return false;
+        }
         transmitBuffer->setLength(buffer.getNumberOfElements());
         transmitBuffer->setEndMarker(outpost::hal::SpaceWire::EndMarker::eop);
     }
 
-    if (timeout != outpost::time::Duration::zero()
-        && timeout != outpost::time::Duration::infinity())
+    if (timeout != outpost::time::Duration::zero() && timeout < outpost::time::Duration::myriad())
     {
         // update remaining timeout unless we are in non-blocking anyways
         outpost::time::SpacecraftElapsedTime now = mClock.now();
@@ -63,42 +66,84 @@ SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::send(
     }
 
     result = mSpWHandle.getSpaceWire().send(transmitBuffer, timeout);
-    return result == SpaceWire::Result::Type::success;
+    if (result == SpaceWire::Result::Type::success)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
-template <uint32_t numberOfQueues, uint32_t maxPacketSize>
-uint32_t
-SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::SpaceWireHandle::receive(
-        outpost::Slice<uint8_t>& buffer, outpost::time::Duration timeout)
+template <uint32_t maxPackages, uint32_t maxPacketSize>
+bool
+SpaceWireMultiProtocolHandler<maxPackages, maxPacketSize>::SpaceWireHandle::receive(
+        SpWMessage& data, outpost::time::Duration timeout)
 {
+    if (!mSpw.isUp())
+    {
+        mSpw.up(timeout);
+        // will be called again anyways, so we don't handle the remaining timeout stuff
+        return false;
+    }
+
     SpaceWire::ReceiveBuffer receiveBuffer;
     auto result = mSpw.receive(receiveBuffer, timeout);
     if (result != SpaceWire::Result::Type::success)
     {
-        return 0;
+        return false;
     }
+    else
+    {
+        bool success = false;
+        uint32_t receivedSize = receiveBuffer.getLength();
 
-    uint32_t receivedSize = receiveBuffer.getLength();
+        if (receivedSize >= protocolByteOffset + 1)
+        {
+            outpost::utils::SharedBufferPointer pointer;
+            if (mPool.allocate(pointer))
+            {
+                uint32_t copySize = outpost::utils::min<uint32_t>(receivedSize, maxPacketSize);
+                if (!pointer.asSlice().copyFrom(receiveBuffer.getData().getDataPointer(), copySize))
+                {
+                    mSpw.releaseBuffer(receiveBuffer);
+                    return false;
+                }
+                outpost::utils::SharedChildPointer child;
+                pointer.getChild(child, 0, 0, copySize);
+                data.buffer = child;
+                data.id.protocol = pointer[protocolByteOffset];
+                if (receivedSize > maxPacketSize)
+                {
+                    // we cut the package
+                    data.id.end = outpost::hal::SpaceWire::EndMarker::partial;
+                }
+                else
+                {
+                    data.id.end = receiveBuffer.getEndMarker();
+                }
+                success = true;
+            }
+        }
 
-    uint32_t copySize = outpost::utils::min<uint32_t>(receivedSize, buffer.getNumberOfElements());
-    memcpy(&buffer[0], &receiveBuffer.getData()[0], copySize);
-
-    mSpw.releaseBuffer(receiveBuffer);
-    return receivedSize;
+        mSpw.releaseBuffer(receiveBuffer);
+        return success;
+    }
 }
 
-template <uint32_t numberOfQueues, uint32_t maxPacketSize>
+template <uint32_t maxPackages, uint32_t maxPacketSize>
 inline SpaceWire&
-SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::SpaceWireHandle::getSpaceWire()
+SpaceWireMultiProtocolHandler<maxPackages, maxPacketSize>::SpaceWireHandle::getSpaceWire()
 {
     return mSpw;
 }
 
-template <uint32_t numberOfQueues, uint32_t maxPacketSize>
+template <uint32_t maxPackages, uint32_t maxPacketSize>
 void
-SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::start()
+SpaceWireMultiProtocolHandler<maxPackages, maxPacketSize>::start()
 {
-    mThread.start();
+    outpost::swb::BusDistributor<MessageID>::start();
 }
 
 /**
@@ -106,9 +151,9 @@ SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::start()
  * @param queue the queue to add
  * @return false if queue == nullptr or all places for Listener are filled
  */
-template <uint32_t numberOfQueues, uint32_t maxPacketSize>
+template <uint32_t maxPackages, uint32_t maxPacketSize>
 bool
-SpaceWireMultiProtocolHandler<numberOfQueues, maxPacketSize>::addTimeCodeListener(
+SpaceWireMultiProtocolHandler<maxPackages, maxPacketSize>::addTimeCodeListener(
         outpost::rtos::Queue<TimeCode>* queue)
 {
     return mSpWHandle.getSpaceWire().addTimeCodeListener(queue);

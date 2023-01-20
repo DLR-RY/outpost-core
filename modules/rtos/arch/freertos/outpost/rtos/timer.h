@@ -14,6 +14,10 @@
 #ifndef OUTPOST_RTOS_FREERTOS_TIMER_H
 #define OUTPOST_RTOS_FREERTOS_TIMER_H
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/timers.h>
+
 #include <outpost/base/callable.h>
 #include <outpost/time/duration.h>
 
@@ -141,14 +145,14 @@ private:
     createTimer(const char* name);
 
     static void
-    invokeTimer(void* handle);
+    invokeTimer(TimerHandle_t handle);
 
     /// Object and member function to call when the timer expires.
     Callable* const mObject;
     Function const mFunction;
 
     /// FreeRTOS timer handle
-    void* mHandle;
+    TimerHandle_t mHandle;
 };
 
 // ----------------------------------------------------------------------------

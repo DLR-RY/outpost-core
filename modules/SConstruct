@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2022, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2022, Tobias Pfeffer (DLR RY-AVS)
+
+import os
+
+vars = Variables('custom.py')
+vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+vars.Add(BoolVariable('trap', 'Set trap on undefined behavior', 0))
+vars.Add('append_buildpath', 'manual append to buildpath', '')
+
+rootpath = os.path.abspath('../')
+envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
+                        buildroot=[rootpath + 'build/'],
+                        tools=['utils_buildformat'],
+                        variables=vars,
+                        ENV=os.environ)
+Help(vars.GenerateHelpText(envGlobal))
+
+if envGlobal['coverage']:
+    envGlobal.Tool('compiler_hosted_gcc_coverage')
+    buildtype = 'coverage'
+else:
+    envGlobal.Tool('compiler_hosted_llvm_sanitizer')
+    if envGlobal['trap']:
+        envGlobal['CCFLAGS_other'] += ['-fsanitize-trap=undefined']
+    buildtype = 'test'
+
+if envGlobal['append_buildpath']:
+    buildtype = envGlobal['append_buildpath']
+
+envGlobal['BUILDPATH'] = os.path.join(rootpath, 'build', buildtype)
+
+# Build at buildpath
+envGlobal.VariantDir('$BUILDPATH', rootpath, duplicate=False)
+
+envGlobal.Tool('compilation_db')
+
+envGlobal.Append(CPPPATH=[
+    os.path.join(rootpath, 'modules/support/default'),
+])
+
+# libs are build in the same path for all modules
+envGlobal.SConscript(os.path.join('$BUILDPATH', 'SConscript.library'), exports='envGlobal')
+envGlobal.SConscript(os.path.join('$BUILDPATH', 'SConscript.test'), exports='envGlobal')

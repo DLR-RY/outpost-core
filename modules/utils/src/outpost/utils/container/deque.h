@@ -16,7 +16,6 @@
 #define OUTPOST_DEQUE_H
 
 #include <outpost/base/slice.h>
-#include <outpost/utils/meta.h>
 
 #include <stddef.h>
 #include <stdint.h>
@@ -150,6 +149,29 @@ public:
     removeFront();
 
 private:
+    /**
+     * Depending if T is trivially copy assignable the corresponding implementation is selected.
+     * If yes, memcpy is used, else element-wise copy assignment is used.
+     *
+     * This method will not check the input arguments for validity (same as memcpy)
+     */
+    template <typename U = T>
+    typename std::enable_if<std::is_trivially_copy_assignable<U>::value>::type
+    appendMultipleElements(Size index, outpost::Slice<T> values)
+    {
+        memcpy(&mBuffer[index], values.getDataPointer(), sizeof(T) * values.getNumberOfElements());
+    }
+
+    template <typename U = T>
+    typename std::enable_if<!std::is_trivially_copy_assignable<U>::value>::type
+    appendMultipleElements(Size index, outpost::Slice<T> values)
+    {
+        for (Size i = 0; i < values.getNumberOfElements(); ++i)
+        {
+            mBuffer[index + i] = values[i];
+        }
+    }
+
     T* const mBuffer;
     const Size mMaxSize;
 

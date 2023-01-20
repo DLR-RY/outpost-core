@@ -141,20 +141,20 @@ public:
         }
 
         inline bool
-        isVerifyEnabled()
+        isVerifyEnabled() const
         {
             // bit4 verify
             return outpost::BitAccess::get<uint8_t, verifyBit>(mField);
         }
 
         inline bool
-        isReplyEnabled()
+        isReplyEnabled() const
         {
             return outpost::BitAccess::get<uint8_t, replyBit>(mField);
         }
 
         inline bool
-        isIncrementEnabled()
+        isIncrementEnabled() const
         {
             return outpost::BitAccess::get<uint8_t, incrementBit>(mField);
         }
@@ -307,7 +307,7 @@ public:
     }
 
     inline uint8_t
-    getReplyPathAddressLength()
+    getReplyPathAddressLength() const
     {
         return mInstruction.getReplyAddressLength();
     }
@@ -343,7 +343,7 @@ public:
     }
 
     inline bool
-    isCommandPacket()
+    isCommandPacket() const
     {
         return (mInstruction.getPacketType() == InstructionField::commandPacket);
     }
@@ -361,13 +361,13 @@ public:
     }
 
     inline bool
-    isReplyPacket()
+    isReplyPacket() const
     {
         return (mInstruction.getPacketType() == InstructionField::replyPacket);
     }
 
     inline bool
-    isWrite()
+    isWrite() const
     {
         return (mInstruction.getOperation() == InstructionField::write);
     }
@@ -379,7 +379,7 @@ public:
     }
 
     inline bool
-    isRead()
+    isRead() const
     {
         return (mInstruction.getOperation() == InstructionField::read);
     }
@@ -391,7 +391,7 @@ public:
     }
 
     inline bool
-    isVerifyFlagSet()
+    isVerifyFlagSet() const
     {
         return mInstruction.isVerifyEnabled();
     }
@@ -403,7 +403,7 @@ public:
     }
 
     inline bool
-    isReplyFlagSet()
+    isReplyFlagSet() const
     {
         return mInstruction.isReplyEnabled();
     }
@@ -415,7 +415,7 @@ public:
     }
 
     inline bool
-    isIncrementFlagSet()
+    isIncrementFlagSet() const
     {
         return mInstruction.isIncrementEnabled();
     }
@@ -487,7 +487,7 @@ public:
     }
 
     inline uint32_t
-    getHeaderLength()
+    getHeaderLength() const
     {
         return mHeaderLength;
     }

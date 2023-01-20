@@ -51,43 +51,43 @@ public:
      * \param  maximumLength
      *      Maximum length of single SpaceWire packet.
      */
-    SpaceWireStub(size_t maximumLength);
+    explicit SpaceWireStub(size_t maximumLength);
 
     virtual ~SpaceWireStub();
 
     virtual size_t
-    getMaximumPacketLength() const;
+    getMaximumPacketLength() const override;
 
-    virtual bool
-    open();
+    bool
+    open() override;
 
-    virtual void
-    close();
+    void
+    close() override;
 
-    virtual bool
-    up(outpost::time::Duration timeout);
+    bool
+    up(outpost::time::Duration timeout) override;
 
-    virtual void
-    down(outpost::time::Duration timeout);
+    void
+    down(outpost::time::Duration timeout) override;
 
-    virtual bool
-    isUp();
+    bool
+    isUp() override;
 
-    virtual Result::Type
-    requestBuffer(TransmitBuffer*& buffer, outpost::time::Duration timeout);
+    Result::Type
+    requestBuffer(TransmitBuffer*& buffer, outpost::time::Duration timeout) override;
 
-    virtual Result::Type
-    send(TransmitBuffer* buffer, outpost::time::Duration timeout);
+    Result::Type
+    send(TransmitBuffer* buffer, outpost::time::Duration timeout) override;
 
-    virtual Result::Type
-    receive(ReceiveBuffer& buffer, outpost::time::Duration timeout);
+    Result::Type
+    receive(ReceiveBuffer& buffer, outpost::time::Duration timeout) override;
 
-    virtual void
-    releaseBuffer(const ReceiveBuffer& buffer);
+    void
+    releaseBuffer(const ReceiveBuffer& buffer) override;
 
     // Ignored in this implementation.
-    virtual void
-    flushReceiveBuffer();
+    void
+    flushReceiveBuffer() override;
 
     /**
      * Check that no transmit buffers are currently used.
@@ -97,7 +97,7 @@ public:
      *                  the application.
      */
     bool
-    noUsedTransmitBuffers()
+    noUsedTransmitBuffers() const
     {
         return mTransmitBuffers.empty();
     }
@@ -106,13 +106,13 @@ public:
      * Check that no receive buffer are in used.
      */
     bool
-    noUsedReceiveBuffers()
+    noUsedReceiveBuffers() const
     {
         return mReceiveBuffers.empty();
     }
 
     bool
-    addTimeCodeListener(outpost::rtos::Queue<outpost::hal::TimeCode>* queue)
+    addTimeCodeListener(outpost::rtos::Queue<outpost::hal::TimeCode>* queue) override
     {
         return mTCD.addListener(queue);
     }
@@ -138,9 +138,8 @@ public:
 private:
     struct TransmitBufferEntry
     {
-        inline TransmitBufferEntry(size_t maximumLength) :
-            buffer(maximumLength, 0),
-            header(outpost::asSlice(buffer))
+        explicit inline TransmitBufferEntry(size_t maximumLength) :
+            buffer(maximumLength, 0), header(outpost::asSlice(buffer))
         {
         }
 
@@ -151,8 +150,7 @@ private:
     struct ReceiveBufferEntry
     {
         ReceiveBufferEntry(std::vector<uint8_t>&& input, EndMarker end) :
-            buffer(std::move(input)),
-            header(outpost::asSlice(buffer), end)
+            buffer(std::move(input)), header(outpost::asSlice(buffer), end)
         {
         }
 

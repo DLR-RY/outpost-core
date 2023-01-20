@@ -209,7 +209,7 @@ TEST(ListTest, removeAlInsertInPost)
 
     // remove one and put new elements beside it and beside its neighbors
     // for max chance of destroying some internal pointers
-    list.removeAll([](RelationalListNode& l) { return l.mValue == 3; },
+    list.removeAll([](const RelationalListNode& l) { return l.mValue == 3; },
                    [&](RelationalListNode&) {
                        list.insert(&node0);
                        list.insert(&node2);
@@ -376,7 +376,7 @@ TEST(ListTest, removeAllWithPostCondition)
     std::vector<ListNode*> v;
 
     EXPECT_EQ(&node3, list.last());
-    list.removeAll([](ListNode& l) { return l.mValue > 3; },
+    list.removeAll([](const ListNode& l) { return l.mValue > 3; },
                    [&v](ListNode& l) { v.push_back(&l); });
     EXPECT_EQ(&node1, list.last());
 
@@ -489,6 +489,7 @@ TEST(ListTest, ConstIteratorTest)
     EXPECT_EQ((*it2).mValue, 3);
 
     ++it2;
+    ASSERT_TRUE(static_cast<const ListNode*>(it2) != nullptr);
     it = it2;
     EXPECT_EQ(it->mValue, 5);
 

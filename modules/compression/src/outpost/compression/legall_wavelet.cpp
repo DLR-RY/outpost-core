@@ -94,13 +94,13 @@ void
 LeGall53Wavelet::forwardTransformInPlace(outpost::Slice<Fixpoint> inBuffer)
 {
     int16_t length = inBuffer.getNumberOfElements();
-    uint16_t inBufferLength = inBuffer.getNumberOfElements();
+    uint16_t inBufferLength = length;
 
     // Perform log2 passes, bisecting the buffer after each pass
     for (uint16_t step = 0; length >= 3; step++)
     {
         // Temporarily save these for handling of lapping cases
-        Fixpoint tmpBuffer[3] = {inBuffer[0], inBuffer[1 << step], inBuffer[2 << step]};
+        const Fixpoint tmpBuffer[3] = {inBuffer[0], inBuffer[1 << step], inBuffer[2 << step]};
 
         // Calculate highpass and lowpass coefficients using the lifting scheme
         for (size_t i = 0; ((i + 4) << step) < inBufferLength; i += 2)
@@ -139,21 +139,23 @@ LeGall53Wavelet::reorder(outpost::Slice<Fixpoint> inBuffer)
 {
     // First, round the coefficients. Otherwise, the decimal places cannot be used as temporary
     // memory
+    int16_t* outputBuffer = reinterpret_cast<int16_t*>(inBuffer.begin());
     for (size_t i = 0; i < inBuffer.getNumberOfElements(); i++)
     {
-        inBuffer[i] = Fixpoint(static_cast<int16_t>(inBuffer[i]));
+        outputBuffer[2 * i + 1] = static_cast<int16_t>(inBuffer[i]);
+        outputBuffer[2 * i] = 0;
     }
 
-    int16_t* outputBuffer = reinterpret_cast<int16_t*>(inBuffer.begin());
     size_t index = 2;
-    outputBuffer[0] = static_cast<int16_t>(inBuffer[0]);
+    outputBuffer[0] = outputBuffer[1];
+
     // From left to right, cast the coefficients to int16_t for transmission and bring in the right
     // order for encoding
     for (size_t step = inBuffer.getNumberOfElements() >> 1; step >= 1; step >>= 1)
     {
         for (size_t i = step; i < inBuffer.getNumberOfElements(); i += 2 * step)
         {
-            outputBuffer[index] = (inBuffer[i].getValue() >> 16) & 0xFFFF;
+            outputBuffer[index] = outputBuffer[2 * i + 1];
             index += 2;
         }
     }

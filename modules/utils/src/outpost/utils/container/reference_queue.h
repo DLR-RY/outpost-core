@@ -16,6 +16,7 @@
 #define OUTPOST_UTILS_REFERENCE_QUEUE_H_
 
 #include <outpost/rtos/queue.h>
+#include <outpost/utils/communicator.h>
 #include <outpost/utils/container/shared_buffer.h>
 
 namespace outpost
@@ -32,33 +33,13 @@ namespace utils
  * that keeps the references.
  */
 template <typename T>
-class ReferenceQueueBase : public outpost::rtos::Queue<size_t>
+class ReferenceQueueBase : public Sender<T>, public Receiver<T>
 {
 public:
     /**
      * Default destructor.
      */
     virtual ~ReferenceQueueBase() = default;
-
-    /**
-     * \brief Send data to the queue.
-     * \param data Data to be sent.
-     * \return Returns true if data could be sent, false otherwise.
-     */
-    virtual bool
-    send(T& data) = 0;
-
-    /**
-     * \brief Receives data from the queue.
-     *
-     * Can be either blocking (timeout > 0) or non-blocking (timeout = 0).
-     * \param data Reference for the data type to be received.
-     * \param timeout Duration for which the caller is willing to wait for incoming data
-     * \return Returns true if data was received, false
-     * otherwise (e.g. a timeout occured)
-     */
-    virtual bool
-    receive(T& data, outpost::time::Duration timeout = outpost::time::Duration::infinity()) = 0;
 
     /**
      * \brief Getter function for the number of items currently stored in the queue.
@@ -87,9 +68,11 @@ protected:
      * \brief Constructor for a ReferenceQueueBase. May only be called by its derivatives (i.e.
      * ReferenceQueue) \param N Maximum number of elements in the queue
      */
-    inline ReferenceQueueBase(size_t N) : outpost::rtos::Queue<size_t>(N)
+    inline ReferenceQueueBase(size_t N) : mQueue(N)
     {
     }
+
+    outpost::rtos::Queue<size_t> mQueue;
 };
 
 /**
@@ -104,13 +87,16 @@ public:
     /**
      * \brief Standard constructor.
      */
-    ReferenceQueue() : ReferenceQueueBase<T>(N), mItemsInQueue(0), mLastIndex(0)
+    ReferenceQueue() :
+        ReferenceQueueBase<T>(N), mEmpty(), mItemsInQueue(0), mLastIndex(0), mPointers{{}}
     {
         for (size_t i = 0; i < N; i++)
         {
             mIsUsed[i] = false;
         }
     }
+
+    virtual ~ReferenceQueue() = default;
 
     /**
      * \brief Checks whether the queue is currently empty.
@@ -155,9 +141,12 @@ public:
      * \return Returns true if data could be sent, false otherwise.
      */
     virtual bool
-    send(T& data) override
+    send(T& data, outpost::time::Duration timeout) override
     {
-        outpost::rtos::MutexGuard lock(mMutex);
+        if (!mMutex.acquire(timeout))
+        {
+            return false;
+        }
         bool res = false;
         size_t i = mLastIndex;
         size_t endSearch = (mLastIndex - 1) % N;
@@ -169,7 +158,7 @@ public:
                 mPointers[i] = data;
                 mIsUsed[i] = true;
                 mLastIndex = (i + 1) % N;
-                if (outpost::rtos::Queue<size_t>::send(i))
+                if (ReferenceQueueBase<T>::mQueue.send(i))
                 {
                     mItemsInQueue++;
                     res = true;
@@ -183,6 +172,7 @@ public:
             }
             i = (i + 1) % N;
         } while (i != endSearch);
+        mMutex.release();
         return res;
     }
 
@@ -197,11 +187,11 @@ public:
      * otherwise (e.g. a timeout occured)
      */
     virtual bool
-    receive(T& data, outpost::time::Duration timeout = outpost::time::Duration::infinity()) override
+    receive(T& data, outpost::time::Duration timeout) override
     {
         bool res = false;
         size_t index;
-        if (outpost::rtos::Queue<size_t>::receive(index, timeout))
+        if (ReferenceQueueBase<T>::mQueue.receive(index, timeout))
         {
             outpost::rtos::MutexGuard lock(mMutex);
             data = mPointers[index];
@@ -223,6 +213,9 @@ public:
         outpost::rtos::MutexGuard lock(mMutex);
         return mItemsInQueue;
     }
+
+    using Sender<T>::send;
+    using Receiver<T>::receive;
 
 private:
     T mEmpty;

@@ -14,15 +14,13 @@
 #ifndef OUTPOST_FIXED_SIZE_ARRAY_H
 #define OUTPOST_FIXED_SIZE_ARRAY_H
 
-#include <outpost/utils/meta.h>
-
 #include <stddef.h>
 #include <string.h>  // for memcpy
 
 #include <type_traits>
 
 // workaround missing "is_trivially_copyable" in g++ < 5.0
-#if __GNUG__ && __GNUC__ < 5
+#if __GNUG__ && (__GNUC__ < 5)
 #define IS_TRIVIALLY_COPYABLE(T) __has_trivial_copy(T)
 #else
 #define IS_TRIVIALLY_COPYABLE(T) std::is_trivially_copyable<T>::value
@@ -42,7 +40,7 @@ class FixedSizeArray
 {
 public:
     typedef T Type;
-    typedef typename outpost::remove_const<T>::type NonConstType;
+    typedef typename std::remove_const<T>::type NonConstType;
     typedef const NonConstType ConstType;
 
     friend class FixedSizeArray<const T, N>;
@@ -71,7 +69,7 @@ public:
      * \endcode
      *
      * \param array
-     *      Array with should be wrapped.
+     *      Array which should be wrapped.
      */
     explicit inline FixedSizeArray(T (&array)[N])
     {
@@ -80,6 +78,7 @@ public:
 
     // This constructor is non-explicit to allow for a conversion from
     // const to non-const
+    // cppcheck-suppress noExplicitConstructor
     inline FixedSizeArray(const FixedSizeArray<NonConstType, N>& rhs)
     {
         memcpy(mData, rhs.mData, sizeof(mData));
@@ -119,7 +118,7 @@ public:
      * Get number of elements in the array.
      */
     inline size_t
-    getNumberOfElements() const
+    getNumberOfElements() const  // cppcheck-suppress functionStatic
     {
         return N;
     }
@@ -139,7 +138,8 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline T& operator[](size_t index)
+    inline T&
+    operator[](size_t index)
     {
         return mData[index];
     }
@@ -150,13 +150,14 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline const T& operator[](size_t index) const
+    inline const T&
+    operator[](size_t index) const
     {
         return mData[index];
     }
 
 private:
-    T mData[N];
+    T mData[N]{{}};
 };
 
 template <typename T, size_t N>
@@ -164,7 +165,7 @@ class FixedSizeArrayView
 {
 public:
     typedef T Type;
-    typedef typename outpost::remove_const<T>::type NonConstType;
+    typedef typename std::remove_const<T>::type NonConstType;
     typedef const NonConstType ConstType;
 
     // STL compatibility
@@ -198,6 +199,7 @@ public:
 
     // This constructor is non-explicit to allow for a conversion from
     // const to non-const
+    // cppcheck-suppress noExplicitConstructor
     inline FixedSizeArrayView(const FixedSizeArray<T, N>& rhs) : mData(rhs.mData)
     {
     }
@@ -206,9 +208,21 @@ public:
      * Get number of elements in the array.
      */
     inline size_t
-    getNumberOfElements() const
+    getNumberOfElements() const  // cppcheck-suppress functionStatic
     {
         return N;
+    }
+
+    /**
+     * Get raw pointer to data.
+     *
+     * \warning
+     *      Operations working directly with the raw pointer are unsafe.
+     */
+    inline constexpr T*
+    getDataPointer() const
+    {
+        return mData;
     }
 
     /**
@@ -226,7 +240,8 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline T& operator[](size_t index)
+    inline T&
+    operator[](size_t index)
     {
         return mData[index];
     }
@@ -237,7 +252,8 @@ public:
      * \warning
      *      No out-of-bound error checking is performed.
      */
-    inline const T& operator[](size_t index) const
+    inline const T&
+    operator[](size_t index) const
     {
         return mData[index];
     }

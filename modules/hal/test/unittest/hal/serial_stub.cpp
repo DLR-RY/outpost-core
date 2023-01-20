@@ -57,7 +57,7 @@ SerialStub::read(outpost::Slice<uint8_t> data, outpost::time::Duration /*timeout
 
     if (length > 0)
     {
-        memcpy(&data[0], &mDataToReceive[0], length);
+        data.copyFrom(&mDataToReceive[0], length);
         mDataToReceive.erase(mDataToReceive.begin(), mDataToReceive.begin() + length);
     }
     return length;

@@ -30,6 +30,7 @@
 #include <outpost/utils/container/reference_queue.h>
 #include <outpost/utils/container/shared_object_pool.h>
 #include <outpost/utils/minmax.h>
+#
 
 #include <array>
 
@@ -254,7 +255,8 @@ public:
          uint32_t memoryAddress,
          uint8_t extendedMemoryAdress,
          outpost::Slice<uint8_t> const& buffer,
-         const outpost::time::Duration& timeout = outpost::time::Duration::maximum());
+         const outpost::time::Duration& timeout =
+                 std::numeric_limits<outpost::time::Duration>::max());
 
     /**
      * Read from remote memory. The method blocks the current
@@ -289,7 +291,8 @@ public:
          uint32_t memoryAddress,
          uint8_t extendedMemoryAdress,
          outpost::Slice<uint8_t> const& buffer,
-         const outpost::time::Duration& timeout = outpost::time::Duration::maximum());
+         const outpost::time::Duration& timeout =
+                 std::numeric_limits<outpost::time::Duration>::max());
 
     //--------------------------------------------------------------------------
 
@@ -332,13 +335,13 @@ private:
     }
 
     inline bool
-    isStopped()
+    isStopped() const
     {
         return mStopped;
     }
 
     inline bool
-    isStarted()
+    isStarted() const
     {
         return !mStopped;
     }
@@ -347,10 +350,10 @@ private:
     sendPacket(RmapTransaction* transaction);
 
     bool
-    receivePacket(RmapPacket* rxedPacket, outpost::utils::SharedBufferPointer& rxBuffer);
+    receivePacket(RmapPacket* rxedPacket, outpost::hal::SpWMessage& rx);
 
     void
-    handleReplyPacket(RmapPacket* packet, outpost::utils::SharedBufferPointer& rxBuffer);
+    handleReplyPacket(RmapPacket* packet, const outpost::hal::SpWMessage& rx);
 
     RmapTransaction*
     resolveTransaction(RmapPacket* packet);
@@ -378,8 +381,7 @@ private:
 
     std::array<uint8_t, maxCommandLength> mSendBuffer;
 
-    outpost::utils::SharedBufferQueue<rmap::numberOfReceiveBuffers> mQueue;
-    outpost::utils::SharedBufferPool<maxReplyLength, rmap::numberOfReceiveBuffers> mPool;
+    outpost::hal::SpWChannel<rmap::numberOfReceiveBuffers> mChannel;
 };
 
 }  // namespace comm

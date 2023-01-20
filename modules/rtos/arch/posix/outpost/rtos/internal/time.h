@@ -90,7 +90,7 @@ isBigger(const timespec& time, const timespec& other)
  * the sleep.
  */
 void
-sleepUntilAbsoluteTime(clockid_t clock, const timespec& time);
+sleepUntilAbsoluteTime(clockid_t clock, const timespec& deadline);
 
 }  // namespace rtos
 }  // namespace outpost

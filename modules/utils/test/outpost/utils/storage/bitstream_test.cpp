@@ -179,9 +179,9 @@ TEST(BistreamTest, serialize)
 
         ref[3 + i] = 0xA5;
     }
-    ref[0] = 0;
-    ref[1] = 28;
-    ref[2] = 7;
+    ref[0] = 7;
+    ref[1] = 0;
+    ref[2] = 25;
 
     EXPECT_EQ(bitstream.getSize(), 25U);
     EXPECT_EQ(bitstream.getSerializedSize(), 28U);
@@ -215,9 +215,9 @@ TEST(BistreamTest, serializeAndCut)
         bitstream.pushBit(false);
         bitstream.pushBit(true);
     }
-    ref[0] = 0;
-    ref[1] = 28;
-    ref[2] = 7;
+    ref[0] = 7;
+    ref[1] = 0;
+    ref[2] = 25;
     ref[3] = 0xA5;
 
     EXPECT_EQ(bitstream.getSize(), 25U);
@@ -230,7 +230,7 @@ TEST(BistreamTest, serializeAndCut)
 
     outpost::Serialize stream_ext(data_out);
     bitstream.serialize(stream_ext, 4);
-    ref[1] = 5;
+    ref[2] = 1;
     EXPECT_ARRAY_EQ(uint8_t, ref, buffer_out, ARRAY_LENGTH);
 }
 
@@ -239,9 +239,9 @@ TEST(BistreamTest, deserialize)
     memset(buffer_in, 0, ARRAY_LENGTH);
     memset(buffer_out, 0, ARRAY_LENGTH);
 
-    buffer_in[0] = 0;
-    buffer_in[1] = 28;
-    buffer_in[2] = 7;
+    buffer_in[0] = 7;
+    buffer_in[1] = 0;
+    buffer_in[2] = 25;
 
     for (uint16_t i = 3; i < 28; i++)
     {

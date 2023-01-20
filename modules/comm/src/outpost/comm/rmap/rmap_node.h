@@ -141,7 +141,7 @@ class RmapTargetsList
 {
 public:
     RmapTargetsList();
-    RmapTargetsList(outpost::Slice<RmapTargetNode*> rmapTargetNodes);
+    explicit RmapTargetsList(outpost::Slice<RmapTargetNode*> rmapTargetNodes);
     ~RmapTargetsList();
 
     /**

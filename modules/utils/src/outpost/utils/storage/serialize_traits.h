@@ -31,10 +31,43 @@ struct SerializeBigEndianTraits
     read(const uint8_t*& buffer);
 
     static T
-    peek(const uint8_t* const& buffer, size_t offset);
+    peek(const uint8_t* const buffer, size_t offset);
 
     static constexpr size_t
     size();
+};
+
+template <>
+struct SerializeBigEndianTraits<bool>
+{
+    static inline void
+    store(uint8_t*& buffer, bool data)
+    {
+        buffer[0] = data ? 1U : 0U;
+        buffer += 1;
+    }
+
+    static inline bool
+    read(const uint8_t*& buffer)
+    {
+        uint8_t value;
+        value = buffer[0];
+        buffer += 1;
+
+        return value != 0;
+    }
+
+    static inline bool
+    peek(const uint8_t* const buffer, size_t n)
+    {
+        return buffer[n] != 0;
+    }
+
+    static inline constexpr size_t
+    size()
+    {
+        return 1;
+    }
 };
 
 template <>
@@ -58,7 +91,7 @@ struct SerializeBigEndianTraits<uint8_t>
     }
 
     static inline uint8_t
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         return buffer[n];
     }
@@ -93,7 +126,7 @@ struct SerializeBigEndianTraits<uint16_t>
     }
 
     static inline uint16_t
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         uint16_t value = 0;
         value |= static_cast<uint16_t>(buffer[n + 0]) << 8;
@@ -136,7 +169,7 @@ struct SerializeBigEndianTraits<uint32_t>
     }
 
     static inline uint32_t
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         uint32_t value = 0;
         value |= static_cast<uint32_t>(buffer[n + 0]) << 24;
@@ -189,7 +222,7 @@ struct SerializeBigEndianTraits<uint64_t>
     }
 
     static inline uint64_t
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         uint64_t value = 0;
         value |= static_cast<uint64_t>(buffer[n + 0]) << 56;
@@ -238,7 +271,7 @@ struct SerializeBigEndianTraits<int8_t>
     }
 
     static inline int8_t
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         int8_t value = static_cast<int8_t>(SerializeBigEndianTraits<uint8_t>::peek(buffer, n));
         return value;
@@ -268,7 +301,7 @@ struct SerializeBigEndianTraits<int16_t>
     }
 
     static inline int16_t
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         int16_t value = static_cast<int16_t>(SerializeBigEndianTraits<uint16_t>::peek(buffer, n));
         return value;
@@ -298,7 +331,7 @@ struct SerializeBigEndianTraits<int32_t>
     }
 
     static inline int32_t
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         int32_t value = static_cast<int32_t>(SerializeBigEndianTraits<uint32_t>::peek(buffer, n));
         return value;
@@ -328,7 +361,7 @@ struct SerializeBigEndianTraits<int64_t>
     }
 
     static inline int64_t
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         int64_t value = static_cast<int64_t>(SerializeBigEndianTraits<uint64_t>::peek(buffer, n));
         return value;
@@ -347,6 +380,7 @@ struct SerializeBigEndianTraits<float>
     static inline void
     store(uint8_t*& buffer, float data)
     {
+        // cppcheck-suppress invalidPointerCast
         const uint32_t* ptr = reinterpret_cast<const uint32_t*>(&data);
         SerializeBigEndianTraits<uint32_t>::store(buffer, *ptr);
     }
@@ -362,7 +396,7 @@ struct SerializeBigEndianTraits<float>
     }
 
     static inline float
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         float f;
         const uint32_t value = SerializeBigEndianTraits<uint32_t>::peek(buffer, n);
@@ -384,6 +418,7 @@ struct SerializeBigEndianTraits<double>
     static inline void
     store(uint8_t*& buffer, double data)
     {
+        // cppcheck-suppress invalidPointerCast
         const uint64_t* ptr = reinterpret_cast<const uint64_t*>(&data);
         SerializeBigEndianTraits<uint64_t>::store(buffer, *ptr);
     }
@@ -399,7 +434,7 @@ struct SerializeBigEndianTraits<double>
     }
 
     static inline double
-    peek(const uint8_t* const& buffer, size_t n)
+    peek(const uint8_t* const buffer, size_t n)
     {
         double d;
         const uint64_t value = SerializeBigEndianTraits<uint64_t>::peek(buffer, n);

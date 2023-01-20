@@ -100,7 +100,7 @@ public:
         }
 
         inline outpost::Slice<uint8_t>
-        getData()
+        getData()  // cppcheck-suppress functionConst
         {
             return mData;
         }
@@ -123,7 +123,8 @@ public:
          * \warning
          *      No out-of-bound error checking is performed.
          */
-        inline uint8_t& operator[](size_t index)
+        inline uint8_t&
+        operator[](size_t index)
         {
             return mData[index];
         }
@@ -188,7 +189,8 @@ public:
          * \warning
          *      No out-of-bound error checking is performed.
          */
-        inline const uint8_t& operator[](size_t index) const
+        inline const uint8_t&
+        operator[](size_t index) const
         {
             return mData[index];
         }
@@ -282,14 +284,6 @@ public:
      */
     virtual void
     flushReceiveBuffer() = 0;
-
-    /**
-     * Add a listener for timecode
-     * @param queue the queue to add
-     * @return false if queue == nullptr or all places for Listener are filled
-     */
-    virtual bool
-    addTimeCodeListener(outpost::rtos::Queue<TimeCode>* queue) = 0;
 };
 
 }  // namespace hal

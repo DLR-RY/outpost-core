@@ -63,3 +63,19 @@ TEST(DurationTest, convertBigNumbersMicrosecondsToDuration)
 
     EXPECT_EQ(3147483643, out.microseconds());
 }
+
+TEST(DurationTest, shouldHaveNoRemainder)
+{
+    Duration d1 = Seconds(16);
+    Duration d2 = Seconds(4);
+
+    EXPECT_EQ(Duration::zero(), d1 % d2);
+}
+
+TEST(DurationTest, shouldHaveRemainder)
+{
+    Duration d1 = Seconds(16);
+    Duration d2 = Seconds(5);
+
+    EXPECT_EQ(Seconds(1), d1 % d2);
+}

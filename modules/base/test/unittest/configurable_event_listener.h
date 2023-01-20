@@ -23,12 +23,12 @@ namespace testing
 {
 namespace internal
 {
-enum GTestColor
+enum class GTestColor
 {
-    COLOR_DEFAULT,
-    COLOR_RED,
-    COLOR_GREEN,
-    COLOR_YELLOW
+    kDefault,
+    kRed,
+    kGreen,
+    kYellow
 };
 
 void

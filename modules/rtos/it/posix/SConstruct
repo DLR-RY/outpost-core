@@ -14,7 +14,7 @@
 
 import os
 
-rootpath = '../../../../'
+rootpath = os.path.abspath('../../../../')
 envGlobal = Environment(
     toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
     tools=[
@@ -28,7 +28,7 @@ envGlobal = Environment(
 envGlobal['BASEPATH'] = os.path.abspath('.')
 envGlobal['BUILDPATH'] = os.path.abspath(rootpath + 'build/rtos/test/posix')
 
-envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
+envGlobal.SConscript(os.path.join(rootpath, 'SConscript.library'), exports='envGlobal')
 
 env = envGlobal.Clone()
 

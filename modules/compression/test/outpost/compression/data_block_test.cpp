@@ -78,7 +78,7 @@ TEST_F(DataBlockTest, Constructor)
     }
 
     outpost::utils::SharedBufferPointer p;
-    mPool.allocate(p);
+    ASSERT_TRUE(mPool.allocate(p));
     {
         outpost::compression::DataBlock block(
                 p,
@@ -106,7 +106,7 @@ TEST_F(DataBlockTest, Constructor)
 TEST_F(DataBlockTest, Push)
 {
     outpost::utils::SharedBufferPointer p;
-    mPool.allocate(p);
+    ASSERT_TRUE(mPool.allocate(p));
     outpost::compression::DataBlock block(
             p,
             123U,
@@ -138,7 +138,7 @@ TEST_F(DataBlockTest, Push)
 TEST_F(DataBlockTest, GetSamples)
 {
     outpost::utils::SharedBufferPointer p;
-    mPool.allocate(p);
+    ASSERT_TRUE(mPool.allocate(p));
     outpost::compression::DataBlock block(
             p,
             123U,
@@ -166,7 +166,7 @@ TEST_F(DataBlockTest, GetSamples)
 TEST_F(DataBlockTest, GetCoefficients)
 {
     outpost::utils::SharedBufferPointer p;
-    mPool.allocate(p);
+    ASSERT_TRUE(mPool.allocate(p));
     outpost::compression::DataBlock block(
             p,
             123U,
@@ -196,12 +196,15 @@ TEST_F(DataBlockTest, Encode)
 
     outpost::utils::SharedBufferPointer p;
     ASSERT_TRUE(mPool.allocate(p));
-    outpost::compression::DataBlock block(
-            p,
-            123U,
-            outpost::time::GpsTime::afterEpoch(outpost::time::Hours(3U)),
-            outpost::compression::SamplingRate::hz05,
-            outpost::compression::Blocksize::bs16);
+
+    outpost::time::GpsTime time = outpost::time::GpsTime::afterEpoch(outpost::time::Hours(3U));
+    time = time + outpost::time::Seconds(56U) + outpost::time::Milliseconds(123U);
+
+    outpost::compression::DataBlock block(p,
+                                          123U,
+                                          time,
+                                          outpost::compression::SamplingRate::hz05,
+                                          outpost::compression::Blocksize::bs16);
 
     for (int16_t i = 0; i < 16; i++)
     {
@@ -222,13 +225,17 @@ TEST_F(DataBlockTest, Encode)
     EXPECT_TRUE(block_out.isEncoded());
 
     outpost::Slice<uint8_t> enc = block_out.getEncodedData();
-    EXPECT_EQ(enc.getNumberOfElements(), 23U);
+    EXPECT_EQ(enc.getNumberOfElements(), 21U);
     EXPECT_EQ(enc[0], 1U);
     EXPECT_EQ(enc[1], 0U);
     EXPECT_EQ(enc[2], 123U);
     uint8_t encoded_sr_bs = static_cast<uint8_t>(outpost::compression::SamplingRate::hz05) << 4;
     encoded_sr_bs |= static_cast<uint8_t>(outpost::compression::Blocksize::bs16);
-    EXPECT_EQ(enc[11], encoded_sr_bs);
+    uint32_t seconds = (enc[3] << 24U) + (enc[4] << 16U) + (enc[5] << 8U) + enc[6];
+    EXPECT_EQ(seconds, 10856U);
+    uint16_t milliseconds = (enc[7] << 8U) + enc[8];
+    EXPECT_EQ(milliseconds, 123U);
+    EXPECT_EQ(enc[9], encoded_sr_bs);
 }
 
 }  // namespace data_block_test

@@ -25,16 +25,21 @@ env = envGlobal.Clone()
 files  = env.Glob('outpost/rtos/*.cpp')
 files += env.Glob('outpost/hal/*.cpp')
 
+impl_files =  env.Glob('outpost/rtos/*_impl.h')
+impl_files += env.Glob('outpost/hal/*_impl.h')
+
 if env['OS'] == 'none':
 	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/none')])
 	env.Append(CPPPATH=[os.path.abspath('../arch/none')])
 	
 	files += env.Glob('../arch/none/outpost/rtos/*.cpp')
+	impl_files += env.Glob('../arch/none/outpost/rtos/*_impl.h')
 elif env['OS'] == 'rtems':
 	envGlobal.Append(CPPPATH=[os.path.abspath('../arch/rtems')])
 	env.Append(CPPPATH=[os.path.abspath('../arch/rtems')])
 	
 	files += env.Glob('../arch/rtems/outpost/rtos/*.cpp')
+	impl_files += env.Glob('../arch/rtems/outpost/rtos/*_impl.h')
 	
 	# as RTEMS is C it uses C-Style casts. Therefore this warning has to
 	# disabled for the RTEMS wrapper files.
@@ -45,6 +50,7 @@ elif env['OS'] == 'freertos':
 	env.Append(CPPPATH=[os.path.abspath('../arch/freertos')])
 	
 	files += env.Glob('../arch/freertos/outpost/rtos/*.cpp')
+	impl_files += env.Glob('../arch/freertos/outpost/rtos/*_impl.h')
 	
 	# FreeRTOS uses C-Style casts. Therefore this warning has to
 	# disabled for the FreeRTOS wrapper files.
@@ -55,11 +61,13 @@ elif env['OS'] == 'posix':
 	
 	files += env.Glob('../arch/posix/outpost/rtos/*.cpp')
 	files += env.Glob('../arch/posix/outpost/rtos/*/*.cpp')
+	impl_files += env.Glob('../arch/posix/outpost/rtos/*_impl.h')
+	impl_files += env.Glob('../arch/posix/outpost/rtos/*/*_impl.h')
 	
 	envGlobal.Append(LIBS=['rt', 'pthread'])
 else:
-	print "Error: Environment variable 'OS' not defined. Set it to " +\
-		  "none|rtems|freertos|posix to define the used operating system!"
+	print("Error: Environment variable 'OS' not defined. Set it to " +\
+		  "none|rtems|freertos|posix to define the used operating system!")
 	Exit(1)
 
 objects = []
@@ -67,7 +75,7 @@ for file in files:
 	objects.append(env.Object(file))
 envGlobal.Append(objects={'rtos': objects})
 envGlobal.Append(sources={'rtos': files})
+envGlobal.Append(headers={'rtos': impl_files})
 
 library = env.StaticLibrary('outpost_rtos', objects)
-envGlobal.Install('$BUILDPATH/lib', library)
-
+env.Install('$BUILDPATH/lib/', library)

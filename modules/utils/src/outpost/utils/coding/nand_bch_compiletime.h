@@ -203,11 +203,13 @@ private:
 
         int32_t table[mMParam];
 
-        constexpr const int32_t& operator[](int i) const
+        constexpr const int32_t&
+        operator[](int i) const
         {
             return table[i];
         };
-        constexpr int32_t& operator[](int i)
+        constexpr int32_t&
+        operator[](int i)
         {
             return table[i];
         };
@@ -218,11 +220,13 @@ private:
         constexpr LogTable(void) : table{} {};
         uint16_t table[mFFSize];
 
-        constexpr const uint16_t& operator[](int i) const
+        constexpr const uint16_t&
+        operator[](int i) const
         {
             return table[i];
         };
-        constexpr uint16_t& operator[](int i)
+        constexpr uint16_t&
+        operator[](int i)
         {
             return table[i];
         };
@@ -233,11 +237,13 @@ private:
         constexpr ALogTable(void) : table{} {};
         uint16_t table[2 * mFFSize];
 
-        constexpr const uint16_t& operator[](int i) const
+        constexpr const uint16_t&
+        operator[](int i) const
         {
             return table[i];
         };
-        constexpr uint16_t& operator[](int i)
+        constexpr uint16_t&
+        operator[](int i)
         {
             return table[i];
         };
@@ -280,12 +286,14 @@ private:
 
             uint32_t* p;
 
-            constexpr const uint32_t& operator[](int i) const
+            constexpr const uint32_t&
+            operator[](int i) const
             {
                 return p[i];
             };
 
-            constexpr uint32_t& operator[](int i)
+            constexpr uint32_t&
+            operator[](int i)
             {
                 return p[i];
             };
@@ -297,20 +305,23 @@ private:
 
             const uint32_t* p;
 
-            constexpr const uint32_t& operator[](int i) const
+            constexpr const uint32_t&
+            operator[](int i) const
             {
                 return p[i];
             };
         };
 
-        constexpr const ConstColumn operator[](int i) const
+        constexpr const ConstColumn
+        operator[](int i) const
         {
             ConstColumn c;
             c.p = &encodeTable[i * mNumRedundantWords];
             return c;
         };
 
-        constexpr Column operator[](int i)
+        constexpr Column
+        operator[](int i)
         {
             Column c;
             c.p = &encodeTable[i * mNumRedundantWords];

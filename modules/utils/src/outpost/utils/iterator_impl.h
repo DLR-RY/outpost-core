@@ -74,13 +74,15 @@ DefaultArrayIterator<T>::DefaultArrayIterator(T* parameters) : ArrayIterator<T>(
 }
 
 template <typename T>
-T& DefaultArrayIterator<T>::operator*()
+T&
+DefaultArrayIterator<T>::operator*()
 {
     return *this->mPos;
 }
 
 template <typename T>
-T* DefaultArrayIterator<T>::operator->()
+T*
+DefaultArrayIterator<T>::operator->()
 {
     return this->mPos;
 }
@@ -153,13 +155,15 @@ DefaultConstArrayIterator<T>::DefaultConstArrayIterator(const DefaultArrayIterat
 }
 
 template <typename T>
-const T& DefaultConstArrayIterator<T>::operator*() const
+const T&
+DefaultConstArrayIterator<T>::operator*() const
 {
     return *this->mPos;
 }
 
 template <typename T>
-const T* DefaultConstArrayIterator<T>::operator->() const
+const T*
+DefaultConstArrayIterator<T>::operator->() const
 {
     return this->mPos;
 }

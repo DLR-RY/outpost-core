@@ -72,7 +72,9 @@ public:
         MN14
     };
 
-    NLSEncoder() = default;
+    NLSEncoder() : mark{}, dmax{}, gmax{}
+    {
+    }
 
     ~NLSEncoder() = default;
 

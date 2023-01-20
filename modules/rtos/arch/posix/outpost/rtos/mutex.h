@@ -74,12 +74,43 @@ public:
     acquire(::outpost::time::Duration timeout);
 
     /**
+     * Acquire the mutex. Not required for POSIX.
+     *
+     *
+     * \param hasWokenThread Set to true iff a higher priority thread was woken by the method.
+     *        Thread::yield() should be called before exiting the ISR.
+     *
+     * \returns    \c true if the mutex could be acquired.
+     */
+    inline bool
+    acquireFromISR(bool& hasWokenThread)
+    {
+        hasWokenThread = false;
+        return acquire();
+    }
+
+    /**
      * Release the mutex.
      */
     inline void
     release()
     {
         pthread_mutex_unlock(&mMutex);
+    }
+
+    /**
+     * Release the mutex. Not required for POSIX.
+     *
+     * \param hasWokenThread Set to true iff a higher priority thread was woken by the method.
+     *        Thread::yield() should be called before exiting the ISR.
+     *
+     * This function will never block.
+     */
+    inline void
+    relaseFromISR(bool& hasWokenThread)
+    {
+        hasWokenThread = false;
+        release();
     }
 
 private:

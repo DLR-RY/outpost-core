@@ -32,14 +32,14 @@ public:
 
     virtual ~TestingClock() = default;
 
-    virtual outpost::time::SpacecraftElapsedTime
-    now() const;
+    outpost::time::SpacecraftElapsedTime
+    now() const override;
 
     /**
      * Set the current time to an absolute value.
      */
     void
-    setTime(outpost::time::SpacecraftElapsedTime time);
+    setTime(outpost::time::SpacecraftElapsedTime timePoint);
 
     /**
      * Increment the current time by the given duration.

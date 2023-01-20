@@ -18,8 +18,7 @@
 #include <unittest/smpc/testing_subscription.h>
 
 #include <stdint.h>
-
-#include <cstring>
+#include <string.h>
 
 struct Data
 {
@@ -36,10 +35,8 @@ operator==(Data const& lhs, Data const& rhs)
 class Component : public outpost::smpc::Subscriber
 {
 public:
-    Component(outpost::smpc::Topic<const Data>& topic) :
-        mReceived(false),
-        mData({0, 0}),
-        subscription(topic, this, &Component::onReceiveData)
+    explicit Component(outpost::smpc::Topic<const Data>& topic) :
+        mReceived(false), mData({0, 0}), subscription(topic, this, &Component::onReceiveData)
     {
     }
 

@@ -44,7 +44,7 @@ public:
      *
      * @param numberOfThreads	number of threads that must wait on the barrier for them to continue
      */
-    Barrier(uint32_t numberOfThreads);
+    explicit Barrier(uint32_t numberOfThreads);
 
     // disable copy constructor
     Barrier(const Barrier& other) = delete;

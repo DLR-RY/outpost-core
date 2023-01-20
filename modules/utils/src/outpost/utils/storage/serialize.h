@@ -18,6 +18,7 @@
 
 #include "serialize_storage_traits.h"
 #include "serialize_traits.h"
+#include "variable_width_integer.h"
 
 #include <outpost/base/slice.h>
 #include <outpost/utils/container/fixed_size_array.h>
@@ -30,13 +31,6 @@
 
 namespace outpost
 {
-struct uint24_t
-{
-    static const int byteLength = 3;
-
-    uint8_t value[byteLength];
-};
-
 /**
  * Serialize data as big-endian into raw byte arrays.
  *
@@ -51,8 +45,7 @@ public:
 
     template <size_t N>
     explicit inline Serialize(outpost::FixedSizeArrayView<uint8_t, N> array) :
-        mBuffer(&array[0]),
-        mBegin(&array[0])
+        mBuffer(&array[0]), mBegin(&array[0])
     {
     }
 
@@ -137,24 +130,33 @@ public:
     inline void
     storeBuffer(const uint8_t* buffer, const size_t length)
     {
-        memcpy(mBuffer, buffer, length);
-        mBuffer += length;
+        if (buffer && length)
+        {
+            memcpy(mBuffer, buffer, length);
+            mBuffer += length;
+        }
     }
 
     inline void
     store(outpost::Slice<const uint8_t> array)
     {
         size_t length = array.getNumberOfElements();
-        memcpy(mBuffer, &array[0], length);
-        mBuffer += length;
+        if (length)
+        {
+            memcpy(mBuffer, array.getDataPointer(), length);
+            mBuffer += length;
+        }
     }
 
     template <size_t N>
     inline void
     store(outpost::FixedSizeArrayView<const uint8_t, N> array)
     {
-        memcpy(mBuffer, &array[0], N);
-        mBuffer += N;
+        if (N)
+        {
+            memcpy(mBuffer, array.getDataPointer(), N);
+            mBuffer += N;
+        }
     }
 
     template <typename U>
@@ -248,21 +250,18 @@ class Deserialize
 {
 public:
     explicit inline Deserialize(const uint8_t* inputBuffer) :
-        mBuffer(inputBuffer),
-        mBegin(inputBuffer)
+        mBuffer(inputBuffer), mBegin(inputBuffer)
     {
     }
 
     explicit inline Deserialize(outpost::Slice<const uint8_t> array) :
-        mBuffer(&array[0]),
-        mBegin(&array[0])
+        mBuffer(&array[0]), mBegin(&array[0])
     {
     }
 
     template <size_t N>
     explicit inline Deserialize(outpost::FixedSizeArrayView<const uint8_t, N> array) :
-        mBuffer(&array[0]),
-        mBegin(&array[0])
+        mBuffer(&array[0]), mBegin(&array[0])
     {
     }
 

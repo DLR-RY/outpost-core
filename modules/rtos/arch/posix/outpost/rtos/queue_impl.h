@@ -19,6 +19,11 @@
 
 #include <outpost/rtos/failure_handler.h>
 
+namespace outpost
+{
+namespace rtos
+{
+
 template <typename T>
 outpost::rtos::Queue<T>::Queue(size_t numberOfItems) :
     mBuffer(new T[numberOfItems]),
@@ -32,7 +37,7 @@ outpost::rtos::Queue<T>::Queue(size_t numberOfItems) :
 }
 
 template <typename T>
-outpost::rtos::Queue<T>::~Queue()
+Queue<T>::~Queue()
 {
     pthread_mutex_lock(&mMutex);
 
@@ -53,7 +58,7 @@ outpost::rtos::Queue<T>::send(const T& data)
 {
     bool itemStored = false;
     pthread_mutex_lock(&mMutex);
-
+    pthread_cleanup_push(unlockMutex, &mMutex);
     if (mItemsInBuffer < mMaximumSize)
     {
         mHead = increment(mHead);
@@ -65,7 +70,7 @@ outpost::rtos::Queue<T>::send(const T& data)
         pthread_cond_signal(&mSignal);
     }
 
-    pthread_mutex_unlock(&mMutex);
+    pthread_cleanup_pop(1);
     return itemStored;
 }
 
@@ -77,9 +82,10 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
     bool timeoutOrErrorOccured = false;
 
     pthread_mutex_lock(&mMutex);
+    pthread_cleanup_push(unlockMutex, &mMutex);
     while ((mItemsInBuffer == 0) && !timeoutOrErrorOccured)
     {
-        if (timeout == outpost::time::Duration::infinity())
+        if (timeout >= outpost::time::Duration::myriad())
         {
             if (pthread_cond_wait(&mSignal, &mMutex) != 0)
             {
@@ -107,7 +113,7 @@ outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
         itemRetrieved = true;
     }
 
-    pthread_mutex_unlock(&mMutex);
+    pthread_cleanup_pop(1);
     return itemRetrieved;
 }
 
@@ -126,5 +132,15 @@ outpost::rtos::Queue<T>::increment(size_t index) const
 
     return index;
 }
+
+template <typename T>
+void
+outpost::rtos::Queue<T>::unlockMutex(void* mutex)
+{
+    pthread_mutex_unlock(reinterpret_cast<pthread_mutex_t*>(mutex));
+}
+
+}  // namespace rtos
+}  // namespace outpost
 
 #endif

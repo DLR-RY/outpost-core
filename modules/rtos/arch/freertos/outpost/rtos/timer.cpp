@@ -14,10 +14,6 @@
 
 #include "timer.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <freertos/timers.h>
-
 #include <outpost/rtos/failure_handler.h>
 
 // ----------------------------------------------------------------------------
@@ -33,8 +29,13 @@ outpost::rtos::Timer::~Timer()
 void
 outpost::rtos::Timer::start(time::Duration duration)
 {
-    if ((xTimerChangePeriod(
-                 mHandle, (duration.milliseconds() * configTICK_RATE_HZ) / 1000, portMAX_DELAY)
+    if ((xTimerChangePeriod(mHandle,
+                            duration.milliseconds() > 1000 * 1000
+                                    ?  // prevent overflows for large delays, and underflows for
+                                       // short delays
+                                    (duration.milliseconds() * configTICK_RATE_HZ) / 1000
+                                    : (duration.milliseconds() / 1000) * configTICK_RATE_HZ,
+                            portMAX_DELAY)
          != pdPASS)
         || (xTimerStart(mHandle, portMAX_DELAY) != pdPASS))
     {
@@ -85,7 +86,7 @@ void
 outpost::rtos::Timer::createTimer(const char* name)
 {
     mHandle = xTimerCreate(
-            reinterpret_cast<const signed char*>(name),
+            name,
             1,        // dummy value (must be >= 0 but will be changed when starting the timer)
             pdFALSE,  // no auto-reload
             (void*) this,
@@ -99,7 +100,7 @@ outpost::rtos::Timer::createTimer(const char* name)
 
 // ----------------------------------------------------------------------------
 void
-outpost::rtos::Timer::invokeTimer(void* handle)
+outpost::rtos::Timer::invokeTimer(TimerHandle_t handle)
 {
     Timer* timer = reinterpret_cast<Timer*>(pvTimerGetTimerID(handle));
     (timer->mObject->*(timer->mFunction))(timer);

@@ -18,8 +18,7 @@
 #include <unittest/smpc/testing_subscription.h>
 
 #include <stdint.h>
-
-#include <cstring>
+#include <string.h>
 
 struct Data
 {

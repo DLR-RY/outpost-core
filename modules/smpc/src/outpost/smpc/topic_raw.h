@@ -16,7 +16,6 @@
 
 #include <outpost/rtos/mutex.h>
 #include <outpost/utils/container/implicit_list.h>
-#include <outpost/utils/meta.h>
 
 #include <stddef.h>
 #include <stdint.h>

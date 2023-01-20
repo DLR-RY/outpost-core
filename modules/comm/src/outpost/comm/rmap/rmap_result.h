@@ -38,7 +38,8 @@ public:
         sendFailed,          // sending the command already failed
         replyTooShort,  // a read command read less data than requested, this may be valid behavior
                         // have to be handled by caller who knows more about the target
-        success         // command executed as expected
+        lockingError,
+        success  // command executed as expected
     };
 
     /**

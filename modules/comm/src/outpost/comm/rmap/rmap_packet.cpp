@@ -172,13 +172,8 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
     }
 
     outpost::Deserialize stream(data);
-    ptrdiff_t headerEndPosition;
-    uint8_t packetHeaderCRC;
-    uint8_t calculatedHeaderCRC;
-    uint8_t calculatedDataCRC;
-    uint8_t packetDataCRC;
 
-    uint8_t initiatoraLogicalAddress = stream.read<uint8_t>();
+    const uint8_t initiatoraLogicalAddress = stream.read<uint8_t>();
 
     if (initiatoraLogicalAddress != initiatorLogicalAddress)
     {
@@ -186,7 +181,7 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
         return ExtractionResult::incorrectAddress;
     }
 
-    uint8_t protocolIdentifiter = stream.read<uint8_t>();
+    const uint8_t protocolIdentifiter = stream.read<uint8_t>();
 
     if (protocolIdentifiter != rmap::protocolIdentifier)
     {
@@ -199,6 +194,7 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
     // If reply packet is received
     if (isReplyPacket())
     {
+        ptrdiff_t headerEndPosition;
         memset(mReplyAddress, 0, rmap::maxAddressLength);
 
         mInitiatorLogicalAddress = initiatoraLogicalAddress;
@@ -216,9 +212,9 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
                 return ExtractionResult::invalid;
             }
             headerEndPosition = stream.getPosition();
-            packetHeaderCRC = stream.read<uint8_t>();
+            const uint8_t packetHeaderCRC = stream.read<uint8_t>();
 
-            calculatedHeaderCRC = outpost::Crc8CcittReversed::calculate(
+            const uint8_t calculatedHeaderCRC = outpost::Crc8CcittReversed::calculate(
                     outpost::Slice<uint8_t>::unsafe(const_cast<uint8_t*>(stream.getPointer()),
                                                     static_cast<size_t>(headerEndPosition)));
 
@@ -246,9 +242,9 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
 
             // Get the header CRC
             headerEndPosition = stream.getPosition();
-            packetHeaderCRC = stream.read<uint8_t>();
+            const uint8_t packetHeaderCRC = stream.read<uint8_t>();
 
-            calculatedHeaderCRC = outpost::Crc8CcittReversed::calculate(
+            const uint8_t calculatedHeaderCRC = outpost::Crc8CcittReversed::calculate(
                     outpost::Slice<uint8_t>::unsafe(const_cast<uint8_t*>(stream.getPointer()),
                                                     static_cast<size_t>(headerEndPosition)));
 
@@ -271,9 +267,9 @@ RmapPacket::extractReplyPacket(outpost::Slice<const uint8_t>& data, uint8_t init
             // Skip the data byte to calculate data CRC
             stream.skip(mDataLength);
 
-            packetDataCRC = stream.read<uint8_t>();
+            const uint8_t packetDataCRC = stream.read<uint8_t>();
 
-            calculatedDataCRC = outpost::Crc8CcittReversed::calculate(mData);
+            const uint8_t calculatedDataCRC = outpost::Crc8CcittReversed::calculate(mData);
             if (packetDataCRC != calculatedDataCRC)
             {
                 console_out("RMAP-Packet: Invalid packet data CRC\n");

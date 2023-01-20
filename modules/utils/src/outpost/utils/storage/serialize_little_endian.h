@@ -35,14 +35,12 @@ class SerializeLittleEndian
 {
 public:
     explicit inline SerializeLittleEndian(outpost::Slice<uint8_t> array) :
-        mBuffer(&array[0]),
-        mBegin(&array[0])
+        mBuffer(&array[0]), mBegin(&array[0])
     {
     }
 
     explicit inline SerializeLittleEndian(uint8_t* outputBuffer) :
-        mBuffer(outputBuffer),
-        mBegin(outputBuffer)
+        mBuffer(outputBuffer), mBegin(outputBuffer)
     {
     }
 
@@ -196,14 +194,12 @@ class DeserializeLittleEndian
 {
 public:
     explicit inline DeserializeLittleEndian(const uint8_t* inputBuffer) :
-        mBuffer(inputBuffer),
-        mBegin(inputBuffer)
+        mBuffer(inputBuffer), mBegin(inputBuffer)
     {
     }
 
     explicit inline DeserializeLittleEndian(outpost::Slice<const uint8_t> array) :
-        mBuffer(&array[0]),
-        mBegin(&array[0])
+        mBuffer(&array[0]), mBegin(&array[0])
     {
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2017, German Aerospace Center (DLR)
+ * Copyright (c) 2015-2022, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,6 +9,7 @@
  *
  * Authors:
  * - 2015-2017, Fabian Greif (DLR RY-AVS)
+ * - 2022, Tobias Pfeffer (DLR RY-AVS)
  */
 
 #include <outpost/time/time_point.h>
@@ -68,4 +69,82 @@ TEST(TimePointTest, shouldConvertEpoch)
 
     // Reset offset
     TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(Duration::zero());
+}
+
+TEST(TimePointTest, shouldBeComparable)
+{
+    SpacecraftElapsedTime time1 = SpacecraftElapsedTime::afterEpoch(Milliseconds(100));
+    SpacecraftElapsedTime time2 = SpacecraftElapsedTime::afterEpoch(Milliseconds(200));
+
+    EXPECT_TRUE(time1 == time1);
+    EXPECT_FALSE(time1 == time2);
+    EXPECT_FALSE(time1 != time1);
+    EXPECT_TRUE(time1 != time2);
+
+    EXPECT_TRUE(time1 < time2);
+    EXPECT_TRUE(time1 <= time2);
+    EXPECT_FALSE(time1 > time2);
+    EXPECT_FALSE(time1 >= time2);
+
+    EXPECT_FALSE(time2 < time1);
+    EXPECT_FALSE(time2 <= time1);
+    EXPECT_TRUE(time2 > time1);
+    EXPECT_TRUE(time2 >= time1);
+
+    EXPECT_FALSE(time1 < time1);
+    EXPECT_TRUE(time1 <= time1);
+    EXPECT_FALSE(time1 > time1);
+    EXPECT_TRUE(time1 >= time1);
+}
+
+TEST(TimePointTest, comparisonShouldNotUnderflowWithMin)
+{
+    SpacecraftElapsedTime time1 = SpacecraftElapsedTime::afterEpoch(-Duration::maximum());
+    SpacecraftElapsedTime time2 = SpacecraftElapsedTime::afterEpoch(Milliseconds(200));
+
+    EXPECT_TRUE(time1 == time1);
+    EXPECT_FALSE(time1 == time2);
+    EXPECT_FALSE(time1 != time1);
+    EXPECT_TRUE(time1 != time2);
+
+    EXPECT_TRUE(time1 < time2);
+    EXPECT_TRUE(time1 <= time2);
+    EXPECT_FALSE(time1 > time2);
+    EXPECT_FALSE(time1 >= time2);
+
+    EXPECT_FALSE(time2 < time1);
+    EXPECT_FALSE(time2 <= time1);
+    EXPECT_TRUE(time2 > time1);
+    EXPECT_TRUE(time2 >= time1);
+
+    EXPECT_FALSE(time1 < time1);
+    EXPECT_TRUE(time1 <= time1);
+    EXPECT_FALSE(time1 > time1);
+    EXPECT_TRUE(time1 >= time1);
+}
+
+TEST(TimePointTest, comparisonShouldNotOverflowWithMax)
+{
+    SpacecraftElapsedTime time1 = SpacecraftElapsedTime::afterEpoch(Milliseconds(100));
+    SpacecraftElapsedTime time2 = SpacecraftElapsedTime::afterEpoch(Duration::maximum());
+
+    EXPECT_TRUE(time1 == time1);
+    EXPECT_FALSE(time1 == time2);
+    EXPECT_FALSE(time1 != time1);
+    EXPECT_TRUE(time1 != time2);
+
+    EXPECT_TRUE(time1 < time2);
+    EXPECT_TRUE(time1 <= time2);
+    EXPECT_FALSE(time1 > time2);
+    EXPECT_FALSE(time1 >= time2);
+
+    EXPECT_FALSE(time2 < time1);
+    EXPECT_FALSE(time2 <= time1);
+    EXPECT_TRUE(time2 > time1);
+    EXPECT_TRUE(time2 >= time1);
+
+    EXPECT_FALSE(time2 < time2);
+    EXPECT_TRUE(time2 <= time2);
+    EXPECT_FALSE(time2 > time2);
+    EXPECT_TRUE(time2 >= time2);
 }

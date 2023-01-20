@@ -47,11 +47,13 @@ public:
 
     virtual size_t
     read(outpost::Slice<uint8_t> data,
-         outpost::time::Duration timeout = outpost::time::Duration::maximum()) override;
+         outpost::time::Duration timeout =
+                 std::numeric_limits<outpost::time::Duration>::max()) override;
 
     virtual size_t
     write(outpost::Slice<const uint8_t> data,
-          outpost::time::Duration timeout = outpost::time::Duration::maximum()) override;
+          outpost::time::Duration timeout =
+                  std::numeric_limits<outpost::time::Duration>::max()) override;
 
     /// Does nothing in this implementation
     virtual void

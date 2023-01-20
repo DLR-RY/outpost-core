@@ -165,11 +165,14 @@ public:
      * configuring CONFIGURE_MAXIMUM_TASKS.
      *
      * \param priority
-     *         Thread priority. RTEMS supports priorities between 1..255.
-     *         Lower values represent a higher priority. To ensure that
+     *         Thread priority.
+     *         Supported are values between 1..255.
+     *         Lower values represent a lower priority. To ensure that
      *         the handler-function is called at the exact time it is
      *         a good idea to give the timer daemon thread a high
-     *         priority (low value).
+     *         priority (high value).
+     *         Note: The priority assigned here is converted to the
+     *               internal priority representation of RTEMS.
      * \param stack
      *         Stack size in bytes. If the stack is smaller than the
      *         default stack size it is replaced with the default size.

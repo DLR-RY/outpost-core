@@ -24,15 +24,15 @@ class TestingTopicBase
 {
 public:
     void
-    dumpConnectedSubscriptions(outpost::smpc::TopicBase& base);
+    dumpConnectedSubscriptions(const outpost::smpc::TopicBase& base) const;
 };
 
 using namespace outpost::smpc;
 
 void
-TestingTopicBase::dumpConnectedSubscriptions(outpost::smpc::TopicBase& base)
+TestingTopicBase::dumpConnectedSubscriptions(const outpost::smpc::TopicBase& base) const
 {
-    printf("topic %p\n", reinterpret_cast<void*>(this));
+    printf("topic %p\n", reinterpret_cast<const void*>(this));
 
     for (Subscription* topic = base.mSubscriptions; topic != 0;
          topic = topic->mNextTopicSubscription)

@@ -10,6 +10,7 @@
  * Authors:
  * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
  * - 2018, Fabian Greif (DLR RY-AVS)
+ * - 2021, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_UTILS_SMART_BUFFER_H_
@@ -69,18 +70,46 @@ public:
      * \return Pointer to the byte array.
      */
     inline outpost::Slice<uint8_t>
+    // cppcheck-suppress functionConst
+    getPointer()
+    {
+        return mBuffer;
+    }
+
+    /**
+     * \brief Getter function for the underlying byte array.
+     * \return Pointer to the byte array.
+     */
+    inline outpost::Slice<const uint8_t>
     getPointer() const
     {
         return mBuffer;
     }
 
     /**
-     * \brief Indexed access to te elements of the underlying byte array
+     * \brief Indexed access to the elements of the underlying byte array
+     *
      * \param index Index to be returned. Warning: Any checks for valid index ranges need to be
      * performed by the caller.
+     *
      * \return Byte value at the specified index
      */
-    inline uint8_t& operator[](size_t index) const
+    inline uint8_t&
+    operator[](int64_t index)
+    {
+        return mBuffer[index];
+    }
+
+    /**
+     * \brief Indexed access to the elements of the underlying byte array
+     *
+     * \param index Index to be returned. Warning: Any checks for valid index ranges need to be
+     * performed by the caller.
+     *
+     * \return Byte value at the specified index
+     */
+    inline const uint8_t&
+    operator[](int64_t index) const
     {
         return mBuffer[index];
     }
@@ -132,6 +161,8 @@ public:
 
 private:
     friend class SharedBufferPointer;
+    friend class ConstSharedBufferPointer;
+    friend class SharedBufferPointerBase;
 
     /**
      * \brief Increments the reference count.
@@ -160,7 +191,7 @@ private:
      * \param ref Reference counter to be checked.
      */
     inline static bool
-    isUsedAtomic(const size_t& ref)
+    isUsedAtomic(const size_t ref)
     {
         outpost::rtos::MutexGuard lock(mMutex);
         return ref != 0;
@@ -213,8 +244,6 @@ private:
     outpost::Slice<uint8_t> mBuffer;
 };
 
-class SharedChildPointer;
-
 /**
  * \ingroup SharedBuffer
  *
@@ -222,123 +251,9 @@ class SharedChildPointer;
  * (i.e. copying, assignment, etc.), nesting and
  * provides the means for user-defined type control.
  */
-class SharedBufferPointer
+class SharedBufferPointerBase
 {
 public:
-    /**
-     * \brief Constructor for an empty (invalid) SharedBufferPointer.
-     *
-     * Used for array creation and invalidation of unused SharedBufferPointer instances.
-     */
-    SharedBufferPointer() : mPtr(nullptr), mType(0), mOffset(0), mLength(0)
-    {
-    }
-
-    /**
-     * \brief Constructor for a SharedBufferPointer instance wrapping a SharedBuffer.
-     *
-     * \param pT Pointer to the SharedBuffer instance.
-     */
-    explicit SharedBufferPointer(SharedBuffer* pT) :
-        mPtr(pT),
-        mType(0),
-        mOffset(0),
-        mLength([pT]() -> size_t {
-            if (pT)
-            {
-                return pT->mBuffer.getNumberOfElements();
-            }
-            return 0;
-        }())
-    {
-        incrementCount();
-    }
-
-    /**
-     * \brief Copy constructor for a SharedBufferPointer instance.
-     *
-     * \param other Reference of the SharedBufferPointer instance to be copied.
-     */
-    SharedBufferPointer(const SharedBufferPointer& other) :
-        mPtr(other.mPtr),
-        mType(other.mType),
-        mOffset(other.mOffset),
-        mLength(other.mLength)
-    {
-        incrementCount();
-    }
-
-    /**
-     * \brief Move constructor for a SharedBufferPointer instance.
-     *
-     * \param other Reference of the SharedBufferPointer instance to be moved.
-     */
-    SharedBufferPointer(const SharedBufferPointer&& other) :
-        mPtr(other.mPtr),
-        mType(other.mType),
-        mOffset(other.mOffset),
-        mLength(other.mLength)
-    {
-        incrementCount();
-    }
-
-    /**
-     * \brief Standard deconstructor.
-     *
-     * May be called as soon as the SharedBufferPointer instance is not needed anymore.
-     * It is recommended to leave this to the standard C++ scope or overwrite an existing reference:
-     * \code{.cpp}
-     * mBuffer = SharedBufferPointer();
-     * \endcode
-     *
-     * The buffer itself, however, can only be reused once its reference counter reaches 0.
-     *
-     */
-    virtual ~SharedBufferPointer()
-    {
-        decrementCount();
-    }
-
-    /**
-     * \brief Assignment operator for a SharedBufferPointer instance.
-     *
-     * \param other Reference of the SharedBufferPointer instance to be moved.
-     */
-    SharedBufferPointer&
-    operator=(const SharedBufferPointer& other)
-    {
-        if (&other != this)
-        {
-            decrementCount();
-            mPtr = other.mPtr;
-            mType = other.mType;
-            mOffset = other.mOffset;
-            mLength = other.mLength;
-            incrementCount();
-        }
-        return *this;
-    }
-
-    /**
-     * \brief Move operator for a SharedBufferPointer instance.
-     *
-     * \param other Reference of the SharedBufferPointer instance to be moved.
-     */
-    SharedBufferPointer&
-    operator=(const SharedBufferPointer&& other)
-    {
-        if (&other != this)
-        {
-            decrementCount();
-            mPtr = other.mPtr;
-            mType = other.mType;
-            mOffset = other.mOffset;
-            mLength = other.mLength;
-            incrementCount();
-        }
-        return *this;
-    }
-
     /**
      * \brief Getter function for the validity of a SharedBufferPointer and its underlying
      * SharedBuffer.
@@ -349,7 +264,7 @@ public:
     inline bool
     isValid() const
     {
-        return mPtr != nullptr && mPtr->isValid();
+        return (nullptr != mPtr) && mPtr->isValid();
     }
 
     /**
@@ -365,39 +280,11 @@ public:
         return false;
     }
 
-    /**
-     * \brief Getter function for a child (nested) SharedBufferPointer that is working on the same
-     * SharedBuffer.
-     *
-     * \param ptr Reference to which the nested buffer will be assigned
-     * \param type Type id of the nested buffer for identification of purpose (e.g. protocol, etc.)
-     * \param pOffset Offset of the nested SharedBufferPointer
-     * \param length Length of the nested SharedBufferPointer in bytes
-     * \return Returns true if the underlying SharedBuffer is neither a nullptr nor invalid,
-     * otherwise wise.
-     */
-    bool
-    getChild(SharedChildPointer& ptr, uint16_t type, size_t pOffest, size_t length) const;
-
-    inline SharedBuffer* operator->() const
+    inline bool
+    isUsed() const
     {
-        return mPtr;
+        return (nullptr != mPtr) && mPtr->isUsed();
     }
-
-    /**
-     * \brief Dereferencing operator will return the underlying SharedBuffer to allow access to the
-     * data.
-     *
-     * Warning: This also means that pointers to SharedBufferPointer instances may not be passed
-     * around, since this breaks the reference counting mechanism. Use references instead!
-     *
-     * \return Returns a reference to the underlying SharedBuffer instance
-     */
-    inline SharedBuffer& operator*() const
-    {
-        return *mPtr;
-    }
-
     /**
      * \brief Comparison operator for two SharedBufferPointer instances.
      *
@@ -407,7 +294,7 @@ public:
      * \return Returns true if the SharedBufferPointer instances are equal, otherwise false.
      */
     inline bool
-    operator==(const SharedBufferPointer& other) const
+    operator==(const SharedBufferPointerBase& other) const
     {
         return mPtr == other.mPtr;
     }
@@ -435,7 +322,7 @@ public:
      * \return Returns true if the SharedBufferPointer instances are not equal, otherwise false.
      */
     inline bool
-    operator!=(const SharedBufferPointer& other) const
+    operator!=(const SharedBufferPointerBase& other) const
     {
         return mPtr != other.mPtr;
     }
@@ -457,37 +344,6 @@ public:
     }
 
     /**
-     * \brief Cast operator to a uint8_t pointer.
-     *
-     * Returns a uint8_t pointer to the underlying SharedBuffer including a possible offset.
-     * If the underlying SharedBuffer is not valid, a nullptr is returned instead.
-     * \return Returns a uint8_t pointer.
-     */
-    inline operator uint8_t*() const
-    {
-        if (mPtr->isValid())
-        {
-            return &(*mPtr)[mOffset];
-        }
-        else
-        {
-            return nullptr;
-        }
-    }
-
-    /**
-     * \brief Indexing operator.
-     *
-     * Returns a uint8_t reference to the underlying SharedBuffer including a possible offset.
-     *
-     * \return Returns a uint8_t reference to the SharedBuffer.
-     */
-    inline uint8_t& operator[](size_t index) const
-    {
-        return (*mPtr)[index + mOffset];
-    }
-
-    /**
      * \brief Getter function for the buffer's maximum length.
      *
      * \return Returns the buffers maximum size or zero if it is not valid.
@@ -500,38 +356,6 @@ public:
             return mLength;
         }
         return 0;
-    }
-
-    /**
-     * \brief Cast operator to a outpost::Slice.
-     *
-     * \return Returns a outpost::Slice of the data buffer.
-     */
-    inline operator outpost::Slice<uint8_t>() const
-    {
-        return mPtr->getPointer().subSlice(mOffset, mLength);
-    }
-
-    /**
-     * \brief Cast operator to a outpost::Slice.
-     *
-     * \return Returns a outpost::Slice of the data buffer.
-     */
-    inline operator outpost::Slice<const uint8_t>() const
-    {
-        return mPtr->getPointer().subSlice(mOffset, mLength);
-    }
-
-    /**
-     * \brief Conversion function to an outpost::Slice slice of the underlying SharedBuffer
-     * including a possible offset.
-     *
-     * \return Returns a outpost::Slice of the data buffer.
-     */
-    inline outpost::Slice<uint8_t>
-    asSlice() const
-    {
-        return mPtr->getPointer().subSlice(mOffset, mLength);
     }
 
     /**
@@ -557,10 +381,118 @@ public:
     }
 
 protected:
+    friend class SharedChildPointer;
+    friend class ConstSharedChildPointer;
+
+    /**
+     * \brief Constructor for an empty (invalid) SharedBufferPointer.
+     *
+     * Used for array creation and invalidation of unused SharedBufferPointer instances.
+     */
+    SharedBufferPointerBase() : mPtr(nullptr), mType(0), mOffset(0), mLength(0)
+    {
+    }
+
+    /**
+     * \brief Constructor for a SharedBufferPointer instance wrapping a SharedBuffer.
+     *
+     * \param pT Pointer to the SharedBuffer instance.
+     */
+    explicit SharedBufferPointerBase(SharedBuffer* pT) :
+        mPtr(pT), mType(0), mOffset(0), mLength([pT]() -> size_t {
+            if (pT)
+            {
+                return pT->mBuffer.getNumberOfElements();
+            }
+            return 0;
+        }())
+    {
+        incrementCount();
+    }
+
+    /**
+     * \brief Copy constructor for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be copied.
+     */
+    SharedBufferPointerBase(const SharedBufferPointerBase& other) :
+        mPtr(other.mPtr), mType(other.mType), mOffset(other.mOffset), mLength(other.mLength)
+    {
+        incrementCount();
+    }
+
+    /**
+     * \brief Move constructor for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    SharedBufferPointerBase(const SharedBufferPointerBase&& other) :
+        mPtr(other.mPtr), mType(other.mType), mOffset(other.mOffset), mLength(other.mLength)
+    {
+        incrementCount();
+    }
+
+    /**
+     * \brief Standard deconstructor.
+     *
+     * May be called as soon as the SharedBufferPointer instance is not needed anymore.
+     * It is recommended to leave this to the standard C++ scope or overwrite an existing reference:
+     * \code{.cpp}
+     * mBuffer = SharedBufferPointer();
+     * \endcode
+     *
+     * The buffer itself, however, can only be reused once its reference counter reaches 0.
+     *
+     */
+    virtual ~SharedBufferPointerBase()
+    {
+        decrementCount();
+    }
+
+    /**
+     * \brief Assignment operator for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    SharedBufferPointerBase&
+    operator=(const SharedBufferPointerBase& other)
+    {
+        if (&other != this)
+        {
+            decrementCount();
+            mPtr = other.mPtr;
+            mType = other.mType;
+            mOffset = other.mOffset;
+            mLength = other.mLength;
+            incrementCount();
+        }
+        return *this;
+    }
+
+    /**
+     * \brief Move operator for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    SharedBufferPointerBase&
+    operator=(const SharedBufferPointerBase&& other)
+    {
+        if (&other != this)
+        {
+            decrementCount();
+            mPtr = other.mPtr;
+            mType = other.mType;
+            mOffset = other.mOffset;
+            mLength = other.mLength;
+            incrementCount();
+        }
+        return *this;
+    }
+
     void
     incrementCount() const
     {
-        if (mPtr != nullptr)
+        if (nullptr != mPtr)
         {
             mPtr->incrementCount();
         }
@@ -569,7 +501,7 @@ protected:
     void
     decrementCount() const
     {
-        if (mPtr != nullptr)
+        if (nullptr != mPtr)
         {
             mPtr->decrementCount();
         }
@@ -583,6 +515,502 @@ protected:
     size_t mLength;
 };
 
+class SharedChildPointer;
+
+/**
+ * \ingroup SharedBuffer
+ *
+ * Wrapper class for SharedBuffer instances that handles passing
+ * (i.e. copying, assignment, etc.), nesting and
+ * provides the means for user-defined type control.
+ */
+class SharedBufferPointer : public SharedBufferPointerBase
+{
+public:
+    /**
+     * \brief Constructor for an empty (invalid) SharedBufferPointer.
+     *
+     * Used for array creation and invalidation of unused SharedBufferPointer instances.
+     */
+    SharedBufferPointer() : SharedBufferPointerBase()
+    {
+    }
+
+    /**
+     * \brief Constructor for a SharedBufferPointer instance wrapping a SharedBuffer.
+     *
+     * \param pT Pointer to the SharedBuffer instance.
+     */
+    explicit SharedBufferPointer(SharedBuffer* pT) : SharedBufferPointerBase(pT)
+    {
+    }
+
+    /**
+     * \brief Copy constructor for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be copied.
+     */
+    SharedBufferPointer(const SharedBufferPointer& other) : SharedBufferPointerBase(other)
+    {
+    }
+
+    /**
+     * \brief Move constructor for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    SharedBufferPointer(const SharedBufferPointer&& other) : SharedBufferPointerBase(other)
+    {
+    }
+
+    /**
+     * \brief Standard deconstructor.
+     *
+     * May be called as soon as the SharedBufferPointer instance is not needed anymore.
+     * It is recommended to leave this to the standard C++ scope or overwrite an existing reference:
+     * \code{.cpp}
+     * mBuffer = SharedBufferPointer();
+     * \endcode
+     *
+     * The buffer itself, however, can only be reused once its reference counter reaches 0.
+     *
+     */
+    virtual ~SharedBufferPointer() = default;
+
+    /**
+     * \brief Assignment operator for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    SharedBufferPointer&
+    operator=(const SharedBufferPointer& other)
+    {
+        SharedBufferPointerBase::operator=(other);
+        return *this;
+    }
+
+    /**
+     * \brief Move operator for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    SharedBufferPointer&
+    operator=(const SharedBufferPointer&& other)
+    {
+        SharedBufferPointerBase::operator=(other);
+        return *this;
+    }
+
+    /**
+     * \brief Getter function for whether the current buffer is a nested buffer of some other
+     * SharedBufferPointer instance.
+     *
+     * \return Always returns false for instances of SharedBufferPointer, but needed for
+     * inheritance.
+     */
+    virtual inline bool
+    isChild() const override
+    {
+        return false;
+    }
+
+    /**
+     * \brief Getter function for a child (nested) SharedBufferPointer that is working on the same
+     * SharedBuffer.
+     *
+     * \param ptr Reference to which the nested buffer will be assigned
+     * \param type Type id of the nested buffer for identification of purpose (e.g. protocol, etc.)
+     * \param pOffset Offset of the nested SharedBufferPointer
+     * \param length Length of the nested SharedBufferPointer in bytes
+     * \return Returns true if the underlying SharedBuffer is neither a nullptr nor invalid,
+     * otherwise false.
+     */
+    bool
+    getChild(SharedChildPointer& ptr, uint16_t type, size_t pOffset, size_t length) const;
+
+    inline SharedBuffer*
+    operator->() const
+    {
+        return mPtr;
+    }
+
+    /**
+     * \brief Dereferencing operator will return the underlying SharedBuffer to allow access to the
+     * data.
+     *
+     * Warning: This also means that pointers to SharedBufferPointer instances may not be passed
+     * around, since this breaks the reference counting mechanism. Use references instead!
+     *
+     * \return Returns a reference to the underlying SharedBuffer instance
+     */
+    inline SharedBuffer&
+    operator*() const
+    {
+        return *mPtr;
+    }
+
+    /**
+     * \brief Cast operator to a uint8_t pointer.
+     *
+     * Returns a uint8_t pointer to the underlying SharedBuffer including a possible offset.
+     * If the underlying SharedBuffer is not valid, a nullptr is returned instead.
+     * \return Returns a uint8_t pointer.
+     */
+    inline
+    operator uint8_t*() const
+    {
+        if ((nullptr != mPtr) && mPtr->isValid())
+        {
+            return &(*mPtr)[mOffset];
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    /**
+     * \brief Indexing operator.
+     *
+     * Returns a uint8_t reference to the underlying SharedBuffer including a possible offset.
+     *
+     * \return Returns a uint8_t reference to the SharedBuffer.
+     */
+    inline uint8_t&
+    operator[](int64_t index) const
+    {
+        return (*mPtr)[index + mOffset];
+    }
+
+    /**
+     * \brief Cast operator to a outpost::Slice.
+     *
+     * \return Returns a outpost::Slice of the data buffer.
+     */
+    inline operator outpost::Slice<const uint8_t>() const
+    {
+        if (nullptr != mPtr)
+        {
+            return mPtr->getPointer().subSlice(mOffset, mLength);
+        }
+        else
+        {
+            return outpost::Slice<const uint8_t>::empty();
+        }
+    }
+
+    /**
+     * \brief Cast operator to a outpost::Slice.
+     *
+     * \return Returns a outpost::Slice of the data buffer.
+     */
+    inline operator outpost::Slice<uint8_t>() const
+    {
+        if (nullptr != mPtr)
+        {
+            return mPtr->getPointer().subSlice(mOffset, mLength);
+        }
+        else
+        {
+            return outpost::Slice<uint8_t>::empty();
+        }
+    }
+
+    /**
+     * \brief Conversion function to an outpost::Slice slice of the underlying SharedBuffer
+     * including a possible offset.
+     *
+     * \return Returns a outpost::Slice of the data buffer.
+     */
+    inline outpost::Slice<uint8_t>
+    asSlice() const
+    {
+        if (nullptr != mPtr)
+        {
+            return mPtr->getPointer().subSlice(mOffset, mLength);
+        }
+        else
+        {
+            return outpost::Slice<uint8_t>::empty();
+        }
+    }
+
+private:
+    friend class SharedChildPointer;
+
+    /**
+     * \brief Copy constructor for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be copied.
+     */
+    // cppcheck-suppress noExplicitConstructor
+    SharedBufferPointer(const SharedBufferPointerBase& other) : SharedBufferPointerBase(other)
+    {
+    }
+};
+
+class ConstSharedChildPointer;
+
+/**
+ * \ingroup SharedBuffer
+ *
+ * Wrapper class for SharedBuffer instances that handles passing
+ * (i.e. copying, assignment, etc.), nesting and
+ * provides the means for user-defined type control.
+ * This version prevent changes to the underlying data
+ */
+class ConstSharedBufferPointer : public SharedBufferPointerBase
+{
+public:
+    /**
+     * \brief Constructor for an empty (invalid) ConstSharedBufferPointer.
+     *
+     * Used for array creation and invalidation of unused ConstSharedBufferPointer instances.
+     */
+    ConstSharedBufferPointer() : SharedBufferPointerBase()
+    {
+    }
+
+    /**
+     * \brief Constructor for a ConstSharedBufferPointer instance wrapping a SharedBuffer.
+     *
+     * \param pT Pointer to the SharedBuffer instance.
+     */
+    explicit ConstSharedBufferPointer(SharedBuffer* pT) : SharedBufferPointerBase(pT)
+    {
+    }
+
+    /**
+     * \brief Copy constructor for a ConstSharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be copied.
+     */
+    // cppcheck-suppress noExplicitConstructor
+    ConstSharedBufferPointer(const SharedBufferPointer& other) : SharedBufferPointerBase(other)
+    {
+    }
+
+    /**
+     * \brief Copy constructor for a ConstSharedBufferPointer instance.
+     *
+     * \param other Reference of the ConstSharedBufferPointer instance to be copied.
+     */
+    ConstSharedBufferPointer(const ConstSharedBufferPointer& other) : SharedBufferPointerBase(other)
+    {
+    }
+
+    /**
+     * \brief Move constructor for a ConstSharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    // cppcheck-suppress noExplicitConstructor
+    ConstSharedBufferPointer(const SharedBufferPointer&& other) : SharedBufferPointerBase(other)
+    {
+    }
+
+    /**
+     * \brief Move constructor for a ConstSharedBufferPointer instance.
+     *
+     * \param other Reference of the ConstSharedBufferPointer instance to be moved.
+     */
+    ConstSharedBufferPointer(const ConstSharedBufferPointer&& other) :
+        SharedBufferPointerBase(other)
+    {
+    }
+
+    /**
+     * \brief Standard deconstructor.
+     *
+     * May be called as soon as the SharedBufferPointer instance is not needed anymore.
+     * It is recommended to leave this to the standard C++ scope or overwrite an existing reference:
+     * \code{.cpp}
+     * mBuffer = SharedBufferPointer();
+     * \endcode
+     *
+     * The buffer itself, however, can only be reused once its reference counter reaches 0.
+     *
+     */
+    virtual ~ConstSharedBufferPointer() = default;
+
+    /**
+     * \brief Assignment operator for a COnstSharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    ConstSharedBufferPointer&
+    operator=(const SharedBufferPointer& other)
+    {
+        SharedBufferPointerBase::operator=(other);
+        return *this;
+    }
+
+    /**
+     * \brief Move operator for a ConstSharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be moved.
+     */
+    ConstSharedBufferPointer&
+    operator=(const SharedBufferPointer&& other)
+    {
+        SharedBufferPointerBase::operator=(other);
+        return *this;
+    }
+
+    /**
+     * \brief Assignment operator for a ConstSharedBufferPointer instance.
+     *
+     * \param other Reference of the ConstSharedBufferPointer instance to be moved.
+     */
+    ConstSharedBufferPointer&
+    operator=(const ConstSharedBufferPointer& other)
+    {
+        SharedBufferPointerBase::operator=(other);
+        return *this;
+    }
+
+    /**
+     * \brief Move operator for a ConstSharedBufferPointer instance.
+     *
+     * \param other Reference of the ConstSharedBufferPointer instance to be moved.
+     */
+    ConstSharedBufferPointer&
+    operator=(const ConstSharedBufferPointer&& other)
+    {
+        SharedBufferPointerBase::operator=(other);
+        return *this;
+    }
+
+    /**
+     * \brief Getter function for whether the current buffer is a nested buffer of some other
+     * SharedBufferPointer instance.
+     *
+     * \return Always returns false for instances of ConstSharedBufferPointer, but needed for
+     * inheritance.
+     */
+    virtual inline bool
+    isChild() const override
+    {
+        return false;
+    }
+
+    /**
+     * \brief Getter function for a child (nested) SharedBufferPointer that is working on the same
+     * SharedBuffer.
+     *
+     * \param ptr Reference to which the nested buffer will be assigned
+     * \param type Type id of the nested buffer for identification of purpose (e.g. protocol, etc.)
+     * \param pOffset Offset of the nested SharedBufferPointer
+     * \param length Length of the nested SharedBufferPointer in bytes
+     * \return Returns true if the underlying SharedBuffer is neither a nullptr nor invalid,
+     * otherwise wise.
+     */
+    bool
+    getChild(ConstSharedChildPointer& ptr, uint16_t type, size_t pOffset, size_t length) const;
+
+    inline const SharedBuffer*
+    operator->() const
+    {
+        return mPtr;
+    }
+
+    /**
+     * \brief Dereferencing operator will return the underlying SharedBuffer to allow access to the
+     * data.
+     *
+     * Warning: This also means that pointers to SharedBufferPointer instances may not be passed
+     * around, since this breaks the reference counting mechanism. Use references instead!
+     *
+     * \return Returns a reference to the underlying SharedBuffer instance
+     */
+    inline const SharedBuffer&
+    operator*() const
+    {
+        return *mPtr;
+    }
+
+    /**
+     * \brief Cast operator to a uint8_t pointer.
+     *
+     * Returns a uint8_t pointer to the underlying SharedBuffer including a possible offset.
+     * If the underlying SharedBuffer is not valid, a nullptr is returned instead.
+     * \return Returns a uint8_t pointer.
+     */
+    inline operator const uint8_t*() const
+    {
+        if ((nullptr != mPtr) && mPtr->isValid())
+        {
+            return &(*mPtr)[mOffset];
+        }
+        else
+        {
+            return nullptr;
+        }
+    }
+
+    /**
+     * \brief Indexing operator.
+     *
+     * Returns a uint8_t reference to the underlying SharedBuffer including a possible offset.
+     *
+     * \return Returns a uint8_t reference to the ConstSharedBuffer.
+     */
+    inline const uint8_t&
+    operator[](int64_t index) const
+    {
+        return (*mPtr)[index + mOffset];
+    }
+
+    /**
+     * \brief Cast operator to a outpost::Slice.
+     *
+     * \return Returns a outpost::Slice of the data buffer.
+     */
+    inline operator outpost::Slice<const uint8_t>() const
+    {
+        if (nullptr != mPtr)
+        {
+            return mPtr->getPointer().subSlice(mOffset, mLength);
+        }
+        else
+        {
+            return outpost::Slice<const uint8_t>::empty();
+        }
+    }
+
+    /**
+     * \brief Conversion function to an outpost::Slice slice of the underlying SharedBuffer
+     * including a possible offset.
+     *
+     * \return Returns a outpost::Slice of the data buffer.
+     */
+    inline outpost::Slice<const uint8_t>
+    asSlice() const
+    {
+        if (nullptr != mPtr)
+        {
+            return mPtr->getPointer().subSlice(mOffset, mLength);
+        }
+        else
+        {
+            return outpost::Slice<const uint8_t>::empty();
+        }
+    }
+
+private:
+    friend class ConstSharedChildPointer;
+
+    /**
+     * \brief Copy constructor for a SharedBufferPointer instance.
+     *
+     * \param other Reference of the SharedBufferPointer instance to be copied.
+     */
+    // cppcheck-suppress noExplicitConstructor
+    ConstSharedBufferPointer(const SharedBufferPointerBase& other) : SharedBufferPointerBase(other)
+    {
+    }
+};
+
 /**
  * \ingroup SharedBuffer
  * \brief Nested derivative of SharedBufferPointer that also features a SharedBufferPointer to its
@@ -592,6 +1020,7 @@ class SharedChildPointer : public SharedBufferPointer
 {
 public:
     friend SharedBufferPointer;
+    friend ConstSharedChildPointer;
 
     SharedChildPointer() = default;
 
@@ -601,8 +1030,7 @@ public:
      * \param other Reference of the SharedChildPointer instance to be copied.
      */
     SharedChildPointer(const SharedChildPointer& other) :
-        SharedBufferPointer(other),
-        mParent(other.mParent)
+        SharedBufferPointer(other), mParent(other.mParent)
     {
     }
 
@@ -612,8 +1040,7 @@ public:
      * \param other Reference of the SharedChildPointer instance to be moved.
      */
     SharedChildPointer(const SharedChildPointer&& other) :
-        SharedBufferPointer(other),
-        mParent(other.mParent)
+        SharedBufferPointer(other), mParent(other.mParent)
     {
     }
 
@@ -669,7 +1096,7 @@ public:
     SharedBufferPointer
     getParent() const
     {
-        return mParent;
+        return SharedBufferPointer(mParent);
     }
 
     /**
@@ -692,17 +1119,193 @@ public:
     virtual inline bool
     isChild() const override
     {
-        return mParent.isValid();
+        return mParent.isUsed();
     }
 
 private:
     SharedChildPointer(SharedBuffer* pT, const SharedBufferPointer& parent) :
-        SharedBufferPointer(pT),
-        mParent(parent)
+        SharedBufferPointer(pT), mParent(parent)
     {
     }
 
-    SharedBufferPointer mParent;
+    SharedBufferPointerBase mParent;
+};
+
+/**
+ * \ingroup SharedBuffer
+ * \brief Nested derivative of ConstSharedBufferPointer that also features a
+ * ConstSharedBufferPointer to its parent.
+ */
+class ConstSharedChildPointer : public ConstSharedBufferPointer
+{
+public:
+    friend ConstSharedBufferPointer;
+
+    ConstSharedChildPointer() = default;
+
+    /**
+     * \brief Copy constructor for a ConstSharedChildPointer instance.
+     *
+     * \param other Reference of the SharedChildPointer instance to be copied.
+     */
+    // cppcheck-suppress noExplicitConstructor
+    ConstSharedChildPointer(const SharedChildPointer& other) :
+        ConstSharedBufferPointer(other), mParent(other.mParent)
+    {
+    }
+
+    /**
+     * \brief Copy constructor for a ConstSharedChildPointer instance.
+     *
+     * \param other Reference of the ConstSharedChildPointer instance to be copied.
+     */
+    ConstSharedChildPointer(const ConstSharedChildPointer& other) :
+        ConstSharedBufferPointer(other), mParent(other.mParent)
+    {
+    }
+
+    /**
+     * \brief Move constructor for a ConstSharedChildPointer instance.
+     *
+     * \param other Reference of the SharedChildPointer instance to be moved.
+     */
+    // cppcheck-suppress noExplicitConstructor
+    ConstSharedChildPointer(const SharedChildPointer&& other) :
+        ConstSharedBufferPointer(other), mParent(other.mParent)
+    {
+    }
+
+    /**
+     * \brief Move constructor for a ConstSharedChildPointer instance.
+     *
+     * \param other Reference of the ConstSharedChildPointer instance to be moved.
+     */
+    ConstSharedChildPointer(const ConstSharedChildPointer&& other) :
+        ConstSharedBufferPointer(other), mParent(other.mParent)
+    {
+    }
+
+    /**
+     * \brief Assignment operator for a ConstSharedChildPointer instance.
+     *
+     * \param other Reference of the ConstSharedChildPointer instance to be assigned.
+     */
+    ConstSharedChildPointer&
+    operator=(const ConstSharedChildPointer& other)
+    {
+        if (&other != this)
+        {
+            decrementCount();
+            mPtr = other.mPtr;
+            mType = other.mType;
+            mOffset = other.mOffset;
+            mLength = other.mLength;
+            mParent = other.mParent;
+            incrementCount();
+        }
+        return *this;
+    }
+
+    /**
+     * \brief Assignment operator for a ConstSharedChildPointer instance.
+     *
+     * \param other Reference of the SharedChildPointer instance to be assigned.
+     */
+    ConstSharedChildPointer&
+    operator=(const SharedChildPointer& other)
+    {
+        decrementCount();
+        mPtr = other.mPtr;
+        mType = other.mType;
+        mOffset = other.mOffset;
+        mLength = other.mLength;
+        mParent = other.mParent;
+        incrementCount();
+        return *this;
+    }
+
+    /**
+     * \brief Move operator for a ConstSharedChildPointer instance.
+     *
+     * \param other Reference of the SharedChildPointer instance to be moved.
+     */
+    ConstSharedChildPointer&
+    operator=(const SharedChildPointer&& other)
+    {
+        decrementCount();
+        mPtr = other.mPtr;
+        mType = other.mType;
+        mOffset = other.mOffset;
+        mLength = other.mLength;
+        mParent = other.mParent;
+        incrementCount();
+        return *this;
+    }
+
+    /**
+     * \brief Move operator for a ConstSharedChildPointer instance.
+     *
+     * \param other Reference of the ConstSharedChildPointer instance to be moved.
+     */
+    ConstSharedChildPointer&
+    operator=(const ConstSharedChildPointer&& other)
+    {
+        if (&other != this)
+        {
+            decrementCount();
+            mPtr = other.mPtr;
+            mType = other.mType;
+            mOffset = other.mOffset;
+            mLength = other.mLength;
+            mParent = other.mParent;
+            incrementCount();
+        }
+        return *this;
+    }
+
+    virtual ~ConstSharedChildPointer() = default;
+
+    /**
+     * \brief Getter function for the ConstSharedChildPointer instance's parent buffer.
+     *
+     * \return Returns a copy of the ConstSharedChildPointer instance's parent buffer
+     */
+    ConstSharedBufferPointer
+    getParent() const
+    {
+        return ConstSharedBufferPointer(mParent);
+    }
+
+    /**
+     * \brief Getter function for the ConstSharedChildPointer instance's root buffer.
+     *
+     * \return Returns a copy of the ConstSharedChildPointer instance's root buffer
+     */
+    ConstSharedBufferPointer
+    getOrigin() const
+    {
+        return ConstSharedBufferPointer(mPtr);
+    }
+
+    /**
+     * \brief Getter function for whether the ConstSharedChildPointer is actually a child buffer of
+     * some valid parent.
+     *
+     * \return Returns true if the ConstSharedChildPointer instance's parent is valid.
+     */
+    virtual inline bool
+    isChild() const override
+    {
+        return mParent.isUsed();
+    }
+
+private:
+    ConstSharedChildPointer(SharedBuffer* pT, const ConstSharedBufferPointer& parent) :
+        ConstSharedBufferPointer(pT), mParent(parent)
+    {
+    }
+
+    SharedBufferPointerBase mParent;
 };
 
 }  // namespace utils

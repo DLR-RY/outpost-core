@@ -15,6 +15,9 @@
 #ifndef OUTPOST_RTOS_FREERTOS_THREAD_H
 #define OUTPOST_RTOS_FREERTOS_THREAD_H
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
 #include <outpost/time/duration.h>
 
 #include <stdint.h>
@@ -214,7 +217,7 @@ private:
     static void
     wrapper(void* object);
 
-    void* mHandle;  // FreeRTOS thread handle (xTaskHandle)
+    TaskHandle_t mHandle;  // FreeRTOS thread handle (xTaskHandle)
 
     const uint8_t mPriority;
     size_t mStackSize;

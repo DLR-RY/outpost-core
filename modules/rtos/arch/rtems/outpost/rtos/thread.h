@@ -182,7 +182,20 @@ public:
     static inline void
     sleep(::outpost::time::Duration duration)
     {
-        rtems_task_wake_after(rtems::getInterval(duration));
+        if (outpost::time::Duration::myriad() <= duration)
+        {
+            // getInterval returns 0 as a placeholder for myriad, which
+            // fits for most rtems API functions, but not rtems_task_wake_after
+            rtems_task_wake_after(std::numeric_limits<rtems_interval>::max());
+        }
+        else if (outpost::time::Duration::zero() >= duration)
+        {
+            rtems_task_wake_after(0U);
+        }
+        else
+        {
+            rtems_task_wake_after(rtems::getInterval(duration));
+        }
     }
 
     /*

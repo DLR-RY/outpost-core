@@ -57,7 +57,7 @@ public:
     ~Mutex();
 
     /**
-     * Acquire the mutex.
+     * Acquire the mutex. Not to be called from with ISRs.
      *
      * This function may block if the mutex is currently held by an
      * other thread.
@@ -68,7 +68,7 @@ public:
     acquire();
 
     /**
-     * Acquire the mutex.
+     * Acquire the mutex. Not to be called from with ISRs.
      *
      * Same as acquire() but blocks only for \p timeout milliseconds.
      *
@@ -82,15 +82,38 @@ public:
     acquire(time::Duration timeout);
 
     /**
-     * Release the mutex.
+     * Acquire the mutex. Only to be used from within an ISR.
+     *
+     *
+     * \param hasWokenThread Set to true iff a higher priority thread was woken by the method.
+     *        Thread::yield() should be called before exiting the ISR.
+     *
+     * \returns    \c true if the mutex could be acquired.
+     */
+    bool
+    acquireFromISR(bool& hasWokenThread);
+
+    /**
+     * Release the mutex. Not to be called from with ISRs.
      *
      * This function will never block.
      */
     void
     release();
 
+    /**
+     * Release the mutex. Only to be used from within an ISR.
+     *
+     * \param hasWokenThread Set to true iff a higher priority thread was woken by the method.
+     *        Thread::yield() should be called before exiting the ISR.
+     *
+     * This function will never block.
+     */
+    void
+    relaseFromISR(bool& hasWokenThread);
+
 private:
-    void* mHandle;
+    QueueDefinition* mHandle;
 };
 
 }  // namespace rtos

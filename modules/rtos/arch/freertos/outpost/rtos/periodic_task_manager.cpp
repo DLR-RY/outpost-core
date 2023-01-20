@@ -24,10 +24,7 @@
 using namespace outpost::rtos;
 
 PeriodicTaskManager::PeriodicTaskManager() :
-    mMutex(),
-    mTimerRunning(false),
-    mLastWakeTime(),
-    mCurrentPeriod()
+    mMutex(), mTimerRunning(false), mLastWakeTime(), mCurrentPeriod()
 {
 }
 
@@ -41,11 +38,15 @@ PeriodicTaskManager::nextPeriod(time::Duration period)
     MutexGuard lock(mMutex);
     Status::Type currentStatus = Status::running;
 
-    const portTickType nextPeriodTicks = (period.milliseconds() * configTICK_RATE_HZ) / 1000;
+    const TickType_t nextPeriodTicks =
+            period.milliseconds() < 1000 * 1000
+                    ?  // prevent overflows by ordering dependent of amount.
+                    (period.milliseconds() * configTICK_RATE_HZ) / 1000
+                    : (period.milliseconds() / 1000) * configTICK_RATE_HZ;
     if (mTimerRunning)
     {
-        if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - mLastWakeTime)
-            > static_cast<Traits<portTickType>::SignedType>(mCurrentPeriod))
+        if (static_cast<Traits<TickType_t>::SignedType>(xTaskGetTickCount() - mLastWakeTime)
+            > static_cast<Traits<TickType_t>::SignedType>(mCurrentPeriod))
         {
             currentStatus = Status::timeout;
         }
@@ -72,8 +73,8 @@ PeriodicTaskManager::status()
     {
         return Status::idle;
     }
-    else if (static_cast<Traits<portTickType>::SignedType>(xTaskGetTickCount() - mLastWakeTime)
-             > static_cast<Traits<portTickType>::SignedType>(mCurrentPeriod))
+    else if (static_cast<Traits<TickType_t>::SignedType>(xTaskGetTickCount() - mLastWakeTime)
+             > static_cast<Traits<TickType_t>::SignedType>(mCurrentPeriod))
     {
         return Status::timeout;
     }

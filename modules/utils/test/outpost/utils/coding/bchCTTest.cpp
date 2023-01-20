@@ -1960,7 +1960,7 @@ TEST(BCHCTest, compareKnown)
 
     for (uint32_t iteration = 0; iteration < 50; ++iteration)
     {
-        std::array<uint8_t, dataSize + spareSize> encoded;
+        std::array<uint8_t, (dataSize + spareSize)> encoded;
 
         EXPECT_TRUE(bch.encode(outpost::asSlice(data[iteration]), outpost::asSlice(encoded)));
 

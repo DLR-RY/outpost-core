@@ -25,7 +25,7 @@ ConfigurableEventListener::OnTestEnd(const testing::TestInfo& test_info)
 {
     if (showInlineFailures && test_info.result()->Failed())
     {
-        testing::internal::ColoredPrintf(testing::internal::COLOR_RED, "[  FAILED  ]");
+        testing::internal::ColoredPrintf(testing::internal::GTestColor::kRed, "[  FAILED  ]");
         printf(" %s.%s\n\n", test_info.test_case_name(), test_info.name());
     }
     else if (showSuccesses && !test_info.result()->Failed())
@@ -34,16 +34,17 @@ ConfigurableEventListener::OnTestEnd(const testing::TestInfo& test_info)
     }
 }
 
-static bool inArgumentList(int argc, char** argv, const char* str)
+static bool
+inArgumentList(int argc, char** argv, const char* str)
 {
-	for(int i = 0; i < argc; i++)
-	{
-		if(strcmp(argv[i], str) == 0)
-		{
-			return true;
-		}
-	}
-	return false;
+    for (int i = 0; i < argc; i++)
+    {
+        if (strcmp(argv[i], str) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 ConfigurableEventListener*
@@ -59,7 +60,7 @@ registerConfigurableEventListener(int argc, char** argv)
     // [ PASSED ] 149 tests.
     ConfigurableEventListener* listener = new ConfigurableEventListener(defaultPrinter);
 
-    if(inArgumentList(argc, argv, "--verbose"))
+    if (inArgumentList(argc, argv, "--verbose"))
     {
         listener->showTestNames = true;
         listener->showSuccesses = true;

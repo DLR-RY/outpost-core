@@ -17,7 +17,7 @@
 
 #include <outpost/rtos/failure_handler.h>
 
-#include <cstring>
+#include <string.h>
 
 using outpost::rtos::Timer;
 
@@ -86,7 +86,8 @@ Timer::isRunning()
     return running;
 }
 
-void Timer::startTimerDaemonThread(uint8_t /*priority*/, size_t /*stack*/)
+void
+Timer::startTimerDaemonThread(uint8_t /*priority*/, size_t /*stack*/)
 {
     // do nothing here for POSIX, only used for RTEMS
 }

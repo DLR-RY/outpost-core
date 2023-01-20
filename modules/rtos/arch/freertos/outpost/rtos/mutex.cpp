@@ -43,6 +43,11 @@ outpost::rtos::Mutex::acquire()
 bool
 outpost::rtos::Mutex::acquire(time::Duration timeout)
 {
+    if (timeout > outpost::time::Duration::myriad())
+    {
+        // prevent calculations if delay is large to prevent overflows
+        return acquire();
+    }
     return (xSemaphoreTakeRecursive(mHandle, timeout.milliseconds() * configTICK_RATE_HZ / 1000)
             == pdTRUE);
 }

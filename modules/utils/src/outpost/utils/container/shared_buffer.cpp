@@ -10,6 +10,7 @@
  * Authors:
  * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
  * - 2018, Fabian Greif (DLR RY-AVS)
+ * - 2021, Jan Malburg (DLR RY-AVS)
  */
 
 #include "shared_buffer.h"
@@ -47,11 +48,32 @@ SharedBufferPointer::getChild(SharedChildPointer& ptr,
                               size_t length) const
 {
     bool res = false;
-    if (isValid())
+    if (isUsed())
     {
-        if (mOffset + pOffset + length <= mPtr->mBuffer.getNumberOfElements() && length > 0)
+        if (((mOffset + pOffset + length) <= mOffset + mLength))
         {
             ptr = SharedChildPointer(mPtr, *this);
+            ptr.mType = type;
+            ptr.mOffset = mOffset + pOffset;
+            ptr.mLength = length;
+            res = true;
+        }
+    }
+    return res;
+}
+
+bool
+ConstSharedBufferPointer::getChild(ConstSharedChildPointer& ptr,
+                                   uint16_t type,
+                                   size_t pOffset,
+                                   size_t length) const
+{
+    bool res = false;
+    if (isUsed())
+    {
+        if (((mOffset + pOffset + length) <= mOffset + mLength))
+        {
+            ptr = ConstSharedChildPointer(mPtr, *this);
             ptr.mType = type;
             ptr.mOffset = mOffset + pOffset;
             ptr.mLength = length;

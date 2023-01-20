@@ -25,8 +25,26 @@ namespace compression
 {
 DataAggregator* DataAggregator::listOfAllDataAggregators = nullptr;
 
+DataAggregator::DataAggregator() :
+    ImplicitList<DataAggregator>(DataAggregator::listOfAllDataAggregators, this),
+    mParameterId(0),
+    mSamplingRate(SamplingRate::disabled),
+    mNextSamplingRate(SamplingRate::disabled),
+    mBlocksize(Blocksize::disabled),
+    mNextBlocksize(Blocksize::disabled),
+    mBlock(),
+    mEnabled(false),
+    mDisableAfterCurrentBlock(false),
+    mMemoryPool(nullptr),
+    mSender(nullptr),
+    mNumCompletedBlocks(0),
+    mNumLostBlocks(0),
+    mNumLostSamples(0),
+    mNumOverallSamples(0)
+{
+}
+
 DataAggregator::DataAggregator(uint16_t paramId,
-                               outpost::time::Clock& clock,
                                outpost::utils::SharedBufferPoolBase& pool,
                                DataBlockSender& sender) :
     ImplicitList<DataAggregator>(DataAggregator::listOfAllDataAggregators, this),
@@ -38,14 +56,31 @@ DataAggregator::DataAggregator(uint16_t paramId,
     mBlock(),
     mEnabled(false),
     mDisableAfterCurrentBlock(false),
-    mClock(clock),
-    mMemoryPool(pool),
-    mSender(sender),
+    mMemoryPool(&pool),
+    mSender(&sender),
     mNumCompletedBlocks(0),
     mNumLostBlocks(0),
     mNumLostSamples(0),
     mNumOverallSamples(0)
 {
+}
+
+bool
+DataAggregator::initialize(uint16_t paramId,
+                           outpost::utils::SharedBufferPoolBase& pool,
+                           DataBlockSender& sender)
+{
+    if (findDataAggregator(paramId) == nullptr)
+    {
+        mParameterId = paramId;
+        mMemoryPool = &pool;
+        mSender = &sender;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 DataAggregator::~DataAggregator()
@@ -58,7 +93,7 @@ DataAggregator::findDataAggregator(uint16_t paramId)
 {
     DataAggregator* aggregator = nullptr;
     for (DataAggregator* it = DataAggregator::listOfAllDataAggregators;
-         (it != nullptr) && (aggregator == nullptr);
+         (nullptr != it) && (nullptr == aggregator);
          it = it->getNext())
     {
         if (it->getParameterId() == paramId)
@@ -82,7 +117,7 @@ DataAggregator::numberOfAggregators()
 }
 
 bool
-DataAggregator::push(Fixpoint fp)
+DataAggregator::push(Fixpoint fp, const outpost::time::GpsTime& currentTime)
 {
     bool res = false;
     if (isEnabled())
@@ -90,17 +125,11 @@ DataAggregator::push(Fixpoint fp)
         if (!mBlock.isValid())
         {
             outpost::utils::SharedBufferPointer p;
-            if (mMemoryPool.allocate(p))
+            if (mMemoryPool->allocate(p))
             {
                 mSamplingRate = mNextSamplingRate;
                 mBlocksize = mNextBlocksize;
-                mBlock = {p,
-                          mParameterId,
-                          outpost::time::TimeEpochConverter<
-                                  outpost::time::SpacecraftElapsedTimeEpoch,
-                                  outpost::time::GpsEpoch>::convert(mClock.now()),
-                          mSamplingRate,
-                          mBlocksize};
+                mBlock = {p, mParameterId, currentTime, mSamplingRate, mBlocksize};
             }
         }
 
@@ -112,7 +141,7 @@ DataAggregator::push(Fixpoint fp)
             if (mBlock.isComplete())
             {
                 mNumCompletedBlocks++;
-                if (!mSender.send(mBlock))
+                if (!mSender->send(mBlock))
                 {
                     mNumLostBlocks++;
                 }
@@ -138,22 +167,38 @@ DataAggregator::isAtStartOfNewBlock() const
     return mBlock.isValid();
 }
 
-void
+bool
 DataAggregator::enable(SamplingRate sr, Blocksize bs)
 {
-    setNextBlocksize(bs);
-    setNextSamplingRate(sr);
-    mEnabled = true;
-    mDisableAfterCurrentBlock = false;
+    if (mMemoryPool != nullptr && mSender != nullptr)
+    {
+        setNextBlocksize(bs);
+        setNextSamplingRate(sr);
+        mEnabled = true;
+        mDisableAfterCurrentBlock = false;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
-void
+bool
 DataAggregator::enableForOneBlock(SamplingRate sr, Blocksize bs)
 {
-    setNextBlocksize(bs);
-    setNextSamplingRate(sr);
-    mEnabled = true;
-    mDisableAfterCurrentBlock = true;
+    if (mMemoryPool != nullptr && mSender != nullptr)
+    {
+        setNextBlocksize(bs);
+        setNextSamplingRate(sr);
+        mEnabled = true;
+        mDisableAfterCurrentBlock = true;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void

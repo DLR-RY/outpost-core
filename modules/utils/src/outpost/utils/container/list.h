@@ -18,6 +18,7 @@
 #define OUTPOST_LIST_H
 
 #include <stddef.h>
+#include <stdio.h>
 
 namespace outpost
 {
@@ -39,6 +40,7 @@ public:
     }
 
     ListElement&
+    // cppcheck-suppress operatorEqVarError
     operator=(const ListElement&)
     {
         return *this;
@@ -118,6 +120,9 @@ public:
     const T*
     last() const;
 
+    /*
+     * Get node that satisfies given condition
+     */
     template <typename Condition>
     T*
     get(Condition condition);
@@ -129,6 +134,21 @@ public:
      */
     T*
     getN(size_t n);
+
+    /*
+     * Get node that satisfies given condition
+     */
+    template <typename Condition>
+    const T*
+    get(Condition condition) const;
+
+    /**
+     * Get the nth element of the list.
+     *
+     * O(N)
+     */
+    const T*
+    getN(size_t n) const;
 
     /**
      * Add a node to the front of the list.
@@ -237,11 +257,14 @@ public:
         bool
         operator!=(const Iterator& other) const;
 
-        T& operator*();
+        T&
+        operator*();
 
-        T* operator->();
+        T*
+        operator->();
 
-        explicit operator T*();
+        explicit
+        operator T*();
 
     private:
         explicit Iterator(T* node);
@@ -273,9 +296,11 @@ public:
         bool
         operator!=(const ConstIterator& other) const;
 
-        const T& operator*() const;
+        const T&
+        operator*() const;
 
-        const T* operator->() const;
+        const T*
+        operator->() const;
 
         explicit operator const T*() const;
 

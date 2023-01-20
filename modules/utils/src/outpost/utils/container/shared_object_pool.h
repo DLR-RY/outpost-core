@@ -10,6 +10,7 @@
  * Authors:
  * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
  * - 2018, Fabian Greif (DLR RY-AVS)
+ * - 2021, Jan Malburg (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_UTILS_SMART_OBJECT_POOL_H_
@@ -42,6 +43,15 @@ public:
     allocate(SharedBufferPointer& pointer) = 0;
 
     /**
+     * \brief Allocation of an unused ConstSharedBufferPoiner from the pool.
+     *
+     * \param pointer Reference to the ConstSharedBufferPointer
+     * \return Returns true if a valid ConstSharedBudderPointer was found, otherwise false.
+     */
+    virtual bool
+    allocate(ConstSharedBufferPointer& pointer) = 0;
+
+    /**
      * \brief Getter function for the overall number of elements in the pool.
      *
      * \return Returns the overall number of items in the pool, including occupied and unused
@@ -49,6 +59,14 @@ public:
      */
     virtual size_t
     numberOfElements() const = 0;
+
+    /**
+     * @brief Gets the size expected of a single element.
+     *
+     * @return size allocated to each individual element.
+     */
+    virtual size_t
+    getElementSize() const = 0;
 
     /**
      * \brief Getter function for the number of free elements in the pool.
@@ -76,15 +94,12 @@ public:
  * \tparam N Number of elements
  */
 template <size_t E, size_t N>
-class SharedBufferPool : public SharedBufferPoolBase
+class ExternalSharedBufferPool : public SharedBufferPoolBase
 {
 public:
-    SharedBufferPool() : mLastIndex(0)
+    explicit ExternalSharedBufferPool(uint8_t* address) : mLastIndex(0)
     {
-        for (size_t i = 0; i < N; i++)
-        {
-            mBuffer[i].setPointer(outpost::Slice<uint8_t>::unsafe(mDataBuffer[i], E));
-        }
+        initialize(address);
     }
 
     /**
@@ -92,7 +107,7 @@ public:
      *
      * Should not be called unless absolutely certain that all buffers in the pool are unused.
      */
-    virtual ~SharedBufferPool() = default;
+    virtual ~ExternalSharedBufferPool() = default;
 
     /**
      * \brief Allocation of an unused SharedBufferPoiner from the pool.
@@ -123,26 +138,31 @@ public:
     }
 
     /**
-     * \brief Prints the current state (used, unused) of all SharedBufferPointers in the pool.
+     * \brief Allocation of an unused SharedBufferPoiner from the pool.
      *
-     * Used for optimization and debugging only.
+     *  When looking for an unused element,
+     *  the element next to the one that was allocated last is considered first.
+     *
+     * \param pointer Reference to the SharedBufferPointer
+     * \return Returns true if a valid SharedBudderPointer was found, otherwise false.
      */
-    void
-    print() const
+    bool
+    allocate(ConstSharedBufferPointer& pointer) override
     {
-        for (unsigned int i = 0; i < N; i++)
+        outpost::rtos::MutexGuard lock(mMutex);
+        size_t i = mLastIndex;
+        bool res = false;
+        do
         {
-            printf("SharedBuffer: %u (Address %p) : ", i, &mBuffer[i]);
-            if (mBuffer[i].isUsed())
+            if (!mBuffer[i].isUsed())
             {
-                printf("used (%lu)\n", mBuffer[i].getReferenceCount());
+                pointer = ConstSharedBufferPointer(&mBuffer[i]);
+                res = true;
+                mLastIndex = (i + 1) % N;
             }
-            else
-            {
-                printf("free\n");
-            }
-        }
-        printf("\n");
+            i = (i + 1) % N;
+        } while (i != mLastIndex && !res);
+        return res;
     }
 
     /**
@@ -155,6 +175,12 @@ public:
     numberOfElements() const override
     {
         return N;
+    }
+
+    inline size_t
+    getElementSize() const override
+    {
+        return E;
     }
 
     /**
@@ -177,12 +203,72 @@ public:
     }
 
 protected:
-    uint8_t mDataBuffer[N][E] __attribute__((aligned(4)));
     SharedBuffer mBuffer[N];
 
     size_t mLastIndex;
 
     outpost::rtos::Mutex mMutex;
+
+    void
+    initialize(uint8_t* address)
+    {
+        for (size_t i = 0; i < N; i++)
+        {
+            mBuffer[i].setPointer(outpost::Slice<uint8_t>::unsafe(address + i * E, E));
+        }
+    };
+};
+
+template <size_t E, size_t N, size_t Alignment = 1>
+class SharedBufferPoolStorage
+{
+protected:
+    SharedBufferPoolStorage() : mDataBuffer(){};
+
+    /**
+     * \brief Default destructor.
+     *
+     * Should not be called unless absolutely certain that all buffers in the pool are unused.
+     */
+    virtual ~SharedBufferPoolStorage() = default;
+
+    std::array<std::array<uint8_t, E>, N>&
+    getDataBuffer(void)
+    {
+        return mDataBuffer;
+    }
+
+public:
+    static bool constexpr isValidAlignment()
+    {
+        return E % Alignment == 0;
+    }
+
+protected:
+    static_assert(isValidAlignment(), "Object Size is not a multiple of the Alignment");
+    alignas(Alignment) std::array<std::array<uint8_t, E>, N> mDataBuffer;
+};
+
+/**
+ * \ingroup SharedBuffer
+ * \brief The ExternalSharedBufferPool is a SharedBufferPool on external linked storage.
+ *
+ * \tparam E Length of a single element in bytes
+ * \tparam N Number of elements
+ */
+template <size_t E, size_t N, size_t Alignment = 1>
+class SharedBufferPool : public SharedBufferPoolStorage<E, N, Alignment>,
+                         public ExternalSharedBufferPool<E, N>
+{
+public:
+    SharedBufferPool() : ExternalSharedBufferPool<E, N>(&(this->getDataBuffer()[0][0])){};
+
+    /**
+     * \brief Default destructor.
+     *
+     * Should not be called unless absolutely certain that all buffers in the pool are unused.
+     */
+    virtual ~SharedBufferPool() = default;
 };
 
 }  // namespace utils

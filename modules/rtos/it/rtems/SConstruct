@@ -15,7 +15,7 @@
 import os
 
 # root folder of the outpost library
-rootpath = '../../../..'
+rootpath = os.path.abspath('../../../..')
 modulepath = os.path.join(rootpath, 'modules')
 buildfolder = os.path.join(rootpath, 'build')
 
@@ -46,7 +46,7 @@ envGlobal.Append(CPPPATH=[
     os.path.abspath(os.path.join(modulepath, 'support/default'))
 ])
 
-envGlobal.SConscript(os.path.join(rootpath, 'modules/SConscript.library'), exports='envGlobal')
+envGlobal.SConscript(os.path.join(rootpath, 'SConscript.library'), exports='envGlobal')
 
 # Build outpost-hw
 # envGlobal.SConscript(os.path.join(rootpath, 'modules/rtos/ext/outpost-hw/src/SConscript'), exports='envGlobal')

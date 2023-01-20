@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2013-2015, 2017-2018, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2013-2014, 2017-2018, Fabian Greif (DLR RY-AVS)
+# - 2015, Norbert Toth (DLR RY-AVS)
+
+import os
+
+module = os.path.basename(os.path.abspath('../'))
+
+Import('envGlobal')
+
+envGlobal.Append(CPPPATH=[os.path.abspath('.')])
+
+### == UNITTEST LIBRARY ==
+
+envLib = envGlobal.Clone()
+
+files = envLib.Glob('unittest/*.cpp')
+files += envLib.Glob('unittest/*/*.cpp')
+files += envLib.Glob('unittest/*/*/*.cpp')
+files += envLib.Glob('unittest/*/*/*/*.cpp')
+
+objects = []
+for file in files:
+    objects.append(envGlobal.Object(file))
+envGlobal.Append(objects_unittest=objects)
+envGlobal.Append(sources_unittest=files)
+
+### == TEST BUILD ==
+
+envTest = envGlobal.Clone()
+
+envTest.AppendUnique(LIBS=[
+    'outpost_hal',
+    'outpost_smpc',
+    'outpost_time',
+    'outpost_utils',
+    'outpost_rtos',
+    'outpost_support'
+])
+
+files = envTest.Glob('*.cpp')
+files += envTest.Glob('outpost/*.cpp')
+files += envTest.Glob('outpost/*/*.cpp')
+files += envTest.Glob('outpost/*/*/*.cpp')
+files += envTest.Glob('outpost/*/*/*/*.cpp')
+
+files += envTest['objects'][module]
+
+envGlobal.Alias(module, envTest.Program('runner', files))
+
+envTest['COMPILATIONDB_PATH_FILTER'] = os.path.join('$BUILDPATH', 'modules', module, '*')
+envGlobal.Alias(module + '_db', envTest.CompilationDatabase(os.path.join('$BUILDPATH', module, 'compile_commands.json')))

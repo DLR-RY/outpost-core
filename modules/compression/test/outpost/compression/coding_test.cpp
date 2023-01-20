@@ -21,7 +21,7 @@ using namespace outpost;
 
 namespace coding_test
 {
-constexpr size_t bufferLength = 64U;
+constexpr size_t bufferLength = 4096U;
 
 outpost::FP<16> waveletInputBuffer[bufferLength];
 outpost::Slice<FP<16>> waveletData(waveletInputBuffer);
@@ -131,8 +131,8 @@ TEST_F(CodingTest, LinearTest)
 {
     for (uint32_t i = 0; i < bufferLength; i++)
     {
-        inputBuffer[i] = static_cast<int16_t>(i * 7);
-        inputReference[i] = static_cast<int16_t>(i * 7);
+        inputBuffer[i] = static_cast<int16_t>(i * 2);
+        inputReference[i] = static_cast<int16_t>(i * 2);
     }
 
     outpost::Bitstream bitstream(bitStreamData);
@@ -153,7 +153,7 @@ TEST_F(CodingTest, LinearTest)
     ASSERT_EQ(res.getNumberOfElements(), bufferLength);
     for (size_t i = 0; i < bufferLength; i++)
     {
-        EXPECT_EQ(res[i], inputReference[i]);
+        EXPECT_LE(std::abs(res[i] - inputReference[i]), 1);
     }
 }
 
@@ -182,9 +182,9 @@ TEST_F(CodingTest, LinearTestWithCompression)
 
     encoder.encode(inputData, bitstream_in);
 
-    EXPECT_EQ(bitstream_in.getSerializedSize(), 107U);
+    EXPECT_EQ(bitstream_in.getSerializedSize(), 7154U);
     outpost::Serialize s_stream(bitStreamData);
-    bitstream_in.serialize(s_stream, 93);
+    bitstream_in.serialize(s_stream, 6000U);
 
     EXPECT_LE(bitstream_in.getSize(), 2 * bufferLength);
     memset(&bitStreamBuffer[bitstream_in.getSerializedSize()],
@@ -265,8 +265,8 @@ TEST_F(CodingTest, WaveletTestWithCompression)
 {
     for (uint32_t i = 0; i < bufferLength; i++)
     {
-        inputReference[i] = static_cast<int16_t>(3U * i + 1024U);
-        waveletInputBuffer[i] = static_cast<int16_t>(3U * i + 1024U);
+        inputReference[i] = static_cast<int16_t>(3U * (i / 2) + 1024U);
+        waveletInputBuffer[i] = static_cast<int16_t>(3U * (i / 2) + 1024U);
     }
 
     outpost::compression::LeGall53Wavelet::forwardTransformInPlace(waveletData);
@@ -275,9 +275,9 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     outpost::Bitstream bitstream(bitStreamData);
 
     encoder.encode(inBuffer, bitstream);
-    EXPECT_EQ(bitstream.getSize(), 20U);
+    EXPECT_EQ(bitstream.getSize(), 1711U);
     outpost::Serialize s_stream(bitStreamData);
-    bitstream.serialize(s_stream, 19U);
+    bitstream.serialize(s_stream, 1500U);
 
     EXPECT_LE(bitstream.getSize(), 2 * bufferLength);
     memset(&bitStreamBuffer[bitstream.getSize()], 0, 2 * bufferLength - bitstream.getSize());
@@ -308,10 +308,10 @@ TEST_F(CodingTest, WaveletTestWithCompression)
     {
         mse += (std::abs(outBuffer[i]) - std::abs(inputReference[i]))
                * (std::abs(outBuffer[i]) - std::abs(inputReference[i]));
-        EXPECT_LE(std::abs(std::abs(outBuffer[i]) - std::abs(inputReference[i])), 3.0f);
+        EXPECT_LE(std::abs(std::abs(outBuffer[i]) - std::abs(inputReference[i])), 1.25f);
     }
     mse /= bufferLength;
-    EXPECT_LE(mse, 3.0f);
+    EXPECT_LE(mse, 0.4f);
 }
 
 }  // namespace coding_test

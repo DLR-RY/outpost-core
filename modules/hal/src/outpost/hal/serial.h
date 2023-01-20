@@ -79,7 +79,7 @@ public:
      */
     virtual size_t
     read(outpost::Slice<uint8_t> data,
-         outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
+         outpost::time::Duration timeout = std::numeric_limits<outpost::time::Duration>::max()) = 0;
 
     /**
      * Write a block of bytes with timeout.
@@ -95,7 +95,8 @@ public:
      */
     virtual size_t
     write(outpost::Slice<const uint8_t> data,
-          outpost::time::Duration timeout = outpost::time::Duration::maximum()) = 0;
+          outpost::time::Duration timeout =
+                  std::numeric_limits<outpost::time::Duration>::max()) = 0;
 
     /**
      * Flush receive buffers.

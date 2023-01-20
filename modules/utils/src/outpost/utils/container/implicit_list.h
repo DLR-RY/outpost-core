@@ -97,7 +97,7 @@ public:
                     node = node->mNext;
                 }
 
-                previous->mNext = node->mNext;
+                previous->mNext = node->mNext;  // cppcheck-suppress nullPointerRedundantCheck
             }
         }
     }

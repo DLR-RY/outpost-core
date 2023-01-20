@@ -14,9 +14,6 @@
 
 #include "semaphore.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/semphr.h>
-
 #include <outpost/rtos/failure_handler.h>
 
 // ----------------------------------------------------------------------------
@@ -46,14 +43,37 @@ outpost::rtos::Semaphore::acquire()
 bool
 outpost::rtos::Semaphore::acquire(time::Duration timeout)
 {
-    const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ) / 1000;
+    if (timeout >= outpost::time::Duration::myriad())
+    {
+        return acquire();
+    }
+    const TickType_t ticks = (timeout.milliseconds() * configTICK_RATE_HZ) / 1000;
     return (xSemaphoreTake(mHandle, ticks) == pdTRUE);
+}
+
+bool
+outpost::rtos::Semaphore::acquireFromISR(bool& hasWokenTask)
+{
+    // wait forever
+    BaseType_t baseType = 0;
+    bool res = (xSemaphoreTakeFromISR(this->mHandle, &baseType) == pdTRUE);
+
+    hasWokenTask = (baseType != 0);
+    return res;
 }
 
 void
 outpost::rtos::Semaphore::release()
 {
     xSemaphoreGive(mHandle);
+}
+
+void
+outpost::rtos::Semaphore::releaseFromISR(bool& hasWokenTask)
+{
+    BaseType_t baseType = 0;
+    xSemaphoreGiveFromISR(mHandle, &baseType);
+    hasWokenTask = (baseType != 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -99,12 +119,30 @@ outpost::rtos::BinarySemaphore::acquire()
 bool
 outpost::rtos::BinarySemaphore::acquire(time::Duration timeout)
 {
-    const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ) / 1000;
+    const TickType_t ticks = (timeout.milliseconds() * configTICK_RATE_HZ) / 1000;
     return (xSemaphoreTake(this->mHandle, ticks) == pdTRUE);
+}
+
+bool
+outpost::rtos::BinarySemaphore::acquireFromISR(bool& hasWokenTask)
+{
+    // wait forever
+    BaseType_t baseType = 0;
+    bool res = (xSemaphoreTakeFromISR(this->mHandle, &baseType) == pdTRUE);
+    hasWokenTask = (baseType != 0);
+    return res;
 }
 
 void
 outpost::rtos::BinarySemaphore::release()
 {
     xSemaphoreGive(mHandle);
+}
+
+void
+outpost::rtos::BinarySemaphore::releaseFromISR(bool& hasWokenTask)
+{
+    BaseType_t baseType = 0;
+    xSemaphoreGiveFromISR(mHandle, &baseType);
+    hasWokenTask = (baseType != 0);
 }

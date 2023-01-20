@@ -113,9 +113,9 @@ outpost::BitAccess::set(T& data, T value)
 
 template <typename T>
 T
-outpost::BitAccess::getMask(size_t length)
+outpost::BitAccess::getMask(size_t width)
 {
-    T mask = (static_cast<T>(1) << length) - 1;
+    T mask = (static_cast<T>(1) << width) - 1;
     return mask;
 }
 

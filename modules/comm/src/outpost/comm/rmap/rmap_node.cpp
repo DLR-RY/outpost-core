@@ -67,7 +67,11 @@ RmapTargetNode::setReplyAddress(outpost::Slice<uint8_t> replyAddress)
     bool result = false;
     if (replyAddress.getNumberOfElements() <= sizeof(mReplyAddress))
     {
-        memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
+        if (replyAddress.getNumberOfElements())
+        {
+            // avoid nullptr copy
+            memcpy(mReplyAddress, replyAddress.begin(), replyAddress.getNumberOfElements());
+        }
         mReplyAddressLength = replyAddress.getNumberOfElements();
         result = true;
     }
@@ -80,9 +84,13 @@ RmapTargetNode::setTargetSpaceWireAddress(outpost::Slice<uint8_t> targetSpaceWir
     bool result = false;
     if (targetSpaceWireAddress.getNumberOfElements() <= sizeof(mTargetSpaceWireAddress))
     {
-        memcpy(mTargetSpaceWireAddress,
-               targetSpaceWireAddress.begin(),
-               targetSpaceWireAddress.getNumberOfElements());
+        if (targetSpaceWireAddress.getNumberOfElements())
+        {
+            // avoid nullptr copy
+            memcpy(mTargetSpaceWireAddress,
+                   targetSpaceWireAddress.begin(),
+                   targetSpaceWireAddress.getNumberOfElements());
+        }
         mTargetSpaceWireAddressLength = targetSpaceWireAddress.getNumberOfElements();
         result = true;
     }
@@ -140,7 +148,7 @@ RmapTargetsList::addTargetNodes(outpost::Slice<RmapTargetNode*> nodes)
 RmapTargetNode*
 RmapTargetsList::getTargetNode(const char* name)
 {
-    if (name == nullptr)
+    if (nullptr == name)
     {
         return nullptr;
     }

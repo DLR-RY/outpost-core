@@ -49,26 +49,42 @@ class DataAggregator : public ImplicitList<DataAggregator>
 {
 public:
     /**
+     * Trivial constructor. Requires a call to initialize(..) before the aggregator can be used.
+     */
+    DataAggregator();
+
+    /**
      * Constructor for a DataAggregator of a single parameter ID.
      * @param paramId ID of the parameter to be managed by the aggregator
-     * @param clock Clock from which the current time at the start of a new DataBlock is taken
      * @param pool SharedBufferPool to allocate the underlying memory of new DataBlocks
      * @param sender The DataAggregator's output for completed DataBlocks
      */
     DataAggregator(uint16_t paramId,
-                   outpost::time::Clock& clock,
                    outpost::utils::SharedBufferPoolBase& pool,
                    DataBlockSender& sender);
     ~DataAggregator();
 
     /**
+     * Required after using the trivial constructor.
+     * @param paramId Parameter Id. May not be present in the system already.
+     * @param pool SharedBufferPool to allocate the underlying memory of new DataBlocks
+     * @param sender The DataAggregator's output for completed DataBlocks
+     * @return Returns true iff the paramId is unique, false otherwise.
+     */
+    bool
+    initialize(uint16_t paramId,
+               outpost::utils::SharedBufferPoolBase& pool,
+               DataBlockSender& sender);
+
+    /**
      * Pushes a single Fixpoint to the current DataBlock, outputs completed DataBlocks and starts a
      * new one if needed.
      * @param fp Fixpoint number to be added to a DataBlock
+     * @param currentTime Current GpsTime of the data sample
      * @return Returns true if the Fixpoint number could be stored in a DataBlock, false otherwise.
      */
     bool
-    push(Fixpoint fp);
+    push(Fixpoint fp, const outpost::time::GpsTime& currentTime);
 
     /**
      * Getter for the parameter ID
@@ -185,16 +201,18 @@ public:
      * Enables the acquisition using a given SamplingRate and Blocksize.
      * @param sr SamplingRate to use
      * @param bs Blocksize to use
+     * @return Returns true iff the aggregator could be enabled , false otherwise.
      */
-    void
+    bool
     enable(SamplingRate sr, Blocksize bs);
 
     /**
      * Enables the acquisition for a single block using a given SamplingRate and Blocksize.
      * @param sr SamplingRate to use
      * @param bs Blocksize to use
+     * @return Returns true iff the aggregator could be enabled , false otherwise.
      */
-    void
+    bool
     enableForOneBlock(SamplingRate sr, Blocksize bs);
 
     /**
@@ -217,7 +235,7 @@ public:
      * @return Returns the number of blocks completed by the DataAggregator.
      */
     inline size_t
-    getNumCompletedBlocks()
+    getNumCompletedBlocks() const
     {
         return mNumCompletedBlocks;
     }
@@ -227,7 +245,7 @@ public:
      * @return Returns the number of blocks that could not be sent and had to be dropped.
      */
     inline uint16_t
-    getNumLostBlocks()
+    getNumLostBlocks() const
     {
         return mNumLostBlocks;
     }
@@ -237,7 +255,7 @@ public:
      * @return Returns the number of samples that could not be stored to a block.
      */
     inline uint16_t
-    getNumLostSamples()
+    getNumLostSamples() const
     {
         return mNumLostSamples;
     }
@@ -247,7 +265,7 @@ public:
      * @return Returns the number of overall samples acquired by the DataAggregator.
      */
     inline size_t
-    getNumOverallSamples()
+    getNumOverallSamples() const
     {
         return mNumOverallSamples;
     }
@@ -303,9 +321,8 @@ protected:
     bool mEnabled;
     bool mDisableAfterCurrentBlock;
 
-    outpost::time::Clock& mClock;
-    outpost::utils::SharedBufferPoolBase& mMemoryPool;
-    DataBlockSender& mSender;
+    outpost::utils::SharedBufferPoolBase* mMemoryPool;
+    DataBlockSender* mSender;
 
     uint16_t mNumCompletedBlocks;
     uint16_t mNumLostBlocks;

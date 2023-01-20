@@ -24,12 +24,15 @@ files = []
 files += env.Glob('outpost/support/*.cpp')
 files += env.Glob('outpost/support/*/*.cpp')
 
+impl_files =  env.Glob('outpost/support/*_impl.h')
+impl_files += env.Glob('outpost/support/*/*_impl.h')
+
 objects = []
 for file in files:
     objects.append(env.Object(file))
 envGlobal.Append(objects={'support': objects})
 envGlobal.Append(sources={'support': files})
+envGlobal.Append(headers={'support': impl_files})
 
 library = env.StaticLibrary('outpost_support', objects)
-envGlobal.Install('$BUILDPATH/lib', library)
-
+env.Install('$BUILDPATH/lib/', library)

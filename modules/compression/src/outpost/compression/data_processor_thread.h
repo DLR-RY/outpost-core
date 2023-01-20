@@ -16,6 +16,7 @@
 
 #include "nls_encoder.h"
 
+#include <outpost/parameter/support.h>
 #include <outpost/rtos/checkpoint.h>
 #include <outpost/rtos/thread.h>
 #include <outpost/utils/storage/bitstream.h>
@@ -49,6 +50,7 @@ public:
      * to ground
      */
     DataProcessorThread(uint8_t thread_priority,
+                        outpost::support::parameter::HeartbeatSource heartbeatSource,
                         outpost::utils::SharedBufferPoolBase& pool,
                         outpost::utils::ReferenceQueueBase<DataBlock>& inputQueue,
                         outpost::utils::ReferenceQueueBase<DataBlock>& outputQueue,
@@ -143,11 +145,15 @@ public:
      * @param timeout Timeout for reception of a DataBlock on the input queue.
      */
     void
-    processSingleBlock(outpost::time::Duration timeout = outpost::time::Duration::infinity());
+    processSingleBlock(outpost::time::Duration timeout = waitForBlockTimeout);
+
+    static constexpr uint16_t maximumEncodingBufferLength = 16500;
 
 private:
     bool
     compress(DataBlock& b);
+
+    outpost::support::parameter::HeartbeatSource mHeartbeatSource;
 
     outpost::utils::ReferenceQueueBase<DataBlock>& mInputQueue;
     outpost::utils::ReferenceQueueBase<DataBlock>& mOutputQueue;
@@ -163,10 +169,8 @@ private:
 
     NLSEncoder mEncoder;
 
-    static constexpr uint16_t maximumEncodingBufferLength = 16400;
-    uint8_t mEncodingBuffer[maximumEncodingBufferLength];
-    outpost::Slice<uint8_t> mEncodingSlice;
-    outpost::Bitstream mBitstream;
+    static constexpr outpost::time::Duration waitForBlockTimeout = outpost::time::Seconds(5);
+    static constexpr outpost::time::Duration processingTimeout = outpost::time::Seconds(1);
 
     outpost::time::Duration mRetrySendTimeout;
     uint8_t mMaxSendRetries;

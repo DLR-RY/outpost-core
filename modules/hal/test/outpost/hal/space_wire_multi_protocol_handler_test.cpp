@@ -20,11 +20,10 @@
 
 TEST(SpaceWireMultiProtocolHandlerTest, construct)
 {
-    char name[] = "test";
     outpost::rtos::SystemClock clock;
     unittest::hal::SpaceWireStub spw(4500);
     outpost::hal::SpaceWireMultiProtocolHandler<2> spwmp(
-            spw, 1, 1024, name, outpost::support::parameter::HeartbeatSource::default0, clock);
+            spw, 100, outpost::support::parameter::HeartbeatSource::default0, clock);
     outpost::hal::SpaceWireMultiProtocolHandlerInterface& ref = spwmp;
     (void) ref;
 }

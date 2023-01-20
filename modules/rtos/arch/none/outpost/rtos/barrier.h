@@ -36,7 +36,7 @@ public:
     /**
      * Create a new Barrier. Parameter here for same interface with versions for other OSs.
      */
-    Barrier(uint32_t){};
+    explicit Barrier(uint32_t){};
 
     // disable copy constructor
     Barrier(const Barrier& other) = delete;

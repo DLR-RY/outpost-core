@@ -18,13 +18,15 @@
 
 #include <outpost/base/slice.h>
 
-using namespace outpost::time;
-
+namespace outpost
+{
+namespace time
+{
 Duration TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::offsetToGpsTime =
         Duration::zero();
 
 void
-outpost::time::setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gps)
+setOffsetBetweenScetAndGps(SpacecraftElapsedTime scet, GpsTime gps)
 {
     TimeEpochConverter<SpacecraftElapsedTimeEpoch, GpsEpoch>::setOffset(scet, gps);
 }
@@ -119,7 +121,7 @@ TimeEpochConverter<UnixEpoch, TaiEpoch>::convert(TimePoint<UnixEpoch> from)
 {
     int64_t seconds = from.timeSinceEpoch().seconds() + initialOffsetInSeconds;
 
-    typedef TimeEpochConverter<TaiEpoch, UnixEpoch> Other;
+    using Other = TimeEpochConverter<TaiEpoch, UnixEpoch>;
 
     // leap second correction
     int64_t correction =
@@ -127,3 +129,6 @@ TimeEpochConverter<UnixEpoch, TaiEpoch>::convert(TimePoint<UnixEpoch> from)
     return TimePoint<TaiEpoch>::afterEpoch(from.timeSinceEpoch()
                                            + Seconds(initialOffsetInSeconds + correction));
 }
+
+}  // namespace time
+}  // namespace outpost

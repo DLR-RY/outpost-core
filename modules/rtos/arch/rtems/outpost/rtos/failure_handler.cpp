@@ -28,7 +28,8 @@ defaultFatalHandler(outpost::rtos::FailureCode code)
 void
 defaultCleanupHandler(outpost::rtos::FailureCode code);
 
-void defaultCleanupHandler(outpost::rtos::FailureCode /*code*/)
+void
+defaultCleanupHandler(outpost::rtos::FailureCode /*code*/)
 {
 }
 

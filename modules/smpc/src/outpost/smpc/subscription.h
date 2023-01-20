@@ -112,7 +112,8 @@ protected:
     inline void
     execute(void* message) const
     {
-        mFunctor.execute(message);
+        outpost::utils::OperationResult res = outpost::utils::OperationResult::invalid;
+        mFunctor.execute(res, message);
     }
 
 private:
@@ -145,7 +146,7 @@ private:
      */
     typedef void (Subscriber::*Function)(void*);
 
-    const Functor1<void(void*)> mFunctor;
+    const Functor<void(void*)> mFunctor;
 };
 
 }  // namespace smpc

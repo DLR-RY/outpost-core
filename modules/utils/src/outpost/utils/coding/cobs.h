@@ -49,7 +49,7 @@ public:
      * \param data
      *     Input data field.
      */
-    CobsEncodingGeneratorBase(outpost::Slice<const uint8_t> input);
+    explicit CobsEncodingGeneratorBase(outpost::Slice<const uint8_t> input);
 
     ~CobsEncodingGeneratorBase();
 
@@ -59,7 +59,7 @@ public:
     operator=(const CobsEncodingGeneratorBase& other);
 
     inline bool
-    isFinished()
+    isFinished() const
     {
         return (mCurrentPosition == mLength);
     }
@@ -69,7 +69,7 @@ public:
 
 private:
     uint8_t
-    findNextBlock();
+    findNextBlock() const;
 
     const uint8_t* mData;
     size_t mLength;

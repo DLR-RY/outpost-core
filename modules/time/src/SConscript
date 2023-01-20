@@ -22,11 +22,14 @@ env = envGlobal.Clone()
 
 files = env.Glob('outpost/*/*.cpp')
 
+impl_files = env.Glob('outpost/*/*_impl.h')
+
 objects = []
 for file in files:
 	objects.append(env.Object(file))
 envGlobal.Append(objects={'time': objects})
 envGlobal.Append(sources={'time': files})
+envGlobal.Append(headers={'time': impl_files})
 
 library = env.StaticLibrary('outpost_time', objects)
-envGlobal.Install('$BUILDPATH/lib', library)
+env.Install('$BUILDPATH/lib/', library)

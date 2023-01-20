@@ -26,7 +26,7 @@ namespace utils
 template <uint8_t blockLength>
 CobsEncodingGeneratorBase<blockLength>::CobsEncodingGeneratorBase(
         outpost::Slice<const uint8_t> input) :
-    mData(&input[0]),
+    mData(input.getDataPointer()),
     mLength(input.getNumberOfElements()),
     mCurrentPosition(0),
     mNextBlock(0),
@@ -104,7 +104,7 @@ CobsEncodingGeneratorBase<blockLength>::getNextByte()
 
 template <uint8_t blockLength>
 uint8_t
-CobsEncodingGeneratorBase<blockLength>::findNextBlock()
+CobsEncodingGeneratorBase<blockLength>::findNextBlock() const
 {
     uint8_t blockSize = 0;
     size_t position = mCurrentPosition;
@@ -113,7 +113,7 @@ CobsEncodingGeneratorBase<blockLength>::findNextBlock()
     // - A zero is found which determines the block length
     // - No zero is found for 254 consecutive bytes
     // - The end of the input array is reached.
-    if (mData != nullptr)
+    if (nullptr != mData)
     {
         while ((position < mLength) && (mData[position] != 0) && (blockSize < blockLength))
         {
@@ -130,9 +130,9 @@ template <uint8_t blockLength>
 size_t
 CobsBase<blockLength>::encode(outpost::Slice<const uint8_t> input, outpost::Slice<uint8_t> output)
 {
-    const uint8_t* inputPtr = &input[0];
+    const uint8_t* inputPtr = input.getDataPointer();
     const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
-    uint8_t* outputPtr = &output[0];
+    uint8_t* outputPtr = output.getDataPointer();
 
     // Pointer to the position where later the block length is inserted
     uint8_t* blockLengthPtr = outputPtr++;
@@ -190,7 +190,7 @@ size_t
 CobsBase<blockLength>::decode(outpost::Slice<const uint8_t> input, uint8_t* output)
 {
     size_t outputPosition = 0;
-    const uint8_t* inputPtr = &input[0];
+    const uint8_t* inputPtr = input.getDataPointer();
     const uint8_t* inputEnd = inputPtr + input.getNumberOfElements();
 
     while (inputPtr < inputEnd)

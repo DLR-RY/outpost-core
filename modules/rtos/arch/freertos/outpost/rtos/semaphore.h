@@ -14,6 +14,9 @@
 #ifndef OUTPOST_RTOS_FREERTOS_SEMAPHORE_HPP
 #define OUTPOST_RTOS_FREERTOS_SEMAPHORE_HPP
 
+#include <freertos/FreeRTOS.h>
+#include <freertos/semphr.h>
+
 #include <outpost/time/duration.h>
 
 namespace outpost
@@ -73,7 +76,7 @@ public:
     acquire();
 
     /**
-     * Decrement the count.
+     * Decrement the count. Not to be used from within ISRs.
      *
      * Same a acquire() but abort after \p timeout milliseconds.
      *
@@ -87,7 +90,20 @@ public:
     acquire(time::Duration timeout);
 
     /**
-     * Increment the count.
+     * Decrement the count. Only to be used from within ISRs.
+     *
+     * \param taskWoken
+     *     Is set to true if a higher priority task was woken by the call.
+     *     In that case, a yield shout be called before exiting the ISR.
+     *
+     * \return True if the count is currently greater than zero and the semaphore could be obtained,
+     *     false otherwise.
+     */
+    bool
+    acquireFromISR(bool& hasWokenTask);
+
+    /**
+     * Increment the count. Not to be used from within ISRs.
      *
      * This function will never block, but may preempt if an other
      * thread waiting for this semaphore has a higher priority.
@@ -95,8 +111,21 @@ public:
     void
     release();
 
+    /**
+     * Increment the count. Only to be used from within ISRs.
+     *
+     * This function will never block, but may preempt if an other
+     * thread waiting for this semaphore has a higher priority.
+     *
+     * \param taskWoken
+     *     Is set to true if a higher priority task was woken by the call.
+     *     In that case, a yield shout be called before exiting the ISR.
+     */
+    void
+    releaseFromISR(bool& hasWokenTask);
+
 private:
-    void* mHandle;
+    QueueDefinition* mHandle;
 };
 
 /**
@@ -150,7 +179,7 @@ public:
     ~BinarySemaphore();
 
     /**
-     * Decrement the count.
+     * Decrement the count. Not to be called from ISRs.
      *
      * Blocks if the count is currently zero until it is incremented
      * by another thread calling the release() method.
@@ -159,7 +188,7 @@ public:
     acquire();
 
     /**
-     * Decrement the count.
+     * Decrement the count. Not to be called from ISRs.
      *
      * Same a acquire() but abort after \p timeout milliseconds.
      *
@@ -173,7 +202,20 @@ public:
     acquire(time::Duration timeout);
 
     /**
-     * Increment the count.
+     * Decrement the count. Only to be used from within ISRs.
+     *
+     * \param taskWoken
+     *     Is set to true if a higher priority task was woken by the call.
+     *     In that case, a yield shout be called before exiting the ISR.
+     *
+     * \return True if the count is currently greater than zero and the semaphore could be obtained,
+     *     false otherwise.
+     */
+    bool
+    acquireFromISR(bool& hasWokenTask);
+
+    /**
+     * Increment the count. Not to be called from ISRs.
      *
      * This function will never block, but may preempt if an other
      * thread waiting for this semaphore has a higher priority.
@@ -181,8 +223,21 @@ public:
     void
     release();
 
+    /**
+     * Decrement the count. Only to be used from within ISRs.
+     *
+     * This function will never block, but may preempt if an other
+     * thread waiting for this semaphore has a higher priority.
+     *
+     * \param taskWoken
+     *     Is set to true if a higher priority task was woken by the call.
+     *     In that case, a yield shout be called before exiting the ISR.
+     */
+    void
+    releaseFromISR(bool& hasWokenTask);
+
 private:
-    void* mHandle;
+    QueueDefinition* mHandle;
 };
 
 }  // namespace rtos

@@ -34,7 +34,7 @@ static inline rtems_interval
 getInterval(outpost::time::Duration duration)
 {
     rtems_interval interval;
-    if (duration == outpost::time::Duration::infinity())
+    if (duration >= outpost::time::Duration::myriad())
     {
         interval = 0;
     }

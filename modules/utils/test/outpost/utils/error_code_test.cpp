@@ -106,7 +106,7 @@ public:
     }
 
 protected:
-    SomeErrorCode(int16_t code) : outpost::ErrorCode(code)
+    explicit SomeErrorCode(int16_t code) : outpost::ErrorCode(code)
     {
     }
 };

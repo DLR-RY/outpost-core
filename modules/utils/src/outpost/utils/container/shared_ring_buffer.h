@@ -10,13 +10,14 @@
  * Authors:
  * - 2017-2018, Jan-Gerd Mess (DLR RY-AVS)
  * - 2018, Fabian Greif (DLR RY-AVS)
+ * - 2021, Felix Passenberg (DLR RY-AVS)
  */
 
 /**
  * \file
  * \author  Jan-Gerd Mess
  *
- * \brief FIFO ring buffer data structure for SharedBuffers.
+ * \brief FIFO ring buffer data structure for SharedBufferPointers.
  */
 
 #ifndef MU_COMMON_UTILS_SMART_RING_BUFFER_H
@@ -25,6 +26,7 @@
 #include "shared_buffer.h"
 
 #include <outpost/base/slice.h>
+#include <outpost/rtos/mutex_guard.h>
 
 #include <stddef.h>
 #include <stdint.h>
@@ -36,7 +38,7 @@ namespace utils
 {
 /**
  * \ingroup SharedBuffer
- * \brief Ring buffer data structure for SharedBuffers.
+ * \brief Ring buffer data structure for SharedBufferPointers.
  *
  *
  * \author  Jan-Gerd Mess
@@ -51,10 +53,7 @@ public:
      */
     inline SharedRingBuffer(outpost::Slice<SharedBufferPointer> buffer,
                             outpost::Slice<uint8_t> flags) :
-        mBuffer(buffer),
-        mFlags(flags),
-        mReadIndex(0),
-        mNumberOfElements(0)
+        mBuffer(buffer), mFlags(flags), mReadIndex(0), mNumberOfUsedElements(0)
     {
     }
 
@@ -76,7 +75,8 @@ public:
     inline size_t
     getFreeSlots() const
     {
-        size_t freeSlots = mBuffer.getNumberOfElements() - mNumberOfElements;
+        outpost::rtos::MutexGuard lock(mMutex);
+        size_t freeSlots = mBuffer.getNumberOfElements() - mNumberOfUsedElements;
         return freeSlots;
     }
 
@@ -88,11 +88,13 @@ public:
     inline size_t
     getUsedSlots() const
     {
-        return mNumberOfElements;
+        outpost::rtos::MutexGuard lock(mMutex);
+        return mNumberOfUsedElements;
     }
 
     /**
-     * \brief Stores an element to the first unoccupied index it finds and updates the writeIndex.
+     * \brief Stores an element to the next free slot (if available) and advances the writeIndex by
+     * one.
      *
      * \param p SharedBufferPointer to be stored
      * \param flags Additional flags for the SharedBufferPointer that may be set.
@@ -102,15 +104,16 @@ public:
     inline bool
     append(const SharedBufferPointer& p, uint8_t flags = 0)
     {
+        outpost::rtos::MutexGuard lock(mMutex);
         bool appended = false;
-        if ((mNumberOfElements < mBuffer.getNumberOfElements()))
+        if ((mNumberOfUsedElements < mBuffer.getNumberOfElements()))
         {
             // calculate write index
-            int writeIndex = increment(mReadIndex, mNumberOfElements);
+            int writeIndex = increment(mReadIndex, mNumberOfUsedElements);
 
             mFlags[writeIndex] = flags;
             mBuffer[writeIndex] = p;
-            ++mNumberOfElements;
+            ++mNumberOfUsedElements;
 
             appended = true;
         }
@@ -126,49 +129,25 @@ public:
     inline bool
     isEmpty() const
     {
-        return (mNumberOfElements == 0);
-    }
-
-    /**
-     * \brief Reads one element from the SharedRingBuffer
-     * \return Returns the element at the current read pointer. The user has to perform all validity
-     * checks.
-     */
-    inline const SharedBufferPointer&
-    read() const
-    {
-        return mBuffer[mReadIndex];
-    }
-
-    /**
-     * \brief Reads one element from the SharedRingBuffer
-     * \return Returns the element at the current read pointer. The user has to perform all validity
-     * checks.
-     */
-    inline SharedBufferPointer&
-    read()
-    {
-        return mBuffer[mReadIndex];
-    }
-
-    /**
-     * \brief Reads the current element's flags from the SharedRingBuffer
-     * \return Returns the byte of flags at the current read pointer.
-     */
-    inline uint8_t
-    readFlags() const
-    {
-        return mFlags[mReadIndex];
+        outpost::rtos::MutexGuard lock(mMutex);
+        return (mNumberOfUsedElements == 0);
     }
 
     /**
      * \brief Sets the current element's flags on the SharedRingBuffer
      * \param flags Flags to be set at the current read pointer.
      */
-    inline void
-    setFlags(uint8_t flags)
+    inline bool
+    setFlags(uint8_t flags, size_t index = 0)
     {
-        mFlags[mReadIndex] = flags;
+        outpost::rtos::MutexGuard lock(mMutex);
+        if (!isEmpty() && index < mNumberOfUsedElements)
+        {
+            size_t position = increment(mReadIndex, index);
+            mFlags[position] = flags;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -180,13 +159,15 @@ public:
     inline bool
     pop()
     {
+        outpost::rtos::MutexGuard lock(mMutex);
         bool elementRemoved = false;
 
-        if (mNumberOfElements > 0)
+        if (mNumberOfUsedElements > 0)
         {
             mBuffer[mReadIndex] = SharedBufferPointer();
+            mFlags[mReadIndex] = 0;
             mReadIndex = increment(mReadIndex, 1);
-            --mNumberOfElements;
+            --mNumberOfUsedElements;
             elementRemoved = true;
         }
 
@@ -205,9 +186,10 @@ public:
      * \return SharedBufferPointer found at the given index (can be invalid)
      */
     inline const SharedBufferPointer&
-    peek(size_t index) const
+    peek(size_t index = 0) const
     {
-        if (index <= mBuffer.getNumberOfElements())
+        outpost::rtos::MutexGuard lock(mMutex);
+        if (index < mNumberOfUsedElements)
         {
             size_t position = increment(mReadIndex, index);
             return mBuffer[position];
@@ -228,10 +210,15 @@ public:
      * \return Flags found at the given index (can be invalid)
      */
     inline uint8_t
-    peekFlags(size_t index) const
+    peekFlags(size_t index = 0) const
     {
-        size_t position = increment(mReadIndex, index);
-        return mFlags[position];
+        outpost::rtos::MutexGuard lock(mMutex);
+        if (index < mNumberOfUsedElements)
+        {
+            size_t position = increment(mReadIndex, index);
+            return mFlags[position];
+        }
+        return 0;
     }
 
     /**
@@ -240,12 +227,15 @@ public:
     inline void
     reset()
     {
-        mReadIndex = 0;
-        mNumberOfElements = 0;
-        for (size_t i = 0; i < mBuffer.getNumberOfElements(); i++)
+        outpost::rtos::MutexGuard lock(mMutex);
+        for (size_t i = 0; i < mNumberOfUsedElements; i++)
         {
-            mBuffer[i] = SharedBufferPointer();
+            size_t position = increment(mReadIndex, i);
+            mBuffer[position] = SharedBufferPointer();
+            mFlags[position] = 0;
         }
+        mReadIndex = 0;
+        mNumberOfUsedElements = 0;
     }
 
 private:
@@ -263,7 +253,9 @@ private:
     const outpost::Slice<uint8_t> mFlags;
 
     size_t mReadIndex;
-    size_t mNumberOfElements;
+    size_t mNumberOfUsedElements;
+
+    mutable outpost::rtos::Mutex mMutex;
 };
 
 /**
@@ -281,18 +273,20 @@ public:
      * \brief Standard constructor
      */
     inline SharedRingBufferStorage() :
-        SharedRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags))
+        SharedRingBuffer(outpost::asSlice(mBufferStorage), outpost::asSlice(mFlags)),
+        mBufferStorage(),
+        mFlags()
     {
     }
 
     /**
-     * \brief Standard detructor
+     * \brief Standard destructor
      */
     virtual ~SharedRingBufferStorage() = default;
 
 private:
-    SharedBufferPointer mBufferStorage[totalNumberOfElements];
-    uint8_t mFlags[totalNumberOfElements];
+    std::array<SharedBufferPointer, totalNumberOfElements> mBufferStorage;
+    std::array<uint8_t, totalNumberOfElements> mFlags;
 };
 
 }  // namespace utils

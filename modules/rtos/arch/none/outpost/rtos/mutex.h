@@ -75,7 +75,7 @@ public:
     acquire();
 
     /**
-     * Acquire the mutex.
+     * Acquire the mutex. Not to be used from within ISRs.
      *
      * Same as acquire() but blocks only for \p timeout milliseconds.
      *
@@ -89,6 +89,22 @@ public:
     acquire(time::Duration timeout);
 
     /**
+     * Acquire the mutex. Only to be used from within ISRs.
+     *
+     *
+     * \param hasWokenThread Set to true iff a higher priority thread was woken by the method.
+     *        Thread::yield() should be called before exiting the ISR.
+     *
+     * \returns    \c true if the mutex could be acquired.
+     */
+    inline bool
+    acquireFromISR(bool& hasWokenThread)
+    {
+        hasWokenThread = false;
+        return acquire();
+    }
+
+    /**
      * Release the mutex.
      *
      * This function will never block.
@@ -96,6 +112,20 @@ public:
     inline void
     release()
     {
+    }
+
+    /**
+     * Release the mutex. Not needed for bare-metal.
+     *
+     * \param hasWokenThread Set to true iff a higher priority thread was woken by the method.
+     *        Thread::yield() should be called before exiting the ISR.
+     *
+     * This function will never block.
+     */
+    void
+    relaseFromISR(bool& hasWokenThread)
+    {
+        hasWokenThread = false;
     }
 };
 

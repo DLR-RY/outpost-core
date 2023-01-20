@@ -45,10 +45,7 @@ Thread::wrapper(void* object)
 }
 
 Thread::Thread(uint8_t, size_t, const char* name, FloatingPointSupport /*floatingPointSupport*/) :
-    mIsRunning(false),
-    mPthreadId(),
-    mTid(),
-    mName()
+    mIsRunning(false), mPthreadId(), mTid(), mName()
 {
     if (name != 0)
     {

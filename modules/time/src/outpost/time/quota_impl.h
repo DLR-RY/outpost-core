@@ -22,10 +22,14 @@ namespace time
 {
 template <size_t Resources>
 ContinuousIntervalQuota<Resources>::ContinuousIntervalQuota(outpost::time::Duration interval) :
-    mInterval(interval),
-    mCurrentIndex(0)
+    mInterval(interval), mCurrentIndex(0)
 {
-    reset();
+    // reset, but reset() is virtual
+    for (size_t i = 0; i < Resources; ++i)
+    {
+        // set as far back as possible
+        mResources[i] = SpacecraftElapsedTime::startOfEpoch() - Duration::maximum();
+    }
 }
 
 template <size_t Resources>
@@ -39,11 +43,7 @@ template <size_t Resources>
 bool
 ContinuousIntervalQuota<Resources>::access(outpost::time::SpacecraftElapsedTime now)
 {
-    size_t next = ++mCurrentIndex;
-    if (next >= Resources)
-    {
-        next = 0;
-    }
+    size_t next = (mCurrentIndex + 1) % Resources;
 
     bool accessGranted = false;
     outpost::time::SpacecraftElapsedTime t = mResources[next];
@@ -64,7 +64,8 @@ ContinuousIntervalQuota<Resources>::reset()
     mCurrentIndex = 0;
     for (size_t i = 0; i < Resources; ++i)
     {
-        mResources[i] = SpacecraftElapsedTime::startOfEpoch() - mInterval;
+        // set as far back as possible
+        mResources[i] = SpacecraftElapsedTime::startOfEpoch() - Duration::maximum();
     }
 }
 

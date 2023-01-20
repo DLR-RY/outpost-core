@@ -20,8 +20,7 @@
 outpost::smpc::TopicBase* outpost::smpc::TopicBase::listOfAllTopics = nullptr;
 
 outpost::smpc::TopicBase::TopicBase() :
-    ImplicitList<TopicBase>(listOfAllTopics, this),
-    mSubscriptions(nullptr)
+    ImplicitList<TopicBase>(listOfAllTopics, this), mSubscriptions(nullptr)
 {
 }
 

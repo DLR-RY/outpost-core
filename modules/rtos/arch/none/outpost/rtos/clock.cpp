@@ -13,8 +13,7 @@
 
 #include "clock.h"
 
-outpost::time::SpacecraftElapsedTime
-__attribute__((weak)) outpost::rtos::SystemClock::now() const
+outpost::time::SpacecraftElapsedTime __attribute__((weak)) outpost::rtos::SystemClock::now() const
 {
     // convert to microseconds
     uint64_t us = 0;

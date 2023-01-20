@@ -41,7 +41,7 @@ bool
 Semaphore::acquire(time::Duration timeout)
 {
     bool success = false;
-    if (timeout == time::Duration::infinity())
+    if (timeout >= time::Duration::myriad())
     {
         success = acquire();
     }
@@ -90,7 +90,7 @@ bool
 BinarySemaphore::acquire(time::Duration timeout)
 {
     bool success = false;
-    if (timeout == time::Duration::infinity())
+    if (timeout >= time::Duration::myriad())
     {
         success = acquire();
     }

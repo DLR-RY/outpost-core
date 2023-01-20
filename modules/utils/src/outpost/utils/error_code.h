@@ -82,6 +82,13 @@ public:
     {
     }
 
+    ErrorCode&
+    operator=(const ErrorCode& other)
+    {
+        mErrorCode = other.mErrorCode;
+        return *this;
+    }
+
     /**
      * This class can be directly used in a boolean expression.
      * A positive value (true) indicates a successful operation.
@@ -135,7 +142,8 @@ public:
         return (mErrorCode != other.mErrorCode);
     }
 
-    inline constexpr bool operator!() const
+    inline constexpr bool
+    operator!() const
     {
         return !isSuccess();
     }

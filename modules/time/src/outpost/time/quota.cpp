@@ -37,7 +37,7 @@ NonDeterministicIntervalQuota::setTimeInterval(outpost::time::Duration interval)
 bool
 NonDeterministicIntervalQuota::access(outpost::time::SpacecraftElapsedTime now)
 {
-    if (mIntervalEnd < now)
+    if (now >= mIntervalEnd)
     {
         mUsedResources = 0;
         mIntervalEnd = now + mInterval;

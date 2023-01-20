@@ -24,6 +24,7 @@ namespace outpost
 {
 namespace compression
 {
+constexpr size_t DataBlock::headerPadding;
 constexpr size_t DataBlock::headerSize;
 
 uint16_t
@@ -57,7 +58,11 @@ DataBlock::DataBlock() :
     mIsEncoded(false)
 {
 }
-
+// Ignore -Wcast-align here
+// because ShareBufferPointers from SharedBufferPools will be 4-byte aligned and headerSize is
+// padded.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-align"
 DataBlock::DataBlock(const outpost::utils::SharedBufferPointer& p,
                      uint16_t parameterId,
                      outpost::time::GpsTime startTime,
@@ -76,6 +81,7 @@ DataBlock::DataBlock(const outpost::utils::SharedBufferPointer& p,
     mIsEncoded(false)
 {
 }
+#pragma GCC diagnostic pop
 
 size_t
 DataBlock::getMaximumSize() const
@@ -114,7 +120,8 @@ DataBlock::getEncodedData() const
 {
     if (isEncoded())
     {
-        return outpost::Slice<uint8_t>::unsafe(&mPointer[0], headerSize + mSampleCount);
+        return outpost::Slice<uint8_t>::unsafe(&mPointer[0U],
+                                               headerSize - headerPadding + mSampleCount);
     }
     else
     {
@@ -165,7 +172,7 @@ DataBlock::encode(DataBlock& b, NLSEncoder& encoder) const
 {
     if (isTransformed() && b.getMaximumSize() >= mSampleCount * sizeof(int16_t))
     {
-        outpost::Slice<uint8_t> slice = b.mPointer.asSlice().skipFirst(headerSize);
+        outpost::Slice<uint8_t> slice = b.mPointer.asSlice().skipFirst(headerSize - headerPadding);
         outpost::Bitstream bitstream(slice);
         encoder.encode(getCoefficients(), bitstream);
         outpost::Serialize dataStream(slice);
@@ -174,10 +181,11 @@ DataBlock::encode(DataBlock& b, NLSEncoder& encoder) const
         b.mIsEncoded = true;
         b.mScheme = CompressionScheme::waveletNLS;
 
-        outpost::Serialize headerStream(&b.mPointer[0]);
+        outpost::Serialize headerStream(&b.mPointer[0U]);
         headerStream.store<uint8_t>(static_cast<uint8_t>(b.mScheme));
         headerStream.store<uint16_t>(mParameterId);
-        headerStream.store<uint64_t>(mStartTime.timeSinceEpoch().milliseconds());
+        headerStream.store<uint32_t>(mStartTime.timeSinceEpoch().seconds());
+        headerStream.store<uint16_t>(mStartTime.timeSinceEpoch().milliseconds() % 1000U);
 
         uint8_t* pos = headerStream.getPointerToCurrentPosition();
         outpost::Bitfield::write<0, 3>(pos, static_cast<uint8_t>(mSamplingRate));

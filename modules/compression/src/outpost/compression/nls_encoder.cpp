@@ -64,7 +64,7 @@ NLSEncoder::encode(outpost::Slice<int16_t> inBuffer,
         {
             max = std::abs(inBuffer[i - 1]);
         }
-        if (i<inBuffer.getNumberOfElements()>> 1)
+        if (i < inBuffer.getNumberOfElements() >> 1)
         {
             dmax[i >> 1] = outpost::utils::max<int16_t>(
                     std::abs(inBuffer[i - 1]), std::abs(inBuffer[i]), dmax[i], dmax[i - 1]);
@@ -76,7 +76,7 @@ NLSEncoder::encode(outpost::Slice<int16_t> inBuffer,
         }
     }
 
-    for (uint16_t i = 1; i<inBuffer.getNumberOfElements()>> 2; i++)
+    for (uint16_t i = 1; i < inBuffer.getNumberOfElements() >> 2; i++)
     {
         gmax[i] = outpost::utils::max<int16_t>(dmax[i << 1], dmax[(i << 1) + 1]);
     }
@@ -149,6 +149,10 @@ NLSEncoder::encode(outpost::Slice<int16_t> inBuffer,
             {
                 j += skip(mark[j]);
             }
+            if (outBuffer.getSize() > maxBytes)
+            {
+                break;
+            }
         }
 
         // Break if the maximum number of output bytes is reached.
@@ -214,6 +218,10 @@ NLSEncoder::encode(outpost::Slice<int16_t> inBuffer,
             {
                 j = j + isSkip(mark[j]);
             }
+            if (outBuffer.getSize() > maxBytes)
+            {
+                break;
+            }
         }
 
         // Break if the maximum number of output bytes is reached.
@@ -241,6 +249,10 @@ NLSEncoder::encode(outpost::Slice<int16_t> inBuffer,
             else
             {
                 j += skip(mark[j]);
+            }
+            if (outBuffer.getSize() > maxBytes)
+            {
+                break;
             }
         }
 

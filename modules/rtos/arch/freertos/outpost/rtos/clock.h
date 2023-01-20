@@ -28,6 +28,8 @@ namespace rtos
 class SystemClock : public time::Clock
 {
 public:
+    virtual ~SystemClock() = default;
+
     virtual time::SpacecraftElapsedTime
     now() const override;
 };

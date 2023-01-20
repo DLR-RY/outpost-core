@@ -48,18 +48,68 @@ public:
     {
     }
 
-    outpost::utils::SharedBufferPool<16384, 10> mPool;
+    outpost::utils::SharedBufferPool<16500, 10> mPool;
     outpost::utils::ReferenceQueue<DataBlock, 8> mQueue;
+
+    outpost::time::GpsTime now =
+            outpost::time::GpsTime::afterEpoch(outpost::time::Duration::zero());
 
     unittest::time::TestingClock mClock;
 };
+
+TEST_F(DataAggregationTest, TrivialConstructor)
+{
+    OneTimeQueueSender ots(mQueue);
+
+    DataAggregator aggregator;
+    EXPECT_FALSE(aggregator.isEnabled());
+    EXPECT_FALSE(aggregator.enable(SamplingRate::hz1, Blocksize::bs16));
+}
+
+TEST_F(DataAggregationTest, AggregatorArray)
+{
+    OneTimeQueueSender ots(mQueue);
+
+    DataAggregator aggregators[3];
+
+    for (size_t i = 0; i < 3; i++)
+    {
+        EXPECT_FALSE(aggregators[i].enable(SamplingRate::hz1, Blocksize::bs16));
+    }
+
+    EXPECT_TRUE(aggregators[0].initialize(123U, mPool, ots));
+    EXPECT_TRUE(aggregators[1].initialize(124U, mPool, ots));
+    EXPECT_FALSE(aggregators[2].initialize(124U, mPool, ots));
+
+    EXPECT_TRUE(aggregators[0].enable(SamplingRate::hz1, Blocksize::bs16));
+    EXPECT_TRUE(aggregators[1].enable(SamplingRate::hz1, Blocksize::bs16));
+    EXPECT_FALSE(aggregators[2].enable(SamplingRate::hz1, Blocksize::bs16));
+}
+
+TEST_F(DataAggregationTest, Initialize)
+{
+    OneTimeQueueSender ots(mQueue);
+    Fixpoint f = 1.0f;
+
+    DataAggregator aggregator;
+    EXPECT_FALSE(aggregator.isEnabled());
+    EXPECT_FALSE(aggregator.enable(SamplingRate::hz1, Blocksize::bs16));
+
+    EXPECT_FALSE(aggregator.initialize(0, mPool, ots));
+    EXPECT_FALSE(aggregator.enable(SamplingRate::hz1, Blocksize::bs16));
+    EXPECT_FALSE(aggregator.push(f, now));
+
+    EXPECT_TRUE(aggregator.initialize(123U, mPool, ots));
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz1, Blocksize::bs16));
+    EXPECT_TRUE(aggregator.push(f, now));
+}
 
 TEST_F(DataAggregationTest, Constructor)
 {
     OneTimeQueueSender ots(mQueue);
     EXPECT_EQ(DataAggregator::numberOfAggregators(), 0U);
 
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
     EXPECT_EQ(DataAggregator::numberOfAggregators(), 1U);
 
@@ -79,14 +129,14 @@ TEST_F(DataAggregationTest, Constructor)
 TEST_F(DataAggregationTest, PushOnce)
 {
     OneTimeQueueSender ots(mQueue);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
     Fixpoint f = 1.5f;
-    EXPECT_FALSE(aggregator.push(f));
+    EXPECT_FALSE(aggregator.push(f, now));
 
     aggregator.enable(SamplingRate::hz05, Blocksize::bs16);
     ASSERT_TRUE(aggregator.isEnabled());
-    EXPECT_TRUE(aggregator.push(f));
+    EXPECT_TRUE(aggregator.push(f, now));
 
     EXPECT_EQ(mPool.numberOfElements(), mPool.numberOfFreeElements() + 1U);
 
@@ -99,14 +149,14 @@ TEST_F(DataAggregationTest, PushOnce)
 TEST_F(DataAggregationTest, PushBlock)
 {
     OneTimeQueueSender ots(mQueue);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
-    aggregator.enable(SamplingRate::hz05, Blocksize::bs16);
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz05, Blocksize::bs16));
 
     Fixpoint f = 1.5f;
     for (size_t i = 0; i < 16U - 1; i++)
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
     EXPECT_EQ(mPool.numberOfElements(), mPool.numberOfFreeElements() + 1U);
     DataBlock b;
@@ -116,7 +166,7 @@ TEST_F(DataAggregationTest, PushBlock)
 
     mClock.incrementBy(outpost::time::Seconds(30U));
 
-    EXPECT_TRUE(aggregator.push(f));
+    EXPECT_TRUE(aggregator.push(f, now));
     ASSERT_TRUE(mQueue.receive(b, outpost::time::Duration::zero()));
 
     EXPECT_TRUE(b.isValid());
@@ -131,7 +181,49 @@ TEST_F(DataAggregationTest, PushBlock)
 
     EXPECT_EQ(mPool.numberOfElements(), mPool.numberOfFreeElements() + 1U);
 
-    EXPECT_TRUE(aggregator.push(f));
+    EXPECT_TRUE(aggregator.push(f, now));
+
+    EXPECT_EQ(mPool.numberOfElements(), mPool.numberOfFreeElements() + 2U);
+}
+
+TEST_F(DataAggregationTest, PushBlock4096)
+{
+    OneTimeQueueSender ots(mQueue);
+    DataAggregator aggregator(123U, mPool, ots);
+
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz05, Blocksize::bs4096));
+
+    Fixpoint f = 1.5f;
+    for (size_t i = 0; i < 4096U - 1; i++)
+    {
+        Fixpoint fadd(static_cast<int>(i));
+        fadd = f + fadd;
+        EXPECT_TRUE(aggregator.push(fadd, now));
+    }
+    EXPECT_EQ(mPool.numberOfElements(), mPool.numberOfFreeElements() + 1U);
+    DataBlock b;
+    EXPECT_FALSE(mQueue.receive(b, outpost::time::Duration::zero()));
+    EXPECT_FALSE(b.isValid());
+    EXPECT_FALSE(b.isComplete());
+
+    mClock.incrementBy(outpost::time::Seconds(30U));
+
+    EXPECT_TRUE(aggregator.push(f, now));
+    ASSERT_TRUE(mQueue.receive(b, outpost::time::Duration::zero()));
+
+    EXPECT_TRUE(b.isValid());
+    EXPECT_TRUE(b.isComplete());
+    EXPECT_EQ(b.getBlocksize(), Blocksize::bs4096);
+    EXPECT_EQ(b.getSampleCount(), 4096U);
+    EXPECT_EQ(b.getParameterId(), 123U);
+
+    EXPECT_EQ(b.getSamplingRate(), SamplingRate::hz05);
+    EXPECT_EQ(b.getStartTime(),
+              outpost::time::GpsTime::afterEpoch(outpost::time::Duration::zero()));
+
+    EXPECT_EQ(mPool.numberOfElements(), mPool.numberOfFreeElements() + 1U);
+
+    EXPECT_TRUE(aggregator.push(f, now));
 
     EXPECT_EQ(mPool.numberOfElements(), mPool.numberOfFreeElements() + 2U);
 }
@@ -139,81 +231,81 @@ TEST_F(DataAggregationTest, PushBlock)
 TEST_F(DataAggregationTest, DisableAfterBlock)
 {
     OneTimeQueueSender ots(mQueue);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
-    aggregator.enable(SamplingRate::hz05, Blocksize::bs16);
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz05, Blocksize::bs16));
 
     Fixpoint f = 1.5f;
     for (size_t i = 0; i < 16U - 1; i++)
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
     aggregator.disableAfterCurrentBlock();
     EXPECT_TRUE(aggregator.isEnabled());
 
-    EXPECT_TRUE(aggregator.push(f));
+    EXPECT_TRUE(aggregator.push(f, now));
 
     DataBlock b;
     ASSERT_TRUE(mQueue.receive(b, outpost::time::Duration::zero()));
 
-    EXPECT_FALSE(aggregator.push(f));
+    EXPECT_FALSE(aggregator.push(f, now));
     EXPECT_FALSE(aggregator.isEnabled());
 }
 
 TEST_F(DataAggregationTest, EnableForOneBlock)
 {
     OneTimeQueueSender ots(mQueue);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
-    aggregator.enableForOneBlock(SamplingRate::hz05, Blocksize::bs16);
+    EXPECT_TRUE(aggregator.enableForOneBlock(SamplingRate::hz05, Blocksize::bs16));
 
     EXPECT_TRUE(aggregator.isEnabled());
 
     Fixpoint f = 1.5f;
     for (size_t i = 0; i < toUInt(Blocksize::bs16); i++)
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     DataBlock b;
     ASSERT_TRUE(mQueue.receive(b, outpost::time::Duration::zero()));
 
     EXPECT_FALSE(aggregator.isEnabled());
-    EXPECT_FALSE(aggregator.push(f));
+    EXPECT_FALSE(aggregator.push(f, now));
 }
 
 TEST_F(DataAggregationTest, Disable)
 {
     OneTimeQueueSender ots(mQueue);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
-    aggregator.enable(SamplingRate::hz05, Blocksize::bs16);
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz05, Blocksize::bs16));
 
     Fixpoint f = 1.5f;
     for (size_t i = 0; i < 2U; i++)
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     aggregator.disable();
 
-    EXPECT_FALSE(aggregator.push(f));
+    EXPECT_FALSE(aggregator.push(f, now));
     EXPECT_FALSE(aggregator.isEnabled());
 }
 
 TEST_F(DataAggregationTest, ChangeBlocksize)
 {
     OneTimeQueueSender ots(mQueue);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
     EXPECT_FALSE(aggregator.hasBlocksizeChanged());
 
-    aggregator.enable(SamplingRate::hz05, Blocksize::bs16);
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz05, Blocksize::bs16));
 
     Fixpoint f = 1.5f;
     for (size_t i = 0; i < 2U; i++)
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     EXPECT_FALSE(aggregator.hasBlocksizeChanged());
@@ -231,12 +323,12 @@ TEST_F(DataAggregationTest, ChangeBlocksize)
 
     while (aggregator.isAtStartOfNewBlock())
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     EXPECT_TRUE(aggregator.hasBlocksizeChanged());
 
-    EXPECT_TRUE(aggregator.push(f));
+    EXPECT_TRUE(aggregator.push(f, now));
 
     EXPECT_FALSE(aggregator.hasBlocksizeChanged());
     EXPECT_EQ(aggregator.getBlocksize(), Blocksize::bs128);
@@ -244,7 +336,7 @@ TEST_F(DataAggregationTest, ChangeBlocksize)
 
     while (aggregator.isAtStartOfNewBlock())
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     DataBlock b;
@@ -258,16 +350,16 @@ TEST_F(DataAggregationTest, ChangeBlocksize)
 TEST_F(DataAggregationTest, ChangeSamplingRate)
 {
     OneTimeQueueSender ots(mQueue);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
     EXPECT_FALSE(aggregator.hasSamplingRateChanged());
 
-    aggregator.enable(SamplingRate::hz05, Blocksize::bs16);
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz05, Blocksize::bs16));
 
     Fixpoint f = 1.5f;
     for (size_t i = 0; i < 2U; i++)
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     EXPECT_FALSE(aggregator.hasSamplingRateChanged());
@@ -286,12 +378,12 @@ TEST_F(DataAggregationTest, ChangeSamplingRate)
 
     while (aggregator.isAtStartOfNewBlock())
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     EXPECT_TRUE(aggregator.hasSamplingRateChanged());
 
-    EXPECT_TRUE(aggregator.push(f));
+    EXPECT_TRUE(aggregator.push(f, now));
 
     EXPECT_FALSE(aggregator.hasSamplingRateChanged());
     EXPECT_EQ(aggregator.getSamplingRate(), SamplingRate::hz10);
@@ -299,7 +391,7 @@ TEST_F(DataAggregationTest, ChangeSamplingRate)
 
     while (aggregator.isAtStartOfNewBlock())
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     DataBlock b;
@@ -314,19 +406,19 @@ TEST_F(DataAggregationTest, EmptyPool)
 {
     outpost::utils::ReferenceQueue<DataBlock, 12> q;
     OneTimeQueueSender ots(q);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
-    aggregator.enable(SamplingRate::hz01, Blocksize::bs16);
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz01, Blocksize::bs16));
 
     Fixpoint f = 1.0f;
     while (mPool.numberOfFreeElements() > 0 || aggregator.isAtStartOfNewBlock())
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
     EXPECT_EQ(aggregator.getNumCompletedBlocks(), 10U);
     EXPECT_EQ(aggregator.getNumOverallSamples(), 160U);
 
-    EXPECT_FALSE(aggregator.push(f));
+    EXPECT_FALSE(aggregator.push(f, now));
     EXPECT_EQ(aggregator.getNumLostBlocks(), 0U);
     EXPECT_EQ(aggregator.getNumLostSamples(), 1U);
 
@@ -335,21 +427,21 @@ TEST_F(DataAggregationTest, EmptyPool)
         EXPECT_TRUE(q.receive(b, outpost::time::Duration::zero()));
     }
 
-    EXPECT_TRUE(aggregator.push(f));
+    EXPECT_TRUE(aggregator.push(f, now));
 }
 
 TEST_F(DataAggregationTest, FullQueue)
 {
     outpost::utils::ReferenceQueue<DataBlock, 1> q;
     OneTimeQueueSender ots(q);
-    DataAggregator aggregator(123U, mClock, mPool, ots);
+    DataAggregator aggregator(123U, mPool, ots);
 
-    aggregator.enable(SamplingRate::hz01, Blocksize::bs16);
+    EXPECT_TRUE(aggregator.enable(SamplingRate::hz01, Blocksize::bs16));
 
     Fixpoint f = 1.0f;
     for (size_t i = 0; i < 48U; i++)
     {
-        EXPECT_TRUE(aggregator.push(f));
+        EXPECT_TRUE(aggregator.push(f, now));
     }
 
     EXPECT_EQ(aggregator.getNumLostSamples(), 0U);

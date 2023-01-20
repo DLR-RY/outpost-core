@@ -21,11 +21,7 @@ namespace outpost
 {
 template <typename T, DequeAppendStrategy strategy>
 Deque<T, strategy>::Deque(T* backendBuffer, size_t n) :
-    mBuffer(backendBuffer),
-    mMaxSize(n),
-    mHead(0),
-    mTail(1),
-    mSize(0)
+    mBuffer(backendBuffer), mMaxSize(n), mHead(0), mTail(1), mSize(0)
 {
 }
 
@@ -140,16 +136,10 @@ template <typename T, DequeAppendStrategy strategy>
 size_t
 Deque<T, strategy>::append(outpost::Slice<T> values)
 {
-    Size elementsToAppend = 0;
-    if (!isFull())
+    Size elementsToAppend = values.getNumberOfElements();
+    if (elementsToAppend && !isFull())
     {
-        Index head = mHead + 1;
-
-        // Get number of elements until end of ring buffer
-        Size elementsUntilEndOfBuffer = mMaxSize - head;
-
         // Get number of elements to copy until overflow happens
-        elementsToAppend = values.getNumberOfElements();
         if (elementsToAppend > (mMaxSize - mSize))
         {
             if (strategy == DequeAppendStrategy::partial)
@@ -159,9 +149,14 @@ Deque<T, strategy>::append(outpost::Slice<T> values)
             else
             {
                 // Do not append anything if not everything can be added.
-                elementsToAppend = 0;
+                return 0;
             }
         }
+
+        Index head = mHead + 1;
+
+        // Get number of elements until end of ring buffer
+        Size elementsUntilEndOfBuffer = mMaxSize - head;
 
         // Two cases:
         // 1. All elements has place in the end of the ring buffer, or fill up
@@ -170,17 +165,16 @@ Deque<T, strategy>::append(outpost::Slice<T> values)
         if (elementsToAppend <= elementsUntilEndOfBuffer)
         {
             // Copy only to the end of the ring buffer
-            memcpy(&mBuffer[head], values.begin(), sizeof(T) * elementsToAppend);
+            appendMultipleElements(head, values.first(elementsToAppend));
             mHead = head + elementsToAppend - 1;
         }
         else
         {
             // 2. Split the elements to copy into two slices, one in the end,
             // other in the begin of array.
-            memcpy(&mBuffer[head], values.begin(), sizeof(T) * elementsUntilEndOfBuffer);
-            memcpy(&mBuffer[0],
-                   &(values[elementsUntilEndOfBuffer]),
-                   sizeof(T) * (elementsToAppend - elementsUntilEndOfBuffer));
+            appendMultipleElements(head, values.first(elementsUntilEndOfBuffer));
+            appendMultipleElements(
+                    0, values.first(elementsToAppend).skipFirst(elementsUntilEndOfBuffer));
             mHead = elementsToAppend - elementsUntilEndOfBuffer - 1;
         }
 

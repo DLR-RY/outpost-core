@@ -127,8 +127,7 @@ private:
 // Implementation of the template constructor
 template <typename T>
 Timer::Timer(T* object, void (T::*function)(Timer* timer), const char* name) :
-    mObject(reinterpret_cast<Callable*>(object)),
-    mFunction(reinterpret_cast<Function>(function))
+    mObject(reinterpret_cast<Callable*>(object)), mFunction(reinterpret_cast<Function>(function))
 {
     this->createTimer(name);
 }

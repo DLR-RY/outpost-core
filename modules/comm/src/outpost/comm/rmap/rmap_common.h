@@ -22,7 +22,7 @@ namespace comm
 {
 namespace rmap
 {
-static constexpr uint32_t maxTransactionIds = 65536;
+static constexpr uint16_t maxTransactionId = UINT16_MAX;
 static constexpr uint8_t maxConcurrentTransactions = 10;
 static constexpr uint16_t bufferSize = 1024;  // The amount of data bytes.
 static constexpr uint8_t numberOfReceiveBuffers =

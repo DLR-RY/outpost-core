@@ -43,18 +43,22 @@ public:
 
     FP(const FP&) = default;
 
+    // cppcheck-suppress noExplicitConstructor
     FP(int16_t x) : value(x * (1 << PREC))
     {
     }
 
-    FP(int32_t x) : value(x * (1 << PREC))
+    // cppcheck-suppress noExplicitConstructor
+    FP(int32_t x) : value(static_cast<int32_t>(static_cast<uint32_t>(x) * (1 << PREC)))
     {
     }
 
+    // cppcheck-suppress noExplicitConstructor
     FP(float x) : value(x * (1 << PREC))
     {
     }
 
+    // cppcheck-suppress noExplicitConstructor
     FP(double x) : value(x * (1 << PREC))
     {
     }
@@ -305,7 +309,8 @@ public:
      * @param x Factor
      * @return Product of the current and a second fixpoint number
      */
-    FP operator*(const FP& x) const
+    FP
+    operator*(const FP& x) const
     {
         FP res(*this);
         return res *= x;
@@ -330,7 +335,8 @@ public:
      * @return Product of the current and the casted input number
      */
     template <typename TT>
-    FP operator*(const TT& x) const
+    FP
+    operator*(const TT& x) const
     {
         FP res(*this);
         return res *= FP(x);
@@ -344,8 +350,9 @@ public:
     FP&
     operator/=(const FP& x)
     {
-        value = static_cast<int32_t>(((static_cast<int64_t>(value)) << PREC)
-                                     / (static_cast<int64_t>(x.value)));
+        value = static_cast<int32_t>(
+                (static_cast<int64_t>(((static_cast<uint64_t>(value)) << PREC)))
+                / (static_cast<int64_t>(x.value)));
         return *this;
     }
 
@@ -395,7 +402,7 @@ public:
     FP&
     operator<<=(const unsigned x)
     {
-        value <<= x;
+        value = (static_cast<uint32_t>(value)) << x;
         return *this;
     }
 

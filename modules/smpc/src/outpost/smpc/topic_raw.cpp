@@ -20,8 +20,7 @@
 outpost::smpc::TopicRaw* outpost::smpc::TopicRaw::listOfAllTopics = 0;
 
 outpost::smpc::TopicRaw::TopicRaw() :
-    ImplicitList<TopicRaw>(listOfAllTopics, this),
-    mSubscriptions(0)
+    ImplicitList<TopicRaw>(listOfAllTopics, this), mSubscriptions(0)
 {
 }
 

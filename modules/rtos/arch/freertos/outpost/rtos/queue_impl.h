@@ -16,9 +16,6 @@
 
 #include "queue.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/queue.h>
-
 #include <outpost/rtos/failure_handler.h>
 
 template <typename T>
@@ -35,23 +32,45 @@ outpost::rtos::Queue<T>::Queue(size_t numberOfItems)
 template <typename T>
 outpost::rtos::Queue<T>::~Queue()
 {
-    vQueueDelete(mHandle);
+    vQueueDelete(static_cast<QueueHandle_t>(mHandle));
 }
 
 template <typename T>
 bool
 outpost::rtos::Queue<T>::send(const T& data)
 {
-    const portTickType ticks = 0;
+    const TickType_t ticks = 0;
     return xQueueSend(mHandle, &data, ticks);
+}
+
+template <typename T>
+bool
+outpost::rtos::Queue<T>::sendFromISR(const T& data, bool& hasWokenTask)
+{
+    BaseType_t baseType = 0;
+    bool res = xQueueSendFromISR(static_cast<QueueHandle_t>(mHandle), &data, &baseType);
+    hasWokenTask = (baseType == 0);
+    return res;
 }
 
 template <typename T>
 bool
 outpost::rtos::Queue<T>::receive(T& data, outpost::time::Duration timeout)
 {
-    const portTickType ticks = (timeout.milliseconds() * configTICK_RATE_HZ) / 1000;
-    return xQueueReceive(mHandle, &data, ticks);
+    const TickType_t ticks = timeout.milliseconds() > 1000 * 1000
+                                     ? (timeout.milliseconds() * configTICK_RATE_HZ) / 1000
+                                     : (timeout.milliseconds() / 1000) * configTICK_RATE_HZ;
+    return xQueueReceive(static_cast<QueueHandle_t>(mHandle), &data, ticks);
+}
+
+template <typename T>
+bool
+outpost::rtos::Queue<T>::receiveFromISR(T& data, bool& hasWokenTask)
+{
+    BaseType_t baseType = 0;
+    bool res = xQueueReceiveFromISR(static_cast<QueueHandle_t>(mHandle), &data, &baseType);
+    hasWokenTask = (baseType != 0);
+    return res;
 }
 
 #endif

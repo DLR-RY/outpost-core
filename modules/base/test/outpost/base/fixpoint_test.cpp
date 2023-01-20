@@ -32,7 +32,8 @@ outpost::FP<16>::operator-(const double& x) const;
 template outpost::FP<16>&
 outpost::FP<16>::operator-=(const double& x);
 
-template outpost::FP<16> outpost::FP<16>::operator*(const double& x) const;
+template outpost::FP<16>
+outpost::FP<16>::operator*(const double& x) const;
 
 template outpost::FP<16>&
 outpost::FP<16>::operator*=(const double& x);

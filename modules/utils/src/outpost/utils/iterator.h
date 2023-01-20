@@ -52,8 +52,10 @@ struct DefaultArrayIterator : public ArrayIterator<T>
 {
     explicit inline DefaultArrayIterator(T* parameters);
 
-    inline T& operator*();
-    inline T* operator->();
+    inline T&
+    operator*();
+    inline T*
+    operator->();
 
 private:
     friend struct DefaultConstArrayIterator<T>;
@@ -95,8 +97,10 @@ struct DefaultConstArrayIterator : public ConstArrayIterator<T>
 
     inline DefaultConstArrayIterator(const DefaultArrayIterator<T>& other);
 
-    inline const T& operator*() const;
-    inline const T* operator->() const;
+    inline const T&
+    operator*() const;
+    inline const T*
+    operator->() const;
 };
 
 }  // namespace outpost

@@ -33,7 +33,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::NandBCHRTime(void
     mNumCodeWordBytes(0),
     mNumRedundantWords(0),
     mLoc{0},
-    mSyndromes{0},
+    mSyndromes{},  // {} without "0" will also zero initialize. Can't explain why cppcheck only
+                   // notes this as redundant.
     mTraceTestVal(0),
     mQuadCompTable{0},
     mValid(false),
@@ -111,7 +112,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::buildLogTables(vo
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 bool
-NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::checkLogTables(void)
+NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::checkLogTables(void) const
 {
     //****************************************************************
     //  Function: chkLogAlogTbls
@@ -246,7 +247,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::genQuadCompTable(
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 int32_t
-NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffQuadFun(int32_t c)
+NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffQuadFun(int32_t c) const
 {
     //****************************************************************
     // Function: ffQuadFun
@@ -509,7 +510,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::generateEncodeTab
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 int32_t
-NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffMult(int32_t a, int32_t b)
+NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffMult(int32_t a, int32_t b) const
 {
     if (a == 0 || b == 0)
         return 0;
@@ -525,7 +526,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffMult(int32_t a,
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 int32_t
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffInv(
-        int32_t opa, bool& success)  // Pointer to status
+        int32_t opa, bool& success) const  // Pointer to status
 {
     //****************************************************************
     //  Function: ffInv
@@ -554,7 +555,7 @@ template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t m
 int32_t
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffDiv(int32_t opa,
                                                                      int32_t opb,
-                                                                     bool& success)
+                                                                     bool& success) const
 {
     //****************************************************************
     //  Function: ffDiv
@@ -582,7 +583,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffDiv(int32_t opa
 
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 int32_t
-NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffSquareRoot(int32_t opa)
+NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffSquareRoot(int32_t opa) const
 {
     //****************************************************************
     //  Function: ffSquareRoot
@@ -610,7 +611,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffSquareRoot(int3
 template <uint32_t mMParam, uint32_t mTParam, uint32_t mNandDataSize, uint32_t mNandSpareSize>
 int32_t
 NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::ffCubeRoot(int32_t opa,
-                                                                          bool& success)
+                                                                          bool& success) const
 {
     //****************************************************************
     //  Function: ffCubeRoot
@@ -668,7 +669,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchEncode(void)
     //****************************************************************
     uint32_t SR[MAX_REDUN_WORDS] = {0};
     // +5 So that we can temporarily keep remainder bytes in whole words
-    uint8_t redunByteArray[(mTParam * mMParam) / 8 + 5];
+    uint8_t redunByteArray[(mTParam * mMParam) / 8 + 5]{{}};
 
     for (uint16_t writeCWAddr = 0; writeCWAddr < mNumDataBytes; writeCWAddr++)
     {  // index to write data buffer
@@ -1311,7 +1312,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quarticElp(int32_
     //  Note to Neal. ###### Next level - list here the conditions that
     //  result in an uncorrectable error and where each is detected.
     //****************************************************************
-    int32_t b2, b3, b4, b4n, b4d;
+    int32_t b2, b3, b4;
 
     bool success = true;
     constexpr int32_t Ln = 4;  // ELP degree is 4 for quartic
@@ -1338,6 +1339,7 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::quarticElp(int32_
     }
     else
     {
+        int32_t b4n, b4d;
         // ---------- Step b of the Deodhar-Weldon paper ----------
         b4n = ffMult(sigbk[1], sigbk[1]);
         b4d = ffMult(sigbk[3], sigbk[3]) ^ ffMult(sigbk[1], ffMult(sigbk[2], sigbk[3]))
@@ -1499,7 +1501,6 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     //  to this function but on entry to this function these arrays do not
     //  contain useful data.
     //****************************************************************
-    int32_t sigmaN[mTParam + 1];
     bool success = true;
     DecodeStatus status = DecodeStatus::noError;
 
@@ -1510,6 +1511,8 @@ NandBCHRTime<mMParam, mTParam, mNandDataSize, mNandSpareSize>::bchDecode(void)
     // If remainderDetdErr is not 0, CW is not err free - could be corr or uncorr
     if (remainderDetdErr != 0)
     {
+        int32_t sigmaN[mTParam + 1];
+
         // GET HERE IF REMAINDER INDICATES AN ERROR (NON-ZERO REMAINDER)
         status = DecodeStatus::corrected;
         computeSyndromes();

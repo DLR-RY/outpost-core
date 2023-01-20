@@ -16,9 +16,6 @@
 
 #include "thread_priorities.h"
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-
 #include <outpost/rtos/failure_handler.h>
 
 #include <stdio.h>
@@ -43,10 +40,7 @@ outpost::rtos::Thread::Thread(uint8_t priority,
                               size_t stack,
                               const char* name,
                               FloatingPointSupport /*floatingPointSupport*/) :
-    mHandle(0),
-    mPriority(priority),
-    mStackSize(stack),
-    mName(name)
+    mHandle(0), mPriority(priority), mStackSize(stack), mName(name)
 {
     if (mStackSize < minimumStackSize)
     {
@@ -69,7 +63,7 @@ outpost::rtos::Thread::start()
     if (mHandle == 0)
     {
         int status = xTaskCreate(&Thread::wrapper,
-                                 (const signed char*) mName,
+                                 mName,
                                  (mStackSize / sizeof(portSTACK_TYPE)) + 1,
                                  this,
                                  static_cast<unsigned portBASE_TYPE>(
@@ -128,7 +122,14 @@ outpost::rtos::Thread::yield()
 void
 outpost::rtos::Thread::sleep(::outpost::time::Duration duration)
 {
-    vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000);
+    if (duration.milliseconds() > 1000 * 1000)
+    {  // prevent overflows of large delays and integer division to zero of small delays
+        vTaskDelay((duration.milliseconds() / 1000) * configTICK_RATE_HZ);
+    }
+    else
+    {
+        vTaskDelay((duration.milliseconds() * configTICK_RATE_HZ) / 1000);
+    }
 }
 
 // ----------------------------------------------------------------------------

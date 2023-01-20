@@ -30,7 +30,14 @@ namespace outpost
 class SerializableObject
 {
 public:
+    SerializableObject() = default;
+
     virtual ~SerializableObject();
+
+    SerializableObject(const SerializableObject&) = default;
+
+    SerializableObject&
+    operator=(const SerializableObject&) = default;
 
     /**
      * Get the size of the parameter.

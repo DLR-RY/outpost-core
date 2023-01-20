@@ -92,9 +92,9 @@ private:
     Crc16Ccitt&
     operator=(const Crc16Ccitt&);
 
-    static const uint16_t initialValue = 0xFFFF;
-    static const int numberOfBitsPerByte = 8;
-    static const int numberOfValuesPerByte = 256;
+    static constexpr uint16_t initialValue = 0xFFFF;
+    static constexpr int32_t numberOfBitsPerByte = 8;
+    static constexpr int32_t numberOfValuesPerByte = 256;
 
     /// Pre-calculated CRC table for one byte
     static const uint16_t crcTable[numberOfValuesPerByte];

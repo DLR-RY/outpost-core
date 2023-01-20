@@ -8,7 +8,9 @@
 // ----------------------------------------------------------------------------
 
 #include <outpost/base/fixpoint.h>
+#include <outpost/compression/data_aggregator.h>
 #include <outpost/compression/data_block.h>
+#include <outpost/compression/data_block_sender.h>
 #include <outpost/compression/data_processor_thread.h>
 #include <outpost/utils/container/reference_queue.h>
 #include <outpost/utils/container/shared_object_pool.h>
@@ -27,7 +29,8 @@ namespace data_aggregation_test
 class DataProcessorThreadTest : public ::testing::Test
 {
 public:
-    DataProcessorThreadTest()
+    DataProcessorThreadTest() :
+        mHeartbeatSource(outpost::support::parameter::HeartbeatSource::default1)
     {
     }
 
@@ -47,16 +50,18 @@ public:
     {
     }
 
-    outpost::utils::SharedBufferPool<16384, 20> mPool;
+    outpost::utils::SharedBufferPool<16500, 20> mPool;
     outpost::utils::ReferenceQueue<DataBlock, 8> mInputQueue;
     outpost::utils::ReferenceQueue<DataBlock, 8> mOutputQueue;
 
     unittest::time::TestingClock mClock;
+
+    outpost::support::parameter::HeartbeatSource mHeartbeatSource;
 };
 
 TEST_F(DataProcessorThreadTest, Constructor)
 {
-    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue);
+    DataProcessorThread thread(123U, mHeartbeatSource, mPool, mInputQueue, mOutputQueue);
 
     EXPECT_EQ(thread.getNumberOfReceivedBlocks(), 0U);
     EXPECT_EQ(thread.getNumberOfProcessedBlocks(), 0U);
@@ -68,7 +73,7 @@ TEST_F(DataProcessorThreadTest, Constructor)
 
 TEST_F(DataProcessorThreadTest, EnableDisable)
 {
-    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue);
+    DataProcessorThread thread(123U, mHeartbeatSource, mPool, mInputQueue, mOutputQueue);
 
     thread.enable();
     EXPECT_TRUE(thread.isEnabled());
@@ -79,7 +84,7 @@ TEST_F(DataProcessorThreadTest, EnableDisable)
 
 TEST_F(DataProcessorThreadTest, emptyQueue)
 {
-    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue);
+    DataProcessorThread thread(123U, mHeartbeatSource, mPool, mInputQueue, mOutputQueue);
 
     thread.processSingleBlock(outpost::time::Duration::zero());
 
@@ -92,7 +97,7 @@ TEST_F(DataProcessorThreadTest, emptyQueue)
 
 TEST_F(DataProcessorThreadTest, processSingleInvalidBlock)
 {
-    DataProcessorThread thread(123U, mPool, mInputQueue, mOutputQueue);
+    DataProcessorThread thread(123U, mHeartbeatSource, mPool, mInputQueue, mOutputQueue);
 
     outpost::compression::DataBlock block;
     mInputQueue.send(block);
@@ -102,15 +107,20 @@ TEST_F(DataProcessorThreadTest, processSingleInvalidBlock)
     EXPECT_EQ(thread.getNumberOfReceivedBlocks(), 1U);
     EXPECT_EQ(thread.getNumberOfProcessedBlocks(), 0U);
     EXPECT_EQ(thread.getNumberOfForwardedBlocks(), 0U);
-    EXPECT_EQ(thread.getNumberOfLostBlocks(), 0U);
+    EXPECT_EQ(thread.getNumberOfLostBlocks(), 1U);
 
     EXPECT_FALSE(mOutputQueue.receive(block, outpost::time::Duration::zero()));
 }
 
 TEST_F(DataProcessorThreadTest, processSingleBlock)
 {
-    DataProcessorThread thread(
-            123U, mPool, mInputQueue, mOutputQueue, 2U, outpost::time::Duration::zero());
+    DataProcessorThread thread(123U,
+                               mHeartbeatSource,
+                               mPool,
+                               mInputQueue,
+                               mOutputQueue,
+                               2U,
+                               outpost::time::Duration::zero());
 
     outpost::utils::SharedBufferPointer p;
     ASSERT_TRUE(mPool.allocate(p));
@@ -120,9 +130,9 @@ TEST_F(DataProcessorThreadTest, processSingleBlock)
             123U,
             outpost::time::GpsTime::afterEpoch(outpost::time::Hours(3U)),
             outpost::compression::SamplingRate::hz05,
-            outpost::compression::Blocksize::bs16);
+            outpost::compression::Blocksize::bs4096);
 
-    for (int32_t i = 0; i < 16; i++)
+    for (int32_t i = 0; i < 4096; i++)
     {
         block.push(outpost::Fixpoint(i));
     }
@@ -138,17 +148,22 @@ TEST_F(DataProcessorThreadTest, processSingleBlock)
     EXPECT_TRUE(mOutputQueue.receive(block, outpost::time::Duration::zero()));
 
     EXPECT_EQ(block.getSamplingRate(), outpost::compression::SamplingRate::hz05);
-    EXPECT_EQ(block.getBlocksize(), outpost::compression::Blocksize::bs16);
+    EXPECT_EQ(block.getBlocksize(), outpost::compression::Blocksize::bs4096);
     EXPECT_TRUE(block.isEncoded());
     outpost::Slice<uint8_t> encodedData = block.getEncodedData();
     EXPECT_EQ(encodedData.getNumberOfElements(),
-              DataBlock::headerSize + Bitstream::headerSize + 8U);
+              DataBlock::headerSize - DataBlock::headerPadding + Bitstream::headerSize + 58U);
 }
 
 TEST_F(DataProcessorThreadTest, processMultipleBlocks)
 {
-    DataProcessorThread thread(
-            123U, mPool, mInputQueue, mOutputQueue, 2U, outpost::time::Duration::zero());
+    DataProcessorThread thread(123U,
+                               mHeartbeatSource,
+                               mPool,
+                               mInputQueue,
+                               mOutputQueue,
+                               2U,
+                               outpost::time::Duration::zero());
 
     for (size_t blocks = 0; blocks < 10; blocks++)
     {

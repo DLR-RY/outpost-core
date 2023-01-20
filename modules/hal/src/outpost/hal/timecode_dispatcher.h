@@ -66,7 +66,7 @@ public:
     virtual ~TimeCodeDispatcher() = default;
 
     virtual void
-    dispatchTimeCode(const TimeCode& tc)
+    dispatchTimeCode(const TimeCode& tc) override
     {
         // For one we are in a ISR and also nNumberOfListener only increments to
         // we don't need any mutex as worst case a just added listener don't get a notify.
@@ -77,9 +77,9 @@ public:
     }
 
     virtual bool
-    addListener(outpost::rtos::Queue<TimeCode>* queue)
+    addListener(outpost::rtos::Queue<TimeCode>* queue) override
     {
-        if (queue == nullptr)
+        if (nullptr == queue)
         {
             return false;
         }

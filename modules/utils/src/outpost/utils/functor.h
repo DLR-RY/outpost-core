@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2018, German Aerospace Center (DLR)
+ * Copyright (c) 2017-2022, German Aerospace Center (DLR)
  *
  * This file is part of the development version of OUTPOST.
  *
@@ -9,56 +9,40 @@
  *
  * Authors:
  * - 2017-2018, Fabian Greif (DLR RY-AVS)
+ * - 2022, Tobias Pfeffer (DLR RY-AVS)
  */
 
 #ifndef OUTPOST_UTILS_FUNCTOR_H
 #define OUTPOST_UTILS_FUNCTOR_H
 
 #include <outpost/base/callable.h>
+#include <outpost/utils/operation_result.h>
 
 namespace outpost
 {
-template <typename FnType>
-struct FunctionSignature;
-
-template <typename R>
-struct FunctionSignature<R()>
-{
-    typedef R ReturnType;
-};
-
-template <typename R, typename P1>
-struct FunctionSignature<R(P1)>
-{
-    typedef R ReturnType;
-    typedef P1 Parameter1Type;
-};
-
-template <typename R, typename P1, typename P2>
-struct FunctionSignature<R(P1, P2)>
-{
-    typedef R ReturnType;
-    typedef P1 Parameter1Type;
-    typedef P2 Parameter2Type;
-};
+template <typename Signature>
+class Functor;
 
 /**
  * Definition of a function which is executable by telecommands.
  */
-template <typename T>
-class Functor1
+template <typename R, typename... As>
+class Functor<R(As...)>
 {
-    typedef typename FunctionSignature<T>::ReturnType ReturnType;
-    typedef typename FunctionSignature<T>::Parameter1Type Parameter1Type;
+    typedef R (Callable::*FunctionBaseType)(As...);
+
+    typedef R ReturnType;
+
+    using OperationResult = outpost::utils::OperationResult;
 
 public:
-    template <typename U>
+    template <typename C>
     struct FunctionType
     {
-        typedef ReturnType (U::*Type)(Parameter1Type);
+        typedef R (C::*Type)(As...);
     };
 
-    inline Functor1() : mObject(0), mFunction(0)
+    inline Functor() : mObject(nullptr), mFunction(nullptr)
     {
     }
 
@@ -70,126 +54,78 @@ public:
      * \param[in]   function
      *      Member function pointer of the subscribing class.
      */
-    template <typename U>
-    inline Functor1(U& object, typename FunctionType<U>::Type function) :
+    template <typename C>
+    inline Functor(C& object, typename FunctionType<C>::Type function) :
         mObject(reinterpret_cast<Callable*>(&object)),
         mFunction(reinterpret_cast<FunctionBaseType>(function))
     {
+    }
+
+    /**
+     * Checks if the functor is valid.
+     *
+     * @return True: if object or member function pointer are not set, otherwise false
+     */
+    bool
+    isEmpty() const
+    {
+        return (mObject == nullptr || mFunction == nullptr);
     }
 
     /**
      * Execute the contained function.
+     * The first parameter is used to check if the result is a valid value.
+     *
+     * @param valid True if call was valid.
      */
     inline ReturnType
-    execute(Parameter1Type parameter1) const
+    execute(OperationResult& valid, As... args) const
     {
-        return (mObject->*mFunction)(parameter1);
+        if (!isEmpty())
+        {
+            valid = OperationResult::success;
+            return (mObject->*mFunction)(args...);
+        }
+        valid = OperationResult::invalid;
+        return ReturnType();
+    }
+
+/**
+ * Execute the contained function.
+ *
+ * @warning Legacy interface that does not NOT check if the functor is valid.
+ */
+#if __cplusplus >= 201402L
+    [[deprecated("Use result checking version instead.")]]
+#endif
+    inline ReturnType
+    execute(As... args) const
+    {
+        return (mObject->*mFunction)(args...);
     }
 
     /**
-     * \see execute()
+     * \see execute() with check parameter
      */
     inline ReturnType
-    operator()(Parameter1Type parameter1) const
+    operator()(OperationResult& valid, As... args) const
     {
-        return execute(parameter1);
+        return execute(valid, args...);
     }
-
-private:
-    typedef ReturnType (Callable::*FunctionBaseType)(Parameter1Type);
-
-    Callable* mObject;
-    FunctionBaseType mFunction;
-};
 
 /**
- * \see outpost::Functor1
+ * \see execute()
  */
-template <typename T>
-class Functor0
-{
-    typedef typename FunctionSignature<T>::ReturnType ReturnType;
-
-public:
-    template <typename U>
-    struct FunctionType
-    {
-        typedef ReturnType (U::*Type)();
-    };
-
-    inline Functor0() : mObject(0), mFunction(0)
-    {
-    }
-
-    template <typename U>
-    inline Functor0(U& object, typename FunctionType<U>::Type function) :
-        mObject(reinterpret_cast<Callable*>(&object)),
-        mFunction(reinterpret_cast<FunctionBaseType>(function))
-    {
-    }
-
+#if __cplusplus >= 201402L
+    [[deprecated("Use result checking version instead.")]]
+#endif
     inline ReturnType
-    execute() const
+    operator()(As... args) const
     {
-        return (mObject->*mFunction)();
+        return execute(args...);
     }
 
-    inline ReturnType
-    operator()() const
-    {
-        return execute();
-    }
-
-private:
-    typedef ReturnType (Callable::*FunctionBaseType)();
-
-    Callable* mObject;
-    FunctionBaseType mFunction;
-};
-
-/**
- * \see outpost::Functor1
- */
-template <typename T>
-class Functor2
-{
-    typedef typename FunctionSignature<T>::ReturnType ReturnType;
-    typedef typename FunctionSignature<T>::Parameter1Type Parameter1Type;
-    typedef typename FunctionSignature<T>::Parameter2Type Parameter2Type;
-
-public:
-    template <typename U>
-    struct FunctionType
-    {
-        typedef ReturnType (U::*Type)(Parameter1Type, Parameter2Type);
-    };
-
-    inline Functor2() : mObject(0), mFunction(0)
-    {
-    }
-
-    template <typename U>
-    inline Functor2(U& object, typename FunctionType<U>::Type function) :
-        mObject(reinterpret_cast<Callable*>(&object)),
-        mFunction(reinterpret_cast<FunctionBaseType>(function))
-    {
-    }
-
-    inline ReturnType
-    execute(Parameter1Type parameter1, Parameter2Type parameter2) const
-    {
-        return (mObject->*mFunction)(parameter1, parameter2);
-    }
-
-    inline ReturnType
-    operator()(Parameter1Type parameter1, Parameter2Type parameter2) const
-    {
-        return execute(parameter1, parameter2);
-    }
-
-private:
-    typedef ReturnType (Callable::*FunctionBaseType)(Parameter1Type, Parameter2Type);
-
+protected:
     Callable* mObject;
     FunctionBaseType mFunction;
 };
