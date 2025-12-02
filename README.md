@@ -1,5 +1,15 @@
 <img src="doc/images/OUTPOST_logo.png" height="200px" />
 
+# IMPORTANT NOTICE
+
+You are looking at an old revision of OUTPOST. While the development of OUTPOST continues,
+this repository is **not** actively maintained anymore.
+
+**If you are interested in OUTPOST, its current state of development and/ or the satellite-specific modules,
+please contact outpost[at]dlr.de.**
+
+# README.md
+
 The **OUTPOST** library (Open modUlar sofTware PlatfOrm for SpacecrafT)
 is developed at the [German Aerospace Center (DLR)][] and provides an
 execution platform targeted at embedded systems running mission
@@ -10,13 +20,6 @@ modules to use and which modules to leave out.
 OUTPOST is split into two repositories: *outpost-core* contains the open-source
 base environment and *outpost-satellite* contains the closed-source satellite
 specific modules.
-
-IMPORTANT NOTICE
--------
-
-This repositry is only a snapshot of the current state of development in progress at DLR.
-If you want to participate or are interested in the satellite specific modules, please contact
-jan-gerd.mess[at]dlr.de
 
 
 Modules
